@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;600;800&family=Oxanium:wght@400;700&family=Rajdhani:wght@300;400;500;600;700&family=Bebas+Neue&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-tech: "Oxanium", cursive;
+  --font-rajdhani: "Rajdhani", sans-serif;
+  --font-bebas: "Bebas Neue", sans-serif;
+
+  --color-primary: #00FF00;
+  --color-secondary: #00CCFF;
+  --color-bg-dark: #000000;
+  --color-surface: #0a0a0a;
+  --color-surface-hover: #141414;
+}
+
+@layer base {
+  body {
+    @apply bg-bg-dark text-white font-sans antialiased selection:bg-primary/30 selection:text-primary;
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  .font-rajdhani { font-family: var(--font-rajdhani); }
+  .font-bebas { font-family: var(--font-bebas); }
+  
+  .tech-label {
+    @apply font-mono text-[10px] uppercase tracking-widest text-primary/70;
+  }
+  
+  .tech-border {
+    @apply border border-white/10;
+  }
+
+  .glow-green {
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  }
+
+  .glow-blue {
+    box-shadow: 0 0 20px rgba(0, 204, 255, 0.3);
+  }
+  
+  .text-gradient-custom {
+    background: linear-gradient(to bottom, #00ff00 20%, #004d00 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #222;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #333;
+}
+
+/* Animations */
+@keyframes terminal-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.cursor-blink::after {
+  content: '_';
+  animation: terminal-cursor 1s infinite;
+}

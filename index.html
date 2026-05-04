@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESCOM Studio — Web Design & Automação Digital</title>
+    <meta name="description" content="Estúdio de web design e automação digital. Criamos experiências imersivas e sistemas inteligentes que escalam negócios.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #080808;
+            --black-bg: #0a0a0a;
+            --neon: #2EFF00; 
+            --neon-dim: rgba(46, 255, 0, 0.15);
+            --neon-glow: rgba(46, 255, 0, 0.5);
+            --white: #f5f5f5;
+            --gray-light: #999;
+            --gray-mid: #555;
+            --gray-dark: #222;
+            --gray-card: #121212;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+            --font-sans: 'Space Grotesk', system-ui, sans-serif;
+            --transition: 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--neon) var(--black); }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--black); }
+        ::-webkit-scrollbar-thumb { background: var(--gray-mid); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--neon); }
+        body { background-color: var(--black); color: var(--white); font-family: var(--font-sans); cursor: none; overflow-x: hidden; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+        #particleCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.6; }
+        .cursor { width: 20px; height: 20px; border: 1px solid var(--neon); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transition: width 0.2s, height 0.2s, background 0.2s; mix-blend-mode: difference; transform: translate(-50%, -50%); }
+        .cursor-dot { width: 4px; height: 4px; background: var(--neon); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); }
+        .cursor.active { width: 60px; height: 60px; background: rgba(204, 255, 0, 0.1); border-color: transparent; }
+        .main-wrapper { position: relative; z-index: 1; }
+        section { padding: 8rem 4rem; max-width: 1600px; margin: 0 auto; position: relative; border-bottom: 1px solid var(--border-color); }
+        
+        /* White Section Theme */
+        #servicos { 
+            background-color: #ffffff; 
+            color: #000000; 
+            max-width: 100vw; 
+            margin: 0; 
+            width: 100%; 
+            border-bottom: none;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            padding: 0; /* Removed padding to allow React sticky to control layout */
+        }
+        #servicos .section-title { color: #000000; }
+        #servicos .manifesto-text { color: #333333; }
+        #servicos .system-tag { border-color: rgba(0,0,0,0.1); }
+        #servicos .card-item { border-color: rgba(0,0,0,0.1); color: #000000; transition: background 0.3s ease; }
+        #servicos .card-item:hover { background: rgba(0,0,0,0.02); }
+        #servicos .card-header { color: #666666; }
+        #servicos .card-header .line { background: rgba(0,0,0,0.2); }
+        #servicos .card-title { color: #000000; }
+        #servicos .card-desc { color: #555555; }
+        #servicos > .split-layout { max-width: 1600px; margin: 0 auto; padding: 0 4rem; }
+        #servicos #servicos-react-root .cards-grid { max-width: 1600px; margin: 4rem auto 0; padding: 0 4rem; border-top: 1px solid rgba(0,0,0,0.1); border-left: 1px solid rgba(0,0,0,0.1); }
+
+        .header { position: fixed; top: 0; left: 0; width: 100%; z-index: 100; background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); transition: var(--transition); }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; height: 70px; }
+        .logo { font-family: var(--font-sans); font-size: 1.1rem; text-decoration: none; display: flex; align-items: center; gap: 6px; }
+        .logo-arrow { font-family: var(--font-mono); color: var(--neon); font-weight: bold; }
+        .logo-bold { color: var(--white); font-weight: 700; }
+        .logo-light { color: var(--gray-light); font-weight: 400; }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { color: var(--gray-light); text-decoration: none; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; transition: var(--transition); }
+        .nav-links a:hover { color: var(--white); }
+        .nav-right { display: flex; align-items: center; height: 100%; gap: 1.5rem; }
+        .lang-switch { display: flex; border: 1px solid var(--gray-dark); font-family: var(--font-mono); font-size: 0.75rem; height: 36px; }
+        .lang-switch a { color: var(--gray-mid); text-decoration: none; transition: var(--transition); height: 100%; display: flex; align-items: center; padding: 0 14px; }
+        .lang-switch a.active { background: var(--neon); color: var(--black); font-weight: 600; }
+        .lang-switch a:hover:not(.active) { color: var(--white); }
+        .btn-solid { background: var(--neon); color: var(--black); font-family: var(--font-mono); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; text-decoration: none; padding: 0 2rem; height: 100%; display: flex; align-items: center; justify-content: center; letter-spacing: 1px; transition: var(--transition); border: none; cursor: none; }
+        .btn-solid:hover { background: var(--white); }
+        .header .btn-solid { height: 36px; padding: 0 1.5rem; }
+        .btn-outline { background: transparent; color: var(--neon); border: 1px solid var(--neon); font-family: var(--font-mono); font-size: 0.8rem; text-transform: uppercase; text-decoration: none; padding: 1rem 2rem; display: inline-flex; align-items: center; gap: 10px; letter-spacing: 1px; transition: var(--transition); cursor: none; }
+        .btn-outline:hover { background: rgba(57, 255, 20, 0.1); color: var(--neon); }
+        .status-bar { display: flex; justify-content: space-between; padding: 0.8rem 4rem; border-bottom: 1px solid var(--border-color); font-family: var(--font-mono); font-size: 0.7rem; color: var(--gray-mid); letter-spacing: 1px; margin-top: 70px; }
+        .status-left span, .status-right span { margin-right: 1.5rem; }
+        .status-left .online-dot, .status-left .green-text { color: var(--neon); }
+        .status-left .online-dot { margin-right: 5px; }
+        .system-tag { font-family: var(--font-mono); font-size: 0.8rem; color: var(--neon); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2rem; display: flex; align-items: center; gap: 10px; }
+        .system-tag span.arrow, .system-tag span.dot { color: var(--neon); }
+        .system-tag span.dot { font-size: 1.2rem; line-height: 0; }
+        .section-title { font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 700; letter-spacing: -2px; line-height: 1.1; margin-bottom: 2rem; max-width: 900px; }
+        .section-title.large { font-size: clamp(3rem, 7vw, 6.5rem); letter-spacing: -3px; }
+        .highlight { color: var(--neon); }
+        .text-gray { color: var(--gray-light); }
+        .subtitle { font-size: 1.2rem; color: var(--gray-light); max-width: 600px; margin-bottom: 3rem; line-height: 1.6; }
+        .split-layout { display: flex; justify-content: space-between; gap: 4rem; align-items: flex-start; }
+        .split-left { flex: 1; max-width: 700px; }
+        .split-right { flex: 1; max-width: 600px; }
+        .hero { padding-top: 6rem; padding-bottom: 8rem; min-height: auto; border-bottom: none; }
+        .hero-actions { display: flex; gap: 1.5rem; margin-top: 3rem; }
+        .manifesto-text { font-size: 1.2rem; color: var(--gray-light); max-width: 800px; line-height: 1.8; margin-top: 2rem; }
+        .cards-grid, .science-grid, .test-grid { border-top: 1px solid var(--border-color); border-left: 1px solid var(--border-color); margin-top: 4rem; }
+        .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+        .science-grid { display: grid; grid-template-columns: 1fr 1fr; }
+        .test-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+        .card-item { padding: 3rem; border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); background: transparent; transition: var(--transition); }
+        .card-item:hover { background: rgba(255,255,255,0.02); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: 0.7rem; color: var(--gray-mid); margin-bottom: 3rem; letter-spacing: 2px; }
+        .card-header .line { width: 30px; height: 1px; background: var(--gray-dark); }
+        .card-icon { font-size: 1.5rem; color: var(--neon); margin-bottom: 1.5rem; }
+        .card-icon svg { width: 24px; height: 24px; fill: none; stroke: var(--neon); stroke-width: 2; }
+        .card-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; letter-spacing: -0.5px; }
+        .card-desc { color: var(--gray-mid); font-size: 0.95rem; line-height: 1.6; }
+        .projects-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4rem; }
+        .project-list { border-top: 1px solid var(--border-color); }
+        .project-row { display: grid; grid-template-columns: 80px 2fr 1fr 100px 50px; align-items: center; padding: 2.5rem 0; border-bottom: 1px solid var(--border-color); transition: var(--transition); text-decoration: none; color: var(--white); cursor: none; }
+        .project-row:hover { padding-left: 1rem; background: rgba(255,255,255,0.01); }
+        .project-row:hover .proj-title { color: var(--neon); }
+        .proj-num { font-family: var(--font-mono); color: var(--gray-mid); font-size: 0.8rem; }
+        .proj-title { font-size: 1.8rem; font-weight: 600; letter-spacing: -1px; transition: var(--transition); text-transform: uppercase; }
+        .proj-cat, .proj-year { font-family: var(--font-mono); color: var(--gray-mid); font-size: 0.75rem; letter-spacing: 2px; }
+        .proj-arrow { text-align: right; color: var(--gray-mid); transition: var(--transition); }
+        .project-row:hover .proj-arrow { color: var(--neon); transform: translateX(10px) translateY(-10px); }
+        #projectModalContainer { position: fixed; top: 0; left: 0; width: 300px; height: 350px; pointer-events: none; overflow: hidden; z-index: 900; transform: translate(-50%, -50%) scale(0); transition: transform 0.4s cubic-bezier(0.76, 0, 0.24, 1); background: #fff; border: 1px solid var(--border-color); }
+        #projectModalContainer.active { transform: translate(-50%, -50%) scale(1); }
+        .project-modal-slider { position: absolute; width: 100%; height: 100%; top: 0; transition: top 0.5s cubic-bezier(0.76, 0, 0.24, 1); }
+        .project-modal-item { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--black-bg); }
+        .project-modal-item img { height: 100%; width: 100%; object-fit: cover; }
+        #viewCursor { position: fixed; top: 0; left: 0; width: 80px; height: 80px; border-radius: 50%; background: var(--neon); color: var(--black); display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 901; font-family: var(--font-mono); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; transform: translate(-50%, -50%) scale(0); transition: transform 0.4s cubic-bezier(0.76, 0, 0.24, 1); mix-blend-mode: normal; }
+        #viewCursor.active { transform: translate(-50%, -50%) scale(1); }
+        .json-panel { border: 1px solid var(--border-color); background: var(--black-bg); }
+        .json-header { font-family: var(--font-mono); font-size: 0.75rem; color: var(--gray-mid); padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color); letter-spacing: 2px; }
+        .json-item { padding: 2rem; border-bottom: 1px solid var(--border-color); }
+        .json-item:last-child { border-bottom: none; }
+        .json-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 1rem; }
+        .json-num { font-family: var(--font-mono); color: var(--neon); font-size: 0.8rem; }
+        .json-desc { color: var(--gray-mid); font-size: 0.95rem; padding-left: 2.2rem; }
+        .tag-group { display: flex; gap: 10px; margin-top: 2rem; }
+        .min-tag { border: 1px solid var(--gray-dark); padding: 6px 12px; font-family: var(--font-mono); font-size: 0.65rem; color: var(--gray-mid); letter-spacing: 1px; text-transform: uppercase; }
+        .dashboard-mock { border: 1px solid var(--border-color); background: var(--black-bg); padding: 2rem; }
+        .dash-header { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.7rem; color: var(--gray-mid); margin-bottom: 3rem; letter-spacing: 2px; }
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem 3rem; }
+        .dash-widget { display: flex; flex-direction: column; gap: 1rem; }
+        .dash-w-title { font-family: var(--font-mono); font-size: 0.75rem; color: var(--gray-light); letter-spacing: 1px; display: flex; flex-direction: column; gap: 10px; }
+        .dash-bar-bg { width: 100%; height: 4px; background: var(--gray-dark); }
+        .dash-bar-fill { height: 100%; background: var(--neon); }
+        .cost-comparison { display: grid; grid-template-columns: 1fr 1fr; margin-top: 4rem; }
+        .cost-side { padding: 4rem; background: var(--black-bg); border: 1px solid var(--border-color); }
+        .cost-side.red { border-right: none; }
+        .cost-side.green { background: radial-gradient(circle at top right, rgba(46,255,0,0.05), transparent 50%), var(--black-bg); border-color: rgba(46,255,0,0.2); position: relative; }
+        .stacked-card { position: sticky; box-shadow: 0 -15px 40px rgba(0,0,0,0.8); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .cost-label { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 2px; margin-bottom: 2rem; }
+        .red .cost-label { color: #ff3333; }
+        .green .cost-label { color: var(--neon); }
+        .cost-title { font-size: 2rem; font-weight: 600; letter-spacing: -1px; margin-bottom: 3rem; }
+        .cost-list { list-style: none; }
+        .cost-item { display: flex; justify-content: space-between; padding: 1.5rem 0; border-bottom: 1px solid var(--border-color); color: var(--gray-light); font-size: 0.95rem; }
+        .cost-total { display: flex; justify-content: space-between; padding: 2rem 0; font-family: var(--font-mono); font-size: 0.9rem; letter-spacing: 1px; color: var(--gray-mid); }
+        .cost-total-value { color: #ff3333; font-size: 1.1rem; }
+        .green-check-list li { position: relative; padding-left: 2rem; margin-bottom: 1.5rem; color: var(--white); font-size: 0.95rem; }
+        .green-check-list li::before { content: '✓'; position: absolute; left: 0; color: var(--neon); font-family: var(--font-mono); }
+        .cost-footer-note { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-color); }
+        .test-card { padding: 4rem 3rem; border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between; }
+        .test-num { font-family: var(--font-mono); font-size: 0.7rem; color: var(--neon); letter-spacing: 2px; margin-bottom: 2rem; }
+        .test-quote { font-size: 1.1rem; line-height: 1.6; margin-bottom: 3rem; font-weight: 400; }
+        .test-author { border-top: 1px solid var(--border-color); padding-top: 1.5rem; }
+        .test-name { font-weight: 600; font-size: 1rem; margin-bottom: 0.3rem; }
+        .test-role { font-family: var(--font-mono); font-size: 0.65rem; color: var(--gray-mid); letter-spacing: 1px; text-transform: uppercase; }
+        .faq-list { margin-top: 2rem; border-top: 1px solid var(--border-color); }
+        .faq-item { border-bottom: 1px solid var(--border-color); }
+        .faq-question { width: 100%; text-align: left; background: none; border: none; padding: 2rem 0; font-family: var(--font-sans); font-size: 1.2rem; color: var(--white); display: flex; justify-content: space-between; align-items: center; cursor: none; transition: var(--transition); }
+        .faq-question:hover { color: var(--neon); }
+        .faq-q-text { display: flex; gap: 1.5rem; align-items: center; }
+        .faq-num { font-family: var(--font-mono); font-size: 0.8rem; color: var(--neon); }
+        .faq-icon { color: var(--gray-mid); transition: transform 0.3s ease; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--neon); }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; color: var(--gray-light); padding-left: 2.8rem; }
+        .faq-item.active .faq-answer { max-height: 200px; padding-bottom: 2rem; }
+
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--black-bg);
+            border: 1px solid var(--border-color);
+            color: var(--neon);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            cursor: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            font-family: var(--font-mono);
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:hover {
+            border-color: var(--neon);
+            box-shadow: 0 0 15px var(--neon-dim);
+            background: var(--gray-dark);
+        }
+        .back-to-top span {
+            font-size: 1.2rem;
+            line-height: 1;
+            transform: translateY(-2px);
+        }
+
+        .contact-info-list { display: flex; flex-direction: column; gap: 2rem; margin-top: 3rem; }
+        .c-info-item { display: flex; align-items: center; gap: 1.5rem; }
+        .c-icon-box { width: 50px; height: 50px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--neon); background: var(--black-bg); transition: var(--transition); }
+        .c-info-item:hover .c-icon-box { border-color: var(--neon); box-shadow: 0 0 15px var(--neon-dim); }
+        .c-text-label { font-family: var(--font-mono); font-size: 0.7rem; color: var(--gray-mid); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.3rem; }
+        .c-text-value { font-size: 1.1rem; color: var(--white); }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; padding: 2rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.8rem; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-label { font-family: var(--font-mono); font-size: 0.75rem; color: var(--gray-mid); letter-spacing: 2px; text-transform: uppercase; }
+        .form-input, .form-textarea { background: transparent; border: 1px solid var(--border-color); padding: 1rem; font-family: var(--font-sans); color: var(--white); font-size: 1rem; transition: var(--transition); outline: none; cursor: none; }
+        .form-input:focus, .form-textarea:focus { border-color: var(--neon); background: rgba(255,255,255,0.02); }
+        .form-textarea { resize: vertical; min-height: 120px; }
+        .form-submit { margin: 0 2rem 2rem 2rem; padding: 1rem 2rem; background: var(--neon); color: var(--black); border: none; font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: none; transition: var(--transition); display: inline-flex; align-items: center; gap: 10px; }
+        .form-submit:hover { background: var(--white); }
+        .site-footer { background: var(--black); border-top: 1px solid var(--border-color); overflow: hidden; padding-top: 4rem; }
+        .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; padding: 2rem 0; border-bottom: 1px solid var(--border-color); border-top: 1px solid var(--border-color); display: flex; background: var(--black-bg); }
+        .marquee-content { display: inline-flex; animation: marquee 25s linear infinite; font-size: 6rem; font-weight: 700; letter-spacing: -2px; color: var(--gray-mid); align-items: center; opacity: 0.8; }
+        .marquee-content span.bullet { color: var(--neon); font-size: 3rem; margin: 0 3rem; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .footer-columns { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 4rem; max-width: 1600px; margin: 0 auto; padding: 4rem; }
+        .footer-col h4 { font-family: var(--font-mono); font-size: 0.75rem; color: var(--gray-mid); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2rem; }
+        .footer-desc { color: var(--gray-light); font-size: 0.95rem; line-height: 1.6; max-width: 400px; }
+        .footer-links { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+        .footer-links a, .footer-contact-text { color: var(--white); text-decoration: none; font-size: 0.95rem; transition: var(--transition); }
+        .footer-links a:hover { color: var(--neon); }
+        .footer-contact-text { display: block; margin-bottom: 1rem; }
+        .footer-bottom { max-width: 1600px; margin: 0 auto; padding: 2rem 4rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border-color); font-family: var(--font-mono); font-size: 0.7rem; color: var(--gray-mid); letter-spacing: 2px; text-transform: uppercase; }
+        .footer-bottom-links { display: flex; gap: 2rem; }
+        .footer-bottom-links a { color: var(--gray-mid); text-decoration: none; transition: var(--transition); }
+        .footer-bottom-links a:hover { color: var(--neon); }
+        @media (max-width: 1024px) {
+            .cards-grid, .science-grid, .test-grid { grid-template-columns: repeat(2, 1fr); }
+            .split-layout { flex-direction: column; gap: 3rem; }
+            .split-left, .split-right { max-width: 100%; }
+            .cost-comparison { grid-template-columns: 1fr; }
+            .cost-side.red { border-right: 1px solid var(--border-color); border-bottom: none; }
+        }
+        @media (max-width: 768px) {
+            section { padding: 5rem 2rem; }
+            .cards-grid, .science-grid, .test-grid { grid-template-columns: 1fr; }
+            .project-row { grid-template-columns: 50px 1fr 50px; }
+            .proj-cat, .proj-year { display: none; }
+            .dash-grid { grid-template-columns: 1fr 1fr; }
+            .header { display: none; }
+            .status-bar { display: none; }
+            .hero { padding-top: 4rem; }
+            .form-grid { grid-template-columns: 1fr; }
+            .marquee-content { font-size: 4rem; }
+            .footer-columns { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 2rem; }
+            .footer-bottom { flex-direction: column; gap: 1rem; align-items: center; padding: 2rem; text-align: center; }
+        }
+        .scramble-wrapper { position: relative; display: inline-flex; align-items: center; padding: 0.2rem 0.5rem; margin-left: 0.3rem; cursor: none; }
+        .scramble-wrapper .corner-frame-bg { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.3s ease, background-size 0.3s ease; background-image: linear-gradient(to right, var(--neon) 1.5px, transparent 1.5px), linear-gradient(to right, var(--neon) 1.5px, transparent 1.5px), linear-gradient(to left, var(--neon) 1.5px, transparent 1.5px), linear-gradient(to left, var(--neon) 1.5px, transparent 1.5px), linear-gradient(to bottom, var(--neon) 1.5px, transparent 1.5px), linear-gradient(to bottom, var(--neon) 1.5px, transparent 1.5px), linear-gradient(to top, var(--neon) 1.5px, transparent 1.5px), linear-gradient(to top, var(--neon) 1.5px, transparent 1.5px); background-size: 0px 0px; background-repeat: no-repeat; background-position: 0 0, 0 100%, 100% 0, 100% 100%, 0 0, 100% 0, 0 100%, 100% 100%; z-index: 0; }
+        .scramble-wrapper:hover .corner-frame-bg { opacity: 1; background-size: 8px 8px; }
+        .scramble-wrapper .scramble-txt { position: relative; z-index: 1; }
+        .text-rotate-wrap { display: inline-flex; flex-wrap: wrap; line-height: inherit; }
+        .text-rotate-word { display: inline-flex; overflow: hidden; }
+        .text-rotate-inner { display: inline-block; transform: translateY(120%); opacity: 0; transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease; white-space: pre; }
+        .text-rotate-wrap.in-view .text-rotate-inner { transform: translateY(0); opacity: 1; }
+
+        @keyframes flowDown {
+            0% { color: rgba(255,255,255,0.2); text-shadow: none; }
+            50% { color: var(--neon); text-shadow: 0 0 8px var(--neon); }
+            100% { color: rgba(255,255,255,0.2); text-shadow: none; }
+        }
+        .arrow-flow span {
+            animation: flowDown 1.5s infinite;
+        }
+        .arrow-flow span:nth-child(1) { animation-delay: 0.0s; }
+        .arrow-flow span:nth-child(2) { animation-delay: 0.2s; }
+        .arrow-flow span:nth-child(3) { animation-delay: 0.4s; }
+        .arrow-flow span:nth-child(4) { animation-delay: 0.6s; }
+        .arrow-flow span:nth-child(5) { animation-delay: 0.8s; }
+        .arrow-flow span:nth-child(6) { animation-delay: 1.0s; }
+        .arrow-flow span:nth-child(7) { animation-delay: 1.2s; }
+        
+        .line-flow-h {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, var(--neon), transparent);
+            transform: scaleX(0);
+            transform-origin: left;
+            animation: lineFlowH 2s infinite;
+            opacity: 0.7;
+        }
+        @keyframes lineFlowH {
+            0% { transform: scaleX(0); transform-origin: left; }
+            49% { transform: scaleX(1); transform-origin: left; }
+            50% { transform: scaleX(1); transform-origin: right; }
+            100% { transform: scaleX(0); transform-origin: right; }
+        }
+
+        .line-flow-v {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(180deg, transparent, var(--neon), transparent);
+            transform: scaleY(0);
+            transform-origin: top;
+            animation: lineFlowV 2s infinite;
+            animation-delay: 1s; /* Start after horizontal line */
+            opacity: 0.7;
+        }
+        @keyframes lineFlowV {
+            0% { transform: scaleY(0); transform-origin: top; }
+            49% { transform: scaleY(1); transform-origin: top; }
+            50% { transform: scaleY(1); transform-origin: bottom; }
+            100% { transform: scaleY(0); transform-origin: bottom; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particleCanvas"></canvas>
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-dot" id="cursorDot"></div>
+    <div id="projectModalContainer">
+        <div class="project-modal-slider" id="projectModalSlider">
+            <div class="project-modal-item"><img src="https://images.cnippet.dev/image/upload/v1770400411/img_17001.jpg" alt="Proj 1"></div>
+            <div class="project-modal-item"><img src="https://images.cnippet.dev/image/upload/v1770400411/img_17002.jpg" alt="Proj 2"></div>
+            <div class="project-modal-item"><img src="https://images.cnippet.dev/image/upload/v1770400411/img_17003.jpg" alt="Proj 3"></div>
+            <div class="project-modal-item"><img src="https://images.cnippet.dev/image/upload/v1770400411/img_17004.jpg" alt="Proj 4"></div>
+        </div>
+    </div>
+    <div id="viewCursor">View</div>
+    <button id="backToTop" class="back-to-top"><span>▲</span></button>
+
+    <div class="main-wrapper">
+        <!-- Header -->
+        <header class="header">
+            <div class="nav-container">
+                <a href="#" class="logo">
+                    <span class="logo-arrow">&gt;_</span>
+                    <span class="logo-bold">ESCOM</span>
+                    <span class="logo-light">STUDIO</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#inicio" data-i18n="nav_inicio">Início</a></li>
+                    <li><a href="#sobre" data-i18n="nav_sobre">Sobre</a></li>
+                    <li><a href="#servicos" data-i18n="nav_servicos">Serviços</a></li>
+                    <li><a href="#portfolio" data-i18n="nav_portfolio">Portfólio</a></li>
+                    <li><a href="#posicionamento" data-i18n="nav_posicionamento">Posicionamento</a></li>
+                </ul>
+                <div class="nav-right">
+                    <div class="lang-switch">
+                        <a href="#pt" class="lang-btn active" data-lang="pt">PT</a>
+                        <a href="#en" class="lang-btn" data-lang="en">EN</a>
+                        <a href="#es" class="lang-btn" data-lang="es">ES</a>
+                    </div>
+                    <a href="#contato" class="btn-solid" data-i18n="btn_fale">Fale Conosco</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-left">
+                <span><span class="online-dot">●</span> ONLINE</span> |
+                <span>STATUS: <span class="green-text">OFF-GRID</span></span> |
+                <span class="green-text" id="liveTime">14:44:10:77</span> |
+                <span>☼ SOL PLENO</span>
+            </div>
+            <div class="status-right">
+                <span>SP / BR • 23.55° S</span>
+            </div>
+        </div>
+
+        <!-- Hero Section -->
+        <section id="inicio" class="hero">
+            <div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ INIT_SYSTEM ]</div>
+            <h1 class="section-title large" data-i18n="hero_title">NÃO CRIAMOS APENAS<br>SITES.<br><span class="text-gray">CRIAMOS</span> <span class="highlight">EXPERIÊNCIAS<br>COMPLETAS.</span></h1>
+            <p class="subtitle" data-i18n="hero_sub">Projetos digitais que unem design, automação e infraestrutura inteligente para reduzir custos e otimizar processos.</p>
+            <div class="hero-actions">
+                <a href="#contato" class="btn-solid" style="padding: 1rem 2rem;" data-i18n="btn_iniciar">INICIAR PROJETO →</a>
+                <a href="#portfolio" class="btn-outline" data-i18n="btn_ver">VER PROJETOS</a>
+            </div>
+        </section>
+
+        <!-- Arrow Connection Divider -->
+        <div style="width: 100%; margin: 4rem 0; position: relative; height: 280px; display: flex; justify-content: center; pointer-events: none; overflow: hidden;">
+            
+            <!-- Left Section -->
+            <div style="position: absolute; left: 0; width: 44%; top: 20px; height: 100%;">
+                <!-- Inner Line -->
+                <div style="position: absolute; right: 0; top: 0; width: 100%; height: 60px;">
+                    <div style="width: 100%; height: 1px; background: rgba(255,255,255,0.1); position: absolute; top: 0; right: 0; overflow: hidden;"><div class="line-flow-h"></div></div>
+                    <div style="width: 1px; height: 100%; background: rgba(255,255,255,0.1); position: absolute; right: 0; top: 0; overflow: hidden;"><div class="line-flow-v" style="animation-delay: 1s;"></div></div>
+                </div>
+                <!-- Middle Line -->
+                <div style="position: absolute; right: 60px; top: 30px; width: 100%; height: 70px;">
+                    <div style="width: 100%; height: 1px; background: rgba(255,255,255,0.1); position: absolute; top: 0; right: 0; overflow: hidden;"><div class="line-flow-h" style="animation-delay: 0.5s;"></div></div>
+                    <div style="width: 1px; height: 100%; background: rgba(255,255,255,0.1); position: absolute; right: 0; top: 0; overflow: hidden;"><div class="line-flow-v" style="animation-delay: 1.5s;"></div></div>
+                </div>
+                <!-- Outer Line -->
+                <div style="position: absolute; right: 120px; top: 60px; width: 100%; height: 80px;">
+                    <div style="width: 100%; height: 1px; background: rgba(255,255,255,0.1); position: absolute; top: 0; right: 0; overflow: hidden;"><div class="line-flow-h" style="animation-delay: 1s;"></div></div>
+                    <div style="width: 1px; height: 100%; background: rgba(255,255,255,0.1); position: absolute; right: 0; top: 0; overflow: hidden;"><div class="line-flow-v" style="animation-delay: 2s;"></div></div>
+                </div>
+                
+                <div class="arrow-flow" style="position: absolute; right: 0; transform: translateX(50%); top: 80px; font-family: var(--font-mono); font-size: 26px; font-weight: 300; display: flex; flex-direction: column; align-items: center; gap: -4px; line-height: 0.8; text-transform: uppercase;">
+                    <span>v</span><span>v</span><span>v</span>
+                    <span style="height: 16px; display:block;"></span>
+                    <span>v</span><span>v</span><span>v</span>
+                </div>
+            </div>
+
+            <!-- Center Section -->
+            <div class="arrow-flow" style="position: relative; top: 40px; font-family: var(--font-mono); font-size: 26px; font-weight: 300; display: flex; flex-direction: column; gap: -4px; line-height: 0.8; align-items: center; z-index: 10; text-transform: uppercase;">
+                <span>v</span><span>v</span><span>v</span>
+                <span style="height: 16px; display:block;"></span>
+                <span>v</span><span>v</span><span>v</span>
+                <span style="height: 16px; display:block;"></span>
+                <span>v</span><span>v</span><span>v</span>
+            </div>
+
+            <!-- Right Section -->
+            <div style="position: absolute; right: 0; width: 44%; top: 20px; height: 100%;">
+                <!-- Inner Line -->
+                <div style="position: absolute; left: 0; top: 0; width: 100%; height: 60px;">
+                    <div style="width: 100%; height: 1px; background: rgba(255,255,255,0.1); position: absolute; top: 0; left: 0; overflow: hidden;"><div class="line-flow-h" style="animation-direction: reverse;"></div></div>
+                    <div style="width: 1px; height: 100%; background: rgba(255,255,255,0.1); position: absolute; left: 0; top: 0; overflow: hidden;"><div class="line-flow-v" style="animation-delay: 1s;"></div></div>
+                </div>
+                <!-- Middle Line -->
+                <div style="position: absolute; left: 60px; top: 30px; width: 100%; height: 70px;">
+                    <div style="width: 100%; height: 1px; background: rgba(255,255,255,0.1); position: absolute; top: 0; left: 0; overflow: hidden;"><div class="line-flow-h" style="animation-direction: reverse; animation-delay: 0.5s;"></div></div>
+                    <div style="width: 1px; height: 100%; background: rgba(255,255,255,0.1); position: absolute; left: 0; top: 0; overflow: hidden;"><div class="line-flow-v" style="animation-delay: 1.5s;"></div></div>
+                </div>
+                <!-- Outer Line -->
+                <div style="position: absolute; left: 120px; top: 60px; width: 100%; height: 80px;">
+                    <div style="width: 100%; height: 1px; background: rgba(255,255,255,0.1); position: absolute; top: 0; left: 0; overflow: hidden;"><div class="line-flow-h" style="animation-direction: reverse; animation-delay: 1s;"></div></div>
+                    <div style="width: 1px; height: 100%; background: rgba(255,255,255,0.1); position: absolute; left: 0; top: 0; overflow: hidden;"><div class="line-flow-v" style="animation-delay: 2s;"></div></div>
+                </div>
+
+                <div class="arrow-flow" style="position: absolute; left: 0; transform: translateX(-50%); top: 80px; font-family: var(--font-mono); font-size: 26px; font-weight: 300; display: flex; flex-direction: column; align-items: center; gap: -4px; line-height: 0.8; text-transform: uppercase;">
+                    <span>v</span><span>v</span><span>v</span>
+                    <span style="height: 16px; display:block;"></span>
+                    <span>v</span><span>v</span><span>v</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Manifesto -->
+        <section id="sobre">
+            <div class="split-layout">
+                <div class="split-left">
+                    <div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ MANIFESTO ]</div>
+                </div>
+                <div class="split-right">
+                    <h2 class="section-title animate-text-rotate" style="font-size: 2.2rem; letter-spacing: -1px; margin-bottom: 1rem;">Um site não deve ser apenas uma vitrine.<br><span class="text-gray">Deve funcionar como uma ferramenta.</span></h2>
+                    <p class="manifesto-text animate-text-rotate">Cada projeto é estruturado para operar como parte do negócio — combinando experiência, automação e inteligência de dados em um único sistema.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Serviços -->
+        <section id="servicos">
+            <div id="servicos-react-root"></div>
+        </section>
+
+        <!-- Projetos Selecionados -->
+        <section id="portfolio">
+            <div class="projects-header">
+                <div>
+                    <div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ INDEX_01 ]</div>
+                    <h2 class="section-title" style="margin-bottom: 1rem; mix-blend-mode: difference; color: #fff;">Projetos selecionados</h2>
+                    <p class="subtitle" style="margin-bottom: 0;">Cada projeto é desenvolvido como um sistema completo — unindo design, estratégia e tecnologia.</p>
+                </div>
+                <a href="#" class="btn-outline">VER PROJETOS COMPLETOS ↗</a>
+            </div>
+            <div class="project-list">
+                <a href="#" class="project-row" data-index="0"><span class="proj-num">01</span><h3 class="proj-title">UBAH DESIGN</h3><span class="proj-cat">BRAND & WEB</span><span class="proj-year">2025</span><span class="proj-arrow">↗</span></a>
+                <a href="#" class="project-row" data-index="1"><span class="proj-num">02</span><h3 class="proj-title">GOLONI URBAN FURNITURE</h3><span class="proj-cat">E-COMMERCE</span><span class="proj-year">2025</span><span class="proj-arrow">↗</span></a>
+                <a href="#" class="project-row" data-index="2"><span class="proj-num">03</span><h3 class="proj-title">FULL ENGLISH</h3><span class="proj-cat">PLATAFORMA</span><span class="proj-year">2024</span><span class="proj-arrow">↗</span></a>
+                <a href="#" class="project-row" data-index="3"><span class="proj-num">04</span><h3 class="proj-title">POSTS DIVERSOS</h3><span class="proj-cat">REDES SOCIAIS</span><span class="proj-year">2024</span><span class="proj-arrow">↗</span></a>
+            </div>
+        </section>
+
+        <!-- Experiência / JSON Values -->
+        <section id="posicionamento" style="padding-top: 10vh;">
+            <div class="split-layout" style="align-items: flex-start;">
+                <div class="split-left" style="position: sticky; top: 15vh;">
+                    <div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ EXPERIÊNCIA ]</div>
+                    <h2 class="section-title">O que você sente<br>é resultado.</h2>
+                    <p class="subtitle" style="margin-bottom: 2rem;">Cada interação foi projetada para criar fluência, autoridade e, acima de tudo, conversão real para o seu negócio.</p>
+                    <p style="font-size: 1.4rem; font-weight: 500;">Não basta ser bonito. <span class="highlight">Tem que vender.</span></p>
+                </div>
+                <div class="split-right" style="width: 100%; min-height: 150vh; padding-bottom: 30vh;">
+                    <div class="json-panel" style="border: none; background: transparent;">
+                        <div class="json-header stacked-card" style="top: 15vh; z-index: 10; border: 1px solid rgba(255, 255, 255, 0.2); background: black; color: white;">CORE_VALUES.JSON</div>
+                        <div class="json-item stacked-card" style="top: calc(15vh + 20px); z-index: 11; margin-top: 30vh; border: 1px solid rgba(255, 255, 255, 0.2); background: black;"><div class="json-title" style="color: white;"><span class="json-num" style="color: var(--neon); font-weight: bold;">01</span> Autoridade</div><div class="json-desc" style="color: var(--neon);">Design orientado à percepção de valor.</div></div>
+                        <div class="json-item stacked-card" style="top: calc(15vh + 40px); z-index: 12; margin-top: 30vh; border: 1px solid rgba(255, 255, 255, 0.2); background: black;"><div class="json-title" style="color: white;"><span class="json-num" style="color: var(--neon); font-weight: bold;">02</span> Estratégia</div><div class="json-desc" style="color: var(--neon);">Engenharia de conversão (CRO).</div></div>
+                        <div class="json-item stacked-card" style="top: calc(15vh + 60px); z-index: 13; margin-top: 30vh; border: 1px solid rgba(255, 255, 255, 0.2); background: black;"><div class="json-title" style="color: white;"><span class="json-num" style="color: var(--neon); font-weight: bold;">03</span> Tecnologia</div><div class="json-desc" style="color: var(--neon);">Infraestrutura inteligente.</div></div>
+                        <div class="json-item stacked-card" style="top: calc(15vh + 80px); z-index: 14; margin-top: 30vh; border: 1px solid rgba(255, 255, 255, 0.2); background: black;"><div class="json-title" style="color: white;"><span class="json-num" style="color: var(--neon); font-weight: bold;">04</span> Resultado Real</div><div class="json-desc" style="color: var(--neon);">Transformamos visitantes em clientes.</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ciência & Performance -->
+        <section id="ciencia" style="padding: 0; max-width: none; border-bottom: none; width: 100%;">
+            <div id="ciencia-react-root"></div>
+        </section>
+
+        <!-- Integração Total / Dashboard -->
+        <section style="border-bottom: none;">
+            <div class="split-layout">
+                <div class="split-left">
+                    <div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ INTEGRAÇÃO_TOTAL ]</div>
+                    <h2 class="section-title animate-text-rotate">O controle absoluto do seu negócio em <span class="highlight">um só lugar.</span></h2>
+                    <p class="subtitle animate-text-rotate">Esqueça dezenas de abas abertas. Integramos as principais métricas e ferramentas de gestão diretamente no seu sistema ESCOM.</p>
+                </div>
+                <div class="split-right" style="width: 100%;">
+                    <div class="dashboard-mock">
+                        <div class="dash-header"><span><span style="color:var(--neon)">●</span> ESCOM://DASHBOARD</span><span>V2.6 • LIVE</span></div>
+                        <div class="dash-grid">
+                            <div class="dash-widget"><div class="dash-w-title">ANALYTICS</div><div class="dash-bar-bg"><div class="dash-bar-fill" style="width: 65%;"></div></div></div>
+                            <div class="dash-widget"><div class="dash-w-title">LEADS & CRM</div><div class="dash-bar-bg"><div class="dash-bar-fill" style="width: 40%;"></div></div></div>
+                            <div class="dash-widget"><div class="dash-w-title">E-MAIL</div><div class="dash-bar-bg"><div class="dash-bar-fill" style="width: 85%;"></div></div></div>
+                            <div class="dash-widget"><div class="dash-w-title">AUTOMAÇÕES</div><div class="dash-bar-bg"><div class="dash-bar-fill" style="width: 50%;"></div></div></div>
+                            <div class="dash-widget"><div class="dash-w-title">DADOS</div><div class="dash-bar-bg"><div class="dash-bar-fill" style="width: 30%;"></div></div></div>
+                            <div class="dash-widget"><div class="dash-w-title">SEO</div><div class="dash-bar-bg"><div class="dash-bar-fill" style="width: 70%;"></div></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gravity Section -->
+        <section style="padding: 0; max-width: none;">
+            <div id="gravity-root"></div>
+        </section>
+
+        <!-- O custo invisível -->
+        <section>
+            <h2 class="section-title animate-text-rotate">O custo invisível das ferramentas</h2>
+            <p class="subtitle animate-text-rotate" style="max-width: 800px;">A maioria das empresas não percebe que o maior custo não está na criação do site — mas na soma das assinaturas necessárias para fazê-lo funcionar.</p>
+            <div class="cost-comparison">
+                <div class="cost-side red">
+                    <div class="cost-label">✕ MODELO COMUM</div>
+                    <h3 class="cost-title">Várias ferramentas. Vários custos.</h3>
+                    <ul class="cost-list">
+                        <li class="cost-item"><span>Hotjar (Mapas de Calor)</span><span>$39 a $99/mês</span></li>
+                        <li class="cost-item"><span>Google Analytics</span><span>Enterprise</span></li>
+                        <li class="cost-item"><span>HubSpot (CRM)</span><span>$50 a $150/mês</span></li>
+                        <li class="cost-item"><span>ClickUp</span><span>$10 a $24/usuário</span></li>
+                        <li class="cost-item"><span>Zapier</span><span>$29 a $73/mês</span></li>
+                    </ul>
+                    <div class="cost-total"><span>CUSTO MÉDIO ANUAL</span><span class="cost-total-value">R$ 9.6k — 27.6k</span></div>
+                </div>
+                <div class="cost-side green">
+                    <div class="cost-label">✓ MODELO ESCOM</div>
+                    <h3 class="cost-title">Um único sistema. Tudo conectado.</h3>
+                    <ul class="cost-list green-check-list">
+                        <li>Captura e gestão de leads — sem CRMs caros para o básico.</li>
+                        <li>Análise de comportamento centralizada.</li>
+                        <li>Estrutura de dados em um único banco.</li>
+                        <li>Automação de fluxos sem dependência de Zapier.</li>
+                        <li>Otimização contínua, pronta para escalar sem refazer o código.</li>
+                    </ul>
+                    <div class="cost-footer-note"><div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neon); letter-spacing: 2px; margin-bottom: 1rem;">● PRONTO PARA OPERAR</div><p style="color: var(--gray-light); font-size: 0.95rem;">Em vez de depender de várias ferramentas, você passa a possuir um único sistema estratégico que potencializa seu ROI.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ROI Reforçado -->
+        <section>
+            <div class="split-layout" style="align-items: center; margin-bottom: 2rem;">
+                <div class="split-left"><div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ ROI_REFORÇADO.EXE ]</div><h2 class="section-title animate-text-rotate" style="margin-bottom: 0;">O verdadeiro valor da<br>integração</h2></div>
+                <div class="split-right"><p class="manifesto-text animate-text-rotate" style="margin-top: 0;">Com um ecossistema centralizado, cada interação do usuário alimenta automaticamente o seu sistema de vendas, sem perda de dados.</p></div>
+            </div>
+            <div id="valor-react-root"></div>
+        </section>
+
+        <!-- Testemunhos -->
+        <section>
+            <div class="split-layout" style="align-items: center; margin-bottom: 2rem;">
+                <div class="split-left"><div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ TESTEMUNHOS ]</div><h2 class="section-title animate-text-rotate" style="margin-bottom: 0;">O que dizem nossos<br>parceiros</h2></div>
+                <div class="split-right"><p class="manifesto-text animate-text-rotate" style="margin-top: 0;">O impacto de integrar design estratégico e engenharia de conversão.</p></div>
+            </div>
+            <div class="test-grid">
+                <div class="test-card"><div><div class="test-num">T/01</div><p class="test-quote">"A ESCOM transformou completamente nossa presença digital. O foco em conversão trouxe resultados imediatos."</p></div><div class="test-author"><div class="test-name">Ricardo Silva</div><div class="test-role">CEO, TECHFLOW</div></div></div>
+                <div class="test-card"><div><div class="test-num">T/02</div><p class="test-quote">"Design sofisticado aliado a uma estratégia de negócio impecável. Recomendo fortemente."</p></div><div class="test-author"><div class="test-name">Mariana Costa</div><div class="test-role">DIRETORA DE MARKETING, INNOVA</div></div></div>
+                <div class="test-card"><div><div class="test-num">T/03</div><p class="test-quote">"Trabalho de altíssimo nível. A infraestrutura integrada facilitou muito nossa operação."</p></div><div class="test-author"><div class="test-name">André Santos</div><div class="test-role">FOUNDER, STARTUPX</div></div></div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section>
+            <div class="split-layout">
+                <div class="split-left"><div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ FAQ ]</div><h2 class="section-title">Dúvidas Frequentes</h2><p class="subtitle">Tire suas dúvidas sobre nossos serviços.</p></div>
+                <div class="split-right" style="width: 100%;">
+                    <div class="faq-list">
+                        <div class="faq-item"><button class="faq-question" onclick="this.parentElement.classList.toggle('active')"><span class="faq-q-text"><span class="faq-num">01</span> Quanto custa um projeto?</span><span class="faq-icon">▼</span></button><div class="faq-answer">Cada projeto tem um escopo único. Nossos valores variam de acordo com a complexidade, as integrações necessárias e a escala do sistema. Entre em contato para um orçamento detalhado.</div></div>
+                        <div class="faq-item"><button class="faq-question" onclick="this.parentElement.classList.toggle('active')"><span class="faq-q-text"><span class="faq-num">02</span> Quanto tempo leva?</span><span class="faq-icon">▼</span></button><div class="faq-answer">O tempo de desenvolvimento padrão varia entre 4 a 8 semanas, dependendo da necessidade de infraestrutura, automações e revisões de design.</div></div>
+                        <div class="faq-item"><button class="faq-question" onclick="this.parentElement.classList.toggle('active')"><span class="faq-q-text"><span class="faq-num">03</span> Vocês trabalham com empresas internacionais?</span><span class="faq-icon">▼</span></button><div class="faq-answer">Sim, atendemos clientes globalmente. Desenvolvemos interfaces multi-idiomas e estruturamos pagamentos e integrações que operam em escala mundial.</div></div>
+                        <div class="faq-item"><button class="faq-question" onclick="this.parentElement.classList.toggle('active')"><span class="faq-q-text"><span class="faq-num">04</span> Vocês fazem manutenção ou apenas criação?</span><span class="faq-icon">▼</span></button><div class="faq-answer">Nosso foco é construir ecossistemas duradouros. Oferecemos planos de suporte contínuo, otimização de SEO e refinamento de conversão (CRO) após o lançamento.</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contato -->
+        <section id="contato">
+            <div class="split-layout">
+                <div class="split-left">
+                    <div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ CONTATO ]</div>
+                    <h2 class="section-title">Vamos criar algo <span class="highlight">incrível<br>juntos.</span></h2>
+                    <p class="subtitle">Entre em contato para discutir seu próximo projeto.</p>
+                    <div class="contact-info-list">
+                        <div class="c-info-item"><div class="c-icon-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><div class="c-text-label">E-MAIL</div><a href="mailto:es.comunicacao@outlook.com" class="c-text-value" style="text-decoration:none;">es.comunicacao@outlook.com</a></div></div>
+                        <div class="c-info-item"><div class="c-icon-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div><div><div class="c-text-label">WHATSAPP</div><div class="c-text-value">+55 (11) 99999-9999</div></div></div>
+                        <div class="c-info-item"><div class="c-icon-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="c-text-label">LOCALIZAÇÃO</div><div class="c-text-value">São Paulo, SP — Brasil</div></div></div>
+                    </div>
+                </div>
+                <div class="split-right" style="width: 100%;">
+                    <div class="json-panel">
+                        <div class="json-header" style="display: flex; justify-content: space-between;"><span>INICIAR_PROJETO.FORM</span><span><span style="color:var(--neon)">●</span> READY</span></div>
+                        <form onsubmit="event.preventDefault();" style="display: flex; flex-direction: column;">
+                            <div class="form-grid">
+                                <div class="form-group"><label class="form-label">SEU NOME</label><input type="text" class="form-input" placeholder="Nome completo" required></div>
+                                <div class="form-group"><label class="form-label">E-MAIL CORPORATIVO</label><input type="email" class="form-input" placeholder="voce@empresa.com" required></div>
+                                <div class="form-group full"><label class="form-label">WHATSAPP</label><input type="tel" class="form-input" placeholder="+55 (00) 00000-0000"></div>
+                                <div class="form-group full"><label class="form-label">CONTE SOBRE SEU PROJETO</label><textarea class="form-textarea" placeholder="Objetivos, prazo, referências..." required></textarea></div>
+                            </div>
+                            <button type="submit" class="form-submit">ENVIAR →</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="marquee-container">
+                <div class="marquee-content"><span style="color: var(--white);">ESCOM STUDIO</span> <span class="bullet">●</span> DESIGN • CODE • STRATEGY <span class="bullet">●</span> <span style="color: var(--white);">ESCOM STUDIO</span> <span class="bullet">●</span> DESIGN • CODE • STRATEGY <span class="bullet">●</span></div>
+            </div>
+            <div class="footer-columns">
+                <div class="footer-col"><div class="system-tag" style="margin-bottom: 1.5rem;"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ SOBRE_A_ESCOM ]</div><p class="footer-desc">A ESCOM desenvolve projetos digitais de alta performance que unem design estratégico e infraestrutura inteligente. Nosso foco é transformar a presença online em um sistema funcional de crescimento.</p></div>
+                <div class="footer-col"><h4>NAVEGAÇÃO</h4><ul class="footer-links"><li><a href="#">Início</a></li><li><a href="#">Sobre nós</a></li><li><a href="#">Serviços</a></li><li><a href="#">Projetos</a></li></ul></div>
+                <div class="footer-col"><h4>CONTATO</h4><a href="mailto:es.comunicacao@outlook.com" class="footer-contact-text">es.comunicacao@outlook.com</a><span class="footer-contact-text">+55 (11) 99999-9999</span><span class="footer-contact-text" style="color: var(--gray-mid);">São Paulo, SP — <a href="/portfolioedu/" style="color: inherit; text-decoration: none;">Brasil</a></span></div>
+            </div>
+            <div class="footer-bottom"><div>© 2026 ESCOM STUDIO // TODOS OS DIREITOS RESERVADOS</div><div class="footer-bottom-links"><a href="#">POLÍTICA DE PRIVACIDADE</a><a href="#">TERMOS DE SERVIÇO</a></div></div>
+        </footer>
+    </div>
+    <script>
+        // LANGUAGE DICTIONARY
+        const i18n = {
+            pt: {
+                nav_inicio: "Início",
+                nav_sobre: "Sobre",
+                nav_servicos: "Serviços",
+                nav_portfolio: "Portfólio",
+                nav_posicionamento: "Posicionamento",
+                btn_fale: "Fale Conosco",
+                hero_title: "NÃO CRIAMOS APENAS<br>SITES.<br><span class=\"text-gray\">CRIAMOS</span> <span class=\"highlight\">EXPERIÊNCIAS<br>COMPLETAS.</span>",
+                hero_sub: "Projetos digitais que unem design, automação e infraestrutura inteligente para reduzir custos e otimizar processos.",
+                btn_iniciar: "INICIAR PROJETO →",
+                btn_ver: "VER PROJETOS",
+                nav_servicos: "O que fazemos",
+                ciencia_tit: "Projetado com base em <span class=\"highlight\">dados.</span>"
+            },
+            en: {
+                nav_inicio: "Home",
+                nav_sobre: "About",
+                nav_servicos: "Services",
+                nav_portfolio: "Portfolio",
+                nav_posicionamento: "Positioning",
+                btn_fale: "Contact Us",
+                hero_title: "WE DON'T JUST BUILD<br>WEBSITES.<br><span class=\"text-gray\">WE CREATE</span> <span class=\"highlight\">COMPLETE<br>EXPERIENCES.</span>",
+                hero_sub: "Digital projects that unite design, automation, and smart infrastructure to reduce costs and optimize processes.",
+                btn_iniciar: "START PROJECT →",
+                btn_ver: "VIEW PROJECTS",
+                nav_servicos: "What we do",
+                ciencia_tit: "Designed based on <span class=\"highlight\">data.</span>"
+            },
+            es: {
+                nav_inicio: "Inicio",
+                nav_sobre: "Nosotros",
+                nav_servicos: "Servicios",
+                nav_portfolio: "Portafolio",
+                nav_posicionamento: "Posicionamiento",
+                btn_fale: "Contáctenos",
+                hero_title: "NO SOLO CREAMOS<br>SITIOS WEB.<br><span class=\"text-gray\">CREAMOS</span> <span class=\"highlight\">EXPERIENCIAS<br>COMPLETAS.</span>",
+                hero_sub: "Proyectos digitales que unen diseño, automatización e infraestructura inteligente para reducir costos y optimizar procesos.",
+                btn_iniciar: "INICIAR PROYECTO →",
+                btn_ver: "VER PROYECTOS",
+                nav_servicos: "Lo que hacemos",
+                ciencia_tit: "Diseñado en base a <span class=\"highlight\">datos.</span>"
+            }
+        };
+
+        // LANGUAGE SWITCHER & SCROLL LOGIC
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const targetId = this.getAttribute('href');
+                if (targetId.length > 1 && !targetId.match(/^#(pt|en|es)$/)) {
+                    const targetEl = document.querySelector(targetId);
+                    if (targetEl) {
+                        e.preventDefault();
+                        const headerOffset = 70;
+                        const elementPosition = targetEl.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: "smooth"
+                        });
+                    }
+                }
+            });
+        });
+
+        const langBtns = document.querySelectorAll('.lang-btn');
+        langBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                langBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const lang = btn.getAttribute('data-lang');
+                if(i18n[lang]) {
+                    document.querySelectorAll('[data-i18n]').forEach(el => {
+                        const key = el.getAttribute('data-i18n');
+                        if (i18n[lang][key]) {
+                            el.innerHTML = i18n[lang][key];
+                        }
+                    });
+                }
+            });
+        });
+
+        const cursor = document.getElementById('cursor');
+        const cursorDot = document.getElementById('cursorDot');
+        let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+        let cursorX = mouseX, cursorY = mouseY;
+        let pModalX = mouseX, pModalY = mouseY;
+        let vCursorX = mouseX, vCursorY = mouseY;
+        const pModalContainer = document.getElementById('projectModalContainer');
+        const pModalSlider = document.getElementById('projectModalSlider');
+        const viewCursor = document.getElementById('viewCursor');
+
+        document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; cursorDot.style.left = `${mouseX}px`; cursorDot.style.top = `${mouseY}px`; });
+        function animateCursor() { 
+            cursorX += (mouseX - cursorX) * 0.2; 
+            cursorY += (mouseY - cursorY) * 0.2; 
+            cursor.style.left = `${cursorX}px`; 
+            cursor.style.top = `${cursorY}px`; 
+
+            pModalX += (mouseX - pModalX) * 0.15;
+            pModalY += (mouseY - pModalY) * 0.15;
+            if(pModalContainer) { pModalContainer.style.left = `${pModalX}px`; pModalContainer.style.top = `${pModalY}px`; }
+            
+            vCursorX += (mouseX - vCursorX) * 0.2;
+            vCursorY += (mouseY - vCursorY) * 0.2;
+            if(viewCursor) { viewCursor.style.left = `${vCursorX}px`; viewCursor.style.top = `${vCursorY}px`; }
+
+            requestAnimationFrame(animateCursor); 
+        }
+        animateCursor();
+        const interactiveElements = document.querySelectorAll('a, button, .project-row, .card-item, .back-to-top');
+        interactiveElements.forEach(el => { el.addEventListener('mouseenter', () => cursor.classList.add('active')); el.addEventListener('mouseleave', () => cursor.classList.remove('active')); });
+
+        // Back to top logic
+        const backToTopBtn = document.getElementById('backToTop');
+        const section2 = document.getElementById('sobre');
+
+        window.addEventListener('scroll', () => {
+            if (section2) {
+                const section2Top = section2.getBoundingClientRect().top + window.pageYOffset;
+                if (window.pageYOffset >= section2Top - 200) {
+                    backToTopBtn.classList.add('visible');
+                } else {
+                    backToTopBtn.classList.remove('visible');
+                }
+            }
+        });
+
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        const projRows = document.querySelectorAll('.project-row');
+        projRows.forEach((row) => {
+            row.addEventListener('mouseenter', () => {
+                const index = row.getAttribute('data-index');
+                if (pModalSlider) pModalSlider.style.top = `${index * -100}%`;
+                if (pModalContainer) pModalContainer.classList.add('active');
+                if (viewCursor) viewCursor.classList.add('active');
+                cursor.style.opacity = '0';
+                cursorDot.style.opacity = '0';
+            });
+            row.addEventListener('mouseleave', () => {
+                if (pModalContainer) pModalContainer.classList.remove('active');
+                if (viewCursor) viewCursor.classList.remove('active');
+                cursor.style.opacity = '1';
+                cursorDot.style.opacity = '1';
+            });
+        });
+
+        function updateTime() { const now = new Date(); document.getElementById('liveTime').innerText = now.toLocaleTimeString('pt-BR', { hour12: false }) + ':' + now.getMilliseconds().toString().padStart(2, '0').slice(0,2); requestAnimationFrame(updateTime); }
+        updateTime();
+        const canvas = document.getElementById('particleCanvas'), ctx = canvas.getContext('2d');
+        let width, height, particles = [];
+        function initCanvas() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; particles = []; for(let i = 0; i < 40; i++) particles.push({ x: Math.random() * width, y: Math.random() * height, vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4, radius: Math.random() * 1.5 }); }
+        window.addEventListener('resize', initCanvas); initCanvas();
+        function animateParticles() { ctx.clearRect(0, 0, width, height); particles.forEach(p => { p.x += p.vx; p.y += p.vy; if (p.x < 0 || p.x > width) p.vx *= -1; if (p.y < 0 || p.y > height) p.vy *= -1; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fillStyle = 'rgba(57, 255, 20, 0.4)'; ctx.fill(); }); for(let i=0; i<particles.length; i++) { for(let j=i+1; j<particles.length; j++) { const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, dist = Math.sqrt(dx*dx + dy*dy); if(dist < 150) { ctx.beginPath(); ctx.strokeStyle = `rgba(57, 255, 20, ${0.15 - dist/1000})`; ctx.lineWidth = 0.5; ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.stroke(); } } } requestAnimationFrame(animateParticles); }
+        animateParticles();
+
+        // Text Scramble Effect
+        const defaultChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        class TextScrambler {
+            constructor(el) {
+                this.el = el;
+                this.originalText = el.innerText.trim();
+                this.isAnimating = false;
+                this.duration = 800;
+                this.speed = 40;
+                this.el.innerHTML = '';
+                this.textSpan = document.createElement('span');
+                this.textSpan.className = 'scramble-txt';
+                this.textSpan.innerText = this.originalText;
+                this.frameConfig = document.createElement('div');
+                this.frameConfig.className = 'corner-frame-bg';
+                this.el.appendChild(this.frameConfig);
+                this.el.appendChild(this.textSpan);
+                this.el.addEventListener('mouseenter', () => this.scramble());
+            }
+            scramble() {
+                if (this.isAnimating) return;
+                this.isAnimating = true;
+                const steps = this.duration / this.speed;
+                let step = 0;
+                const interval = setInterval(() => {
+                    let scrambled = '';
+                    const progress = step / steps;
+                    for (let i = 0; i < this.originalText.length; i++) {
+                        if (this.originalText[i] === ' ') { scrambled += ' '; continue; }
+                        if (progress * this.originalText.length > i) { scrambled += this.originalText[i]; } 
+                        else { scrambled += defaultChars[Math.floor(Math.random() * defaultChars.length)]; }
+                    }
+                    this.textSpan.innerText = scrambled;
+                    step++;
+                    if (step > steps) { clearInterval(interval); this.textSpan.innerText = this.originalText; this.isAnimating = false; }
+                }, this.speed);
+            }
+        }
+        document.querySelectorAll('.system-tag').forEach(tag => {
+            const textNodes = Array.from(tag.childNodes).filter(n => n.nodeType === 3 && n.textContent.trim() !== '');
+            // We usually want to modify the last text node (the actual label)
+            if (textNodes.length > 0) {
+                const targetNode = textNodes[textNodes.length - 1];
+                const textStr = targetNode.textContent.trim();
+                const wrapper = document.createElement('span');
+                wrapper.className = 'scramble-wrapper';
+                wrapper.innerText = textStr;
+                const space = document.createTextNode(' ');
+                tag.insertBefore(space, targetNode);
+                tag.replaceChild(wrapper, targetNode);
+                new TextScrambler(wrapper);
+                wrapper.addEventListener('mouseenter', () => cursor.classList.add('active'));
+                wrapper.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+            }
+        });
+
+        class TextRotateEntrance {
+            constructor(el) {
+                this.el = el;
+                const nodes = Array.from(el.childNodes);
+                el.innerHTML = '';
+                el.classList.add('text-rotate-wrap');
+                let wordIndex = 0;
+                nodes.forEach(node => {
+                    if (node.nodeName === 'BR') {
+                        el.appendChild(document.createElement('br'));
+                    } else if (node.nodeType === 3 || node.nodeType === 1) {
+                        const text = node.textContent.trim();
+                        if (!text) return;
+                        const words = text.split(' ');
+                        words.forEach(word => {
+                            const wordWrap = document.createElement('span');
+                            wordWrap.className = 'text-rotate-word';
+                            const charWrap = document.createElement('span');
+                            charWrap.className = 'text-rotate-inner';
+                            charWrap.style.transitionDelay = `${wordIndex * 0.05}s`;
+                            
+                            if (node.nodeType === 1) {
+                                const wrapper = document.createElement(node.nodeName);
+                                wrapper.className = node.className;
+                                wrapper.style.cssText = node.style.cssText;
+                                wrapper.innerText = word + ' ';
+                                charWrap.appendChild(wrapper);
+                            } else {
+                                charWrap.innerText = word + ' ';
+                            }
+                            wordWrap.appendChild(charWrap);
+                            el.appendChild(wordWrap);
+                            wordIndex++;
+                        });
+                    }
+                });
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) { el.classList.add('in-view'); observer.disconnect(); }
+                    });
+                }, { threshold: 0.1 });
+                observer.observe(el);
+            }
+        }
+        window.TextRotateEntrance = TextRotateEntrance;
+        document.querySelectorAll('.animate-text-rotate').forEach(el => new TextRotateEntrance(el));
+    </script>
+    <script type="module" src="/src/GravityMount.tsx"></script>
+</body>
+</html>
