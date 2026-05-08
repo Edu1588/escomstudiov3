@@ -82,7 +82,7 @@ export default function ValueProposition() {
           to { transform: rotate(360deg); }
         }
         .tech-shadow {
-          box-shadow: 0 0 60px rgba(0, 255, 0, 0.2);
+          /* no glow */
         }
       `}</style>
     </section>

@@ -3,8 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edu Santos — Direção Criativa & Estratégia</title>
+    <title>Edu Santos — Direção Criativa & Estratégia Digital</title>
     <meta name="description" content="Especialista em resolver problemas de posicionamento, experiência digital e conversão em larga escala através de direção criativa estratégica.">
+    <meta name="keywords" content="Edu Santos, direção criativa, UX design, estratégia digital, branding, posicionamento de marca, design estratégico">
+    <link rel="canonical" href="https://escomstudio.com/portfolioedu/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://escomstudio.com/portfolioedu/">
+    <meta property="og:title" content="Edu Santos — Direção Criativa & Estratégia Digital">
+    <meta property="og:description" content="Especialista em resolver problemas de posicionamento e experiência digital através de direção criativa estratégica.">
+    <meta property="og:image" content="https://escomstudio.com/THUMB_ESCOM.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -131,15 +141,15 @@
             top: 0;
             width: 3px;
             height: 150px;
-            background: linear-gradient(to bottom, transparent, var(--neon), var(--neon), transparent);
+            background: linear-gradient(to top, transparent, var(--neon), var(--neon), transparent);
             animation: timelineFlow 4s linear infinite;
             z-index: 10;
         }
         @keyframes timelineFlow {
-            0% { top: -150px; opacity: 0; }
+            0% { top: 100%; opacity: 0; }
             10% { opacity: 1; }
             90% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
+            100% { top: -150px; opacity: 0; }
         }
         .timeline-item { display: grid; grid-template-columns: 200px 1fr; gap: 2rem; padding-bottom: 4rem; position: relative; }
         .timeline-item:last-child { padding-bottom: 0; }
@@ -381,46 +391,10 @@
                 </div>
             </div>
 
-            <div class="projects-grid">
-                <a href="#" class="project-card">
-                    <div class="project-header"><span>PRJ_01 / BRANDING</span><span>2025</span></div>
-                    <div class="project-image-placeholder"><span class="project-tag">BRANDING</span></div>
-                    <div class="project-info">
-                        <div><h3 class="project-title">Reposicionamento NORTH/CO</h3><p class="project-desc">Identidade Visual</p></div>
-                        <div class="project-link-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
-                    </div>
-                </a>
-                
-                <a href="#" class="project-card">
-                    <div class="project-header"><span>PRJ_02 / WEB</span><span>2025</span></div>
-                    <div class="project-image-placeholder"><span class="project-tag">WEB</span></div>
-                    <div class="project-info">
-                        <div><h3 class="project-title">Plataforma SaaS Vertex</h3><p class="project-desc">Produto Digital</p></div>
-                        <div class="project-link-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
-                    </div>
-                </a>
-
-                <a href="#" class="project-card">
-                    <div class="project-header"><span>PRJ_03 / ART_DIRECTION</span><span>2024</span></div>
-                    <div class="project-image-placeholder"><span class="project-tag">ART_DIRECTION</span></div>
-                    <div class="project-info">
-                        <div><h3 class="project-title">Campanha Lumen Labs</h3><p class="project-desc">Direção de Arte</p></div>
-                        <div class="project-link-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
-                    </div>
-                </a>
-
-                <a href="#" class="project-card">
-                    <div class="project-header"><span>PRJ_04 / WEB</span><span>2024</span></div>
-                    <div class="project-image-placeholder"><span class="project-tag">WEB</span></div>
-                    <div class="project-info">
-                        <div><h3 class="project-title">E-commerce Atelier 19</h3><p class="project-desc">Conversão</p></div>
-                        <div class="project-link-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
-                    </div>
-                </a>
-            </div>
+            <div id="projects-root"></div>
 
             <div class="projects-footer">
-                <a href="#" class="btn-outline-green">VER TODOS OS PROJETOS →</a>
+                <a href="/portfolio-projetos" class="btn-outline-green">VER TODOS OS PROJETOS →</a>
             </div>
         </section>
 
@@ -608,7 +582,7 @@
             </div>
             
             <div class="footer-bottom">
-                <div>© 2026 ESCOM STUDIO LTDA • CNPJ 00.000.000/0001-00</div>
+                <div>© 2026 ESCOM STUDIO LTDA • CNPJ 48.298.795/0001-92</div>
                 <div class="footer-bottom-links">
                     <a href="/">VOLTAR PARA ESCOM STUDIO</a>
                 </div>
@@ -805,7 +779,9 @@
                 observer.observe(el);
             }
         }
-        document.querySelectorAll('.animate-text-rotate').forEach(el => new TextRotateEntrance(el));
+        if (window.innerWidth >= 768) {
+            document.querySelectorAll('.animate-text-rotate').forEach(el => new TextRotateEntrance(el));
+        }
     </script>
     <script type="module" src="/src/portfolioedu.tsx"></script>
 </body>

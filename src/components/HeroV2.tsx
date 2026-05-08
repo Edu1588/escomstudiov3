@@ -90,36 +90,8 @@ export default function HeroV2() {
       <div className="w-full relative h-[250vh] bg-[#111111] font-rajdhani selection:bg-white selection:text-black">
         
         {/* =========================================
-            BOTÕES FLUTUANTES (FIXOS)
+            BOTÕES FLUTUANTES FORAM MOVIDOS PARA BackToTop.tsx
             ========================================= */}
-        <div className="fixed bottom-8 right-8 z-[300] flex flex-col items-center gap-4">
-          <button 
-            className={`flex items-center justify-center w-14 h-14 bg-black border border-[#00e300] rounded-none text-[#00e300] transition-all duration-500 hover:bg-[#00e300] hover:text-black shadow-[0_0_20px_rgba(0,227,0,0.2)] group ${
-              (scrollProgress || 0) > 0.05 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
-            }`}
-            title="Entre em contacto"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-            </svg>
-            <span className="absolute right-16 bg-black border border-[#00e300] text-[#00e300] text-[10px] uppercase tracking-widest font-bold py-1 px-3 rounded-none opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap font-rajdhani">
-              Contacto
-            </span>
-          </button>
-
-          <button 
-            onClick={scrollToTop}
-            className={`flex items-center justify-center w-14 h-14 bg-black border border-white/10 rounded-none text-white/40 transition-all duration-500 hover:border-[#00e300] hover:text-[#00e300] shadow-xl group ${
-              (scrollProgress || 0) > 0.2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
-            }`}
-            title="Voltar ao topo"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="18 15 12 9 6 15"></polyline>
-            </svg>
-          </button>
-        </div>
-
         <div className="sticky top-0 w-full h-screen overflow-hidden bg-black">
           
           {/* =========================================
@@ -256,7 +228,7 @@ export default function HeroV2() {
 
               <nav className="flex flex-col gap-10 items-center w-full font-rajdhani shrink-0">
                 {['INÍCIO', 'SOBRE', 'SERVIÇOS', 'CONTATO'].map((item, index) => (
-                  <a key={index} href={`#${item.toLowerCase()}`} className="group flex items-center justify-center  transition-all">
+                  <a key={index} href={item === 'SOBRE' ? '/sobre' : `#${item.toLowerCase()}`} className="group flex items-center justify-center  transition-all">
                     <span className="text-black/40 group-hover:text-[#00e300] text-[10px] uppercase tracking-[0.4em] font-black transition-colors" style={{ writingMode: 'vertical-rl' }}>{item}</span>
                   </a>
                 ))}

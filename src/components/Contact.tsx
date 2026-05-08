@@ -37,7 +37,7 @@ export default function Contact() {
   };
 
   return (
-    <section className="py-32 px-6 bg-black relative" id="fale conosco">
+    <section className="py-32 px-6 bg-black relative" id="contato">
        {/* Background gradient */}
        <div className="absolute bottom-0 left-0 w-full h-[500px] bg-gradient-to-t from-primary/5 to-transparent pointer-events-none" />
        

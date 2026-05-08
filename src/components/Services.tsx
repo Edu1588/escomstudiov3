@@ -13,19 +13,23 @@ export default function Services() {
   return (
     <section className="py-32 px-6 bg-black relative" id="serviços">
       <div className="container mx-auto">
-        <div className="flex flex-col items-center mb-24 text-center">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="px-3 py-1 border border-primary/20 rounded-md mb-8 inline-block"
-          >
-            <span className="font-mono text-[10px] tracking-widest text-primary">[ NOSSOS_SERVIÇOS ]</span>
-          </motion.div>
-          
-          <h2 className="text-6xl md:text-9xl font-black font-tech uppercase mb-6 leading-none">O QUE FAZEMOS</h2>
-          <p className="text-white/30 max-w-xl font-mono text-[10px] tracking-[0.2em] uppercase font-bold bg-white/[0.03] px-6 py-2 rounded-full border border-white/5 mx-auto">
-            DESIGN COM PROPÓSITO COMERCIAL E INFRAESTRUTURA INTEGRADA PARA MÁXIMA PERFORMANCE.
-          </p>
+        <div className="flex flex-col md:flex-row items-end justify-between mb-24 gap-8">
+          <div className="flex flex-col text-left">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              className="px-3 py-1 border border-primary/20 rounded-md mb-8 inline-block self-start"
+            >
+              <span className="font-mono text-[10px] tracking-widest text-primary">[ NOSSOS_SERVIÇOS ]</span>
+            </motion.div>
+            
+            <h2 className="text-6xl md:text-[10rem] font-black font-tech uppercase leading-none m-0">O QUE<br/>FAZEMOS</h2>
+          </div>
+          <div className="md:max-w-sm pb-4">
+            <p className="text-white/80 font-mono text-sm tracking-[0.1em] uppercase font-bold border-l-2 border-primary pl-4 leading-relaxed">
+              DESIGN COM PROPÓSITO COMERCIAL E INFRAESTRUTURA INTEGRADA PARA MÁXIMA PERFORMANCE.
+            </p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

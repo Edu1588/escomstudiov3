@@ -13,6 +13,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 import { Resend } from "resend";
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, addDoc, serverTimestamp, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
+import fs from 'fs';
+
+const firebaseConfig = JSON.parse(fs.readFileSync(path.join(__dirname, 'firebase-applet-config.json'), 'utf-8'));
+
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp, firebaseConfig.firestoreDatabaseId || '(default)');
 
 // Resend initialization (Lazy loaded for security)
 const getResend = () => {
@@ -43,6 +51,13 @@ async function startServer() {
           message: "Campos obrigatórios ausentes." 
         });
       }
+
+      // Save Lead to Firebase
+      let leadId = null;
+      try {
+        const docRef = await addDoc(collection(db, 'leads'), { name, email, phone: phone || null, message, status: 'novo', createdAt: serverTimestamp() });
+        leadId = docRef.id;
+      } catch (err) { console.error("Firebase save lead error:", err); }
 
       // 2. Email Sending via Resend
       const resendClient = getResend();
@@ -104,30 +119,31 @@ async function startServer() {
       
       // Clean up body content
       $('script, style, nav, footer, header').remove();
-      const pageText = $("body").text().replace(/\s+/g, ' ').substring(0, 8000); // Only first 8000 chars
+      const pageText = $("body").text().replace(/\s+/g, ' ').substring(0, 10000); // 10k chars
 
-      // Use Groq API
+      // Use Groq API for Deep Audit
       const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
       const chatCompletion = await groq.chat.completions.create({
-        messages: [{ role: "user", content: `You are a strict and senior UX/UI auditor. Analyze this text extracted from a website to provide an audit report:
+        messages: [{ role: "system", content: "You always return ONLY purely valid JSON, with absolutely NO markdown backticks." }, { role: "user", content: `Você é um diretor sênior de UX/UI, Heurísticas, Psicologia Cognitiva e CRO. Faça uma auditoria extremamente profunda, rigorosa e técnica no conteúdo extraído do site:
 "${pageText}"
 
-Return ONLY a valid JSON object matching this structure exactly, with texts strictly in PORTUGUESE (pt-BR). Do not add any markdown formatting, only pure JSON.
+Retorne APENAS um JSON válido. Não inclua os caracteres de markdown. 
+Formato exigido:
 { 
-  "summary": "Main overall issue summary (e.g., 'A identidade visual do site é confusa e...'). At least 2 sentences.", 
+  "summary": "Um sumário analítico profissional de alto nível, com no mínimo 6 a 8 frases detalhando vulnerabilidades cognitivas, deficiências na arquitetura de informação e fricções de interface.", 
   "issues": [
     { 
       "category": "tipografia" | "cores" | "heuristica" | "vies" | "arquitetura" | "acessibilidade",
       "tab": "IDENTIDADE VISUAL E UI" | "HEURÍSTICAS DE NIELSEN" | "VIESES COGNITIVOS E PSICOLOGIA" | "ARQUITETURA DA INFORMAÇÃO" | "ACESSIBILIDADE E INCLUSÃO",
-      "title": "Short title of the problem (e.g., 'Falta de Consistência na Tipografia')",
-      "description": "Clear explanation of the problem found on the text/content.",
-      "recommendation": "Technical recommendation on how to fix it."
+      "title": "Nome técnico e robusto do problema.",
+      "description": "Explicação muito detalhada (ao menos um parágrafo longo) baseada em princípios avançados de design e comportamento do usuário. Explique os custos ocultos de conversão que esse erro causa.",
+      "recommendation": "O passo a passo incrivelmente exato de como aplicar a correção, sugerindo diretrizes e práticas modernas."
     }
   ]
 }
-Make sure to generate at least 4-5 issues spanning different categories.`}],
+Obrigatório: gere pelo menos de 7 a 10 problemas cobrindo TODAS e múltiplas áreas diferentes.`}],
         model: "llama-3.3-70b-versatile",
-        temperature: 0.2,
+        temperature: 0.3,
         response_format: { type: "json_object" }
       });
 
@@ -227,11 +243,11 @@ Return ONLY a valid JSON object: {"subject": "...", "body": "..."}`}],
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          q: "site:linkedin.com/jobs/view/ OR site:gupy.io/ (Web Designer OR UI Designer OR UX Designer) (São Paulo OR Remoto)",
+          q: "(\"R$ 5.000\" OR \"5.000,00\" OR \"R$ 6.000\" OR \"R$ 7.000\" OR \"Sênior\" OR \"Pleno\") (Web Designer OR UI Designer OR UX Designer) site:vagas.com.br OR site:gupy.io OR site:linkedin.com/jobs/view/",
           gl: "br",
           hl: "pt-br",
-          tbs: "qdr:w", // past week
-          num: 10
+          tbs: "qdr:m", // past month
+          num: 15
         })
       });
       
@@ -265,14 +281,243 @@ Return ONLY a valid JSON object: {"subject": "...", "body": "..."}`}],
     }
   });
 
+  // SERVICES API
+  let servicesStore: any[] = [
+    { id: 1, name: "Landing Page Alta Conversão", price: 2200, active: true, description: "Página única otimizada para capturar leads ou vender produtos com alta taxa de conversão." },
+    { id: 2, name: "Site Completo (5 a 6 páginas)", price: 4500, active: true, description: "Site institucional completo com páginas sobre, serviços, contato e blog." },
+    { id: 3, name: "E-commerce Básico", price: 6500, active: true, description: "Loja virtual completa com até 50 produtos cadastrados, carrinho e checkout." },
+    { id: 4, name: "Gestão de Tráfego Mensal", price: 1500, active: false, description: "Gestão de campanhas de anúncios no Google e Meta Ads para atrair clientes." },
+    { id: 5, name: "Identidade Visual", price: 3200, active: true, description: "Criação de logotipo, paleta de cores, tipografia e manual da marca." },
+  ];
+
+  app.get("/api/services", (req, res) => {
+    res.json({ success: true, services: servicesStore });
+  });
+
+  app.post("/api/services", (req, res) => {
+    try {
+      const { id, name, price, active, description } = req.body;
+      if (!name || price === undefined) return res.status(400).json({ error: "Name and price required" });
+      
+      let priceNumber = typeof price === 'string' ? parseFloat(price.replace(".", "")) : price;
+
+      const existingIndex = servicesStore.findIndex((s: any) => s.id === id);
+      if (existingIndex >= 0) {
+        servicesStore[existingIndex] = { ...servicesStore[existingIndex], name, price: priceNumber, active, description: description || "" };
+      } else {
+        servicesStore.push({ id: id || Date.now(), name, price: priceNumber, active: active ?? true, description: description || "" });
+      }
+      res.json({ success: true, services: servicesStore });
+    } catch (e) {
+      res.status(500).json({ error: "Error saving service" });
+    }
+  });
+
+  app.delete("/api/services/:id", (req, res) => {
+    const id = Number(req.params.id);
+    const index = servicesStore.findIndex(s => s.id === id);
+    if (index >= 0) {
+       servicesStore.splice(index, 1);
+    }
+    res.json({ success: true, services: servicesStore });
+  });
+
+  // PROPOSALS API
+  app.post("/api/proposals", async (req, res) => {
+    try {
+      const { clientName, phone, company, budget, selectedServices, observations } = req.body;
+      if (!company) {
+        return res.status(400).json({ error: "Company name is required." });
+      }
+      
+      const slug = `proposta-escom-${company.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`;
+      const proposal = {
+        id: slug,
+        clientName,
+        phone,
+        company,
+        budget,
+        selectedServices,
+        observations,
+        status: 'pendente', // 'pendente', 'aceito', 'recusado'
+        createdAt: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
+      };
+      
+      await setDoc(doc(db, "proposals", slug), proposal);
+      
+      res.json({ success: true, slug, proposal });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to generate proposal" });
+    }
+  });
+
+  app.get("/api/proposals", async (req, res) => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "proposals"));
+      const proposalsList: any[] = [];
+      querySnapshot.forEach((docSnap) => {
+        proposalsList.push(docSnap.data());
+      });
+      res.json({ success: true, proposals: proposalsList });
+    } catch (e) {
+      res.status(500).json({ error: "Failed to fetch proposals" });
+    }
+  });
+
+  app.get("/api/proposals/:slug", async (req, res) => {
+    try {
+      const slug = req.params.slug;
+      const docRef = doc(db, "proposals", slug);
+      const docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        return res.status(404).json({ error: "Proposal not found" });
+      }
+      
+      const proposal = docSnap.data();
+      
+      // Check expiration
+      if (new Date(proposal.expiresAt) < new Date() && proposal.status === 'pendente') {
+        return res.status(410).json({ error: "Proposal expired" });
+      }
+      
+      res.json({ success: true, proposal });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to fetch proposal" });
+    }
+  });
+
+  app.delete("/api/proposals/:id", async (req, res) => {
+    try {
+      const id = req.params.id;
+      const docRef = doc(db, "proposals", id);
+      await deleteDoc(docRef);
+      res.json({ success: true });
+    } catch (e) {
+      console.error("Error deleting proposal:", e);
+      res.status(500).json({ error: "Failed to delete proposal" });
+    }
+  });
+
+  app.post("/api/proposals/:slug/accept", async (req, res) => {
+    try {
+      const slug = req.params.slug;
+      const docRef = doc(db, "proposals", slug);
+      const docSnap = await getDoc(docRef);
+      if (!docSnap.exists()) return res.status(404).json({ error: "Proposal not found" });
+      
+      const proposal = docSnap.data();
+      if (proposal.status === "aceito") {
+        return res.json({ success: true, message: "Already accepted" });
+      }
+      
+      await updateDoc(docRef, { status: "aceito" });
+      
+      // Criar contrato baseado na proposta
+      await addDoc(collection(db, "contracts"), {
+        proposalSlug: slug,
+        clientName: proposal.clientName,
+        company: proposal.company,
+        budget: proposal.budget,
+        selectedServices: proposal.selectedServices,
+        status: "ATIVO", // ATIVO, FINALIZADO, ENCERRADO
+        createdAt: serverTimestamp(),
+      });
+      
+      res.json({ success: true });
+    } catch (e) {
+      res.status(500).json({ error: "Failed to accept proposal" });
+    }
+  });
+
+  // CONTRACTS API
+  app.get("/api/contracts", async (req, res) => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "contracts"));
+      const contractsList: any[] = [];
+      querySnapshot.forEach((docSnap) => {
+        contractsList.push({ id: docSnap.id, ...docSnap.data() });
+      });
+      res.json({ success: true, contracts: contractsList });
+    } catch (e) {
+      res.status(500).json({ error: "Failed to fetch contracts" });
+    }
+  });
+
+  app.put("/api/contracts/:id/status", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const docRef = doc(db, "contracts", id);
+      await updateDoc(docRef, { status });
+      res.json({ success: true });
+    } catch (e) {
+      res.status(500).json({ error: "Failed to update contract" });
+    }
+  });
+
+  // LEADS API
+  app.get("/api/leads", async (req, res) => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "leads"));
+      const leadsList: any[] = [];
+      querySnapshot.forEach((docSnap) => {
+        leadsList.push({ id: docSnap.id, ...docSnap.data() });
+      });
+      res.json({ success: true, leads: leadsList });
+    } catch (e) {
+      res.status(500).json({ error: "Failed to fetch leads" });
+    }
+  });
+
+  app.delete("/api/leads/:id", async (req, res) => {
+    try {
+      const id = req.params.id;
+      await deleteDoc(doc(db, "leads", id));
+      res.json({ success: true });
+    } catch (e) {
+      console.error("Error deleting lead:", e);
+      res.status(500).json({ error: "Failed to delete lead" });
+    }
+  });
+
+  app.put("/api/leads/:id/status", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      await updateDoc(doc(db, "leads", id), { status });
+      res.json({ success: true });
+    } catch (e) {
+      res.status(500).json({ error: "Failed to update lead status" });
+    }
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
+    app.get("/portfolio-projetos*", (req, res, next) => {
+      req.url = "/portfolio-projetos/index.html";
+      next();
+    });
     app.get("/portfolioedu*", (req, res, next) => {
       req.url = "/portfolioedu/index.html";
       next();
     });
     app.get("/admin*", (req, res, next) => {
       req.url = "/admin/index.html";
+      next();
+    });
+    app.get("/sobre*", (req, res, next) => {
+      req.url = "/sobre/index.html";
+      next();
+    });
+    app.get("/baseproposta*", (req, res, next) => {
+      req.url = "/baseproposta/index.html";
+      next();
+    });
+    app.get("/proposta-escom-*", (req, res, next) => {
+      req.url = "/baseproposta/index.html";
       next();
     });
     const vite = await createViteServer({
@@ -283,11 +528,23 @@ Return ONLY a valid JSON object: {"subject": "...", "body": "..."}`}],
   } else {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
+    app.get("/portfolio-projetos*", (req, res) => {
+      res.sendFile(path.join(distPath, "portfolio-projetos", "index.html"));
+    });
     app.get("/portfolioedu*", (req, res) => {
       res.sendFile(path.join(distPath, "portfolioedu", "index.html"));
     });
     app.get("/admin*", (req, res) => {
       res.sendFile(path.join(distPath, "admin", "index.html"));
+    });
+    app.get("/sobre*", (req, res) => {
+      res.sendFile(path.join(distPath, "sobre", "index.html"));
+    });
+    app.get("/baseproposta*", (req, res) => {
+      res.sendFile(path.join(distPath, "baseproposta", "index.html"));
+    });
+    app.get("/proposta-escom-*", (req, res) => {
+      res.sendFile(path.join(distPath, "baseproposta", "index.html"));
     });
     app.get("*", (req, res) => {
       res.sendFile(path.join(distPath, "index.html"));

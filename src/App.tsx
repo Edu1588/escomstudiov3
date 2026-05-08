@@ -6,6 +6,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
+import { logPageView } from "./lib/analytics";
 
 // Components
 import LoadingScreen from "./components/LoadingScreen";
@@ -36,6 +37,10 @@ import BackToTop from "./components/BackToTop";
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [version, setVersion] = useState<"v1" | "v2">("v1");
+
+  useEffect(() => {
+    logPageView("HOME");
+  }, []);
 
   return (
     <main className="relative">
@@ -85,7 +90,6 @@ export default function App() {
               <Contact />
               <FAQ />
               <Footer />
-              <BackToTop />
             </>
           ) : (
             <>
@@ -97,12 +101,13 @@ export default function App() {
               <CostAnalysis />
               <ValueProposition />
               <Testimonials />
-              <AboutV2 />
               <FAQV2 />
               <Contact />
               <Footer />
             </>
           )}
+
+          <BackToTop />
           
           {/* Version Toggle Switch - Discrete floating button */}
           <button 

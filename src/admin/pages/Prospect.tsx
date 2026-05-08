@@ -1,10 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Header } from "../components/Header";
 import { 
   Search, ArrowRight, LayoutDashboard, UserCheck, Briefcase, Clock, 
   Loader2, Download, Globe, Mail, Phone, MessageSquare, Bookmark, 
   ChevronRight, Building2, Send, Copy, Trash2, FileText
 } from "lucide-react";
+import { db } from "../../lib/firebase";
+import { collection, addDoc, serverTimestamp, getDocs, deleteDoc, doc, query, orderBy } from "firebase/firestore";
+
+enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
+}
+
+interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: any;
+}
+
+function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const errInfo: FirestoreErrorInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    authInfo: null,
+    operationType,
+    path
+  };
+  console.warn('Firestore Error: ', JSON.stringify(errInfo));
+  // Not throwing to avoid crashing the app when user has no permissions yet
+}
 
 export default function Prospect() {
   const [activeTab, setActiveTab] = useState("UX ANALYZER");
@@ -23,7 +52,75 @@ export default function Prospect() {
   const [jobState, setJobState] = useState<"idle" | "loading" | "results">("idle");
   const [jobResults, setJobResults] = useState<any[]>([]);
 
-  const [historyTab, setHistoryTab] = useState("LEADS (2)");
+  const [historyTab, setHistoryTab] = useState("LEADS");
+  const [savedLeads, setSavedLeads] = useState<any[]>([]);
+  const [savedJobs, setSavedJobs] = useState<any[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === "HISTÓRICO") {
+      loadHistory();
+    }
+  }, [activeTab]);
+
+  const loadHistory = async () => {
+    setHistoryLoading(true);
+    try {
+      const leadsSnap = await getDocs(query(collection(db, "leads"), orderBy("createdAt", "desc")));
+      setSavedLeads(leadsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+      
+      const jobsSnap = await getDocs(query(collection(db, "jobs"), orderBy("createdAt", "desc")));
+      setSavedJobs(jobsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+    } catch (error) {
+       handleFirestoreError(error, OperationType.GET, "leads/jobs");
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
+  const handleSaveLead = async (lead: any) => {
+    try {
+      await addDoc(collection(db, "leads"), {
+        ...lead,
+        createdAt: serverTimestamp()
+      });
+      alert('Lead salvo no histórico!');
+    } catch (error) {
+      alert('Erro ao salvar lead.');
+      handleFirestoreError(error, OperationType.CREATE, "leads");
+    }
+  };
+
+  const handleDeleteLead = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, "leads", id));
+      setSavedLeads(savedLeads.filter(l => l.id !== id));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, "leads");
+    }
+  };
+
+  const handleSaveJob = async (job: any) => {
+    try {
+      await addDoc(collection(db, "jobs"), {
+        ...job,
+        createdAt: serverTimestamp()
+      });
+      alert('Vaga salva no histórico!');
+    } catch (error) {
+      alert('Erro ao salvar vaga.');
+      handleFirestoreError(error, OperationType.CREATE, "jobs");
+    }
+  };
+
+  const handleDeleteJob = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, "jobs", id));
+      setSavedJobs(savedJobs.filter(j => j.id !== id));
+    } catch (error) {
+       handleFirestoreError(error, OperationType.DELETE, "jobs");
+    }
+  };
 
   const tabs = [
     { id: "UX ANALYZER", icon: <LayoutDashboard size={18} /> },
@@ -53,6 +150,11 @@ export default function Prospect() {
       setUxState("results");
     }
   };
+
+  const handleDownloadPdf = () => {
+     window.print();
+  };
+
 
   const handleLeadSearch = async () => {
     if (!leadInput) return;
@@ -121,8 +223,10 @@ export default function Prospect() {
 
   return (
     <div className="flex-1 overflow-y-auto w-full bg-[#050505]">
-      <Header title="Ferramentas PRO" />
-      <div className="max-w-[1200px] mx-auto mt-8 px-8">
+      <div className="print:hidden">
+        <Header title="Ferramentas PRO" />
+      </div>
+      <div className="max-w-[1200px] mx-auto mt-8 px-8 print:p-0 print:m-0 print:max-w-full print:bg-white print:text-black">
         
         <div className="flex items-center gap-4 mb-8">
           <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#2EFF00]">
@@ -201,19 +305,19 @@ export default function Prospect() {
 
              {uxState === "results" && (
                 <div className="border border-[#1a1a1a] rounded-xl bg-[#0a0a0a] p-8">
-                   <div className="flex justify-between items-center mb-8 border-b border-[#1a1a1a] pb-6">
-                     <div className="flex items-center gap-4 text-[#2EFF00]">
-                       <LayoutDashboard size={24} />
-                       <h2 className="font-mono tracking-widest uppercase text-lg">Relatório de Auditoria</h2>
+                     <div className="flex justify-between items-center mb-8 border-b border-[#1a1a1a] pb-6">
+                       <div className="flex items-center gap-4 text-[#2EFF00]">
+                         <LayoutDashboard size={24} />
+                         <h2 className="font-mono tracking-widest uppercase text-lg">Relatório de Auditoria</h2>
+                       </div>
+                       <button onClick={handleDownloadPdf} className="print:hidden flex items-center gap-2 bg-transparent hover:bg-[#111] border border-[#2EFF00] text-[#2EFF00] px-4 py-2 rounded font-mono text-sm transition-colors">
+                         <Download size={16} />
+                         BAIXAR RELATÓRIO
+                       </button>
                      </div>
-                     <button className="flex items-center gap-2 bg-transparent hover:bg-[#111] border border-[#2EFF00] text-[#2EFF00] px-4 py-2 rounded font-mono text-sm transition-colors">
-                       <Download size={16} />
-                       BAIXAR RELATÓRIO
-                     </button>
-                   </div>
 
-                   <div className="flex flex-wrap gap-2 mb-8">
-                     {["RESUMO EXECUTIVO", "IDENTIDADE VISUAL E UI", "HEURÍSTICAS DE NIELSEN", "VIESES COGNITIVOS E PSICOLOGIA", "ARQUITETURA DA INFORMAÇÃO", "ACESSIBILIDADE E INCLUSÃO"].map(tab => (
+                   <div className="flex flex-wrap gap-2 mb-8 print:hidden">
+                     {["IDENTIDADE VISUAL E UI", "HEURÍSTICAS DE NIELSEN", "VIESES COGNITIVOS E PSICOLOGIA", "ARQUITETURA DA INFORMAÇÃO", "ACESSIBILIDADE E INCLUSÃO"].map(tab => (
                        <button
                          key={tab}
                          onClick={() => setUxActiveInnerTab(tab)}
@@ -229,29 +333,40 @@ export default function Prospect() {
                    </div>
 
                    <div className="bg-[#050505] border border-[#1a1a1a] rounded-lg p-8">
-                      <p className="text-gray-300 text-sm leading-relaxed mb-8">
-                        {uxResults?.summary || "Resumo da auditoria da página..."}
-                      </p>
+                      <div className="mb-12">
+                         <h3 className="text-[#2EFF00] font-mono tracking-widest mb-4 print:text-black">RESUMO EXECUTIVO</h3>
+                         <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line print:text-black">
+                           {uxResults?.summary || "Sumário da auditoria será exibido aqui."}
+                         </p>
+                      </div>
 
-                      <div className="border-t border-[#1a1a1a] pt-8 space-y-8">
-                         {uxResults?.issues?.filter((i: any) => i.tab === uxActiveInnerTab)?.length > 0 ? (
-                           uxResults.issues.filter((i: any) => i.tab === uxActiveInnerTab).map((issue: any, idx: number) => (
-                             <div key={idx} className="relative pl-6 before:absolute before:left-0 before:top-2 before:bottom-0 before:w-px before:bg-[#2EFF00]/30">
-                                <div className="absolute left-[-4px] top-2 w-2 h-2 rounded-full border-2 border-[#2EFF00] bg-black ring-4 ring-black"></div>
-                                <h3 className="text-white font-bold text-lg mb-3">{issue.title}</h3>
-                                <p className="text-gray-400 text-sm mb-4">{issue.description}</p>
-                                <div className="bg-[#111] border border-[#1a1a1a] rounded p-4">
-                                  <div className="text-[#2EFF00] font-mono text-[10px] tracking-widest mb-2 flex items-center gap-2">
-                                    <span className="rotate-180 inline-block w-2 h-2 text-current">&rarr;</span>
-                                    COMO DEVERIA SER:
-                                  </div>
-                                  <p className="text-[#2EFF00] text-sm">{issue.recommendation}</p>
-                                </div>
-                             </div>
-                           ))
-                         ) : (
-                           <div className="text-gray-500 font-mono text-sm text-center py-8">Nenhum problema encontrado nesta categoria específica ainda.</div>
-                         )}
+                      <div className="border-t border-[#1a1a1a] pt-8 space-y-16">
+                         {["IDENTIDADE VISUAL E UI", "HEURÍSTICAS DE NIELSEN", "VIESES COGNITIVOS E PSICOLOGIA", "ARQUITETURA DA INFORMAÇÃO", "ACESSIBILIDADE E INCLUSÃO"].map(tabName => {
+                            const issuesForTab = uxResults?.issues?.filter((i: any) => i.tab === tabName) || [];
+                            if (issuesForTab.length === 0) return null;
+                            
+                            return (
+                               <div key={tabName} className={`${uxActiveInnerTab === tabName ? 'block' : 'hidden print:block'}`}>
+                                 <h3 className="text-[#2EFF00] font-mono tracking-widest mb-6 print:text-black border-b border-[#2EFF00]/30 pb-2">{tabName}</h3>
+                                 <div className="space-y-8">
+                                   {issuesForTab.map((issue: any, idx: number) => (
+                                     <div key={idx} className="relative pl-6 before:absolute before:left-0 before:top-2 before:bottom-0 before:w-px before:bg-[#2EFF00]/30 print:before:bg-black/30">
+                                        <div className="absolute left-[-4px] top-2 w-2 h-2 rounded-full border-2 border-[#2EFF00] bg-black ring-4 ring-black print:border-black print:ring-white"></div>
+                                        <h3 className="text-white font-bold text-lg mb-3 print:text-black">{issue.title}</h3>
+                                        <p className="text-gray-400 text-sm mb-4 whitespace-pre-line print:text-gray-800">{issue.description}</p>
+                                        <div className="bg-[#111] border border-[#1a1a1a] rounded p-4 print:bg-gray-100 print:border-gray-300">
+                                          <div className="text-[#2EFF00] font-mono text-[10px] tracking-widest mb-2 flex items-center gap-2 print:text-black">
+                                            <span className="rotate-180 inline-block w-2 h-2 text-current">&rarr;</span>
+                                            COMO DEVERIA SER:
+                                          </div>
+                                          <p className="text-[#2EFF00] text-sm whitespace-pre-line print:text-black">{issue.recommendation}</p>
+                                        </div>
+                                     </div>
+                                   ))}
+                                 </div>
+                               </div>
+                            );
+                         })}
                       </div>
                    </div>
                 </div>
@@ -355,7 +470,7 @@ export default function Prospect() {
                           {leadGeneratingTextId === idx ? <Loader2 size={16} className="animate-spin" /> : <MessageSquare size={16} />}
                           GERAR TEXTO DE PROSPECÇÃO
                         </button>
-                        <button className="flex items-center gap-2 border border-[#333] hover:border-gray-500 text-gray-300 hover:text-white px-6 py-3 rounded font-mono text-xs transition-colors">
+                        <button onClick={() => handleSaveLead(lead)} className="flex items-center gap-2 border border-[#333] hover:border-gray-500 text-gray-300 hover:text-white px-6 py-3 rounded font-mono text-xs transition-colors">
                           <Bookmark size={16} /> Salvar Lead
                         </button>
                       </div>
@@ -469,6 +584,9 @@ export default function Prospect() {
                        <a href={job.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 border border-[#333] hover:border-[#2EFF00] text-gray-300 hover:text-white px-6 py-2 rounded font-mono text-xs transition-colors">
                          <FileText size={16} /> Detalhes
                        </a>
+                       <button onClick={() => handleSaveJob(job)} className="flex items-center gap-2 border border-[#333] hover:border-gray-500 text-gray-300 hover:text-white px-6 py-2 rounded font-mono text-xs transition-colors">
+                         <Bookmark size={16} /> Salvar Vaga
+                       </button>
                      </div>
                    </div>
                   ))}
@@ -484,86 +602,126 @@ export default function Prospect() {
         {activeTab === "HISTÓRICO" && (
           <div className="max-w-5xl">
 
-             <div className="flex items-center gap-6 mb-12 border-b border-[#1a1a1a] pb-6">
-                <h2 className="text-[#2EFF00] flex items-center gap-4 text-3xl font-mono tracking-widest uppercase">
-                  <Clock size={32} /> HISTÓRICO
-                </h2>
-                
-                <div className="ml-auto flex bg-[#0a0a0a] border border-[#1a1a1a] rounded">
-                   <button 
-                     onClick={() => setHistoryTab("LEADS (2)")}
-                     className={`px-6 py-3 font-mono text-xs tracking-widest transition-colors ${
-                       historyTab === "LEADS (2)" ? 'bg-[#2EFF00] text-black font-bold' : 'text-gray-400 hover:text-white'
-                     }`}
-                   >
-                     LEADS (2)
-                   </button>
-                   <button 
-                     onClick={() => setHistoryTab("VAGAS (10)")}
-                     className={`px-6 py-3 font-mono text-xs tracking-widest transition-colors border-l border-[#1a1a1a] ${
-                       historyTab === "VAGAS (10)" ? 'bg-[#2EFF00] text-black font-bold' : 'text-gray-400 hover:text-white'
-                     }`}
-                   >
-                     VAGAS (10)
-                   </button>
-                </div>
-             </div>
+              <div className="flex items-center gap-6 mb-12 border-b border-[#1a1a1a] pb-6">
+                 <h2 className="text-[#2EFF00] flex items-center gap-4 text-3xl font-mono tracking-widest uppercase">
+                   <Clock size={32} /> HISTÓRICO
+                 </h2>
+                 
+                 <div className="ml-auto flex bg-[#0a0a0a] border border-[#1a1a1a] rounded">
+                    <button 
+                      onClick={() => setHistoryTab("LEADS")}
+                      className={`px-6 py-3 font-mono text-xs tracking-widest transition-colors ${
+                        historyTab === "LEADS" ? 'bg-[#2EFF00] text-black font-bold' : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      LEADS ({historyLoading ? '...' : savedLeads.length})
+                    </button>
+                    <button 
+                      onClick={() => setHistoryTab("VAGAS")}
+                      className={`px-6 py-3 font-mono text-xs tracking-widest transition-colors border-l border-[#1a1a1a] ${
+                        historyTab === "VAGAS" ? 'bg-[#2EFF00] text-black font-bold' : 'text-gray-400 hover:text-white'
+                      }`}
+                    >
+                      VAGAS ({historyLoading ? '...' : savedJobs.length})
+                    </button>
+                 </div>
+              </div>
 
-             {historyTab === "LEADS (2)" && (
+              {historyLoading && (
+                <div className="py-24 text-center">
+                   <Loader2 size={32} className="mx-auto text-[#2EFF00] animate-spin mb-4" />
+                   <p className="text-[#2EFF00] font-mono text-sm tracking-widest">CARREGANDO HISTÓRICO...</p>
+                </div>
+              )}
+
+              {historyTab === "LEADS" && !historyLoading && (
                 <div className="space-y-6">
-                   <div className="border border-[#1a1a1a] bg-[#0a0a0a] rounded-lg p-6 relative flex flex-col">
+                   {savedLeads.map(lead => (
+                   <div key={lead.id} className="border border-[#1a1a1a] bg-[#0a0a0a] rounded-lg p-6 relative flex flex-col">
                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#188C00]"></div>
                      
                      <div className="flex justify-between items-start mb-6 pl-2">
-                       <h3 className="text-xl font-bold text-white">Clínica Brasil Dentistas</h3>
-                       <button className="text-xs font-mono text-gray-500 hover:text-red-500 underline decoration-gray-500 underline-offset-4 transition-colors">Remover</button>
+                       <h3 className="text-xl font-bold text-white">{lead.title}</h3>
+                       <button onClick={() => handleDeleteLead(lead.id)} className="text-xs font-mono text-gray-500 hover:text-red-500 underline decoration-gray-500 underline-offset-4 transition-colors">Remover</button>
                      </div>
 
                      <p className="text-gray-400 font-mono text-xs mb-8 pl-2 leading-relaxed">
-                       Contato · Trabalhe Conosco; Go Back; Go Back. Search the Site. Inscreva-se ... Em consultório: feito pelo dentista, com resultados rápidos... Notícias. Ler ...
+                       {lead.snippet}
                      </p>
 
-                     <div className="flex items-center gap-6 text-[10px] font-mono mb-8 pl-2 pb-6 border-b border-[#1a1a1a]">
-                       <div className="flex items-center gap-2 text-[#2EFF00]">
-                         <Globe size={14} /> WWW.CLINICABRASILDENTISTAS.COM.BR
+                     <div className="flex items-center gap-6 text-[10px] font-mono mb-8 pl-2 pb-6 border-b border-[#1a1a1a] overflow-x-auto">
+                       <a href={lead.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#2EFF00] whitespace-nowrap hover:underline">
+                         <Globe size={14} /> {new URL(lead.link.startsWith('http') ? lead.link : 'https://' + lead.link).hostname.toUpperCase()}
+                       </a>
+                       <div className="flex items-center gap-2 text-white whitespace-nowrap">
+                         <Mail size={14} className="text-[#2EFF00]" /> {lead.email}
                        </div>
-                       <div className="flex items-center gap-2 text-white">
-                         <Mail size={14} className="text-[#2EFF00]" /> contato@clinicabrasildentistas.com.br
-                       </div>
-                       <div className="flex items-center gap-2 text-gray-600">
+                       <div className="flex items-center gap-2 text-gray-600 whitespace-nowrap">
                          <Phone size={14} /> Telefone não encontrado
                        </div>
                      </div>
 
-                     {/* Prospection Generated Block */}
+                     {lead.generatedText && (
                      <div className="border border-[#188C00]/30 bg-[#050505] rounded-lg overflow-hidden ml-2">
                         <div className="flex items-center justify-between px-4 py-3 border-b border-[#188C00]/30 bg-[#188C00]/5">
                            <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
                              <ChevronRight size={14} className="text-[#2EFF00]" />
-                             Assunto: <span className="text-[#2EFF00] font-bold">Otimizando a Experiência do Paciente na Clínica Brasil Dentistas</span>
+                             Assunto: <span className="text-[#2EFF00] font-bold">{lead.generatedText.subject}</span>
                            </div>
                            <div className="flex items-center gap-3 text-gray-400">
-                             <button className="hover:text-white transition-colors"><Send size={14}/></button>
-                             <button className="hover:text-white transition-colors"><Copy size={14}/></button>
+                             <a href={`mailto:${lead.email}?subject=${encodeURIComponent(lead.generatedText.subject)}&body=${encodeURIComponent(lead.generatedText.body)}`} className="hover:text-white transition-colors"><Send size={14}/></a>
+                             <button onClick={() => navigator.clipboard.writeText(lead.generatedText.body)} className="hover:text-white transition-colors"><Copy size={14}/></button>
                            </div>
                         </div>
-                        <div className="p-4 bg-transparent text-gray-300 text-sm leading-relaxed space-y-4">
-                           <p>Olá, me chamo Edu Santos. Sou especialista em design de sites, análise cognitiva e vieses comportamentais com anos de experiência na área. Estava pesquisando sobre clínicas dentárias e acabei caindo no site da Clínica Brasil Dentistas.</p>
-                           <p>Notei que o site oferece uma ampla gama de informações sobre os tratamentos e serviços oferecidos, o que é ótimo para os pacientes que buscam entender melhor suas opções de tratamento. No entanto, percebi que a navegação e a apresentação das informações poderiam ser otimizadas para melhorar a experiência do usuário e aumentar as conversões.</p>
-                           <p>Uma abordagem de design estratégico, focada na psicologia do usuário, pode ajudar a simplificar a navegação, destacar os pontos fortes da clínica e direcionar os pacientes para as informações mais relevantes para suas necessidades. Isso pode incluir a criação de fluxos de usuário mais claros, a utilização de elementos visuais atraentes e a otimização do site para dispositivos...</p>
+                        <div className="p-4 bg-transparent text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">
+                           {lead.generatedText.body}
                         </div>
                      </div>
-
+                     )}
                    </div>
+                   ))}
+                   {savedLeads.length === 0 && (
+                     <div className="text-gray-500 font-mono text-center pt-8">Nenhum lead salvo no histórico.</div>
+                   )}
                 </div>
-             )}
+              )}
 
-             {historyTab === "VAGAS (10)" && (
-                <div className="py-24 text-center border border-[#1a1a1a] rounded-xl bg-[#0a0a0a]">
-                  <Briefcase size={48} className="mx-auto text-gray-600 mb-6" />
-                  <p className="text-gray-500 font-mono text-sm max-w-[400px] mx-auto">Funcionalidade em construção. Aqui aparecerá a lista de vagas pesquisadas anteriormente.</p>
+              {historyTab === "VAGAS" && !historyLoading && (
+                <div className="space-y-6">
+                  {savedJobs.map(job => (
+                   <div key={job.id} className="border border-[#1a1a1a] bg-[#0a0a0a] rounded-lg p-6 relative flex flex-col">
+                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#188C00]"></div>
+                     
+                     <div className="flex justify-between items-start mb-4 pl-2">
+                       <h3 className="text-xl font-bold text-white">{job.title}</h3>
+                       <div className="flex items-center gap-4">
+                         <div className="border border-[#188C00]/30 text-[#188C00] px-3 py-1 text-xs font-mono rounded bg-[#188C00]/5">{job.company}</div>
+                         <button onClick={() => handleDeleteJob(job.id)} className="text-xs font-mono text-gray-500 hover:text-red-500 underline decoration-gray-500 underline-offset-4 transition-colors">Remover</button>
+                       </div>
+                     </div>
+                     
+                     <p className="text-gray-400 font-mono text-xs mb-8 pl-2 leading-relaxed">
+                       {job.snippet}
+                     </p>
+
+                     <div className="flex items-center gap-6 text-[10px] font-mono mb-8 pl-2 pb-6 border-b border-[#1a1a1a]">
+                       <div className="flex items-center gap-2 text-[#2EFF00]">
+                         <Globe size={14} /> Via web
+                       </div>
+                       <div className="flex items-center gap-2 text-white">
+                         <span className="text-[#2EFF00]">$</span> A combinar
+                       </div>
+                       <a href={job.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#2EFF00] hover:underline">
+                         <Globe size={14} /> ACESSAR VAGA
+                       </a>
+                     </div>
+                   </div>
+                  ))}
+                  {savedJobs.length === 0 && (
+                     <div className="text-gray-500 font-mono text-center pt-8">Nenhuma vaga salva no histórico.</div>
+                  )}
                 </div>
-             )}
+              )}
           </div>
         )}
 

@@ -1,31 +1,58 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Header } from "../components/Header";
-import { DollarSign, MousePointerClick, Users, FileSignature } from "lucide-react";
+import { DollarSign, MousePointerClick, Users, FileSignature, Loader2 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-
-const data = [
-  { name: '20/04', value: 2 },
-  { name: '21/04', value: 1 },
-  { name: '22/04', value: 17 },
-  { name: '23/04', value: 16 },
-  { name: '24/04', value: 6 },
-  { name: '25/04', value: 1 },
-  { name: '26/04', value: 1 },
-  { name: '27/04', value: 5 },
-  { name: '28/04', value: 5 },
-  { name: '29/04', value: 10 },
-  { name: '30/04', value: 16 },
-  { name: '01/05', value: 1 },
-  { name: '02/05', value: 12 },
-  { name: '03/05', value: 1 },
-  { name: '04/05', value: 3 },
-];
+import { db } from "../../lib/firebase";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 
 export default function Dashboard() {
+  const [loading, setLoading] = useState(true);
+  const [totalViews, setTotalViews] = useState(0);
+  const [totalLeads, setTotalLeads] = useState(0);
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [pagesData, setPagesData] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        // Fetch page views
+        const viewsSnap = await getDocs(collection(db, "page_views"));
+        let views = 0;
+        let pData: any[] = [];
+        viewsSnap.forEach(d => {
+          views += (d.data().viewCount || 0);
+          pData.push({ id: d.id, ...d.data() });
+        });
+
+        setTotalViews(views);
+        setPagesData(pData.sort((a,b) => b.viewCount - a.viewCount));
+
+        // Fetch leads total count (mock or true from collection if any form submission logs them)
+        const leadsSnap = await getDocs(collection(db, "leads"));
+        setTotalLeads(leadsSnap.size);
+
+        // Fetch chart data
+        const dailySnap = await getDocs(collection(db, "daily_views"));
+        const cData: any[] = [];
+        dailySnap.forEach(d => {
+          cData.push({ name: d.id.substring(5), fullDate: d.id, value: d.data().viewCount || 0 });
+        });
+        
+        cData.sort((a,b) => a.fullDate.localeCompare(b.fullDate));
+        setChartData(cData.slice(-30));
+      } catch (error) {
+        console.warn("Could not load analytics (permissions or disabled):", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
   return (
     <div className="flex-1 overflow-y-auto w-full">
       <Header title="Análise Geral" />
-      <div className="p-8 max-w-[1400px] mx-auto space-y-6">
+      <div className="p-4 md:p-8 max-w-[1400px] mx-auto space-y-4 md:space-y-6">
         
         {/* Top Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -49,9 +76,9 @@ export default function Dashboard() {
                 <MousePointerClick size={16} />
               </div>
             </div>
-            <div className="text-3xl font-bold text-white mb-2">575</div>
+            <div className="text-3xl font-bold text-white mb-2">{totalViews}</div>
             <div className="text-[11px] font-mono text-[#2EFF00] flex items-center gap-1">
-              <span>↗</span> Tempo real
+              <span>{loading ? <Loader2 size={12} className="animate-spin" /> : "↗"}</span> Tempo real
             </div>
           </div>
 
@@ -63,9 +90,9 @@ export default function Dashboard() {
                 <Users size={16} />
               </div>
             </div>
-            <div className="text-3xl font-bold text-white mb-2">2</div>
+            <div className="text-3xl font-bold text-white mb-2">{totalLeads}</div>
             <div className="text-[11px] font-mono text-[#2EFF00] flex items-center gap-1">
-              <span>↗</span> +22% vs último mês
+              <span>{loading ? <Loader2 size={12} className="animate-spin" /> : "↗"}</span> Monitoramento ao vivo
             </div>
           </div>
 
@@ -94,7 +121,7 @@ export default function Dashboard() {
             </div>
             <div className="h-[250px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={data}>
+                <LineChart data={chartData}>
                   <XAxis dataKey="name" stroke="#333" fontSize={10} tickMargin={10} />
                   <YAxis stroke="#333" fontSize={10} tickFormatter={(value) => `${value}`} />
                   <Tooltip 
@@ -119,7 +146,7 @@ export default function Dashboard() {
             <div className="flex-1 flex flex-col items-center justify-center relative">
               <div className="w-48 h-48 rounded-full border-[16px] border-[#1a1a1a] border-t-[#2EFF00] border-r-[#2EFF00] transform rotate-45 mb-8 flex items-center justify-center">
                  <div className="transform -rotate-45 text-center mt-[-30px] ml-[-30px]">
-                    <div className="text-4xl font-bold">2</div>
+                    <div className="text-4xl font-bold">{totalLeads}</div>
                     <div className="text-[10px] text-gray-500 font-mono">TOTAL</div>
                  </div>
               </div>
@@ -168,30 +195,16 @@ export default function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-b border-[#1a1a1a]/50">
-                  <td className="py-4 text-gray-300">Página Inicial (Home)</td>
-                  <td className="py-4 text-right font-mono">190</td>
-                  <td className="py-4 text-right font-mono text-[#2EFF00]">2</td>
-                  <td className="py-4 text-right"><span className="bg-[#2EFF00]/10 text-[#2EFF00] px-2 py-1 inline-flex rounded text-[10px] font-bold">Ativo</span></td>
-                </tr>
-                <tr className="border-b border-[#1a1a1a]/50">
-                  <td className="py-4 text-gray-300">Portfólio de Projetos</td>
-                  <td className="py-4 text-right font-mono">5</td>
-                  <td className="py-4 text-right font-mono text-[#2EFF00]">0</td>
-                  <td className="py-4 text-right"><span className="bg-[#2EFF00]/10 text-[#2EFF00] px-2 py-1 inline-flex rounded text-[10px] font-bold">Ativo</span></td>
-                </tr>
-                <tr className="border-b border-[#1a1a1a]/50">
-                  <td className="py-4 text-gray-300">Página de Propostas</td>
-                  <td className="py-4 text-right font-mono">5</td>
-                  <td className="py-4 text-right font-mono text-[#2EFF00]">0</td>
-                  <td className="py-4 text-right"><span className="bg-[#2EFF00]/10 text-[#2EFF00] px-2 py-1 inline-flex rounded text-[10px] font-bold">Ativo</span></td>
-                </tr>
-                <tr>
-                  <td className="py-4 text-gray-300">Portfolio EDU</td>
-                  <td className="py-4 text-right font-mono">237</td>
-                  <td className="py-4 text-right font-mono text-[#2EFF00]">0</td>
-                  <td className="py-4 text-right"><span className="bg-[#2EFF00]/10 text-[#2EFF00] px-2 py-1 inline-flex rounded text-[10px] font-bold">Ativo</span></td>
-                </tr>
+                {pagesData.length > 0 ? pagesData.map((page, idx) => (
+                  <tr key={idx} className="border-b border-[#1a1a1a]/50">
+                    <td className="py-4 text-gray-300">{page.id || 'Página Desconhecida'}</td>
+                    <td className="py-4 text-right font-mono">{page.viewCount || 0}</td>
+                    <td className="py-4 text-right font-mono text-[#2EFF00]">--</td>
+                    <td className="py-4 text-right"><span className="bg-[#2EFF00]/10 text-[#2EFF00] px-2 py-1 inline-flex rounded text-[10px] font-bold">Ativo</span></td>
+                  </tr>
+                )) : (
+                  <tr><td colSpan={4} className="py-4 text-center text-gray-500 font-mono">Nenhum acesso registrado</td></tr>
+                )}
               </tbody>
             </table>
           </div>

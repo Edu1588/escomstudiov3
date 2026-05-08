@@ -70,17 +70,21 @@ export default function ServicesV2() {
   return (
     <section className="py-32 bg-black relative overflow-hidden w-full" id="serviços-v2">
       <div className="container mx-auto px-6">
-        <div className="flex flex-col items-center mb-16 text-center">
-          <div className="px-3 py-1 border border-[#00e300]/20 rounded-none mb-8 inline-block">
-            <span className="font-rajdhani text-[10px] tracking-widest text-[#00e300] uppercase font-bold">[ NOSSOS_SERVIÇOS ]</span>
+        <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-16">
+          <div className="flex flex-col">
+            <div className="px-3 py-1 border border-[#00e300]/20 rounded-none mb-8 inline-block self-start">
+              <span className="font-rajdhani text-[10px] tracking-widest text-[#00e300] uppercase font-bold">[ NOSSOS_SERVIÇOS ]</span>
+            </div>
+            
+            <h2 className="text-4xl md:text-6xl lg:text-8xl font-black tracking-tighter text-white uppercase leading-[0.9] font-rajdhani m-0">
+              O QUE<br />FAZEMOS
+            </h2>
           </div>
-          
-          <h2 className="text-4xl md:text-6xl lg:text-8xl font-black tracking-tighter text-white uppercase mb-4 leading-[0.9] font-rajdhani">
-            O QUE FAZEMOS
-          </h2>
-          <p className="font-rajdhani text-sm md:text-lg font-light text-white/70 tracking-wide leading-relaxed max-w-xl mx-auto">
-            Design com propósito comercial e infraestrutura tecnológica integrada para máxima performance.
-          </p>
+          <div className="mt-8 md:mt-0 md:max-w-md pb-2">
+            <p className="font-rajdhani text-sm md:text-lg font-light text-white/70 tracking-wide leading-relaxed">
+              Design com propósito comercial e infraestrutura tecnológica integrada para máxima performance.
+            </p>
+          </div>
         </div>
       </div>
 

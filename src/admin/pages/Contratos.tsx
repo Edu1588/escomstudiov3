@@ -1,10 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Header } from "../components/Header";
-import { Search, Plus, Clock } from "lucide-react";
+import { Search, Plus, Clock, FileText, CheckCircle, XCircle } from "lucide-react";
 
 export default function Contratos() {
   const [activeTab, setActiveTab] = useState("TUDO");
-  const tabs = ["TUDO", "PENDENTES", "ATIVOS", "FINALIZADOS"];
+  const tabs = ["TUDO", "ATIVOS", "FINALIZADOS", "ENCERRADOS"];
+  
+  const [contracts, setContracts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchContracts();
+  }, []);
+
+  const fetchContracts = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/contracts");
+      if (res.ok) {
+        const data = await res.json();
+        setContracts(data.contracts || []);
+      }
+    } catch (e) {
+      console.error("Failed to fetch contracts", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateStatus = async (id: string, newStatus: string) => {
+    try {
+      const res = await fetch(`/api/contracts/${id}/status`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (res.ok) {
+        fetchContracts();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const filteredContracts = contracts.filter(c => {
+    if (activeTab === "TUDO") return true;
+    if (activeTab === "ATIVOS") return c.status === "ATIVO";
+    if (activeTab === "FINALIZADOS") return c.status === "FINALIZADO";
+    if (activeTab === "ENCERRADOS") return c.status === "ENCERRADO";
+    return true;
+  });
 
   return (
     <div className="flex-1 overflow-y-auto w-full">
@@ -53,21 +98,72 @@ export default function Contratos() {
               <tr className="text-[10px] text-gray-500 font-mono tracking-widest text-left border-b border-[#1a1a1a]">
                 <th className="px-6 py-4 font-medium">CLIENTE/EMPRESA</th>
                 <th className="px-6 py-4 font-medium">VALOR PROJETO</th>
-                <th className="px-6 py-4 font-medium">DATA INÍCIO / PRAZO</th>
+                <th className="px-6 py-4 font-medium">DATA ACEITE</th>
                 <th className="px-6 py-4 font-medium text-center">STATUS</th>
                 <th className="px-6 py-4 font-medium text-right">AÇÕES</th>
               </tr>
             </thead>
             <tbody>
-              {/* Empty state handles rendering */}
+              {!loading && filteredContracts.map(c => (
+                <tr key={c.id} className="border-b border-[#1a1a1a] hover:bg-[#111] transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="font-bold">{c.company}</div>
+                    <div className="text-xs text-gray-500">{c.clientName}</div>
+                  </td>
+                  <td className="px-6 py-4 font-mono text-[#2EFF00]">
+                    {c.budget?.includes('R$') ? c.budget : `R$ ${c.budget}`}
+                  </td>
+                  <td className="px-6 py-4 text-gray-400">
+                    {new Date(c.createdAt?.seconds ? c.createdAt.seconds * 1000 : c.createdAt).toLocaleDateString('pt-BR')}
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <span className={`px-2 py-1 rounded text-[10px] font-bold ${
+                      c.status === 'ATIVO' ? 'bg-[#2EFF00]/10 text-[#2EFF00]' :
+                      c.status === 'FINALIZADO' ? 'bg-blue-500/10 text-blue-500' :
+                      'bg-red-500/10 text-red-500'
+                    }`}>
+                      {c.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                       {c.status !== 'ATIVO' && (
+                         <button onClick={() => updateStatus(c.id, 'ATIVO')} title="Marcar como Ativo" className="p-1.5 hover:bg-[#333] rounded text-gray-400 hover:text-white transition-colors">
+                           <Clock size={16} />
+                         </button>
+                       )}
+                       {c.status !== 'FINALIZADO' && (
+                         <button onClick={() => updateStatus(c.id, 'FINALIZADO')} title="Marcar como Finalizado" className="p-1.5 hover:bg-[#333] rounded text-gray-400 hover:text-[#2EFF00] transition-colors">
+                           <CheckCircle size={16} />
+                         </button>
+                       )}
+                       {c.status !== 'ENCERRADO' && (
+                         <button onClick={() => updateStatus(c.id, 'ENCERRADO')} title="Encerrar" className="p-1.5 hover:bg-[#333] rounded text-gray-400 hover:text-red-500 transition-colors">
+                           <XCircle size={16} />
+                         </button>
+                       )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
-          <div className="py-24 flex flex-col items-center justify-center text-gray-500">
-            <Clock size={32} className="mb-4 opacity-30" />
-            <p className="text-xs font-mono tracking-widest uppercase">Carregando contratos...</p>
-          </div>
-        </div>
+          
+          {loading && (
+            <div className="py-24 flex flex-col items-center justify-center text-gray-500">
+              <Clock size={32} className="mb-4 opacity-30 animate-spin" />
+              <p className="text-xs font-mono tracking-widest uppercase">Carregando contratos...</p>
+            </div>
+          )}
 
+          {!loading && filteredContracts.length === 0 && (
+            <div className="py-24 flex flex-col items-center justify-center text-gray-500">
+              <FileText size={32} className="mb-4 opacity-30" />
+              <p className="text-xs font-mono tracking-widest uppercase">Nenhum contrato encontrado.</p>
+            </div>
+          )}
+
+        </div>
       </div>
     </div>
   );

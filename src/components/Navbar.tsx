@@ -16,7 +16,7 @@ export default function Navbar() {
         
         <div className="hidden md:flex items-center gap-8 text-[11px] font-mono tracking-widest text-white/60">
           {["Início", "Sobre", "Serviços", "Portfólio", "Posicionamento"].map((item) => (
-            <a key={item} href={`#${item.toLowerCase()}`} className="hover:text-primary transition-colors">
+            <a key={item} href={item === "Sobre" ? "/sobre" : `/#${item.toLowerCase()}`} className="hover:text-primary transition-colors">
               {item}
             </a>
           ))}

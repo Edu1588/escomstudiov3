@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
-import { Brain, Zap } from "lucide-react";
+import { Brain } from "lucide-react";
+import AnimatedZap from "./AnimatedZap";
 
 export default function DataDrivenProjects() {
   return (
@@ -44,7 +45,7 @@ export default function DataDrivenProjects() {
           >
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#00e300]/5 blur-[80px] rounded-full group-hover:bg-[#00e300]/10 transition-colors pointer-events-none" />
             <div className="w-16 h-16 mb-8 text-[#00e300] opacity-80 group-hover:opacity-100 transition-opacity">
-              <Zap size={48} strokeWidth={2} />
+              <AnimatedZap />
             </div>
             <h3 className="text-2xl font-black font-tech text-white mb-6 leading-tight">
               Performance & <br /> SEO Técnico

@@ -15,7 +15,10 @@ export default defineConfig(({mode}) => {
         input: {
           main: path.resolve(__dirname, 'index.html'),
           portfolioedu: path.resolve(__dirname, 'portfolioedu/index.html'),
+          portfolioprojetos: path.resolve(__dirname, 'portfolio-projetos/index.html'),
           admin: path.resolve(__dirname, 'admin/index.html'),
+          sobre: path.resolve(__dirname, 'sobre/index.html'),
+          baseproposta: path.resolve(__dirname, 'baseproposta/index.html'),
         },
       },
     },

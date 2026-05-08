@@ -74,9 +74,9 @@ export default function PortfolioGrid() {
         </div>
 
         <div className="mt-40 flex justify-center">
-           <button className="bg-primary text-black px-16 py-6 rounded-none font-black uppercase tracking-[0.4em] text-[11px] hover:shadow-[0_0_50px_rgba(0,255,0,0.25)] transition-all flex items-center gap-6 group hover:translate-y-[-4px]">
-             VER WORK COMPLETO_ <ArrowUpRight size={20} strokeWidth={3} />
-           </button>
+           <a href="/portfolio-projetos/" className="bg-primary text-black px-16 py-6 rounded-none font-black uppercase tracking-[0.4em] text-[11px] hover:shadow-[0_0_50px_rgba(0,255,0,0.25)] transition-all flex items-center gap-6 group hover:translate-y-[-4px]">
+             VER WORK COMPLETO_ <ArrowUpRight size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" strokeWidth={3} />
+           </a>
         </div>
       </div>
     </section>

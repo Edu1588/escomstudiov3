@@ -52,10 +52,15 @@ export default function Paginas() {
                   </div>
                 </div>
 
-                <button className="w-full mt-auto bg-[#1a1a1a] hover:bg-[#222] border border-[#333] text-white py-2.5 flex items-center justify-center gap-2 rounded-lg text-sm font-medium transition-colors">
+                <a 
+                  href={pagina.path} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="w-full mt-auto bg-[#1a1a1a] hover:bg-[#222] border border-[#333] text-white py-2.5 flex items-center justify-center gap-2 rounded-lg text-sm font-medium transition-colors"
+                >
                   <ArrowUpRight size={16} />
                   Abrir Página
-                </button>
+                </a>
               </div>
             ))}
           </div>

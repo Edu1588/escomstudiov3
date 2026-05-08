@@ -3,15 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESCOM Studio — Web Design & Automação Digital</title>
-    <meta name="description" content="Estúdio de web design e automação digital. Criamos experiências imersivas e sistemas inteligentes que escalam negócios.">
+    <title>ESCOM Studio — Web Design Estratégico & Automação Inteligente</title>
+    <meta name="description" content="Aumente seu faturamento com sites de alta conversão, design premium e automações inteligentes. Especialistas em UX Engineering e Performance.">
+    <meta name="keywords" content="web design, automação, desenvolvimento web, ux engineering, performance, sites corporativos, estratégias digitais, ESCOM Studio">
+    <link rel="canonical" href="https://escomstudio.com/">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://escomstudio.com/">
+    <meta property="og:title" content="ESCOM Studio — Web Design Estratégico & Automação Inteligente">
+    <meta property="og:description" content="Aumente seu faturamento com sites de alta conversão, design premium e automações inteligentes.">
+    <meta property="og:image" content="https://escomstudio.com/THUMB_ESCOM.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://escomstudio.com/">
+    <meta property="twitter:title" content="ESCOM Studio — Web Design Estratégico & Automação Inteligente">
+    <meta property="twitter:description" content="Aumente seu faturamento com sites de alta conversão, design premium e automações inteligentes.">
+    <meta property="twitter:image" content="https://escomstudio.com/THUMB_ESCOM.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.9); } }
         :root {
-            --black: #080808;
-            --black-bg: #0a0a0a;
+            --black: #000000;
+            --black-bg: #000000;
             --neon: #2EFF00; 
             --neon-dim: rgba(46, 255, 0, 0.15);
             --neon-glow: rgba(46, 255, 0, 0.5);
@@ -67,27 +86,30 @@
         #servicos > .split-layout { max-width: 1600px; margin: 0 auto; padding: 0 4rem; }
         #servicos #servicos-react-root .cards-grid { max-width: 1600px; margin: 4rem auto 0; padding: 0 4rem; border-top: 1px solid rgba(0,0,0,0.1); border-left: 1px solid rgba(0,0,0,0.1); }
 
-        .header { position: fixed; top: 0; left: 0; width: 100%; z-index: 100; background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color); transition: var(--transition); }
+        .header { position: fixed; top: 0; left: 0; width: 100%; z-index: 100; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(255,255,255,0.05); transition: var(--transition); }
         .nav-container { display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; height: 70px; }
         .logo { font-family: var(--font-sans); font-size: 1.1rem; text-decoration: none; display: flex; align-items: center; gap: 6px; }
         .logo-arrow { font-family: var(--font-mono); color: var(--neon); font-weight: bold; }
         .logo-bold { color: var(--white); font-weight: 700; }
-        .logo-light { color: var(--gray-light); font-weight: 400; }
+        .logo-light { color: var(--white); font-weight: 400; }
         .nav-links { display: flex; gap: 2rem; list-style: none; }
-        .nav-links a { color: var(--gray-light); text-decoration: none; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; transition: var(--transition); }
-        .nav-links a:hover { color: var(--white); }
+        .nav-links a { color: var(--white); text-decoration: none; font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; transition: var(--transition); }
+        .nav-links a:hover { color: var(--neon); }
         .nav-right { display: flex; align-items: center; height: 100%; gap: 1.5rem; }
-        .lang-switch { display: flex; border: 1px solid var(--gray-dark); font-family: var(--font-mono); font-size: 0.75rem; height: 36px; }
-        .lang-switch a { color: var(--gray-mid); text-decoration: none; transition: var(--transition); height: 100%; display: flex; align-items: center; padding: 0 14px; }
-        .lang-switch a.active { background: var(--neon); color: var(--black); font-weight: 600; }
-        .lang-switch a:hover:not(.active) { color: var(--white); }
-        .btn-solid { background: var(--neon); color: var(--black); font-family: var(--font-mono); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; text-decoration: none; padding: 0 2rem; height: 100%; display: flex; align-items: center; justify-content: center; letter-spacing: 1px; transition: var(--transition); border: none; cursor: none; }
-        .btn-solid:hover { background: var(--white); }
+        .lang-switch { display: flex; border: 1px solid rgba(255,255,255,0.3); font-family: var(--font-mono); font-size: 0.75rem; height: 36px; }
+        .lang-switch a { color: var(--white); text-decoration: none; transition: var(--transition); height: 100%; display: flex; align-items: center; padding: 0 14px; background: transparent; }
+        .lang-switch a.active { color: var(--neon); font-weight: 600; }
+        .lang-switch a:hover { background: var(--neon) !important; color: var(--black) !important; }
+        .btn-solid { background: transparent; color: var(--white); border: 1px solid rgba(255,255,255,0.2); font-family: var(--font-mono); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; text-decoration: none; padding: 0 2rem; height: 100%; display: flex; align-items: center; justify-content: center; letter-spacing: 1px; transition: var(--transition); cursor: none; }
+        .btn-solid:hover { background: var(--neon); color: var(--black); border-color: var(--neon); }
         .header .btn-solid { height: 36px; padding: 0 1.5rem; }
-        .btn-outline { background: transparent; color: var(--neon); border: 1px solid var(--neon); font-family: var(--font-mono); font-size: 0.8rem; text-transform: uppercase; text-decoration: none; padding: 1rem 2rem; display: inline-flex; align-items: center; gap: 10px; letter-spacing: 1px; transition: var(--transition); cursor: none; }
-        .btn-outline:hover { background: rgba(57, 255, 20, 0.1); color: var(--neon); }
-        .status-bar { display: flex; justify-content: space-between; padding: 0.8rem 4rem; border-bottom: 1px solid var(--border-color); font-family: var(--font-mono); font-size: 0.7rem; color: var(--gray-mid); letter-spacing: 1px; margin-top: 70px; }
-        .status-left span, .status-right span { margin-right: 1.5rem; }
+        .btn-outline { background: transparent; color: var(--white); border: 1px solid rgba(255,255,255,0.2); font-family: var(--font-mono); font-size: 0.8rem; text-transform: uppercase; text-decoration: none; padding: 1rem 2rem; display: inline-flex; align-items: center; justify-content: center; gap: 10px; letter-spacing: 1px; transition: var(--transition); cursor: none; }
+        .btn-outline:hover { background: var(--neon); color: var(--black); border-color: var(--neon); }
+        /* Status Bar */
+        .status-bar { position: absolute; top: 70px; left: 0; width: 100%; z-index: 50; display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 4rem; border-bottom: 1px solid rgba(255,255,255,0.05); font-family: var(--font-mono); font-size: 0.7rem; color: var(--white); letter-spacing: 1px; flex-wrap: wrap; gap: 1rem; }
+        .status-left, .status-right { display: flex; align-items: center; flex-wrap: wrap; }
+        .status-left { gap: 1.5rem; }
+        .status-left > span, .status-right > span { display: inline-flex; align-items: center; white-space: nowrap; }
         .status-left .online-dot, .status-left .green-text { color: var(--neon); }
         .status-left .online-dot { margin-right: 5px; }
         .system-tag { font-family: var(--font-mono); font-size: 0.8rem; color: var(--neon); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2rem; display: flex; align-items: center; gap: 10px; }
@@ -101,8 +123,20 @@
         .split-layout { display: flex; justify-content: space-between; gap: 4rem; align-items: flex-start; }
         .split-left { flex: 1; max-width: 700px; }
         .split-right { flex: 1; max-width: 600px; }
-        .hero { padding-top: 6rem; padding-bottom: 8rem; min-height: auto; border-bottom: none; }
-        .hero-actions { display: flex; gap: 1.5rem; margin-top: 3rem; }
+        /* Hero Settings */
+        .hero { padding: 4rem; padding-top: 140px; padding-bottom: 1rem; min-height: 100vh; max-width: 100% !important; border-bottom: none; display: flex; align-items: flex-end; justify-content: space-between; position: relative; margin: 0; background-color: var(--black-bg); border-radius: 0; overflow: hidden; }
+        .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: 0.9; }
+        .hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, #000000 0%, #000000 5%, rgba(0,0,0,0.6) 30%, transparent 100%); z-index: 1; pointer-events: none; }
+        .hero-content-wrapper { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; width: 100%; gap: 4rem; max-width: 1600px; margin: 10vh auto 0; }
+        .hero-left { flex: 1; max-width: 600px; }
+        .hero-right { flex: 1; max-width: 400px; display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+        .hero-title { font-family: 'Space Grotesk', serif; font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 300; line-height: 1.2; margin: 0; color: #fff; letter-spacing: -0.5px; text-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .hero-title span { color: #fff !important; }
+        .hero-title .text-gray { color: #fff !important; }
+        .hero-title .highlight { color: #fff !important; font-weight: 400; }
+        .hero-subtitle { font-family: var(--font-sans); font-size: 1rem; color: #f5f5f5; line-height: 1.6; margin-bottom: 2.5rem; max-width: 90%; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+        .hero-btn { background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.7); color: white; padding: 14px 40px; border-radius: 40px; text-decoration: none; font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; transition: all 0.3s ease; cursor: pointer; letter-spacing: 1px; }
+        .hero-btn:hover { background: var(--neon); color: var(--black); border-color: var(--neon); box-shadow: 0 0 20px rgba(46, 255, 0, 0.4); }
         .manifesto-text { font-size: 1.2rem; color: var(--gray-light); max-width: 800px; line-height: 1.8; margin-top: 2rem; }
         .cards-grid, .science-grid, .test-grid { border-top: 1px solid var(--border-color); border-left: 1px solid var(--border-color); margin-top: 4rem; }
         .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
@@ -112,8 +146,8 @@
         .card-item:hover { background: rgba(255,255,255,0.02); }
         .card-header { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: 0.7rem; color: var(--gray-mid); margin-bottom: 3rem; letter-spacing: 2px; }
         .card-header .line { width: 30px; height: 1px; background: var(--gray-dark); }
-        .card-icon { font-size: 1.5rem; color: var(--neon); margin-bottom: 1.5rem; }
-        .card-icon svg { width: 24px; height: 24px; fill: none; stroke: var(--neon); stroke-width: 2; }
+        .card-icon { font-size: 2rem; color: var(--neon); margin-bottom: 1.5rem; }
+        .card-icon svg { width: 32px; height: 32px; fill: none; stroke: var(--neon); stroke-width: 2; }
         .card-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; letter-spacing: -0.5px; }
         .card-desc { color: var(--gray-mid); font-size: 0.95rem; line-height: 1.6; }
         .projects-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4rem; }
@@ -161,10 +195,22 @@
         .cost-list { list-style: none; }
         .cost-item { display: flex; justify-content: space-between; padding: 1.5rem 0; border-bottom: 1px solid var(--border-color); color: var(--gray-light); font-size: 0.95rem; }
         .cost-total { display: flex; justify-content: space-between; padding: 2rem 0; font-family: var(--font-mono); font-size: 0.9rem; letter-spacing: 1px; color: var(--gray-mid); }
-        .cost-total-value { color: #ff3333; font-size: 1.1rem; }
-        .green-check-list li { position: relative; padding-left: 2rem; margin-bottom: 1.5rem; color: var(--white); font-size: 0.95rem; }
-        .green-check-list li::before { content: '✓'; position: absolute; left: 0; color: var(--neon); font-family: var(--font-mono); }
+        .cost-total-value { color: #ff3333; font-size: 1.1rem; position: relative; display: inline-block; }
+        .cost-total-value::after { content: ''; position: absolute; left: -5%; top: 50%; width: 110%; height: 2px; background-color: #ff3333; transform-origin: left; animation: strikeThrough 0.8s ease-in-out infinite alternate; }
+        @keyframes strikeThrough { 0%, 20% { transform: scaleX(0); } 80%, 100% { transform: scaleX(1); } }
+        .green-check-list li { position: relative; padding-left: 0; margin-bottom: 1.5rem; color: var(--white); font-size: 0.95rem; display: flex; align-items: flex-start; gap: 12px; }
+        .green-check-list li::before { content: none !important; }
         .cost-footer-note { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-color); }
+        .cost-side.green { background: radial-gradient(circle at top right, rgba(46,255,0,0.05), transparent 50%), var(--black-bg); position: relative; overflow: hidden; border: 1px solid rgba(46,255,0,0.2); border-left: none; }
+        .cost-side.green .flow-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .cost-side.green .flow-line-top { position: absolute; top: 0; left: -100%; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--neon)); animation: flowTop 2s linear infinite; }
+        .cost-side.green .flow-line-right { position: absolute; top: -100%; right: 0; width: 2px; height: 100%; background: linear-gradient(180deg, transparent, var(--neon)); animation: flowRight 2s linear infinite 0.5s; }
+        .cost-side.green .flow-line-bottom { position: absolute; bottom: 0; right: -100%; width: 100%; height: 2px; background: linear-gradient(270deg, transparent, var(--neon)); animation: flowBottom 2s linear infinite 1s; }
+        .cost-side.green .flow-line-left { position: absolute; bottom: -100%; left: 0; width: 2px; height: 100%; background: linear-gradient(360deg, transparent, var(--neon)); animation: flowLeft 2s linear infinite 1.5s; }
+        @keyframes flowTop { 100% { left: 100%; } }
+        @keyframes flowRight { 100% { top: 100%; } }
+        @keyframes flowBottom { 100% { right: 100%; } }
+        @keyframes flowLeft { 100% { bottom: 100%; } }
         .test-card { padding: 4rem 3rem; border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between; }
         .test-num { font-family: var(--font-mono); font-size: 0.7rem; color: var(--neon); letter-spacing: 2px; margin-bottom: 2rem; }
         .test-quote { font-size: 1.1rem; line-height: 1.6; margin-bottom: 3rem; font-weight: 400; }
@@ -208,7 +254,7 @@
         }
         .back-to-top:hover {
             border-color: var(--neon);
-            box-shadow: 0 0 15px var(--neon-dim);
+            color: var(--neon);
             background: var(--gray-dark);
         }
         .back-to-top span {
@@ -219,8 +265,9 @@
 
         .contact-info-list { display: flex; flex-direction: column; gap: 2rem; margin-top: 3rem; }
         .c-info-item { display: flex; align-items: center; gap: 1.5rem; }
-        .c-icon-box { width: 50px; height: 50px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--neon); background: var(--black-bg); transition: var(--transition); }
-        .c-info-item:hover .c-icon-box { border-color: var(--neon); box-shadow: 0 0 15px var(--neon-dim); }
+        .c-icon-box { width: 64px; height: 64px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--neon); background: var(--black-bg); transition: var(--transition); }
+        .c-icon-box svg { width: 32px; height: 32px; }
+        .c-info-item:hover .c-icon-box { border-color: var(--neon); color: var(--neon); }
         .c-text-label { font-family: var(--font-mono); font-size: 0.7rem; color: var(--gray-mid); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.3rem; }
         .c-text-value { font-size: 1.1rem; color: var(--white); }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; padding: 2rem; }
@@ -248,34 +295,57 @@
         .footer-bottom-links { display: flex; gap: 2rem; }
         .footer-bottom-links a { color: var(--gray-mid); text-decoration: none; transition: var(--transition); }
         .footer-bottom-links a:hover { color: var(--neon); }
+        /* Modal base styles */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); z-index: 999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content { background: var(--black-bg); border: 1px solid rgba(255,255,255,0.1); width: 90%; max-width: 500px; padding: 3rem; border-radius: 20px; position: relative; transform: translateY(20px); transition: transform 0.3s ease; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .modal-close { position: absolute; top: 1.5rem; right: 1.5rem; background: transparent; border: none; color: var(--gray-mid); font-size: 1.5rem; cursor: pointer; transition: color 0.3s ease; }
+        .modal-close:hover { color: var(--neon); }
+        .modal-title { font-family: 'Space Grotesk', serif; font-size: 2rem; margin-bottom: 0.5rem; color: var(--white); }
+        .modal-desc { color: var(--gray-light); margin-bottom: 2rem; }
+
         @media (max-width: 1024px) {
             .cards-grid, .science-grid, .test-grid { grid-template-columns: repeat(2, 1fr); }
             .split-layout { flex-direction: column; gap: 3rem; }
             .split-left, .split-right { max-width: 100%; }
             .cost-comparison { grid-template-columns: 1fr; }
             .cost-side.red { border-right: 1px solid var(--border-color); border-bottom: none; }
+            
+            #posicionamento .split-left { position: relative !important; top: auto !important; margin-bottom: 2rem; }
+            #posicionamento .split-right { min-height: auto !important; padding-bottom: 0 !important; }
+            #posicionamento .stacked-card { position: relative !important; top: auto !important; margin-top: 1rem !important; }
         }
         @media (max-width: 768px) {
             section { padding: 5rem 2rem; }
+            #servicos { margin-top: 4rem; }
+            .section-title { font-size: 2.2rem; line-height: 1.1; }
+            .section-title.large { font-size: 3.5rem; }
             .cards-grid, .science-grid, .test-grid { grid-template-columns: 1fr; }
             .project-row { grid-template-columns: 50px 1fr 50px; }
+            .projects-header { flex-direction: column; align-items: flex-start; gap: 2rem; }
             .proj-cat, .proj-year { display: none; }
             .dash-grid { grid-template-columns: 1fr 1fr; }
             .header { display: none; }
             .status-bar { display: none; }
             .hero { padding-top: 4rem; }
+            .hero-actions { flex-direction: column; }
             .form-grid { grid-template-columns: 1fr; }
             .marquee-content { font-size: 4rem; }
             .footer-columns { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 2rem; }
             .footer-bottom { flex-direction: column; gap: 1rem; align-items: center; padding: 2rem; text-align: center; }
         }
+        
+        body { transition: filter 0.3s ease; }
+        body.lang-blur { filter: blur(8px); }
+
         .scramble-wrapper { position: relative; display: inline-flex; align-items: center; padding: 0.2rem 0.5rem; margin-left: 0.3rem; cursor: none; }
         .scramble-wrapper .corner-frame-bg { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.3s ease, background-size 0.3s ease; background-image: linear-gradient(to right, var(--neon) 1.5px, transparent 1.5px), linear-gradient(to right, var(--neon) 1.5px, transparent 1.5px), linear-gradient(to left, var(--neon) 1.5px, transparent 1.5px), linear-gradient(to left, var(--neon) 1.5px, transparent 1.5px), linear-gradient(to bottom, var(--neon) 1.5px, transparent 1.5px), linear-gradient(to bottom, var(--neon) 1.5px, transparent 1.5px), linear-gradient(to top, var(--neon) 1.5px, transparent 1.5px), linear-gradient(to top, var(--neon) 1.5px, transparent 1.5px); background-size: 0px 0px; background-repeat: no-repeat; background-position: 0 0, 0 100%, 100% 0, 100% 100%, 0 0, 100% 0, 0 100%, 100% 100%; z-index: 0; }
         .scramble-wrapper:hover .corner-frame-bg { opacity: 1; background-size: 8px 8px; }
         .scramble-wrapper .scramble-txt { position: relative; z-index: 1; }
-        .text-rotate-wrap { display: inline-flex; flex-wrap: wrap; line-height: inherit; }
+        .text-rotate-wrap { display: inline-flex; flex-wrap: wrap; line-height: inherit; column-gap: 0.25em; row-gap: 0.1em; }
         .text-rotate-word { display: inline-flex; overflow: hidden; }
-        .text-rotate-inner { display: inline-block; transform: translateY(120%); opacity: 0; transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease; white-space: pre; }
+        .text-rotate-inner { display: inline-block; transform: translateY(120%); opacity: 0; transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease; white-space: normal; }
         .text-rotate-wrap.in-view .text-rotate-inner { transform: translateY(0); opacity: 1; }
 
         @keyframes flowDown {
@@ -343,7 +413,8 @@
         </div>
     </div>
     <div id="viewCursor">View</div>
-    <button id="backToTop" class="back-to-top"><span>▲</span></button>
+    
+    <div id="backtotop-root"></div>
 
     <div class="main-wrapper">
         <!-- Header -->
@@ -356,7 +427,7 @@
                 </a>
                 <ul class="nav-links">
                     <li><a href="#inicio" data-i18n="nav_inicio">Início</a></li>
-                    <li><a href="#sobre" data-i18n="nav_sobre">Sobre</a></li>
+                    <li><a href="/sobre" data-i18n="nav_sobre">Sobre</a></li>
                     <li><a href="#servicos" data-i18n="nav_servicos">Serviços</a></li>
                     <li><a href="#portfolio" data-i18n="nav_portfolio">Portfólio</a></li>
                     <li><a href="#posicionamento" data-i18n="nav_posicionamento">Posicionamento</a></li>
@@ -367,7 +438,7 @@
                         <a href="#en" class="lang-btn" data-lang="en">EN</a>
                         <a href="#es" class="lang-btn" data-lang="es">ES</a>
                     </div>
-                    <a href="#contato" class="btn-solid" data-i18n="btn_fale">Fale Conosco</a>
+                    <button type="button" class="btn-solid open-modal-btn" data-i18n="btn_fale">Fale Conosco</button>
                 </div>
             </div>
         </header>
@@ -375,10 +446,14 @@
         <!-- Status Bar -->
         <div class="status-bar">
             <div class="status-left">
-                <span><span class="online-dot">●</span> ONLINE</span> |
-                <span>STATUS: <span class="green-text">OFF-GRID</span></span> |
-                <span class="green-text" id="liveTime">14:44:10:77</span> |
-                <span>☼ SOL PLENO</span>
+                <span><span class="online-dot">●</span> ONLINE</span>
+                <span style="color: var(--gray-dark);">|</span>
+                <span>STATUS: <span class="green-text" style="margin-left: 0.5rem;">OFF-GRID</span></span>
+                <span style="color: var(--gray-dark);">|</span>
+                <span style="display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap;">
+                    <span class="green-text" id="liveTime">14:44:10:77</span>
+                    <span id="climateCondition" style="color: inherit; margin-left: 6px; display: inline-flex; align-items: center; gap: 4px;">☼ SOL PLENO</span>
+                </span>
             </div>
             <div class="status-right">
                 <span>SP / BR • 23.55° S</span>
@@ -387,12 +462,19 @@
 
         <!-- Hero Section -->
         <section id="inicio" class="hero">
-            <div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ INIT_SYSTEM ]</div>
-            <h1 class="section-title large" data-i18n="hero_title">NÃO CRIAMOS APENAS<br>SITES.<br><span class="text-gray">CRIAMOS</span> <span class="highlight">EXPERIÊNCIAS<br>COMPLETAS.</span></h1>
-            <p class="subtitle" data-i18n="hero_sub">Projetos digitais que unem design, automação e infraestrutura inteligente para reduzir custos e otimizar processos.</p>
-            <div class="hero-actions">
-                <a href="#contato" class="btn-solid" style="padding: 1rem 2rem;" data-i18n="btn_iniciar">INICIAR PROJETO →</a>
-                <a href="#portfolio" class="btn-outline" data-i18n="btn_ver">VER PROJETOS</a>
+            <video class="hero-video" autoplay loop muted playsinline>
+                <source src="https://eionstudio.com.br/wp-content/uploads/2026/05/ROBOZITO_HERO.mp4" type="video/mp4">
+            </video>
+            <div id="hero-bg-root" style="display: none;"></div>
+            <div class="hero-content-wrapper">
+                <div class="hero-left">
+                    <h1 class="hero-title" data-i18n="hero_title">Não criamos apenas<br>sites.<br><span class="text-gray" style="font-weight: 300;">Criamos</span> <span class="highlight" style="font-weight: 400;">experiências<br>completas.</span></h1>
+                </div>
+                
+                <div class="hero-right">
+                    <p class="hero-subtitle" data-i18n="hero_sub">Projetos digitais que unem design, automação e infraestrutura inteligente para reduzir custos e otimizar processos.</p>
+                    <button type="button" class="hero-btn open-modal-btn" data-i18n="btn_iniciar">INICIAR PROJETO</button>
+                </div>
             </div>
         </section>
 
@@ -467,8 +549,8 @@
                     <div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ MANIFESTO ]</div>
                 </div>
                 <div class="split-right">
-                    <h2 class="section-title animate-text-rotate" style="font-size: 2.2rem; letter-spacing: -1px; margin-bottom: 1rem;">Um site não deve ser apenas uma vitrine.<br><span class="text-gray">Deve funcionar como uma ferramenta.</span></h2>
-                    <p class="manifesto-text animate-text-rotate">Cada projeto é estruturado para operar como parte do negócio — combinando experiência, automação e inteligência de dados em um único sistema.</p>
+                    <h2 class="section-title animate-text-rotate" style="font-size: 2.2rem; letter-spacing: -1px; margin-bottom: 1rem;" data-i18n="manifesto_title">Um site não deve ser apenas uma vitrine.<br><span class="text-gray">Deve funcionar como uma ferramenta.</span></h2>
+                    <p class="manifesto-text animate-text-rotate" data-i18n="manifesto_sub">Cada projeto é estruturado para operar como parte do negócio — combinando experiência, automação e inteligência de dados em um único sistema.</p>
                 </div>
             </div>
         </section>
@@ -483,10 +565,10 @@
             <div class="projects-header">
                 <div>
                     <div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ INDEX_01 ]</div>
-                    <h2 class="section-title" style="margin-bottom: 1rem; mix-blend-mode: difference; color: #fff;">Projetos selecionados</h2>
-                    <p class="subtitle" style="margin-bottom: 0;">Cada projeto é desenvolvido como um sistema completo — unindo design, estratégia e tecnologia.</p>
+                    <h2 class="section-title" style="margin-bottom: 1rem; mix-blend-mode: difference; color: #fff;" data-i18n="projects_header_tit">Projetos selecionados</h2>
+                    <p class="subtitle" style="margin-bottom: 0;" data-i18n="projects_header_sub">Cada projeto é desenvolvido como um sistema completo — unindo design, estratégia e tecnologia.</p>
                 </div>
-                <a href="#" class="btn-outline">VER PROJETOS COMPLETOS ↗</a>
+                <a href="/portfolio-projetos/" class="btn-outline" data-i18n="btn_ver_projetos">VER PROJETOS COMPLETOS ↗</a>
             </div>
             <div class="project-list">
                 <a href="#" class="project-row" data-index="0"><span class="proj-num">01</span><h3 class="proj-title">UBAH DESIGN</h3><span class="proj-cat">BRAND & WEB</span><span class="proj-year">2025</span><span class="proj-arrow">↗</span></a>
@@ -501,17 +583,17 @@
             <div class="split-layout" style="align-items: flex-start;">
                 <div class="split-left" style="position: sticky; top: 15vh;">
                     <div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ EXPERIÊNCIA ]</div>
-                    <h2 class="section-title">O que você sente<br>é resultado.</h2>
-                    <p class="subtitle" style="margin-bottom: 2rem;">Cada interação foi projetada para criar fluência, autoridade e, acima de tudo, conversão real para o seu negócio.</p>
-                    <p style="font-size: 1.4rem; font-weight: 500;">Não basta ser bonito. <span class="highlight">Tem que vender.</span></p>
+                    <h2 class="section-title" data-i18n="exp_title">O que você sente<br>é resultado.</h2>
+                    <p class="subtitle" style="margin-bottom: 2rem;" data-i18n="exp_sub">Cada interação foi projetada para criar fluência, autoridade e, acima de tudo, conversão real para o seu negócio.</p>
+                    <p style="font-size: 1.4rem; font-weight: 500;" data-i18n="exp_highlight">Não basta ser bonito. <span class="highlight">Tem que vender.</span></p>
                 </div>
                 <div class="split-right" style="width: 100%; min-height: 150vh; padding-bottom: 30vh;">
                     <div class="json-panel" style="border: none; background: transparent;">
                         <div class="json-header stacked-card" style="top: 15vh; z-index: 10; border: 1px solid rgba(255, 255, 255, 0.2); background: black; color: white;">CORE_VALUES.JSON</div>
-                        <div class="json-item stacked-card" style="top: calc(15vh + 20px); z-index: 11; margin-top: 30vh; border: 1px solid rgba(255, 255, 255, 0.2); background: black;"><div class="json-title" style="color: white;"><span class="json-num" style="color: var(--neon); font-weight: bold;">01</span> Autoridade</div><div class="json-desc" style="color: var(--neon);">Design orientado à percepção de valor.</div></div>
-                        <div class="json-item stacked-card" style="top: calc(15vh + 40px); z-index: 12; margin-top: 30vh; border: 1px solid rgba(255, 255, 255, 0.2); background: black;"><div class="json-title" style="color: white;"><span class="json-num" style="color: var(--neon); font-weight: bold;">02</span> Estratégia</div><div class="json-desc" style="color: var(--neon);">Engenharia de conversão (CRO).</div></div>
-                        <div class="json-item stacked-card" style="top: calc(15vh + 60px); z-index: 13; margin-top: 30vh; border: 1px solid rgba(255, 255, 255, 0.2); background: black;"><div class="json-title" style="color: white;"><span class="json-num" style="color: var(--neon); font-weight: bold;">03</span> Tecnologia</div><div class="json-desc" style="color: var(--neon);">Infraestrutura inteligente.</div></div>
-                        <div class="json-item stacked-card" style="top: calc(15vh + 80px); z-index: 14; margin-top: 30vh; border: 1px solid rgba(255, 255, 255, 0.2); background: black;"><div class="json-title" style="color: white;"><span class="json-num" style="color: var(--neon); font-weight: bold;">04</span> Resultado Real</div><div class="json-desc" style="color: var(--neon);">Transformamos visitantes em clientes.</div></div>
+                        <div class="json-item stacked-card" style="top: calc(15vh + 20px); z-index: 11; margin-top: 30vh; border: 1px solid rgba(0,0,0,0.1); background: white;"><div class="json-title" style="color: black;"><span class="json-num" style="color: var(--gray-mid); font-weight: bold;">01</span> <span data-i18n="json_01_tit">Autoridade</span></div><div class="json-desc" style="color: #666;" data-i18n="json_01_desc">Design orientado à percepção de valor.</div></div>
+                        <div class="json-item stacked-card" style="top: calc(15vh + 40px); z-index: 12; margin-top: 30vh; border: 1px solid rgba(0,0,0,0.1); background: white;"><div class="json-title" style="color: black;"><span class="json-num" style="color: var(--gray-mid); font-weight: bold;">02</span> <span data-i18n="json_02_tit">Estratégia</span></div><div class="json-desc" style="color: #666;" data-i18n="json_02_desc">Engenharia de conversão (CRO).</div></div>
+                        <div class="json-item stacked-card" style="top: calc(15vh + 60px); z-index: 13; margin-top: 30vh; border: 1px solid rgba(0,0,0,0.1); background: white;"><div class="json-title" style="color: black;"><span class="json-num" style="color: var(--gray-mid); font-weight: bold;">03</span> <span data-i18n="json_03_tit">Tecnologia</span></div><div class="json-desc" style="color: #666;" data-i18n="json_03_desc">Infraestrutura inteligente.</div></div>
+                        <div class="json-item stacked-card" style="top: calc(15vh + 80px); z-index: 14; margin-top: 30vh; border: 1px solid var(--neon); background: var(--neon);"><div class="json-title" style="color: black;"><span class="json-num" style="color: rgba(0,0,0,0.5); font-weight: bold;">04</span> <span data-i18n="json_04_tit">Resultado Real</span></div><div class="json-desc" style="color: black;" data-i18n="json_04_desc">Transformamos visitantes em clientes.</div></div>
                     </div>
                 </div>
             </div>
@@ -527,8 +609,8 @@
             <div class="split-layout">
                 <div class="split-left">
                     <div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ INTEGRAÇÃO_TOTAL ]</div>
-                    <h2 class="section-title animate-text-rotate">O controle absoluto do seu negócio em <span class="highlight">um só lugar.</span></h2>
-                    <p class="subtitle animate-text-rotate">Esqueça dezenas de abas abertas. Integramos as principais métricas e ferramentas de gestão diretamente no seu sistema ESCOM.</p>
+                    <h2 class="section-title animate-text-rotate" data-i18n="ctrl_tit">O controle absoluto do seu negócio em <span class="highlight">um só lugar.</span></h2>
+                    <p class="subtitle animate-text-rotate" data-i18n="ctrl_sub">Esqueça dezenas de abas abertas. Integramos as principais métricas e ferramentas de gestão diretamente no seu sistema ESCOM.</p>
                 </div>
                 <div class="split-right" style="width: 100%;">
                     <div class="dashboard-mock">
@@ -553,32 +635,36 @@
 
         <!-- O custo invisível -->
         <section>
-            <h2 class="section-title animate-text-rotate">O custo invisível das ferramentas</h2>
-            <p class="subtitle animate-text-rotate" style="max-width: 800px;">A maioria das empresas não percebe que o maior custo não está na criação do site — mas na soma das assinaturas necessárias para fazê-lo funcionar.</p>
+            <h2 class="section-title animate-text-rotate" data-i18n="cost_tit">O custo invisível das ferramentas</h2>
+            <p class="subtitle animate-text-rotate" style="max-width: 800px;" data-i18n="cost_sub">A maioria das empresas não percebe que o maior custo não está na criação do site — mas na soma das assinaturas necessárias para fazê-lo funcionar.</p>
             <div class="cost-comparison">
                 <div class="cost-side red">
-                    <div class="cost-label">✕ MODELO COMUM</div>
-                    <h3 class="cost-title">Várias ferramentas. Vários custos.</h3>
+                    <div class="cost-label" data-i18n="cost_common">✕ MODELO COMUM</div>
+                    <h3 class="cost-title" data-i18n="cost_common_tit">Várias ferramentas. Vários custos.</h3>
                     <ul class="cost-list">
-                        <li class="cost-item"><span>Hotjar (Mapas de Calor)</span><span>$39 a $99/mês</span></li>
-                        <li class="cost-item"><span>Google Analytics</span><span>Enterprise</span></li>
-                        <li class="cost-item"><span>HubSpot (CRM)</span><span>$50 a $150/mês</span></li>
-                        <li class="cost-item"><span>ClickUp</span><span>$10 a $24/usuário</span></li>
-                        <li class="cost-item"><span>Zapier</span><span>$29 a $73/mês</span></li>
+                        <li class="cost-item"><span data-i18n="cost_c1">Hotjar (Mapas de Calor)</span><span>$39 a $99/mês</span></li>
+                        <li class="cost-item"><span data-i18n="cost_c2">Google Analytics</span><span>Enterprise</span></li>
+                        <li class="cost-item"><span data-i18n="cost_c3">HubSpot (CRM)</span><span>$50 a $150/mês</span></li>
+                        <li class="cost-item"><span data-i18n="cost_c4">ClickUp</span><span>$10 a $24/usuário</span></li>
+                        <li class="cost-item"><span data-i18n="cost_c5">Zapier</span><span>$29 a $73/mês</span></li>
                     </ul>
-                    <div class="cost-total"><span>CUSTO MÉDIO ANUAL</span><span class="cost-total-value">R$ 9.6k — 27.6k</span></div>
+                    <div class="cost-total"><span data-i18n="cost_annual">CUSTO MÉDIO ANUAL</span><span class="cost-total-value">R$ 9.6k — 27.6k</span></div>
                 </div>
                 <div class="cost-side green">
-                    <div class="cost-label">✓ MODELO ESCOM</div>
-                    <h3 class="cost-title">Um único sistema. Tudo conectado.</h3>
+                    <span class="flow-line-top"></span>
+                    <span class="flow-line-right"></span>
+                    <span class="flow-line-bottom"></span>
+                    <span class="flow-line-left"></span>
+                    <div class="cost-label">✓ <span data-i18n="cost_escom">MODELO ESCOM</span></div>
+                    <h3 class="cost-title" data-i18n="cost_escom_tit">Um único sistema. Tudo conectado.</h3>
                     <ul class="cost-list green-check-list">
-                        <li>Captura e gestão de leads — sem CRMs caros para o básico.</li>
-                        <li>Análise de comportamento centralizada.</li>
-                        <li>Estrutura de dados em um único banco.</li>
-                        <li>Automação de fluxos sem dependência de Zapier.</li>
-                        <li>Otimização contínua, pronta para escalar sem refazer o código.</li>
+                        <li><div class="lottie-check" style="width: 24px; height: 24px; margin-right: 8px;"></div> <span data-i18n="cost_e1">Captura e gestão de leads — sem CRMs caros para o básico.</span></li>
+                        <li><div class="lottie-check" style="width: 24px; height: 24px; margin-right: 8px;"></div> <span data-i18n="cost_e2">Análise de comportamento centralizada.</span></li>
+                        <li><div class="lottie-check" style="width: 24px; height: 24px; margin-right: 8px;"></div> <span data-i18n="cost_e3">Estrutura de dados em um único banco.</span></li>
+                        <li><div class="lottie-check" style="width: 24px; height: 24px; margin-right: 8px;"></div> <span data-i18n="cost_e4">Automação de fluxos sem dependência de Zapier.</span></li>
+                        <li><div class="lottie-check" style="width: 24px; height: 24px; margin-right: 8px;"></div> <span data-i18n="cost_e5">Otimização contínua, pronta para escalar sem refazer o código.</span></li>
                     </ul>
-                    <div class="cost-footer-note"><div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neon); letter-spacing: 2px; margin-bottom: 1rem;">● PRONTO PARA OPERAR</div><p style="color: var(--gray-light); font-size: 0.95rem;">Em vez de depender de várias ferramentas, você passa a possuir um único sistema estratégico que potencializa seu ROI.</p></div>
+                    <div class="cost-footer-note"><div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neon); letter-spacing: 2px; margin-bottom: 1rem;">● <span data-i18n="cost_enote_tit">PRONTO PARA OPERAR</span></div><p style="color: var(--gray-light); font-size: 0.95rem;" data-i18n="cost_enote_desc">Em vez de depender de várias ferramentas, você passa a possuir um único sistema estratégico que potencializa seu ROI.</p></div>
                 </div>
             </div>
         </section>
@@ -586,8 +672,8 @@
         <!-- ROI Reforçado -->
         <section>
             <div class="split-layout" style="align-items: center; margin-bottom: 2rem;">
-                <div class="split-left"><div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ ROI_REFORÇADO.EXE ]</div><h2 class="section-title animate-text-rotate" style="margin-bottom: 0;">O verdadeiro valor da<br>integração</h2></div>
-                <div class="split-right"><p class="manifesto-text animate-text-rotate" style="margin-top: 0;">Com um ecossistema centralizado, cada interação do usuário alimenta automaticamente o seu sistema de vendas, sem perda de dados.</p></div>
+                <div class="split-left"><div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ ROI_REFORÇADO.EXE ]</div><h2 class="section-title animate-text-rotate" style="margin-bottom: 0;" data-i18n="roi_tit">O verdadeiro valor da<br>integração</h2></div>
+                <div class="split-right"><p class="manifesto-text animate-text-rotate" style="margin-top: 0;" data-i18n="roi_sub">Com um ecossistema centralizado, cada interação do usuário alimenta automaticamente o seu sistema de vendas, sem perda de dados.</p></div>
             </div>
             <div id="valor-react-root"></div>
         </section>
@@ -595,26 +681,26 @@
         <!-- Testemunhos -->
         <section>
             <div class="split-layout" style="align-items: center; margin-bottom: 2rem;">
-                <div class="split-left"><div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ TESTEMUNHOS ]</div><h2 class="section-title animate-text-rotate" style="margin-bottom: 0;">O que dizem nossos<br>parceiros</h2></div>
-                <div class="split-right"><p class="manifesto-text animate-text-rotate" style="margin-top: 0;">O impacto de integrar design estratégico e engenharia de conversão.</p></div>
+                <div class="split-left"><div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ TESTEMUNHOS ]</div><h2 class="section-title animate-text-rotate" style="margin-bottom: 0;" data-i18n="test_tit">O que dizem nossos<br>parceiros</h2></div>
+                <div class="split-right"><p class="manifesto-text animate-text-rotate" style="margin-top: 0;" data-i18n="test_sub">O impacto de integrar design estratégico e engenharia de conversão.</p></div>
             </div>
             <div class="test-grid">
-                <div class="test-card"><div><div class="test-num">T/01</div><p class="test-quote">"A ESCOM transformou completamente nossa presença digital. O foco em conversão trouxe resultados imediatos."</p></div><div class="test-author"><div class="test-name">Ricardo Silva</div><div class="test-role">CEO, TECHFLOW</div></div></div>
-                <div class="test-card"><div><div class="test-num">T/02</div><p class="test-quote">"Design sofisticado aliado a uma estratégia de negócio impecável. Recomendo fortemente."</p></div><div class="test-author"><div class="test-name">Mariana Costa</div><div class="test-role">DIRETORA DE MARKETING, INNOVA</div></div></div>
-                <div class="test-card"><div><div class="test-num">T/03</div><p class="test-quote">"Trabalho de altíssimo nível. A infraestrutura integrada facilitou muito nossa operação."</p></div><div class="test-author"><div class="test-name">André Santos</div><div class="test-role">FOUNDER, STARTUPX</div></div></div>
+                <div class="test-card"><div><div class="test-num">T/01</div><p class="test-quote" data-i18n="test_1_quote">"A ESCOM transformou completamente nossa presença digital. O foco em conversão trouxe resultados imediatos."</p></div><div class="test-author"><div class="test-name">Ricardo Silva</div><div class="test-role">CEO, TECHFLOW</div></div></div>
+                <div class="test-card"><div><div class="test-num">T/02</div><p class="test-quote" data-i18n="test_2_quote">"Design sofisticado aliado a uma estratégia de negócio impecável. Recomendo fortemente."</p></div><div class="test-author"><div class="test-name">Mariana Costa</div><div class="test-role">DIRETORA DE MARKETING, INNOVA</div></div></div>
+                <div class="test-card"><div><div class="test-num">T/03</div><p class="test-quote" data-i18n="test_3_quote">"Trabalho de altíssimo nível. A infraestrutura integrada facilitou muito nossa operação."</p></div><div class="test-author"><div class="test-name">André Santos</div><div class="test-role">FOUNDER, STARTUPX</div></div></div>
             </div>
         </section>
 
         <!-- FAQ -->
         <section>
             <div class="split-layout">
-                <div class="split-left"><div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ FAQ ]</div><h2 class="section-title">Dúvidas Frequentes</h2><p class="subtitle">Tire suas dúvidas sobre nossos serviços.</p></div>
+                <div class="split-left"><div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ FAQ ]</div><h2 class="section-title" data-i18n="faq_tit">Dúvidas Frequentes</h2><p class="subtitle" data-i18n="faq_sub">Tire suas dúvidas sobre nossos serviços.</p></div>
                 <div class="split-right" style="width: 100%;">
                     <div class="faq-list">
-                        <div class="faq-item"><button class="faq-question" onclick="this.parentElement.classList.toggle('active')"><span class="faq-q-text"><span class="faq-num">01</span> Quanto custa um projeto?</span><span class="faq-icon">▼</span></button><div class="faq-answer">Cada projeto tem um escopo único. Nossos valores variam de acordo com a complexidade, as integrações necessárias e a escala do sistema. Entre em contato para um orçamento detalhado.</div></div>
-                        <div class="faq-item"><button class="faq-question" onclick="this.parentElement.classList.toggle('active')"><span class="faq-q-text"><span class="faq-num">02</span> Quanto tempo leva?</span><span class="faq-icon">▼</span></button><div class="faq-answer">O tempo de desenvolvimento padrão varia entre 4 a 8 semanas, dependendo da necessidade de infraestrutura, automações e revisões de design.</div></div>
-                        <div class="faq-item"><button class="faq-question" onclick="this.parentElement.classList.toggle('active')"><span class="faq-q-text"><span class="faq-num">03</span> Vocês trabalham com empresas internacionais?</span><span class="faq-icon">▼</span></button><div class="faq-answer">Sim, atendemos clientes globalmente. Desenvolvemos interfaces multi-idiomas e estruturamos pagamentos e integrações que operam em escala mundial.</div></div>
-                        <div class="faq-item"><button class="faq-question" onclick="this.parentElement.classList.toggle('active')"><span class="faq-q-text"><span class="faq-num">04</span> Vocês fazem manutenção ou apenas criação?</span><span class="faq-icon">▼</span></button><div class="faq-answer">Nosso foco é construir ecossistemas duradouros. Oferecemos planos de suporte contínuo, otimização de SEO e refinamento de conversão (CRO) após o lançamento.</div></div>
+                        <div class="faq-item"><button class="faq-question" onclick="this.parentElement.classList.toggle('active')"><span class="faq-q-text"><span class="faq-num">01</span> <span data-i18n="faq_1_q">Quanto custa um projeto?</span></span><span class="faq-icon">▼</span></button><div class="faq-answer" data-i18n="faq_1_a">Cada projeto tem um escopo único. Nossos valores variam de acordo com a complexidade, as integrações necessárias e a escala do sistema. Entre em contato para um orçamento detalhado.</div></div>
+                        <div class="faq-item"><button class="faq-question" onclick="this.parentElement.classList.toggle('active')"><span class="faq-q-text"><span class="faq-num">02</span> <span data-i18n="faq_2_q">Quanto tempo leva?</span></span><span class="faq-icon">▼</span></button><div class="faq-answer" data-i18n="faq_2_a">O tempo de desenvolvimento padrão varia entre 4 a 8 semanas, dependendo da necessidade de infraestrutura, automações e revisões de design.</div></div>
+                        <div class="faq-item"><button class="faq-question" onclick="this.parentElement.classList.toggle('active')"><span class="faq-q-text"><span class="faq-num">03</span> <span data-i18n="faq_3_q">Vocês trabalham com empresas internacionais?</span></span><span class="faq-icon">▼</span></button><div class="faq-answer" data-i18n="faq_3_a">Sim, atendemos clientes globalmente. Desenvolvemos interfaces multi-idiomas e estruturamos pagamentos e integrações que operam em escala mundial.</div></div>
+                        <div class="faq-item"><button class="faq-question" onclick="this.parentElement.classList.toggle('active')"><span class="faq-q-text"><span class="faq-num">04</span> <span data-i18n="faq_4_q">Vocês fazem manutenção ou apenas criação?</span></span><span class="faq-icon">▼</span></button><div class="faq-answer" data-i18n="faq_4_a">Nosso foco é construir ecossistemas duradouros. Oferecemos planos de suporte contínuo, otimização de SEO e refinamento de conversão (CRO) após o lançamento.</div></div>
                     </div>
                 </div>
             </div>
@@ -625,25 +711,25 @@
             <div class="split-layout">
                 <div class="split-left">
                     <div class="system-tag"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ CONTATO ]</div>
-                    <h2 class="section-title">Vamos criar algo <span class="highlight">incrível<br>juntos.</span></h2>
-                    <p class="subtitle">Entre em contato para discutir seu próximo projeto.</p>
+                    <h2 class="section-title" data-i18n="contato_tit">Vamos criar algo <span class="highlight">incrível<br>juntos.</span></h2>
+                    <p class="subtitle" data-i18n="contato_sub">Entre em contato para discutir seu próximo projeto.</p>
                     <div class="contact-info-list">
                         <div class="c-info-item"><div class="c-icon-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><div class="c-text-label">E-MAIL</div><a href="mailto:es.comunicacao@outlook.com" class="c-text-value" style="text-decoration:none;">es.comunicacao@outlook.com</a></div></div>
-                        <div class="c-info-item"><div class="c-icon-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div><div><div class="c-text-label">WHATSAPP</div><div class="c-text-value">+55 (11) 99999-9999</div></div></div>
+                        <div class="c-info-item"><div class="c-icon-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.015c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg></div><div><div class="c-text-label" data-i18n="contact_whatsapp">WHATSAPP</div><div class="c-text-value">+55 (11) 99999-9999</div></div></div>
                         <div class="c-info-item"><div class="c-icon-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="c-text-label">LOCALIZAÇÃO</div><div class="c-text-value">São Paulo, SP — Brasil</div></div></div>
                     </div>
                 </div>
                 <div class="split-right" style="width: 100%;">
                     <div class="json-panel">
                         <div class="json-header" style="display: flex; justify-content: space-between;"><span>INICIAR_PROJETO.FORM</span><span><span style="color:var(--neon)">●</span> READY</span></div>
-                        <form onsubmit="event.preventDefault();" style="display: flex; flex-direction: column;">
+                        <form id="contact-form" style="display: flex; flex-direction: column;">
                             <div class="form-grid">
-                                <div class="form-group"><label class="form-label">SEU NOME</label><input type="text" class="form-input" placeholder="Nome completo" required></div>
-                                <div class="form-group"><label class="form-label">E-MAIL CORPORATIVO</label><input type="email" class="form-input" placeholder="voce@empresa.com" required></div>
-                                <div class="form-group full"><label class="form-label">WHATSAPP</label><input type="tel" class="form-input" placeholder="+55 (00) 00000-0000"></div>
-                                <div class="form-group full"><label class="form-label">CONTE SOBRE SEU PROJETO</label><textarea class="form-textarea" placeholder="Objetivos, prazo, referências..." required></textarea></div>
+                                <div class="form-group"><label class="form-label" data-i18n="form_nome">SEU NOME</label><input type="text" id="c-name" class="form-input" placeholder="Nome completo" required></div>
+                                <div class="form-group"><label class="form-label" data-i18n="form_email">E-MAIL CORPORATIVO</label><input type="email" id="c-email" class="form-input" placeholder="voce@empresa.com" required></div>
+                                <div class="form-group full"><label class="form-label" data-i18n="form_whatsapp">WHATSAPP</label><input type="tel" id="c-whatsapp" class="form-input" placeholder="+55 (00) 00000-0000"></div>
+                                <div class="form-group full"><label class="form-label" data-i18n="form_projeto">CONTE SOBRE SEU PROJETO</label><textarea id="c-message" class="form-textarea" placeholder="Objetivos, prazo, referências..." required></textarea></div>
                             </div>
-                            <button type="submit" class="form-submit">ENVIAR →</button>
+                            <button type="submit" id="c-submit" class="form-submit" data-i18n="btn_enviar">ENVIAR MENSAGEM →</button>
                         </form>
                     </div>
                 </div>
@@ -656,16 +742,16 @@
                 <div class="marquee-content"><span style="color: var(--white);">ESCOM STUDIO</span> <span class="bullet">●</span> DESIGN • CODE • STRATEGY <span class="bullet">●</span> <span style="color: var(--white);">ESCOM STUDIO</span> <span class="bullet">●</span> DESIGN • CODE • STRATEGY <span class="bullet">●</span></div>
             </div>
             <div class="footer-columns">
-                <div class="footer-col"><div class="system-tag" style="margin-bottom: 1.5rem;"><span class="arrow">&gt;_</span> <span class="dot">●</span> [ SOBRE_A_ESCOM ]</div><p class="footer-desc">A ESCOM desenvolve projetos digitais de alta performance que unem design estratégico e infraestrutura inteligente. Nosso foco é transformar a presença online em um sistema funcional de crescimento.</p></div>
-                <div class="footer-col"><h4>NAVEGAÇÃO</h4><ul class="footer-links"><li><a href="#">Início</a></li><li><a href="#">Sobre nós</a></li><li><a href="#">Serviços</a></li><li><a href="#">Projetos</a></li></ul></div>
-                <div class="footer-col"><h4>CONTATO</h4><a href="mailto:es.comunicacao@outlook.com" class="footer-contact-text">es.comunicacao@outlook.com</a><span class="footer-contact-text">+55 (11) 99999-9999</span><span class="footer-contact-text" style="color: var(--gray-mid);">São Paulo, SP — <a href="/portfolioedu/" style="color: inherit; text-decoration: none;">Brasil</a></span></div>
+                <div class="footer-col"><div class="system-tag" style="margin-bottom: 1.5rem;"><span class="arrow">&gt;_</span> <span class="dot">●</span> <span data-i18n="foot_sobre">[ SOBRE_A_ESCOM ]</span></div><p class="footer-desc" data-i18n="foot_desc">A ESCOM desenvolve projetos digitais de alta performance que unem design estratégico e infraestrutura inteligente. Nosso foco é transformar a presença online em um sistema funcional de crescimento.</p></div>
+                <div class="footer-col"><h4 data-i18n="foot_nav">NAVEGAÇÃO</h4><ul class="footer-links"><li><a href="#" data-i18n="nav_inicio">Início</a></li><li><a href="/sobre" data-i18n="nav_sobre">Sobre nós</a></li><li><a href="#servicos" data-i18n="nav_servicos">Serviços</a></li><li><a href="#portfolio" data-i18n="nav_portfolio">Projetos</a></li></ul></div>
+                <div class="footer-col"><h4 data-i18n="foot_contact">CONTATO</h4><a href="mailto:es.comunicacao@outlook.com" class="footer-contact-text">es.comunicacao@outlook.com</a><span class="footer-contact-text">+55 (11) 99999-9999</span><span class="footer-contact-text" style="color: var(--gray-mid);"><span data-i18n="contact_localizacao">São Paulo, SP</span> — <a href="/portfolioedu/" style="color: inherit; text-decoration: none;">Brasil</a></span></div>
             </div>
-            <div class="footer-bottom"><div>© 2026 ESCOM STUDIO // TODOS OS DIREITOS RESERVADOS</div><div class="footer-bottom-links"><a href="#">POLÍTICA DE PRIVACIDADE</a><a href="#">TERMOS DE SERVIÇO</a></div></div>
+            <div class="footer-bottom"><div>© 2026 ESCOM STUDIO // <span data-i18n="foot_rights">TODOS OS DIREITOS RESERVADOS</span></div><div class="footer-bottom-links"><a href="#" data-i18n="foot_privacy">POLÍTICA DE PRIVACIDADE</a><a href="#" data-i18n="foot_terms">TERMOS DE SERVIÇO</a></div></div>
         </footer>
     </div>
     <script>
         // LANGUAGE DICTIONARY
-        const i18n = {
+        window.i18n = {
             pt: {
                 nav_inicio: "Início",
                 nav_sobre: "Sobre",
@@ -673,12 +759,102 @@
                 nav_portfolio: "Portfólio",
                 nav_posicionamento: "Posicionamento",
                 btn_fale: "Fale Conosco",
-                hero_title: "NÃO CRIAMOS APENAS<br>SITES.<br><span class=\"text-gray\">CRIAMOS</span> <span class=\"highlight\">EXPERIÊNCIAS<br>COMPLETAS.</span>",
+                hero_title: "Não criamos apenas<br>sites.<br><span class=\"text-gray\" style=\"font-weight: 300; color: #fff;\">Criamos</span> <span style=\"font-weight: 400; color: #fff;\">experiências<br>completas.</span>",
                 hero_sub: "Projetos digitais que unem design, automação e infraestrutura inteligente para reduzir custos e otimizar processos.",
-                btn_iniciar: "INICIAR PROJETO →",
+                btn_iniciar: "INICIAR PROJETO",
                 btn_ver: "VER PROJETOS",
                 nav_servicos: "O que fazemos",
-                ciencia_tit: "Projetado com base em <span class=\"highlight\">dados.</span>"
+                servicos_sub: "Design com propósito comercial e infraestrutura tecnológica integrada para máxima performance.",
+                ciencia_tit: "Projetado com base em <span class=\"highlight\">dados.</span>",
+                ciencia_sub: "Decisões baseadas em psicologia cognitiva e engenharia de performance para maximizar a retenção e conversão.",
+                manifesto_title: "Um site não deve ser apenas uma vitrine.<br><span class=\"text-gray\">Deve funcionar como uma ferramenta.</span>",
+                manifesto_sub: "Cada projeto é estruturado para operar como parte do negócio — combinando experiência, automação e inteligência de dados em um único sistema.",
+                exp_title: "O que você sente<br>é resultado.",
+                exp_sub: "Cada interação foi projetada para criar fluência, autoridade e, acima de tudo, conversão real para o seu negócio.",
+                exp_highlight: "Não basta ser bonito. <span class=\"highlight\">Tem que vender.</span>",
+                svc_01_tit: "Infraestrutura Inteligente",
+                svc_01_desc: "Cada projeto é desenvolvido com uma base inteligente que centraliza funções essenciais dentro do próprio site. Menos dependência, mais controle total do seu ecossistema.",
+                svc_02_tit: "Menos ferramentas. Mais eficiência.",
+                svc_02_desc: "Ao integrar funcionalidades diretamente no projeto, reduzimos significativamente custos recorrentes com plataformas externas.",
+                svc_03_tit: "Centralização total",
+                svc_03_desc: "A centralização melhora a performance e facilita a gestão do seu negócio, em um único ambiente coeso e escalável.",
+                sci_01_tit: "UX Engineering & Psicologia Cognitiva",
+                sci_01_desc: "Analisamos e otimizamos interfaces com base nas Heurísticas de Nielsen, Gestalt, Leis de UX, Don Norman e Vieses Cognitivos.",
+                sci_02_tit: "Performance & SEO Técnico",
+                sci_02_desc: "Otimizamos o SEO ao máximo: desde a compressão cirúrgica do tamanho dos arquivos até à renomeação automática de imagens.",
+                projects_header_tit: "Projetos selecionados",
+                projects_header_sub: "Cada projeto é desenvolvido como um sistema completo — unindo design, estratégia e tecnologia.",
+                btn_ver_projetos: "VER PROJETOS COMPLETOS ↗",
+                ctrl_tit: "O controle absoluto do seu negócio em <span class=\"highlight\">um só lugar.</span>",
+                ctrl_sub: "Esqueça dezenas de abas abertas. Integramos as principais métricas e ferramentas de gestão diretamente no seu sistema ESCOM.",
+                cost_tit: "O custo invisível das ferramentas",
+                cost_sub: "A maioria das empresas não percebe que o maior custo não está na criação do site — mas na soma das assinaturas necessárias para fazê-lo funcionar.",
+                cost_common: "MODELO COMUM",
+                cost_common_tit: "Várias ferramentas. Vários custos.",
+                cost_escom: "MODELO ESCOM",
+                cost_escom_tit: "Um único sistema. Tudo conectado.",
+                cost_annual: "CUSTO MÉDIO ANUAL",
+                cost_c1: "Hotjar (Mapas de Calor)",
+                cost_c2: "Google Analytics",
+                cost_c3: "HubSpot (CRM)",
+                cost_c4: "ClickUp",
+                cost_c5: "Zapier",
+                cost_e1: "Captura e gestão de leads — sem CRMs caros para o básico.",
+                cost_e2: "Análise de comportamento centralizada.",
+                cost_e3: "Estrutura de dados em um único banco.",
+                cost_e4: "Automação de fluxos sem dependência de Zapier.",
+                cost_e5: "Otimização contínua, pronta para escalar sem refazer o código.",
+                cost_enote_tit: "PRONTO PARA OPERAR",
+                cost_enote_desc: "Em vez de depender de várias ferramentas, você passa a possuir um único sistema estratégico que potencializa seu ROI.",
+                roi_tit: "O verdadeiro valor da<br>integração",
+                roi_sub: "Com um ecossistema centralizado, cada interação do usuário alimenta automaticamente o seu sistema de vendas, sem perda de dados.",
+                test_tit: "O que dizem nossos<br>parceiros",
+                test_sub: "O impacto de integrar design estratégico e engenharia de conversão.",
+                faq_tit: "Dúvidas Frequentes",
+                faq_sub: "Tire suas dúvidas sobre nossos serviços.",
+                contato_tit: "Vamos criar algo <span class=\"highlight\">incrível<br>juntos.</span>",
+                contato_sub: "Entre em contato para discutir seu próximo projeto.",
+                val_01_tit: "Velocidade",
+                val_01_desc: "Carregamento instantâneo sem scripts de terceiros pesados.",
+                val_02_tit: "Controle",
+                val_02_desc: "Os dados do cliente são próprios, sem depender de APIs externas para o básico.",
+                val_03_tit: "Escala",
+                val_03_desc: "Infraestrutura pronta para crescer conforme o tráfego aumenta.",
+                tools_tit: "Nossas Ferramentas",
+                tools_sub: "O QUE USAMOS PARA CONSTRUIR O SEU SISTEMA",
+                json_01_tit: "Autoridade",
+                json_01_desc: "Design orientado à percepção de valor.",
+                json_02_tit: "Estratégia",
+                json_02_desc: "Engenharia de conversão (CRO).",
+                json_03_tit: "Tecnologia",
+                json_03_desc: "Infraestrutura inteligente.",
+                json_04_tit: "Resultado Real",
+                json_04_desc: "Transformamos visitantes em clientes.",
+                foot_nav: "NAVEGAÇÃO",
+                foot_contact: "CONTATO",
+                foot_sobre: "[ SOBRE_A_ESCOM ]",
+                foot_desc: "A ESCOM desenvolve projetos digitais de alta performance que unem design estratégico e infraestrutura inteligente. Nosso foco é transformar a presença online em um sistema funcional de crescimento.",
+                foot_rights: "TODOS OS DIREITOS RESERVADOS",
+                foot_privacy: "POLÍTICA DE PRIVACIDADE",
+                foot_terms: "TERMOS DE SERVIÇO",
+                contact_whatsapp: "WHATSAPP",
+                contact_localizacao: "LOCALIZAÇÃO",
+                form_nome: "SEU NOME",
+                form_email: "E-MAIL CORPORATIVO",
+                form_whatsapp: "WHATSAPP",
+                form_projeto: "CONTE SOBRE SEU PROJETO",
+                btn_enviar: "ENVIAR MENSAGEM →",
+                faq_1_q: "Quanto custa um projeto?",
+                faq_1_a: "Cada projeto tem um escopo único. Nossos valores variam de acordo com a complexidade, as integrações necessárias e a escala do sistema. Entre em contato para um orçamento detalhado.",
+                faq_2_q: "Quanto tempo leva?",
+                faq_2_a: "O tempo de desenvolvimento padrão varia entre 4 a 8 semanas, dependendo da necessidade de infraestrutura, automações e revisões de design.",
+                faq_3_q: "Vocês trabalham com empresas internacionais?",
+                faq_3_a: "Sim, atendemos clientes globalmente. Desenvolvemos interfaces multi-idiomas e estruturamos pagamentos e integrações que operam em escala mundial.",
+                faq_4_q: "Vocês fazem manutenção ou apenas criação?",
+                faq_4_a: "Nosso foco é construir ecossistemas duradouros. Oferecemos planos de suporte contínuo, otimização de SEO e refinamento de conversão (CRO) após o lançamento.",
+                test_1_quote: "\"A ESCOM transformou completamente nossa presença digital. O foco em conversão trouxe resultados imediatos.\"",
+                test_2_quote: "\"Design sofisticado aliado a uma estratégia de negócio impecável. Recomendo fortemente.\"",
+                test_3_quote: "\"Trabalho de altíssimo nível. A infraestrutura integrada facilitou muito nossa operação.\""
             },
             en: {
                 nav_inicio: "Home",
@@ -687,12 +863,102 @@
                 nav_portfolio: "Portfolio",
                 nav_posicionamento: "Positioning",
                 btn_fale: "Contact Us",
-                hero_title: "WE DON'T JUST BUILD<br>WEBSITES.<br><span class=\"text-gray\">WE CREATE</span> <span class=\"highlight\">COMPLETE<br>EXPERIENCES.</span>",
+                hero_title: "We don't just build<br>websites.<br><span class=\"text-gray\" style=\"font-weight: 300; color: #fff;\">We create</span> <span style=\"font-weight: 400; color: #fff;\">complete<br>experiences.</span>",
                 hero_sub: "Digital projects that unite design, automation, and smart infrastructure to reduce costs and optimize processes.",
-                btn_iniciar: "START PROJECT →",
+                btn_iniciar: "START PROJECT",
                 btn_ver: "VIEW PROJECTS",
                 nav_servicos: "What we do",
-                ciencia_tit: "Designed based on <span class=\"highlight\">data.</span>"
+                servicos_sub: "Design with commercial purpose and integrated technological infrastructure for maximum performance.",
+                ciencia_tit: "Designed based on <span class=\"highlight\">data.</span>",
+                ciencia_sub: "Decisions based on cognitive psychology and performance engineering to maximize retention and conversion.",
+                manifesto_title: "A website shouldn't just be a showcase.<br><span class=\"text-gray\">It must work as a tool.</span>",
+                manifesto_sub: "Each project is structured to operate as part of the business — combining experience, automation, and data intelligence into a single system.",
+                exp_title: "What you feel<br>is the result.",
+                exp_sub: "Every interaction is designed to create fluency, authority, and above all, real conversion for your business.",
+                exp_highlight: "It's not enough to be pretty. <span class=\"highlight\">It has to sell.</span>",
+                svc_01_tit: "Smart Infrastructure",
+                svc_01_desc: "Each project is developed with a smart base that centralizes essential functions within the site itself. Less dependency, more total control over your ecosystem.",
+                svc_02_tit: "Fewer tools. More efficiency.",
+                svc_02_desc: "By integrating features directly into the project, we significantly reduce recurring costs with external platforms.",
+                svc_03_tit: "Total Centralization",
+                svc_03_desc: "Centralization improves performance and makes it easier to manage your business, in a single scalable and cohesive environment.",
+                sci_01_tit: "UX Engineering & Cognitive Psychology",
+                sci_01_desc: "We analyze and optimize interfaces based on Nielsen's Heuristics, Gestalt, UX Laws, Don Norman, and Cognitive Biases.",
+                sci_02_tit: "Performance & Technical SEO",
+                sci_02_desc: "We optimize SEO to the maximum: from surgical file size compression to automatic image renaming.",
+                projects_header_tit: "Selected projects",
+                projects_header_sub: "Each project is developed as a complete system — uniting design, strategy, and technology.",
+                btn_ver_projetos: "VIEW FULL PROJECTS ↗",
+                ctrl_tit: "Absolute control of your business in <span class=\"highlight\">one place.</span>",
+                ctrl_sub: "Forget dozens of open tabs. We integrate key metrics and management tools directly into your ESCOM system.",
+                cost_tit: "The invisible cost of tools",
+                cost_sub: "Most companies don't realize the biggest cost isn't building the site — it's the sum of subscriptions needed to make it work.",
+                cost_common: "COMMON MODEL",
+                cost_common_tit: "Multiple tools. Multiple costs.",
+                cost_escom: "ESCOM MODEL",
+                cost_escom_tit: "A single system. Everything connected.",
+                cost_annual: "AVERAGE ANNUAL COST",
+                cost_c1: "Hotjar (Heatmaps)",
+                cost_c2: "Google Analytics",
+                cost_c3: "HubSpot (CRM)",
+                cost_c4: "ClickUp",
+                cost_c5: "Zapier",
+                cost_e1: "Lead capture & management — no expensive CRMs for the basics.",
+                cost_e2: "Centralized behavior analytics.",
+                cost_e3: "Data structure in a single database.",
+                cost_e4: "Workflow automation without Zapier dependency.",
+                cost_e5: "Continuous optimization, ready to scale without rewriting code.",
+                cost_enote_tit: "READY TO OPERATE",
+                cost_enote_desc: "Instead of relying on multiple tools, you now own a single strategic system that maximizes your ROI.",
+                roi_tit: "The true value of<br>integration",
+                roi_sub: "With a centralized ecosystem, every user interaction automatically feeds your sales system, with no data loss.",
+                test_tit: "What our partners<br>say",
+                test_sub: "The impact of integrating strategic design and conversion engineering.",
+                faq_tit: "Frequently Asked Questions",
+                faq_sub: "Get your questions answered about our services.",
+                contato_tit: "Let's create something <span class=\"highlight\">incredible<br>together.</span>",
+                contato_sub: "Get in touch to discuss your next project.",
+                val_01_tit: "Velocity",
+                val_01_desc: "Instant loading without heavy third-party scripts.",
+                val_02_tit: "Control",
+                val_02_desc: "Client data is your own, without relying on external APIs for the basics.",
+                val_03_tit: "Scale",
+                val_03_desc: "Infrastructure ready to grow as traffic increases.",
+                tools_tit: "Our Tools",
+                tools_sub: "WHAT WE USE TO BUILD YOUR SYSTEM",
+                json_01_tit: "Authority",
+                json_01_desc: "Design oriented towards perceived value.",
+                json_02_tit: "Strategy",
+                json_02_desc: "Conversion Rate Optimization (CRO).",
+                json_03_tit: "Technology",
+                json_03_desc: "Smart infrastructure.",
+                json_04_tit: "Real Results",
+                json_04_desc: "We transform visitors into customers.",
+                foot_nav: "NAVIGATION",
+                foot_contact: "CONTACT",
+                foot_sobre: "[ ABOUT_ESCOM ]",
+                foot_desc: "ESCOM develops high-performance digital projects that unite strategic design and smart infrastructure. Our focus is to transform online presence into a functional system for growth.",
+                foot_rights: "ALL RIGHTS RESERVED",
+                foot_privacy: "PRIVACY POLICY",
+                foot_terms: "TERMS OF SERVICE",
+                contact_whatsapp: "WHATSAPP",
+                contact_localizacao: "LOCATION",
+                form_nome: "YOUR NAME",
+                form_email: "CORPORATE EMAIL",
+                form_whatsapp: "WHATSAPP",
+                form_projeto: "TELL US ABOUT YOUR PROJECT",
+                btn_enviar: "SEND MESSAGE →",
+                faq_1_q: "How much does a project cost?",
+                faq_1_a: "Each project has a unique scope. Our rates vary according to complexity, required integrations, and system scale. Contact us for a detailed quote.",
+                faq_2_q: "How long does it take?",
+                faq_2_a: "Standard development time varies between 4 to 8 weeks, depending on the need for infrastructure, automations, and design reviews.",
+                faq_3_q: "Do you work with international companies?",
+                faq_3_a: "Yes, we serve clients globally. We develop multi-language interfaces and structure payments and integrations that operate on a worldwide scale.",
+                faq_4_q: "Do you provide maintenance or just creation?",
+                faq_4_a: "Our focus is to build lasting ecosystems. We offer ongoing support plans, SEO optimization, and conversion refinement (CRO) after launch.",
+                test_1_quote: "\"ESCOM completely transformed our digital presence. The focus on conversion brought immediate results.\"",
+                test_2_quote: "\"Sophisticated design combined with flawless business strategy. Highly recommended.\"",
+                test_3_quote: "\"Top-tier work. The integrated infrastructure made our operation much easier.\""
             },
             es: {
                 nav_inicio: "Inicio",
@@ -701,12 +967,102 @@
                 nav_portfolio: "Portafolio",
                 nav_posicionamento: "Posicionamiento",
                 btn_fale: "Contáctenos",
-                hero_title: "NO SOLO CREAMOS<br>SITIOS WEB.<br><span class=\"text-gray\">CREAMOS</span> <span class=\"highlight\">EXPERIENCIAS<br>COMPLETAS.</span>",
+                hero_title: "No solo creamos<br>sitios web.<br><span class=\"text-gray\" style=\"font-weight: 300; color: #fff;\">Creamos</span> <span style=\"font-weight: 400; color: #fff;\">experiencias<br>completas.</span>",
                 hero_sub: "Proyectos digitales que unen diseño, automatización e infraestructura inteligente para reducir costos y optimizar procesos.",
-                btn_iniciar: "INICIAR PROYECTO →",
+                btn_iniciar: "INICIAR PROYECTO",
                 btn_ver: "VER PROYECTOS",
                 nav_servicos: "Lo que hacemos",
-                ciencia_tit: "Diseñado en base a <span class=\"highlight\">datos.</span>"
+                servicos_sub: "Diseño con propósito comercial e infraestructura tecnológica integrada para un máximo rendimiento.",
+                ciencia_tit: "Diseñado en base a <span class=\"highlight\">datos.</span>",
+                ciencia_sub: "Decisiones basadas en psicología cognitiva e ingeniería de rendimiento para maximizar la retención y la conversión.",
+                manifesto_title: "Un sitio no debe ser solo una vitrina.<br><span class=\"text-gray\">Debe funcionar como una herramienta.</span>",
+                manifesto_sub: "Cada proyecto está estructurado para operar como parte del negocio — combinando experiencia, automatización e inteligencia de datos en un solo sistema.",
+                exp_title: "Lo que sientes<br>es resultado.",
+                exp_sub: "Cada interacción está diseñada para crear fluidez, autoridad y sobre todo, conversión real para su negocio.",
+                exp_highlight: "No basta con ser bonito. <span class=\"highlight\">Tiene que vender.</span>",
+                svc_01_tit: "Infraestructura Inteligente",
+                svc_01_desc: "Cada proyecto se desarrolla con una base inteligente que centraliza funciones esenciales dentro del propio sitio. Menos dependencia, más control total de tu ecosistema.",
+                svc_02_tit: "Menos herramientas. Más eficiencia.",
+                svc_02_desc: "Al integrar funcionalidades directamente en el proyecto, reducimos significativamente los costos recurrentes con plataformas externas.",
+                svc_03_tit: "Centralización total",
+                svc_03_desc: "La centralización mejora el rendimiento y facilita la gestión de su negocio, en un único entorno coherente y escalable.",
+                sci_01_tit: "Ingeniería UX y Psicología Cognitiva",
+                sci_01_desc: "Analizamos y optimizamos interfaces con base en las Heurísticas de Nielsen, Gestalt, Leyes de UX, Don Norman y Sesgos Cognitivos.",
+                sci_02_tit: "Rendimimiento y SEO Técnico",
+                sci_02_desc: "Optimizamos el SEO al máximo: desde la compresión quirúrgica del tamaño de los archivos hasta el renombramiento automático de imágenes.",
+                projects_header_tit: "Proyectos seleccionados",
+                projects_header_sub: "Cada proyecto se desarrolla como un sistema completo — uniendo diseño, estrategia y tecnología.",
+                btn_ver_projetos: "VER PROYECTOS COMPLETOS ↗",
+                ctrl_tit: "El control absoluto de su negocio en <span class=\"highlight\">un solo lugar.</span>",
+                ctrl_sub: "Olvídese de docenas de pestañas abiertas. Integramos métricas y herramientas de gestión clave directamente en su sistema ESCOM.",
+                cost_tit: "El costo invisible de las herramientas",
+                cost_sub: "La mayoría de las empresas no se dan cuenta de que el mayor costo no está en crear el sitio — sino en la suma de suscripciones necesarias para que funcione.",
+                cost_common: "MODELO COMÚN",
+                cost_common_tit: "Varias herramientas. Varios costos.",
+                cost_escom: "MODELO ESCOM",
+                cost_escom_tit: "Un único sistema. Todo conectado.",
+                cost_annual: "COSTO PROMEDIO ANUAL",
+                cost_c1: "Hotjar (Mapas de Calor)",
+                cost_c2: "Google Analytics",
+                cost_c3: "HubSpot (CRM)",
+                cost_c4: "ClickUp",
+                cost_c5: "Zapier",
+                cost_e1: "Captura y gestión de leads — sin costosos CRM para lo básico.",
+                cost_e2: "Análisis de comportamiento centralizado.",
+                cost_e3: "Estructura de datos en una única base de datos.",
+                cost_e4: "Automatización de flujo de trabajo sin dependencia de Zapier.",
+                cost_e5: "Optimización continua, lista para escalar sin reescribir código.",
+                cost_enote_tit: "LISTO PARA OPERAR",
+                cost_enote_desc: "En lugar de depender de múltiples herramientas, ahora posee un único sistema estratégico que maximiza su ROI.",
+                roi_tit: "El verdadero valor de la<br>integración",
+                roi_sub: "Con un ecosistema centralizado, cada interacción de usuario alimenta automáticamente su sistema de ventas, sin pérdida de datos.",
+                test_tit: "Lo que dicen nuestros<br>socios",
+                test_sub: "El impacto de integrar diseño estratégico e ingeniería de conversión.",
+                faq_tit: "Preguntas Frecuentes",
+                faq_sub: "Obtenga respuestas a sus dudas sobre nuestros servicios.",
+                contato_tit: "Vamos a crear algo <span class=\"highlight\">increíble<br>juntos.</span>",
+                contato_sub: "Póngase en contacto para hablar sobre su próximo proyecto.",
+                val_01_tit: "Velocidad",
+                val_01_desc: "Carga instantánea sin scripts de terceros pesados.",
+                val_02_tit: "Control",
+                val_02_desc: "Los datos del cliente son propios, sin depender de APIs externas para lo básico.",
+                val_03_tit: "Escala",
+                val_03_desc: "Infraestructura lista para crecer a medida que aumenta el tráfico.",
+                tools_tit: "Nuestras Herramientas",
+                tools_sub: "LO QUE USAMOS PARA CONSTRUIR SU SISTEMA",
+                json_01_tit: "Autoridad",
+                json_01_desc: "Diseño orientado a la percepción de valor.",
+                json_02_tit: "Estrategia",
+                json_02_desc: "Ingeniería de conversión (CRO).",
+                json_03_tit: "Tecnología",
+                json_03_desc: "Infraestructura inteligente.",
+                json_04_tit: "Resultado Real",
+                json_04_desc: "Transformamos visitantes en clientes.",
+                foot_nav: "NAVEGACIÓN",
+                foot_contact: "CONTACTO",
+                foot_sobre: "[ SOBRE_ESCOM ]",
+                foot_desc: "ESCOM desarrolla proyectos digitales de alto rendimiento que unen diseño estratégico e infraestructura inteligente. Nuestro enfoque es transformar la presencia en línea en un sistema funcional de crecimiento.",
+                foot_rights: "TODOS LOS DERECHOS RESERVADOS",
+                foot_privacy: "POLÍTICA DE PRIVACIDAD",
+                foot_terms: "TÉRMINOS DE SERVICIO",
+                contact_whatsapp: "WHATSAPP",
+                contact_localizacao: "UBICACIÓN",
+                form_nome: "SU NOMBRE",
+                form_email: "CORREO CORPORATIVO",
+                form_whatsapp: "WHATSAPP",
+                form_projeto: "CUÉNTENOS SOBRE SU PROYECTO",
+                btn_enviar: "ENVIAR MENSAJE →",
+                faq_1_q: "¿Cuánto cuesta un proyecto?",
+                faq_1_a: "Cada proyecto tiene un alcance único. Nuestros valores varían según la complejidad, las integraciones necesarias y la escala del sistema. Contáctenos para un presupuesto detallado.",
+                faq_2_q: "¿Cuánto tiempo toma?",
+                faq_2_a: "El tiempo estándar de desarrollo varía entre 4 a 8 semanas, dependiendo de la necesidad de infraestructura, automatizaciones y revisiones de diseño.",
+                faq_3_q: "¿Trabajan con empresas internacionales?",
+                faq_3_a: "Sí, atendemos a clientes globalmente. Desarrollamos interfaces multilingües y estructuramos pagos e integraciones que operan a escala mundial.",
+                faq_4_q: "¿Hacen mantenimiento o solo creación?",
+                faq_4_a: "Nuestro enfoque es construir ecosistemas duraderos. Ofrecemos planes de soporte continuo, optimización de SEO y refinamiento de conversión (CRO) después del lanzamiento.",
+                test_1_quote: "\"ESCOM transformó completamente nuestra presencia digital. El enfoque en conversión trajo resultados inmediatos.\"",
+                test_2_quote: "\"Diseño sofisticado combinado con una estrategia comercial impecable. Muy recomendable.\"",
+                test_3_quote: "\"Trabajo de primer nivel. La infraestructura integrada facilitó mucho nuestra operación.\""
             }
         };
 
@@ -738,14 +1094,25 @@
                 btn.classList.add('active');
                 
                 const lang = btn.getAttribute('data-lang');
-                if(i18n[lang]) {
-                    document.querySelectorAll('[data-i18n]').forEach(el => {
-                        const key = el.getAttribute('data-i18n');
-                        if (i18n[lang][key]) {
-                            el.innerHTML = i18n[lang][key];
-                        }
-                    });
-                }
+                document.body.classList.add('lang-blur');
+                
+                setTimeout(() => {
+                    if(window.i18n[lang]) {
+                        document.querySelectorAll('[data-i18n]').forEach(el => {
+                            const key = el.getAttribute('data-i18n');
+                            if (window.i18n[lang][key]) {
+                                el.innerHTML = window.i18n[lang][key];
+                                if (el.classList.contains('animate-text-rotate') && window.innerWidth >= 768) {
+                                    el.classList.remove('text-rotate-wrap', 'in-view');
+                                    new window.TextRotateEntrance(el);
+                                    setTimeout(() => el.classList.add('in-view'), 50);
+                                }
+                            }
+                        });
+                        window.dispatchEvent(new CustomEvent('languageChanged', { detail: lang }));
+                    }
+                    document.body.classList.remove('lang-blur');
+                }, 300);
             });
         });
 
@@ -780,28 +1147,6 @@
         const interactiveElements = document.querySelectorAll('a, button, .project-row, .card-item, .back-to-top');
         interactiveElements.forEach(el => { el.addEventListener('mouseenter', () => cursor.classList.add('active')); el.addEventListener('mouseleave', () => cursor.classList.remove('active')); });
 
-        // Back to top logic
-        const backToTopBtn = document.getElementById('backToTop');
-        const section2 = document.getElementById('sobre');
-
-        window.addEventListener('scroll', () => {
-            if (section2) {
-                const section2Top = section2.getBoundingClientRect().top + window.pageYOffset;
-                if (window.pageYOffset >= section2Top - 200) {
-                    backToTopBtn.classList.add('visible');
-                } else {
-                    backToTopBtn.classList.remove('visible');
-                }
-            }
-        });
-
-        backToTopBtn.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-
         const projRows = document.querySelectorAll('.project-row');
         projRows.forEach((row) => {
             row.addEventListener('mouseenter', () => {
@@ -822,6 +1167,50 @@
 
         function updateTime() { const now = new Date(); document.getElementById('liveTime').innerText = now.toLocaleTimeString('pt-BR', { hour12: false }) + ':' + now.getMilliseconds().toString().padStart(2, '0').slice(0,2); requestAnimationFrame(updateTime); }
         updateTime();
+
+        function updateClimateCondition() {
+            const hour = new Date().getHours();
+            const min = new Date().getMinutes();
+            const time = hour + min / 60;
+            let condition = "";
+            const svgStyle = 'style="display: inline-block; vertical-align: middle; margin-right: 4px; margin-bottom: 2px;"';
+            
+            // Lottie-like advanced CSS animations within SVG
+            const spinAnim = `<style>@keyframes svgSpin { 100% { transform: rotate(360deg); } } .spin-group { transform-origin: center; animation: svgSpin 8s linear infinite; }</style>`;
+            const pulseAnim = `<style>@keyframes svgPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } } .pulse-group { transform-origin: center; animation: svgPulse 3s ease-in-out infinite; }</style>`;
+            const riseAnim = `<style>@keyframes svgRise { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } } .rise-group { animation: svgRise 4s ease-in-out infinite; }</style>`;
+            const sunsetAnim = `<style>@keyframes svgSunset { 0%, 100% { transform: translateY(0) scale(1); opacity: 1; } 50% { transform: translateY(4px) scale(0.9); opacity: 0.7; } } .sunset-group { animation: svgSunset 4s ease-in-out infinite; }</style>`;
+            const cloudAnim = `<style>@keyframes svgCloud { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(2px); } } .cloud-group { animation: svgCloud 5s ease-in-out infinite; }</style>`;
+            const starAnim = `<style>@keyframes svgStar { 0%, 100% { fill: #fff; opacity: 1; } 50% { fill: #fde047; opacity: 0.3; } } .star-group { animation: svgStar 2s infinite; }</style>`;
+            
+            if (time < 5) {
+                condition = "MADRUGADA"; 
+                icon = `<svg ${svgStyle} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${pulseAnim}${starAnim}<path class="pulse-group" d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/><circle class="star-group" cx="19" cy="4" r="1"/><circle class="star-group" cx="18" cy="8" r="0.5" style="animation-delay: 1s;"/></svg>`;
+            } else if (time < 7.5) {
+                condition = "AMANHECENDO"; 
+                icon = `<svg ${svgStyle} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${riseAnim}<g class="rise-group"><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 6 4-4 4 4"/><path d="M16 18a4 4 0 0 0-8 0"/></g></svg>`;
+            } else if (time < 12) {
+                condition = "MANHÃ CLARA"; 
+                icon = `<svg ${svgStyle} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${cloudAnim}<g class="cloud-group"><path stroke="#93c5fd" d="M17.5 19a4.5 4.5 0 1 0-2.8-8.1 7 7 0 1 0-11 4.5 4.5 4.5 0 1 0 13.8 3.6Z"/></g><circle cx="6" cy="10" r="3" fill="#fbbf24" stroke="none" class="pulse-group"/></svg>`;
+            } else if (time < 16) {
+                condition = "SOL PLENO"; 
+                icon = `<svg ${svgStyle} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${spinAnim}<g class="spin-group"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></g></svg>`;
+            } else if (time < 18.5) {
+                condition = "ENTARDECER"; 
+                icon = `<svg ${svgStyle} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${sunsetAnim}<g class="sunset-group"><circle cx="12" cy="12" r="3" fill="#f97316" stroke="none"/><path d="M12 10V2"/><path d="m4.93 10.93 1.41 1.41"/><path d="m19.07 10.93-1.41 1.41"/><path d="m16 5-4 4-4-4"/></g><path d="M2 18h2"/><path d="M20 18h2"/><path d="M22 22H2"/><path d="M16 18a4 4 0 0 0-8 0"/></svg>`;
+            } else if (time < 20) {
+                condition = "ANOITECENDO"; 
+                icon = `<svg ${svgStyle} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${pulseAnim}${starAnim}<path class="pulse-group" d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/><circle class="star-group" cx="16" cy="6" r="1.5"/></svg>`;
+            } else {
+                condition = "NOITE ESTRELADA"; 
+                icon = `<svg ${svgStyle} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${pulseAnim}${starAnim}<path class="pulse-group" d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/><circle class="star-group" cx="19" cy="4" r="1.5"/><circle class="star-group" cx="18" cy="8" r="1" style="animation-delay: 1.5s;"/><circle class="star-group" cx="4" cy="18" r="1.2" style="animation-delay: 0.5s;"/></svg>`;
+            }
+            
+            document.getElementById('climateCondition').innerHTML = `${icon}<span style="color: #ffffff !important; white-space: nowrap; font-weight: 600;">${condition}</span>`;
+        }
+        updateClimateCondition();
+        setInterval(updateClimateCondition, 60000);
+
         const canvas = document.getElementById('particleCanvas'), ctx = canvas.getContext('2d');
         let width, height, particles = [];
         function initCanvas() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; particles = []; for(let i = 0; i < 40; i++) particles.push({ x: Math.random() * width, y: Math.random() * height, vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4, radius: Math.random() * 1.5 }); }
@@ -910,8 +1299,9 @@
                                 const wrapper = document.createElement(node.nodeName);
                                 wrapper.className = node.className;
                                 wrapper.style.cssText = node.style.cssText;
-                                wrapper.innerText = word + ' ';
+                                wrapper.innerText = word;
                                 charWrap.appendChild(wrapper);
+                                charWrap.appendChild(document.createTextNode(' '));
                             } else {
                                 charWrap.innerText = word + ' ';
                             }
@@ -930,8 +1320,143 @@
             }
         }
         window.TextRotateEntrance = TextRotateEntrance;
-        document.querySelectorAll('.animate-text-rotate').forEach(el => new TextRotateEntrance(el));
+        if (window.innerWidth >= 768) {
+            document.querySelectorAll('.animate-text-rotate').forEach(el => new TextRotateEntrance(el));
+        }
     </script>
+    <script type="module">
+        import lottie from 'lottie-web';
+        const checkAnimationData = {"v":"5.5.2","fr":30,"ip":0,"op":60,"w":100,"h":100,"nm":"Check","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"Shape Layer 1","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":0,"k":0},"p":{"a":0,"k":[50,50,0]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","it":[{"ind":0,"ty":"sh","ix":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0],[0,0]],"o":[[0,0],[0,0],[0,0]],"v":[[-20,-5],[-5,12],[20,-12]],"c":false}},"nm":"Path 1","hd":false},{"ty":"st","c":{"a":0,"k":[0.18,1,0,1]},"o":{"a":0,"k":100},"w":{"a":0,"k":8},"lc":2,"lj":2,"ml":4,"bm":0,"nm":"Stroke 1","hd":false},{"ty":"tm","s":{"a":0,"k":0,"ix":1},"e":{"a":1,"k":[{"i":{"x":[0.25],"y":[1]},"o":{"x":[0.25],"y":[0]},"t":0,"s":[0]},{"i":{"x":[0.25],"y":[1]},"o":{"x":[0.25],"y":[0]},"t":15,"s":[100]},{"t":60,"s":[100]}],"ix":2},"o":{"a":0,"k":0,"ix":3},"m":1,"ix":3,"nm":"Trim Paths 1","hd":false},{"ty":"tr","p":{"a":0,"k":[0,0],"ix":2},"a":{"a":0,"k":[0,0],"ix":1},"s":{"a":0,"k":[100,100],"ix":3},"r":{"a":0,"k":0,"ix":6},"o":{"a":0,"k":100,"ix":7},"sk":{"a":0,"k":0,"ix":4},"sa":{"a":0,"k":0,"ix":5},"nm":"Transform"}],"nm":"Group 1","cix":2,"bm":0,"ix":1,"mn":"ADBE Vector Group","hd":false}],"ip":0,"op":60,"st":0,"bm":0}]};
+        
+        const initLottie = () => {
+            const containers = document.querySelectorAll('.lottie-check');
+            containers.forEach(container => {
+                if (container.hasChildNodes()) return; // Already initialized
+                lottie.loadAnimation({
+                    container: container,
+                    renderer: 'svg',
+                    loop: true,
+                    autoplay: true,
+                    animationData: checkAnimationData
+                });
+                // No glow effect
+            });
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initLottie);
+        } else {
+            initLottie();
+        }
+
+        const staggerIcons = () => {
+            const svgGroups = document.querySelectorAll('body:not(.admin-page) svg.lucide:not([data-staggered]), body:not(.admin-page) .c-icon-box svg:not([data-staggered]), body:not(.admin-page) .process-icon svg:not([data-staggered]), body:not(.admin-page) .card-header > svg:not([data-staggered]), body:not(.admin-page) .card-icon svg:not([data-staggered]), body:not(.admin-page) .feature-item svg:not([data-staggered]), body:not(.admin-page) .tech-icon svg:not([data-staggered]), body:not(.admin-page) .project-modal-item svg:not([data-staggered]), body:not(.admin-page) .card svg:not([data-staggered])');
+            svgGroups.forEach((svg) => {
+                svg.setAttribute('data-staggered', 'true');
+                const randomDelay = Math.random() * -4;
+                svg.querySelectorAll('*').forEach(path => {
+                    path.style.animationDelay = `${randomDelay}s`;
+                });
+            });
+        };
+        setInterval(staggerIcons, 1000);
+        staggerIcons();
+
+        // Contact Form Submission
+        const contactForm = document.getElementById('contact-form');
+        if(contactForm) {
+            contactForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('c-submit');
+                const originalText = btn.innerText;
+                btn.innerText = "ENVIANDO...";
+                btn.disabled = true;
+
+                const name = document.getElementById('c-name').value;
+                const email = document.getElementById('c-email').value;
+                const phone = document.getElementById('c-whatsapp').value;
+                const message = document.getElementById('c-message').value;
+
+                try {
+                    const response = await fetch('/api/contact', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email, phone, message })
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        btn.innerText = "ENVIADO COM SUCESSO!";
+                        btn.style.background = "var(--neon)";
+                        btn.style.color = "var(--bg-dark)";
+                        contactForm.reset();
+                    } else { throw new Error('Erro'); }
+                } catch (error) {
+                    btn.innerText = "ERRO AO ENVIAR. CONTATE-NOS VIA EMAIL.";
+                }
+                setTimeout(() => { btn.innerText = originalText; btn.style.background = ""; btn.style.color = ""; btn.disabled = false; }, 4000);
+            });
+        }
+
+    </script>
+    <!-- Contact Modal -->
+    <div id="contact-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" id="close-modal">&times;</button>
+            <h2 class="modal-title" style="font-weight: 300;">Iniciar <span class="highlight" style="font-weight: 500;">Projeto</span></h2>
+            <p class="modal-desc">Deixe seus dados e nossa equipe entrará em contato com você o mais rápido possível.</p>
+            <form id="popup-contact-form" style="display: flex; flex-direction: column; gap: 1rem;">
+                <input type="text" placeholder="Nome" required style="padding: 14px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: white; font-family: var(--font-sans); outline: none;">
+                <input type="email" placeholder="E-mail Corporativo" required style="padding: 14px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: white; font-family: var(--font-sans); outline: none;">
+                <textarea placeholder="Fale sobre o seu projeto..." rows="4" required style="padding: 14px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: white; font-family: var(--font-sans); outline: none; resize: none;"></textarea>
+                <button type="submit" class="hero-btn" style="margin-top: 1rem; width: 100%; border-radius: 8px;">ENVIAR MENSAGEM</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Modal Logic
+        const modal = document.getElementById('contact-modal');
+        const closeBtn = document.getElementById('close-modal');
+        // Need to use event delegation because buttons might be inside React or rendered late
+        document.body.addEventListener('click', (e) => {
+            if (e.target.closest('.open-modal-btn')) {
+                e.preventDefault();
+                modal.classList.add('active');
+            }
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+        
+        const popupForm = document.getElementById('popup-contact-form');
+        popupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = popupForm.querySelector('button');
+            const originalText = btn.textContent;
+            btn.textContent = 'ENVIANDO...';
+            setTimeout(() => {
+                btn.textContent = 'ENVIADO!';
+                btn.style.background = 'var(--neon)';
+                btn.style.color = '#000';
+                setTimeout(() => {
+                    modal.classList.remove('active');
+                    popupForm.reset();
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                    btn.style.color = '';
+                }, 1500);
+            }, 1000);
+        });
+    </script>
+
     <script type="module" src="/src/GravityMount.tsx"></script>
 </body>
 </html>
