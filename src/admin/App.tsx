@@ -23,7 +23,7 @@ import Leads from "./pages/Leads";
 import Contratos from "./pages/Contratos";
 import Portfolio from "./pages/Portfolio";
 import InstagramGEM from "./pages/InstagramGEM";
-import Relatorios from "./pages/Relatorios";
+import ProjetosNoAr from "./pages/ProjetosNoAr";
 import Configuracoes from "./pages/Configuracoes";
 import Prospect from "./pages/Prospect";
 import Login from "./pages/Login";
@@ -48,7 +48,7 @@ function Sidebar({ onLogout, isOpen, setIsOpen }: { onLogout: () => void, isOpen
   ];
 
   const sistema = [
-    { name: "Relatórios", path: "/relatorios", icon: <BarChart2 size={18} /> },
+    { name: "Projetos no ar", path: "/projetos-no-ar", icon: <BarChart2 size={18} /> },
     { name: "Configurações", path: "/configuracoes", icon: <Settings size={18} /> },
   ];
 
@@ -161,7 +161,7 @@ export default function App() {
           <Route path="/contratos" element={<Contratos />} />
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/instagram" element={<InstagramGEM />} />
-          <Route path="/relatorios" element={<Relatorios />} />
+          <Route path="/projetos-no-ar" element={<ProjetosNoAr />} />
           <Route path="/configuracoes" element={<Configuracoes />} />
           <Route path="/prospect" element={<Prospect />} />
         </Routes>

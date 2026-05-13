@@ -7,8 +7,8 @@ export default function BackToTop() {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Show button after 400px
-      setIsVisible(window.scrollY > 400);
+      // Show button after the first section (which is 600vh due to video sequence)
+      setIsVisible(window.scrollY > window.innerHeight * 5.8);
     };
 
     window.addEventListener("scroll", handleScroll);

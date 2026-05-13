@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { Gravity, MatterBody, GravityRef } from "./components/ui/gravity";
 import { TiltCard } from "./components/TiltCard";
 import BackToTop from "./components/BackToTop";
-import { motion, useScroll, useTransform } from "motion/react";
+import { motion, useScroll, useTransform, AnimatePresence } from "motion/react";
 import AnimatedZap from "./components/AnimatedZap";
 import AnimatedLock from "./components/AnimatedLock";
 import AnimatedGraph from "./components/AnimatedGraph";
@@ -31,6 +31,113 @@ function useI18n(key: string, fallback: string) {
   if (!i18nObj) return fallback;
   return i18nObj[lang]?.[key] || fallback;
 }
+
+const ProjectModal = ({ project, onClose }: { project: PortfolioProject | null; onClose: () => void }) => {
+  const [isZoomed, setIsZoomed] = useState(false);
+  if (!project) return null;
+
+  return (
+    <AnimatePresence>
+      {project && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => {
+            if (isZoomed) setIsZoomed(false);
+            else onClose();
+          }}
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 p-4 md:p-8 cursor-pointer"
+          style={{ backdropFilter: 'blur(12px)' }}
+        >
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            onClick={(e) => e.stopPropagation()}
+            className={`bg-[#0a0a0a] border border-white/10 w-full ${isZoomed ? 'max-w-none h-full md:h-[95vh]' : 'max-w-4xl max-h-[90vh] md:max-h-[80vh]'} rounded-2xl overflow-hidden cursor-default relative flex flex-col transition-all duration-500 ease-[0.33, 1, 0.68, 1]`}
+          >
+            <button 
+              onClick={onClose}
+              className="absolute top-4 right-4 z-[100] bg-black/50 backdrop-blur-md hover:bg-white/10 w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors border border-white/10"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+
+            <div className={`flex flex-col ${isZoomed ? '' : 'md:flex-row'} h-full overflow-hidden`}>
+              {/* Image Section */}
+              <div 
+                onClick={() => setIsZoomed(!isZoomed)}
+                className={`${isZoomed ? 'w-full h-full' : 'w-full md:w-1/2 h-[350px] md:h-auto'} bg-black relative overflow-hidden group cursor-zoom-in flex items-center justify-center`}
+              >
+                <motion.img 
+                  layout
+                  src={project.image} 
+                  alt={project.name}
+                  className={`w-full h-full ${isZoomed ? 'object-contain' : 'object-cover'} transition-all duration-700 ease-[0.33, 1, 0.68, 1] group-hover:scale-[1.02]`}
+                />
+                {!isZoomed && (
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <span className="bg-white/20 backdrop-blur-xl text-white px-4 py-2 rounded-full text-xs font-mono tracking-widest border border-white/20">CLIQUE PARA AMPLIAR</span>
+                  </div>
+                )}
+                {!isZoomed && <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 to-transparent pointer-events-none"></div>}
+              </div>
+
+              {/* Info Section */}
+              {!isZoomed && (
+                <div className="w-full md:w-1/2 p-6 md:p-10 overflow-y-auto flex flex-col custom-scrollbar">
+                  <div className="system-tag mb-5 inline-flex items-center gap-2">
+                    <div className="flex gap-1">
+                      <div className="w-2 h-2 rounded-full bg-red-500/50"></div>
+                      <div className="w-2 h-2 rounded-full bg-yellow-500/50"></div>
+                      <div className="w-2 h-2 rounded-full bg-green-500/50"></div>
+                    </div>
+                    <span className="text-[10px] font-mono opacity-50 tracking-widest uppercase">PROJ_ID: {project.id?.slice(0, 8)}</span>
+                  </div>
+                  
+                  <h3 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tighter uppercase font-sans">
+                    {project.name}
+                  </h3>
+                  
+                  <div className="flex items-center gap-3 mb-6">
+                    <p className="text-[#2EFF00] font-mono text-[10px] tracking-widest uppercase border border-[#2EFF00]/30 px-2 py-0.5 rounded">
+                      {project.category}
+                    </p>
+                    <span className="text-white/20 text-[10px] font-mono">/</span>
+                    <span className="text-white/40 text-[10px] font-mono uppercase">Performance {project.score}</span>
+                  </div>
+
+                  <p className="text-gray-400 text-base leading-relaxed mb-8 font-sans">
+                    {project.desc}
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-4 mb-8">
+                    <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex flex-col gap-1">
+                        <span className="text-gray-500 text-[9px] uppercase font-mono tracking-widest">Score</span>
+                        <span className="text-xl font-bold text-white font-mono">{project.score}</span>
+                    </div>
+                    <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex flex-col gap-1">
+                        <span className="text-gray-500 text-[9px] uppercase font-mono tracking-widest">Status</span>
+                        <span className="text-[#2EFF00] text-[10px] font-mono uppercase tracking-widest">Live</span>
+                    </div>
+                  </div>
+
+                  <a 
+                    href={`/portfolio-projetos/${project.id}`}
+                    className="mt-auto group relative overflow-hidden bg-white text-black font-bold py-4 px-6 rounded-xl text-center transition-all duration-300 tracking-tighter hover:bg-[#2EFF00] active:scale-95 text-sm"
+                  >
+                    <span className="relative z-10">VER ESTUDO DE CASO</span>
+                  </a>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
 
 const ScrambleTag = ({ text }: { text: string }) => {
   const textRef = useRef<HTMLSpanElement>(null);
@@ -547,6 +654,114 @@ function ScienceCards() {
   );
 }
 
+import { getPortfolioProjects, PortfolioProject } from "./firebase";
+
+function ProjectList() {
+  const [projects, setProjects] = useState<PortfolioProject[]>([]);
+  const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
+  const [error, setError] = useState<any>(null);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const projs = await getPortfolioProjects();
+        setProjects(projs);
+        
+        const modalSlider = document.getElementById("projectModalSlider");
+        if (modalSlider && projs.length > 0) {
+          modalSlider.innerHTML = projs.map(p => `<div class="project-modal-item"><img src="${p.image || ''}" alt="${p.name}"></div>`).join('');
+        } else if (modalSlider) {
+          modalSlider.innerHTML = '';
+        }
+      } catch (err) {
+        console.error(err);
+        setError(err);
+      }
+    }
+    load();
+  }, []);
+
+  const handleMouseEnter = (index: number) => {
+      const pModalSlider = document.getElementById('projectModalSlider');
+      const pModalContainer = document.getElementById('projectModalContainer');
+      const viewCursor = document.getElementById('viewCursor');
+      const cursor = document.getElementById('cursor');
+      const cursorDot = document.getElementById('cursorDot');
+
+      if (pModalSlider) pModalSlider.style.top = `${index * -100}%`;
+      if (pModalContainer) pModalContainer.classList.add('active');
+      if (viewCursor) viewCursor.classList.add('active');
+      if (cursor) cursor.style.opacity = '0';
+      if (cursorDot) cursorDot.style.opacity = '0';
+  };
+
+  const handleMouseLeave = () => {
+      const pModalContainer = document.getElementById('projectModalContainer');
+      const viewCursor = document.getElementById('viewCursor');
+      const cursor = document.getElementById('cursor');
+      const cursorDot = document.getElementById('cursorDot');
+
+      if (pModalContainer) pModalContainer.classList.remove('active');
+      if (viewCursor) viewCursor.classList.remove('active');
+      if (cursor) cursor.style.opacity = '1';
+      if (cursorDot) cursorDot.style.opacity = '1';
+  };
+
+  const handleProjectClick = (e: React.MouseEvent, project: PortfolioProject) => {
+    e.preventDefault();
+    setSelectedProject(project);
+    // Disable body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+    
+    // Reset cursors
+    const viewCursor = document.getElementById('viewCursor');
+    const cursor = document.getElementById('cursor');
+    const cursorDot = document.getElementById('cursorDot');
+    
+    if (viewCursor) viewCursor.classList.remove('active');
+    if (cursor) cursor.style.opacity = '1';
+    if (cursorDot) cursorDot.style.opacity = '1';
+    if (cursor) cursor.classList.remove('active');
+  };
+
+  const handleCloseModal = () => {
+    setSelectedProject(null);
+    document.body.style.overflow = 'auto';
+  };
+
+  if (error) return <div style={{ color: 'red', padding: '2rem' }}>Error loading projects.</div>;
+
+  return (
+    <>
+      <div className="project-list" style={{ borderTop: "1px solid var(--border-color)" }}>
+         {projects.length === 0 ? (
+           <div style={{ padding: '2.5rem 0', color: 'var(--gray-mid)', fontFamily: 'var(--font-mono)' }}>Nenhum projeto encontrado.</div>
+         ) : projects.map((p, index) => (
+           <a key={p.id || index} href={`/portfolio-projetos/${p.id}`} className="project-row" data-index={index}
+              onMouseEnter={() => handleMouseEnter(index)}
+              onMouseLeave={handleMouseLeave}
+              onClick={(e) => handleProjectClick(e, p)}
+              style={{ display: 'grid' }}
+           >
+              <span className="proj-num">{String(index + 1).padStart(2, '0')}</span>
+              <h3 className="proj-title">{p.name || 'Sem Nome'}</h3>
+              <span className="proj-cat">{p.category || 'Sem Categoria'}</span>
+              <span className="proj-year">
+                {p.createdAt 
+                  ? (typeof p.createdAt === 'string' 
+                     ? new Date(p.createdAt).getFullYear() 
+                     : (p.createdAt.toDate ? p.createdAt.toDate().getFullYear() : (p.createdAt.seconds ? new Date(p.createdAt.seconds * 1000).getFullYear() : '2025')))
+                  : '2025'}
+              </span>
+              <span className="proj-arrow">↗</span>
+           </a>
+         ))}
+      </div>
+      <ProjectModal project={selectedProject} onClose={handleCloseModal} />
+    </>
+  );
+}
+
 const container = document.getElementById("gravity-root");
 if (container) {
   createRoot(container).render(
@@ -588,6 +803,15 @@ if (backToTopContainer) {
   createRoot(backToTopContainer).render(
     <StrictMode>
       <BackToTop />
+    </StrictMode>
+  );
+}
+
+const portfolioListContainer = document.getElementById("portfolio-list-react-root");
+if (portfolioListContainer) {
+  createRoot(portfolioListContainer).render(
+    <StrictMode>
+      <ProjectList />
     </StrictMode>
   );
 }

@@ -38,9 +38,15 @@ function PortfolioPage() {
           </a>
           
           <div className="hidden md:flex items-center gap-8 text-[11px] font-mono tracking-widest text-white/60">
-            {["Início", "Sobre", "Serviços", "Portfólio", "Posicionamento"].map((item) => (
-              <a key={item} href={`/#${item.toLowerCase()}`} className="hover:text-[#00e300] transition-colors">
-                {item}
+            {Object.entries({
+              "Início": "inicio",
+              "Sobre": "sobre",
+              "Serviços": "servicos",
+              "Portfólio": "portfolio",
+              "Posicionamento": "posicionamento"
+            }).map(([label, id]) => (
+              <a key={label} href={`/#${id}`} className="hover:text-[#00e300] transition-colors">
+                {label}
               </a>
             ))}
           </div>
