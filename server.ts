@@ -39,6 +39,10 @@ async function startServer() {
   app.use(cors());
   app.use(express.json());
 
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "ok" });
+  });
+
   // Secure API Route for Contact Form
   app.post("/api/contact", async (req, res) => {
     try {
@@ -155,6 +159,51 @@ Obrigatório: gere pelo menos de 7 a 10 problemas cobrindo TODAS e múltiplas á
     }
   });
 
+  // MAPS LEAD FINDER API
+  app.post("/api/maps-leads", async (req, res) => {
+    try {
+      const { query } = req.body;
+      if (!query) return res.status(400).json({ error: "Query is required" });
+      if (!process.env.SERPER_API_KEY) {
+         return res.status(500).json({ error: "SERPER_API_KEY is not configured in .env" });
+      }
+
+      // Search Google Maps using Serper
+      const response = await fetch("https://google.serper.dev/places", {
+        method: "POST",
+        headers: {
+          "X-API-KEY": process.env.SERPER_API_KEY,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          q: query,
+          gl: "br",
+          hl: "pt-br"
+        })
+      });
+      
+      const searchData = await response.json();
+      const placesResults = searchData.places || [];
+
+      res.json({ 
+        success: true, 
+        data: placesResults.map((r: any) => ({
+          title: r.title,
+          address: r.address,
+          phone: r.phoneNumber || "Sem telefone",
+          website: r.website || "",
+          rating: r.rating,
+          ratingCount: r.ratingCount,
+          placeId: r.cid || r.placeId || Date.now().toString()
+        }))
+      });
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to search maps" });
+    }
+  });
+
   // LEAD FINDER API
   app.post("/api/find-leads", async (req, res) => {
     try {
@@ -188,7 +237,7 @@ Obrigatório: gere pelo menos de 7 a 10 problemas cobrindo TODAS e múltiplas á
           title: r.title,
           snippet: r.snippet,
           link: r.link,
-          email: "contato@" + new URL(r.link.startsWith('http') ? r.link : 'https://' + r.link).hostname.replace('www.', '')
+          email: "contato@" + new URL((r.link || '').startsWith('http') ? (r.link || 'https://google.com') : 'https://' + (r.link || 'google.com')).hostname.replace('www.', '')
         }))
       });
 

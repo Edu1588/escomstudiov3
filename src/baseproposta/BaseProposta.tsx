@@ -3,7 +3,7 @@ import { ArrowDown, Users, Globe, Award, ArrowUpRight, CheckCircle2, Clock, Wall
 import { TextRotateEntrance } from "../components/ui/text-rotate-entrance";
 import { InteractiveTiltCard } from "../components/ui/tilt-card";
 import { getPortfolioProjects, PortfolioProject } from "../firebase";
-import html2canvas from 'html2canvas';
+import { toJpeg } from 'html-to-image';
 import { jsPDF } from "jspdf";
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import '@dotlottie/react-player/dist/index.css';
@@ -146,16 +146,18 @@ export default function BaseProposta() {
         // Wait for CSS to apply and layout to calculate width/height
         await new Promise(resolve => setTimeout(resolve, 200));
 
-        const canvas = await html2canvas(element, { 
-          scale: 2, 
-          useCORS: true, 
-          backgroundColor: '#050505'
+        const filter = (node: HTMLElement) => {
+          return node.getAttribute ? node.getAttribute('data-html2canvas-ignore') !== 'true' : true;
+        };
+
+        const imgData = await toJpeg(element, { 
+          pixelRatio: 2, 
+          backgroundColor: '#050505',
+          filter: filter
         });
         
         const width = element.offsetWidth;
         const height = element.offsetHeight;
-        
-        const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
         const pdf = new jsPDF({
           orientation: 'portrait',

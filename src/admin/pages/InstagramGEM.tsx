@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Header } from "../components/Header";
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 import { jsPDF } from "jspdf";
 import { db } from "../../firebase";
 import { collection, addDoc, getDocs, doc, deleteDoc, query, orderBy } from "firebase/firestore";
@@ -368,10 +368,10 @@ export default function InstagramGEM() {
             for (let i = 0; i < slides.length; i++) {
                 const element = document.getElementById(`capture-slide-${i}`);
                 if (element) {
-                    const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: null });
+                    const dataUrl = await toPng(element, { pixelRatio: 2, backgroundColor: 'rgba(0,0,0,0)' });
                     const link = document.createElement('a');
                     link.download = `escom-carrossel-slide-${i + 1}.png`;
-                    link.href = canvas.toDataURL('image/png');
+                    link.href = dataUrl;
                     link.click();
                     await new Promise(r => setTimeout(r, 600));
                 }
@@ -397,8 +397,7 @@ export default function InstagramGEM() {
             for (let i = 0; i < slides.length; i++) {
                 const element = document.getElementById(`capture-slide-${i}`);
                 if (element) {
-                    const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: null });
-                    const imgData = canvas.toDataURL('image/png');
+                    const imgData = await toPng(element, { pixelRatio: 2, backgroundColor: 'rgba(0,0,0,0)' });
                     if (i > 0) pdf.addPage([400, 500], 'portrait');
                     pdf.addImage(imgData, 'PNG', 0, 0, 400, 500);
                 }

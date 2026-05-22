@@ -7,6 +7,8 @@ import {
 } from "lucide-react";
 import { db } from "../../lib/firebase";
 import { collection, addDoc, serverTimestamp, getDocs, deleteDoc, doc, query, orderBy } from "firebase/firestore";
+import { toJpeg } from 'html-to-image';
+import { jsPDF } from "jspdf";
 
 enum OperationType {
   CREATE = 'create',
@@ -43,6 +45,7 @@ export default function Prospect() {
   const [uxActiveInnerTab, setUxActiveInnerTab] = useState("IDENTIDADE VISUAL E UI");
   const [uxInput, setUxInput] = useState("");
   const [uxResults, setUxResults] = useState<any>(null);
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
 
   const [leadState, setLeadState] = useState<"idle" | "loading" | "results">("idle");
   const [leadInput, setLeadInput] = useState("");
@@ -151,8 +154,48 @@ export default function Prospect() {
     }
   };
 
-  const handleDownloadPdf = () => {
-     window.print();
+  const handleDownloadPdf = async () => {
+    setIsDownloadingPdf(true);
+    try {
+      const element = document.getElementById("ux-report-container");
+      if (element) {
+        // Temporarily modify element to allow capture if it's placed off-screen
+        element.classList.add('pdf-exporting');
+        
+        // Ensure all tabs are visible for the PDF
+        const originalTab = uxActiveInnerTab;
+        
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        const filter = (node: HTMLElement) => {
+          return node.getAttribute ? node.getAttribute('data-html2canvas-ignore') !== 'true' : true;
+        };
+
+        const imgData = await toJpeg(element, { 
+          pixelRatio: 2, 
+          backgroundColor: '#0a0a0a',
+          filter: filter
+        });
+        
+        const width = element.offsetWidth;
+        const height = element.offsetHeight;
+
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'px',
+          format: [width, height]
+        });
+        
+        pdf.addImage(imgData, 'JPEG', 0, 0, width, height);
+        pdf.save(`auditoria-ux.pdf`);
+        
+        element.classList.remove('pdf-exporting');
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert('Erro ao exportar PDF: ' + err.message);
+    }
+    setIsDownloadingPdf(false);
   };
 
 
@@ -304,19 +347,19 @@ export default function Prospect() {
              )}
 
              {uxState === "results" && (
-                <div className="border border-[#1a1a1a] rounded-xl bg-[#0a0a0a] p-8">
+                <div id="ux-report-container" className="border border-[#1a1a1a] rounded-xl bg-[#0a0a0a] p-8">
                      <div className="flex justify-between items-center mb-8 border-b border-[#1a1a1a] pb-6">
                        <div className="flex items-center gap-4 text-[#2EFF00]">
                          <LayoutDashboard size={24} />
                          <h2 className="font-mono tracking-widest uppercase text-lg">Relatório de Auditoria</h2>
                        </div>
-                       <button onClick={handleDownloadPdf} className="print:hidden flex items-center gap-2 bg-transparent hover:bg-[#111] border border-[#2EFF00] text-[#2EFF00] px-4 py-2 rounded font-mono text-sm transition-colors">
+                       <button onClick={handleDownloadPdf} disabled={isDownloadingPdf} data-html2canvas-ignore="true" className="print:hidden flex items-center gap-2 bg-transparent hover:bg-[#111] border border-[#2EFF00] text-[#2EFF00] px-4 py-2 rounded font-mono text-sm transition-colors disabled:opacity-50">
                          <Download size={16} />
-                         BAIXAR RELATÓRIO
+                         {isDownloadingPdf ? 'GERANDO...' : 'BAIXAR RELATÓRIO'}
                        </button>
                      </div>
 
-                   <div className="flex flex-wrap gap-2 mb-8 print:hidden">
+                   <div className="flex flex-wrap gap-2 mb-8 print:hidden" data-html2canvas-ignore="true">
                      {["IDENTIDADE VISUAL E UI", "HEURÍSTICAS DE NIELSEN", "VIESES COGNITIVOS E PSICOLOGIA", "ARQUITETURA DA INFORMAÇÃO", "ACESSIBILIDADE E INCLUSÃO"].map(tab => (
                        <button
                          key={tab}
@@ -346,7 +389,7 @@ export default function Prospect() {
                             if (issuesForTab.length === 0) return null;
                             
                             return (
-                               <div key={tabName} className={`${uxActiveInnerTab === tabName ? 'block' : 'hidden print:block'}`}>
+                               <div key={tabName} className={`${(isDownloadingPdf || uxActiveInnerTab === tabName) ? 'block' : 'hidden print:block'}`}>
                                  <h3 className="text-[#2EFF00] font-mono tracking-widest mb-6 print:text-black border-b border-[#2EFF00]/30 pb-2">{tabName}</h3>
                                  <div className="space-y-8">
                                    {issuesForTab.map((issue: any, idx: number) => (
@@ -450,9 +493,11 @@ export default function Prospect() {
                       <p className="text-gray-400 font-mono text-xs mb-8 pl-2">{lead.snippet}</p>
                       
                       <div className="flex items-center gap-6 text-[10px] font-mono mb-8 pl-2 pb-6 border-b border-[#1a1a1a] overflow-x-auto">
-                        <a href={lead.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#2EFF00] whitespace-nowrap hover:underline">
-                          <Globe size={14} /> {new URL(lead.link.startsWith('http') ? lead.link : 'https://' + lead.link).hostname.toUpperCase()}
-                        </a>
+                        {lead.link && (
+                          <a href={lead.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#2EFF00] whitespace-nowrap hover:underline">
+                            <Globe size={14} /> {new URL(lead.link.startsWith('http') ? lead.link : 'https://' + lead.link).hostname.toUpperCase()}
+                          </a>
+                        )}
                         <div className="flex items-center gap-2 text-white whitespace-nowrap">
                           <Mail size={14} className="text-[#2EFF00]" /> {lead.email}
                         </div>
@@ -650,9 +695,11 @@ export default function Prospect() {
                      </p>
 
                      <div className="flex items-center gap-6 text-[10px] font-mono mb-8 pl-2 pb-6 border-b border-[#1a1a1a] overflow-x-auto">
-                       <a href={lead.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#2EFF00] whitespace-nowrap hover:underline">
-                         <Globe size={14} /> {new URL(lead.link.startsWith('http') ? lead.link : 'https://' + lead.link).hostname.toUpperCase()}
-                       </a>
+                       {lead.link && (
+                         <a href={lead.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#2EFF00] whitespace-nowrap hover:underline">
+                           <Globe size={14} /> {new URL(lead.link.startsWith('http') ? lead.link : 'https://' + lead.link).hostname.toUpperCase()}
+                         </a>
+                       )}
                        <div className="flex items-center gap-2 text-white whitespace-nowrap">
                          <Mail size={14} className="text-[#2EFF00]" /> {lead.email}
                        </div>

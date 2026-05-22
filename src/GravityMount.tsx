@@ -10,6 +10,8 @@ import AnimatedGraph from "./components/AnimatedGraph";
 import studio from "@theatre/studio";
 import "./index.css";
 
+import { Component as GradientBarsBackground } from "./components/ui/gradient-bars-background";
+
 studio.initialize();
 studio.ui.hide();
 
@@ -707,7 +709,7 @@ function ProjectList() {
       if (cursorDot) cursorDot.style.opacity = '1';
   };
 
-  const handleProjectClick = (e: React.MouseEvent, project: PortfolioProject) => {
+  const handleProjectClick = (e: any, project: PortfolioProject) => {
     e.preventDefault();
     setSelectedProject(project);
     // Disable body scroll when modal is open
@@ -767,6 +769,15 @@ if (container) {
   createRoot(container).render(
     <StrictMode>
       <GravityDemo />
+    </StrictMode>
+  );
+}
+
+const heroBgContainer = document.getElementById("hero-background-react-root");
+if (heroBgContainer) {
+  createRoot(heroBgContainer).render(
+    <StrictMode>
+      <GradientBarsBackground numBars={19} gradientFrom="#39ff14" animationDuration={3} backgroundColor="transparent" />
     </StrictMode>
   );
 }

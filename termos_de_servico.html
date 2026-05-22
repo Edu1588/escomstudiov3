@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="antialiased bg-zinc-950 text-zinc-300">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termos de Serviço - ESCOM STUDIO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="font-light text-base p-8 md:p-24 max-w-4xl mx-auto">
+    <a href="index.html" class="text-lime-400 hover:text-lime-500 mb-8 inline-block">&larr; Voltar para o início</a>
+    <h1 class="text-3xl font-medium text-white mb-6">Termos de Serviço</h1>
+    <p class="mb-4">Ao utilizar nossos serviços, você concorda em se vincular e agir de acordo com estes termos.</p>
+    <h2 class="text-xl text-white mt-8 mb-4">1. Escopo de Trabalho</h2>
+    <p class="mb-4">Cada projeto é governado por um acordo de escopo (SOW) detalhando entregáveis, prazos, e cronograma de pagamentos.</p>
+    <h2 class="text-xl text-white mt-8 mb-4">2. Propriedade Intelectual</h2>
+    <p class="mb-4">Todo o código e design final é transferido inteiramente ao cliente após o pagamento completo, retendo apenas nossa permissão de exibir em nosso portfólio.</p>
+    <h2 class="text-xl text-white mt-8 mb-4">3. Revisões</h2>
+    <p class="mb-4">O ciclo de revisões é estipulado no contrato. Modificações extraordinárias fora do escopo inicial poderão incorrer em taxas adicionais.</p>
+    <p class="mt-12 text-sm text-zinc-500">Última atualização: Maio de 2026</p>
+
+<style>
+@property --hover-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@keyframes rotate-border { to { --hover-angle: 360deg; } }
+button.hover-bg-fx { position: relative; z-index: 1; }
+button.hover-bg-fx::before { content: ""; position: absolute; inset: -2px; z-index: -1; border-radius: inherit; background: conic-gradient(from var(--hover-angle), transparent 0%, #3275F8 50%, transparent 100%); animation: rotate-border 2s linear infinite; opacity: 0; transition: opacity 0.5s ease; pointer-events: none; }
+button.hover-bg-fx:hover::before { opacity: 1; }
+button.hover-bg-fx::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: inherit; background-color: inherit; pointer-events: none; }
+</style>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("button").forEach(b => b.classList.add('hover-bg-fx'));
+});
+</script>
+
+</body>
+</html>

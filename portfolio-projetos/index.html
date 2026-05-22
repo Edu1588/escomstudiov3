@@ -22,5 +22,20 @@
   <body class="bg-black text-white selection:bg-white selection:text-black antialiased">
     <div id="root"></div>
     <script type="module" src="/src/portfolio-projetos.tsx"></script>
-  </body>
+  
+<style>
+@property --hover-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@keyframes rotate-border { to { --hover-angle: 360deg; } }
+button.hover-bg-fx { position: relative; z-index: 1; }
+button.hover-bg-fx::before { content: ""; position: absolute; inset: -2px; z-index: -1; border-radius: inherit; background: conic-gradient(from var(--hover-angle), transparent 0%, #3275F8 50%, transparent 100%); animation: rotate-border 2s linear infinite; opacity: 0; transition: opacity 0.5s ease; pointer-events: none; }
+button.hover-bg-fx:hover::before { opacity: 1; }
+button.hover-bg-fx::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: inherit; background-color: inherit; pointer-events: none; }
+</style>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("button").forEach(b => b.classList.add('hover-bg-fx'));
+});
+</script>
+
+</body>
 </html>

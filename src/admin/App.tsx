@@ -12,7 +12,8 @@ import {
   Instagram, 
   BarChart2, 
   Settings,
-  LogOut
+  LogOut,
+  Search
 } from "lucide-react";
 
 import Dashboard from "./pages/Dashboard";
@@ -26,6 +27,7 @@ import InstagramGEM from "./pages/InstagramGEM";
 import ProjetosNoAr from "./pages/ProjetosNoAr";
 import Configuracoes from "./pages/Configuracoes";
 import Prospect from "./pages/Prospect";
+import Mineracao from "./pages/Mineracao";
 import Login from "./pages/Login";
 
 function Sidebar({ onLogout, isOpen, setIsOpen }: { onLogout: () => void, isOpen: boolean, setIsOpen: (val: boolean) => void }) {
@@ -41,6 +43,7 @@ function Sidebar({ onLogout, isOpen, setIsOpen }: { onLogout: () => void, isOpen
     { name: "Gestão de Páginas", path: "/paginas", icon: <Layers size={18} /> },
     { name: "Gerar Propostas", path: "/propostas", icon: <FileText size={18} /> },
     { name: "Prospect", path: "/prospect", icon: <Target size={18} /> },
+    { name: "Mineração de Leads", path: "/mineracao", icon: <Search size={18} /> },
     { name: "Leads", path: "/leads", icon: <Users size={18} /> },
     { name: "Contratos", path: "/contratos", icon: <FileSignature size={18} /> },
     { name: "Projetos do Portfolio", path: "/portfolio", icon: <Briefcase size={18} /> },
@@ -164,6 +167,7 @@ export default function App() {
           <Route path="/projetos-no-ar" element={<ProjetosNoAr />} />
           <Route path="/configuracoes" element={<Configuracoes />} />
           <Route path="/prospect" element={<Prospect />} />
+          <Route path="/mineracao" element={<Mineracao />} />
         </Routes>
       </main>
     </div>

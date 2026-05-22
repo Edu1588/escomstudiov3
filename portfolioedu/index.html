@@ -18,10 +18,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
     <style>
         :root {
-            --black: #0a0a0a;
-            --black-bg: #0d0d0d;
+            --black: #09090b;
+            --black-bg: #09090b;
             --neon: #2EFF00; 
             --neon-dim: rgba(46, 255, 0, 0.15);
             --neon-glow: rgba(46, 255, 0, 0.5);
@@ -207,8 +210,10 @@
         .footer-bottom-links a:hover { color: var(--neon); }
 
         @media (max-width: 1024px) {
-            .hero-layout, .mindset-layout, .split-layout { flex-direction: column; display: flex; }
+            .hero-layout { flex-direction: column-reverse; display: flex; align-items: center; gap: 4rem; }
+            .mindset-layout, .split-layout { flex-direction: column; display: flex; }
             .hero-side-box { width: 100%; margin-top: 2rem; }
+            .hero-side-scroll-box { width: 100%; margin: 0 auto; max-width: 400px; }
             .split-left, .split-right { max-width: 100%; }
             .mindset-grid { border-left: none; }
             .projects-grid { grid-template-columns: 1fr; }
@@ -224,7 +229,9 @@
             .header { display: none; }
             .status-bar { display: none; }
             .hero { padding-top: 4rem; text-align: center; }
-            .hero-layout, .hero-actions { justify-content: center; align-items: center; }
+            .hero-layout { justify-content: center; align-items: center; }
+            .hero-actions { flex-direction: column; width: 100%; gap: 1rem; align-items: stretch; justify-content: stretch; }
+            .hero-actions a { padding: 1.2rem !important; display: flex !important; justify-content: center; width: 100%; box-sizing: border-box; }
             .hero-side-box { text-align: center; }
             .hero-tags { justify-content: center; }
             .split-layout { text-align: center; }
@@ -319,9 +326,9 @@
                 </ul>
                 <div class="nav-right">
                     <div class="lang-switch">
-                        <a href="#" class="active">PT</a>
-                        <a href="#">EN</a>
-                        <a href="#">ES</a>
+                        <a href="#" class="lang-btn active">PT</a>
+                        <a href="#" class="lang-btn">EN</a>
+                        <a href="#" class="lang-btn">ES</a>
                     </div>
                     <a href="#contato" class="btn-solid">VAMOS CONVERSAR</a>
                 </div>
@@ -346,12 +353,11 @@
                 <div class="hero-text-content">
                     <h1 class="section-title large" style="margin-bottom: 1rem;">EDU <span class="highlight">SANTOS.</span></h1>
                     <div class="hero-tags"><span>// DIREÇÃO CRIATIVA & ESTRATÉGIA</span><span>|</span><span>// DESIGN PARA CONVERSÃO</span></div>
-                    <p class="subtitle animate-text-rotate">Sou especialista em resolver problemas de posicionamento, experiência digital e conversão em larga escala através de direção criativa estratégica.</p>
-                    <div class="hero-actions"><a href="#contato" class="btn-solid" style="padding: 1.2rem 2.5rem;">VAMOS CONVERSAR →</a><a href="#trabalhos" class="btn-outline">VER TRABALHOS</a></div>
+                    <p id="hero-dynamic-phrase" class="subtitle">Sou especialista em resolver problemas de posicionamento, experiência digital e conversão em larga escala através de direção criativa estratégica.</p>
+                    <div class="hero-actions"><a href="#contato" class="btn-solid" style="padding: 1.2rem 2.5rem;">VAMOS CONVERSAR →</a><a href="#trabalhos" class="btn-outline" style="padding: 1.2rem 2.5rem;">VER TRABALHOS</a></div>
                 </div>
-                <div class="hero-side-box">
-                    <div class="hero-side-label">MENSAGEM</div>
-                    <div class="hero-side-title">Transformando<br><span class="highlight">marcas.</span></div>
+                <div class="hero-side-scroll-box" style="flex: 1; max-width: 500px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); aspect-ratio: 1/1; position: relative; overflow: hidden; border-radius: 8px;">
+                    <canvas id="hero-video-canvas" style="position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover;"></canvas>
                 </div>
             </div>
             <div class="scroll-down"><div class="scroll-down-line"></div>ROLE PARA BAIXO ↓</div>
@@ -836,7 +842,113 @@
                 });
             });
         }
+
+        // Language switch functionality
+        const langBtns = document.querySelectorAll('.lang-btn');
+        langBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                langBtns.forEach(b => b.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+            });
+        });
+
+        // GSAP Hero Canvas Image Sequence Animation
+        if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+            gsap.registerPlugin(ScrollTrigger);
+
+            const canvasObj = document.getElementById("hero-video-canvas");
+            if (canvasObj) {
+                const context = canvasObj.getContext("2d");
+
+                canvasObj.width = 600; 
+                canvasObj.height = 600;
+
+                const scrollFrames = { frame: 0 };
+                const frameImages = [];
+                const totalFrames = 120;
+
+                for (let i = 0; i < totalFrames; i++) {
+                    const img = new Image();
+                    const frameNum = totalFrames - i;
+                    img.src = `https://escom.eionstudio.com.br/wp-content/uploads/2026/03/ezgif-frame-${frameNum.toString().padStart(3, '0')}.webp`;
+                    frameImages.push(img);
+                }
+
+                frameImages[0].onload = () => {
+                    canvasObj.width = frameImages[0].width;
+                    canvasObj.height = frameImages[0].height;
+                    context.drawImage(frameImages[0], 0, 0);
+                };
+
+                gsap.to(scrollFrames, {
+                    frame: totalFrames - 1,
+                    snap: "frame",
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: ".hero",
+                        start: "top top",
+                        end: "+=2500",
+                        scrub: 0.5,
+                        pin: true,
+                    },
+                    onUpdate: () => {
+                        const idx = Math.floor(scrollFrames.frame);
+                        if (frameImages[idx] && frameImages[idx].complete) {
+                            context.clearRect(0, 0, canvasObj.width, canvasObj.height);
+                            context.drawImage(frameImages[idx], 0, 0);
+                        }
+                    }
+                });
+
+                const dynamicPhrases = [
+                    "Sou especialista em resolver problemas de posicionamento, experiência digital e conversão em larga escala através de direção criativa estratégica.",
+                    "Crio ecossistemas digitais que unem estética apurada, performance comercial e narrativa de marca.",
+                    "Do conceito à execução, elevo ao extremo a percepção de valor que o mercado tem de você."
+                ];
+
+                ScrollTrigger.create({
+                    trigger: ".hero",
+                    start: "top top",
+                    end: "+=2500",
+                    scrub: true,
+                    onUpdate: (self) => {
+                        const progress = self.progress;
+                        let index = 0;
+                        if (progress > 0.33) index = 1;
+                        if (progress > 0.66) index = 2;
+                        
+                        const phraseEl = document.getElementById("hero-dynamic-phrase");
+                        if (phraseEl && phraseEl.innerText !== dynamicPhrases[index]) {
+                            gsap.to(phraseEl, {
+                                opacity: 0, 
+                                duration: 0.15, 
+                                onComplete: () => {
+                                    phraseEl.innerText = dynamicPhrases[index];
+                                    gsap.to(phraseEl, {opacity: 1, duration: 0.15});
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        }
     </script>
     <script type="module" src="/src/portfolioedu.tsx"></script>
+
+<style>
+@property --hover-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@keyframes rotate-border { to { --hover-angle: 360deg; } }
+button.hover-bg-fx { position: relative; z-index: 1; }
+button.hover-bg-fx::before { content: ""; position: absolute; inset: -2px; z-index: -1; border-radius: inherit; background: conic-gradient(from var(--hover-angle), transparent 0%, #3275F8 50%, transparent 100%); animation: rotate-border 2s linear infinite; opacity: 0; transition: opacity 0.5s ease; pointer-events: none; }
+button.hover-bg-fx:hover::before { opacity: 1; }
+button.hover-bg-fx::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: inherit; background-color: inherit; pointer-events: none; }
+</style>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("button").forEach(b => b.classList.add('hover-bg-fx'));
+});
+</script>
+
 </body>
 </html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="antialiased bg-zinc-950 text-zinc-300">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidade - ESCOM STUDIO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="font-light text-base p-8 md:p-24 max-w-4xl mx-auto">
+    <a href="index.html" class="text-lime-400 hover:text-lime-500 mb-8 inline-block">&larr; Voltar para o início</a>
+    <h1 class="text-3xl font-medium text-white mb-6">Política de Privacidade</h1>
+    <p class="mb-4">Este documento descreve como a ESCOM STUDIO coleta, usa, e protege as informações de nossos usuários.</p>
+    <h2 class="text-xl text-white mt-8 mb-4">1. Coleta de Informações</h2>
+    <p class="mb-4">Coletamos informações fornecidas ativamente por nossos clientes durante o contato e briefing do projeto, bem como dados analíticos anônimos para melhorar nossa plataforma.</p>
+    <h2 class="text-xl text-white mt-8 mb-4">2. Uso de Dados</h2>
+    <p class="mb-4">As informações coletadas são utilizadas estritamente para o desenvolvimento dos projetos contratados, suporte e prestação dos nossos serviços.</p>
+    <h2 class="text-xl text-white mt-8 mb-4">3. Proteção e Segurança</h2>
+    <p class="mb-4">Implementamos medidas de segurança rígidas para proteger suas informações pessoais contra acesso não autorizado.</p>
+    <p class="mt-12 text-sm text-zinc-500">Última atualização: Maio de 2026</p>
+
+<style>
+@property --hover-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@keyframes rotate-border { to { --hover-angle: 360deg; } }
+button.hover-bg-fx { position: relative; z-index: 1; }
+button.hover-bg-fx::before { content: ""; position: absolute; inset: -2px; z-index: -1; border-radius: inherit; background: conic-gradient(from var(--hover-angle), transparent 0%, #3275F8 50%, transparent 100%); animation: rotate-border 2s linear infinite; opacity: 0; transition: opacity 0.5s ease; pointer-events: none; }
+button.hover-bg-fx:hover::before { opacity: 1; }
+button.hover-bg-fx::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: inherit; background-color: inherit; pointer-events: none; }
+</style>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("button").forEach(b => b.classList.add('hover-bg-fx'));
+});
+</script>
+
+</body>
+</html>
