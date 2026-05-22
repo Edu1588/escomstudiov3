@@ -771,9 +771,41 @@
           </p>
         </div>
 
+        <style>
+          .eco-card {
+            position: relative;
+          }
+          .eco-card::before, .eco-card::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            background: #2EFF00;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 10px rgba(46,255,0,0.5);
+          }
+          .eco-card::before { top: -1px; left: 0; transition-delay: 0s; }
+          .eco-card::after { bottom: -1px; right: 0; transition-delay: 0.2s; }
+          
+          .eco-card .eco-card-v::before, .eco-card .eco-card-v::after {
+            content: '';
+            position: absolute;
+            width: 1px;
+            height: 0;
+            background: #2EFF00;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 10px rgba(46,255,0,0.5);
+          }
+          .eco-card .eco-card-v::before { top: 0; right: -1px; transition-delay: 0.1s; }
+          .eco-card .eco-card-v::after { bottom: 0; left: -1px; transition-delay: 0.3s; }
+
+          .eco-card:hover::before, .eco-card:hover::after { width: 100%; }
+          .eco-card:hover .eco-card-v::before, .eco-card:hover .eco-card-v::after { height: 100%; }
+        </style>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
           <!-- Card 1 -->
-          <div class="md:col-span-2 md:row-span-2 bg-[#0f0f11] border border-zinc-800/80 p-8 md:p-12 relative flex flex-col group">
+          <div class="md:col-span-2 md:row-span-2 bg-[#0f0f11] border border-zinc-800/80 p-8 md:p-12 relative flex flex-col group eco-card">
+            <div class="eco-card-v"></div>
             <div class="absolute top-8 right-8 text-[10px] md:text-xs font-mono font-bold tracking-[0.2em] text-zinc-500 uppercase">AUTOMAÇÃO_PIPELINE</div>
             
             <h3 class="text-4xl md:text-5xl lg:text-6xl font-jakarta font-bold text-white mb-6 pr-0 md:pr-12 leading-tight tracking-tight mt-8 md:mt-0">
@@ -785,7 +817,7 @@
 
             <div class="mt-16 flex justify-between items-end">
               <div>
-                <div class="text-[#2EFF00] font-jakarta font-black text-6xl md:text-[5.5rem] tracking-tighter drop-shadow-[0_0_20px_rgba(46,255,0,0.3)] mb-2">-40h</div>
+                <div class="text-[#2EFF00] font-jakarta font-black text-6xl md:text-[5.5rem] tracking-tighter mb-2">-40h</div>
                 <div class="text-zinc-500 font-mono text-[10px] md:text-xs tracking-[0.2em] uppercase">/WEEK SAVED</div>
               </div>
               <div class="text-[#2EFF00] opacity-80 mb-2">
@@ -805,7 +837,8 @@
           </div>
 
           <!-- Card 2 -->
-          <div class="col-span-1 bg-[#0f0f11] border border-zinc-800/80 p-8 relative flex flex-col justify-center group h-full min-h-[220px]">
+          <div class="col-span-1 bg-[#0f0f11] border border-zinc-800/80 p-8 relative flex flex-col justify-center group h-full min-h-[220px] eco-card">
+            <div class="eco-card-v"></div>
             <div class="absolute top-6 right-6 text-right">
               <div class="text-[9px] font-mono font-bold tracking-[0.1em] text-zinc-500 uppercase mb-1">QUALITY_GATE</div>
               <div class="text-[9px] font-mono font-bold tracking-[0.1em] text-[#2EFF00] uppercase">STABILITY_MAX</div>
@@ -820,7 +853,8 @@
           </div>
 
           <!-- Card 3 -->
-          <div class="col-span-1 bg-[#0f0f11] border border-zinc-800/80 p-8 relative flex flex-col justify-center group h-full min-h-[220px]">
+          <div class="col-span-1 bg-[#0f0f11] border border-zinc-800/80 p-8 relative flex flex-col justify-center group h-full min-h-[220px] eco-card">
+            <div class="eco-card-v"></div>
             <div class="absolute top-6 right-6 text-right">
               <div class="text-[9px] font-mono font-bold tracking-[0.1em] text-zinc-500 uppercase mb-1">INFRA_ELÁSTICA</div>
               <div class="text-[9px] font-mono font-bold tracking-[0.1em] text-[#2EFF00] uppercase">AUTO_SCALE</div>
@@ -841,7 +875,8 @@
           </div>
 
           <!-- Card 4 -->
-          <div class="col-span-1 bg-[#0f0f11] border border-zinc-800/80 p-8 relative flex flex-col justify-end group min-h-[200px]">
+          <div class="col-span-1 bg-[#0f0f11] border border-zinc-800/80 p-8 relative flex flex-col justify-end group min-h-[200px] eco-card">
+            <div class="eco-card-v"></div>
             <div class="absolute top-6 left-6 text-[10px] font-mono font-bold tracking-[0.15em] text-zinc-500 uppercase">CONVERSION_LIFT</div>
             <div class="absolute top-6 right-6 text-[10px] font-mono font-bold tracking-[0.15em] text-zinc-500 uppercase">MÉTRICA</div>
             
@@ -852,7 +887,8 @@
           </div>
 
           <!-- Card 5 -->
-          <div class="col-span-1 bg-[#0f0f11] border border-zinc-800/80 p-8 relative flex flex-col justify-end group min-h-[200px]">
+          <div class="col-span-1 bg-[#0f0f11] border border-zinc-800/80 p-8 relative flex flex-col justify-end group min-h-[200px] eco-card">
+            <div class="eco-card-v"></div>
             <div class="absolute top-6 left-6 text-[10px] font-mono font-bold tracking-[0.15em] text-zinc-500 uppercase">LIGHTHOUSE_SCORE</div>
             <div class="absolute top-6 right-6 text-[10px] font-mono font-bold tracking-[0.15em] text-zinc-500 uppercase">MÉTRICA</div>
             
@@ -863,7 +899,8 @@
           </div>
 
           <!-- Card 6 -->
-          <div class="col-span-1 bg-[#0f0f11] border border-zinc-800/80 p-8 relative flex flex-col justify-center group min-h-[200px]">
+          <div class="col-span-1 bg-[#0f0f11] border border-zinc-800/80 p-8 relative flex flex-col justify-center group min-h-[200px] eco-card">
+            <div class="eco-card-v"></div>
             <div class="absolute top-6 right-6 text-[10px] font-mono font-bold tracking-[0.15em] text-zinc-500 uppercase">TIME_TO_LAUNCH</div>
             
             <div class="mt-6">
