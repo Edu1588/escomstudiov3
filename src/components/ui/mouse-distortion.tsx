@@ -65,7 +65,9 @@ export const MouseDistortion = () => {
         float rs = s.x / s.y;
         float ri = i.x / i.y;
         vec2 newScale = rs < ri ? vec2(i.x * s.y / i.y, s.y) : vec2(s.x, i.y * s.x / i.x);
-        vec2 offset = (rs < ri ? vec2((newScale.x - s.x) / 2.0, 0.0) : vec2(0.0, 0.0)) / newScale;
+        // Align to top of image when cropping vertically (WebGL texture top is 1.0 if not flipped, or 0.0 if flipped).
+        // Standard WebGL: 0.0 is bottom. To show top of image at top of screen, we need offset.y = newScale.y - s.y
+        vec2 offset = (rs < ri ? vec2((newScale.x - s.x) / 2.0, 0.0) : vec2(0.0, (newScale.y - s.y) * 0.9)) / newScale;
         vec2 finalUv = distortedUv * s / newScale + offset;
 
         vec4 texColor = texture2D(uTexture, finalUv);
