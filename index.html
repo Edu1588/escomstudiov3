@@ -435,13 +435,80 @@
       });
     </script>
 </head>
-  <body class="font-inter font-light text-base overflow-x-hidden">
+  <body class="font-inter font-light text-base overflow-x-hidden bg-zinc-950 text-white">
     
+    <!-- Diagonal Wipe Loader -->
+    <div id="loader-bg" class="fixed inset-0 z-[99998] bg-[#e4e4e4] transform-gpu" style="clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);"></div>
+
+    <div id="loader-text-container" class="fixed bottom-6 left-6 md:bottom-10 md:left-10 z-[99999] pointer-events-none transform-gpu origin-top-left">
+      <h1 id="loader-text-h1" class="text-4xl md:text-6xl font-geist font-light tracking-[0.2em] text-zinc-950 uppercase drop-shadow-sm opacity-0 flex items-center gap-2">
+        ESCOM <span class="font-bold text-zinc-600">STUDIO</span>
+      </h1>
+    </div>
+
+    <!-- Loader Logic -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const loaderBg = document.getElementById("loader-bg");
+        const loaderTextContainer = document.getElementById("loader-text-container");
+        const loaderTextH1 = document.getElementById("loader-text-h1");
+        const navLogo = document.getElementById("nav-logo");
+        
+        if (typeof gsap !== 'undefined') {
+          // Reveal text
+          gsap.to(loaderTextH1, { opacity: 1, duration: 1, ease: "power2.out", delay: 0.2 });
+          
+          setTimeout(() => {
+            const navRect = navLogo.getBoundingClientRect();
+            const loaderRect = loaderTextContainer.getBoundingClientRect();
+            
+            // Calculate distance to move to Top-Left position
+            const deltaX = navRect.left - loaderRect.left;
+            const deltaY = navRect.top - loaderRect.top;
+            
+            // Diagonal Wipe up-right
+            gsap.to(loaderBg, {
+              clipPath: "polygon(100% 0%, 100% 0%, 100% 0%, 100% 0%)",
+              duration: 1.5,
+              ease: "power3.inOut"
+            });
+            
+            // Move text to header
+            gsap.to(loaderTextContainer, {
+              x: deltaX,
+              y: deltaY,
+              scale: navRect.height / loaderRect.height, // Scale down to match nav size
+              duration: 1.5,
+              ease: "power3.inOut",
+              onComplete: () => {
+                navLogo.style.opacity = "1";
+                loaderTextContainer.style.display = "none";
+                loaderBg.style.display = "none";
+                if (window.playHeroReveal) window.playHeroReveal();
+              }
+            });
+            
+            // Color transition during move to match nav logo
+            gsap.to(loaderTextH1, {
+              color: "#f4f4f5", // text-zinc-100
+              duration: 1.5,
+              ease: "power3.inOut"
+            });
+            gsap.to(loaderTextH1.querySelector('span'), {
+              color: "#00ff41",
+              duration: 1.5,
+              ease: "power3.inOut"
+            });
+          }, 1200);
+        } else {
+          loaderBg.style.display = 'none';
+          loaderTextContainer.style.display = 'none';
+          navLogo.style.opacity = "1";
+          if (window.playHeroReveal) window.playHeroReveal();
+        }
+      });
+    </script>
     
-
-
-
-
 <!-- Background (component) added by Aura -->
 <div class="aura-background-component top-0 w-full h-screen -z-10 fixed" data-alpha-mask="80"><div data-us-project="0WrRbFIPaKoWVkiQWBG0" class="absolute w-full h-full left-0 top-0 -z-10"></div>
 <script type="text/javascript">
@@ -450,11 +517,11 @@
 
     <!-- Navigation -->
     <nav id="main-nav" class="fixed top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center transition-all duration-300">
-      <div class="tracking-[0.2em] text-sm uppercase font-geist font-light text-zinc-100 drop-shadow-sm">
+      <div id="nav-logo" class="tracking-[0.2em] text-sm uppercase font-geist font-light text-zinc-100 drop-shadow-sm opacity-0" style="transition: opacity 0.3s">
         ESCOM <span class="text-[#00ff41]">STUDIO</span>
       </div>
       <div class="hidden md:flex gap-8 text-sm text-zinc-400">
-        <a href="#hero" class="transition-colors duration-300 font-geist font-light hover:text-zinc-100">
+        <a href="#" class="transition-colors duration-300 font-geist font-light hover:text-zinc-100">
           Início
         </a>
         <a href="#gallery" class="transition-colors duration-300 font-geist font-light hover:text-zinc-100">
@@ -467,26 +534,26 @@
           Contato
         </a>
       </div>
-      <button onclick="const m = document.getElementById('contact-modal'); m.classList.remove('hidden'); m.classList.add('flex');" class="magnetic btn-primary px-5 py-2.5 rounded text-sm hover:bg-lime-500 transition-colors duration-300 flex items-center gap-2 font-geist font-light bg-lime-400 text-zinc-950">
+      <button onclick="const m = document.getElementById('contact-modal'); m.classList.remove('hidden'); m.classList.add('flex');" class="magnetic btn-primary px-5 py-2.5 rounded text-sm hover:bg-[#28e600] transition-colors duration-300 flex items-center gap-2 font-geist font-medium bg-[#2EFF00] text-zinc-950 uppercase">
         Iniciar Projeto
         <iconify-icon icon="solar:arrow-right-up-linear" width="18"></iconify-icon>
       </button>
     </nav>
 
     <!-- 1. Hero -->
-    <section id="hero" class="sticky top-0 z-10 h-screen flex flex-col items-center justify-center px-6 md:px-12 lg:px-24 pt-20 pointer-events-none bg-zinc-950 overflow-hidden">
+    <section id="hero" class="relative z-10 w-full min-h-[120vh] md:min-h-[140vh] flex flex-col items-center justify-start px-6 md:px-12 lg:px-24 pt-32 overflow-hidden">
       <!-- Background Image -->
-      <div class="absolute inset-0 z-[1] w-full h-full bg-zinc-950">
-        <div id="cyber-hero-shader-root" class="absolute inset-0 w-full h-full pointer-events-none"></div>
+      <div class="absolute top-0 left-0 w-full h-full z-0 pointer-events-none bg-black">
+        <div id="cyber-hero-shader-root" class="w-full h-full"></div>
       </div>
-
-      <div class="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-zinc-950 to-transparent z-[8] pointer-events-none"></div>
       
-      <div id="hero-content-wrapper" class="z-10 w-full relative mx-auto flex flex-col lg:flex-row items-center justify-between pointer-events-auto max-w-7xl" style="visibility: hidden; opacity: 0;">
+      <div class="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-[#09090b] to-transparent z-[1] pointer-events-none"></div>
+
+      <div id="hero-content-wrapper" class="z-10 w-full relative mx-auto flex flex-col lg:flex-row items-center justify-between pointer-events-auto max-w-7xl mt-12 md:mt-24" style="visibility: hidden; opacity: 0;">
         <div id="hero-content" class="w-full lg:w-[60%] relative flex flex-col items-start text-left" style="transform-origin: center right;">
           
           <div class="hero-fade mb-6 w-full mt-8">
-            <h1 class="font-jakarta text-5xl md:text-7xl lg:text-[5.5rem] leading-[0.95] tracking-tighter text-white font-black uppercase">
+            <h1 class="font-jakarta text-4xl md:text-6xl lg:text-[4.5rem] leading-[0.95] tracking-tighter text-white font-black uppercase">
               REDUZA CUSTOS.<br/>
               <span class="text-[#2EFF00]">OTIMIZE RESULTADOS.</span>
             </h1>
@@ -494,18 +561,17 @@
           
           <div class="hero-fade mb-10 w-full lg:w-[80%]">
             <p class="text-sm md:text-lg leading-relaxed font-jakarta font-medium text-zinc-300">
-              Web Design de alta performance e automação de CRM/SaaS para empresas que
-              buscam eficiência máxima através de arquitetura digital de ponta.
+              Web Design de alta performance e automação de CRM/SaaS. Entregamos arquitetura digital de ponta para empresas que buscam eficiência máxima, além de ajudar pequenas e médias empresas a alavancarem sua presença digital.
             </p>
           </div>
 
           <div class="flex flex-col sm:flex-row items-center gap-4 hero-fade">
-            <button class="w-full sm:w-auto px-8 py-4 text-sm transition-colors duration-300 font-jakarta font-bold bg-[#2EFF00] hover:bg-[#28e600] text-black tracking-wide uppercase shadow-[0_0_20px_rgba(46,255,0,0.15)] hover:shadow-[0_0_25px_rgba(46,255,0,0.3)]">
+            <button onclick="const m = document.getElementById('contact-modal'); m.classList.remove('hidden'); m.classList.add('flex');" class="w-full sm:w-auto px-8 py-4 text-sm transition-colors duration-300 font-jakarta font-bold bg-[#2EFF00] hover:bg-[#28e600] text-black tracking-wide uppercase shadow-[0_0_20px_rgba(46,255,0,0.15)] hover:shadow-[0_0_25px_rgba(46,255,0,0.3)]">
               INICIAR PROJETO
             </button>
-            <button class="w-full sm:w-auto border px-8 py-4 text-sm transition-colors duration-300 font-jakarta font-bold border-zinc-700 text-zinc-300 hover:text-white hover:border-zinc-500 bg-zinc-950/20 backdrop-blur-sm tracking-wide uppercase">
+            <a href="#gallery" class="w-full sm:w-auto border px-8 py-4 text-sm transition-colors duration-300 font-jakarta font-bold border-zinc-700 text-zinc-300 hover:text-white hover:border-zinc-500 bg-zinc-950/20 backdrop-blur-sm tracking-wide uppercase text-center">
               VER PORTFÓLIO
-            </button>
+            </a>
           </div>
         </div>
 
@@ -531,34 +597,34 @@
           
           <!-- Card 1 -->
           <div class="animate-float-1">
-            <div class="group relative bg-[#0a0a0a]/60 backdrop-blur-md border border-zinc-800/80 p-4 cyber-card transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(46,255,0,0.15)] cursor-default overflow-hidden">
-              <div class="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-[#2EFF00]"></div>
-              <div class="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-[#2EFF00]"></div>
+            <div class="group relative bg-[#0a0a0a]/60 backdrop-blur-md border border-zinc-800/80 p-4 cyber-card transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(46,255,0,0.15)] cursor-default rounded-2xl">
+              <div class="absolute top-1 left-1 w-3 h-3 border-t-2 border-l-2 border-[#2EFF00] rounded-tl-lg"></div>
+              <div class="absolute bottom-1 right-1 w-3 h-3 border-b-2 border-r-2 border-[#2EFF00] rounded-br-lg"></div>
               <p class="text-[10px] font-mono font-bold tracking-[0.1em] text-zinc-400 mb-1 uppercase relative z-10">CLIENTES_ATIVOS</p>
               <p class="text-2xl font-jakarta font-black text-white group-hover:text-[#2EFF00] transition-colors relative z-10">42</p>
-              <div class="absolute inset-0 bg-gradient-to-br from-[#2EFF00]/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div class="absolute inset-0 bg-gradient-to-br from-[#2EFF00]/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
             </div>
           </div>
 
           <!-- Card 2 -->
           <div class="animate-float-2">
-            <div class="group relative bg-[#0a0a0a]/60 backdrop-blur-md border border-zinc-800/80 p-4 cyber-card transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(46,255,0,0.15)] cursor-default overflow-hidden">
-              <div class="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-[#2EFF00]"></div>
-              <div class="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-[#2EFF00]"></div>
+            <div class="group relative bg-[#0a0a0a]/60 backdrop-blur-md border border-zinc-800/80 p-4 cyber-card transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(46,255,0,0.15)] cursor-default rounded-2xl">
+              <div class="absolute top-1 left-1 w-3 h-3 border-t-2 border-l-2 border-[#2EFF00] rounded-tl-lg"></div>
+              <div class="absolute bottom-1 right-1 w-3 h-3 border-b-2 border-r-2 border-[#2EFF00] rounded-br-lg"></div>
               <p class="text-[10px] font-mono font-bold tracking-[0.1em] text-zinc-400 mb-1 uppercase relative z-10">UPTIME_MEDIO</p>
               <p class="text-2xl font-jakarta font-black text-white group-hover:text-[#2EFF00] transition-colors relative z-10">99.98%</p>
-              <div class="absolute inset-0 bg-gradient-to-br from-[#2EFF00]/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div class="absolute inset-0 bg-gradient-to-br from-[#2EFF00]/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
             </div>
           </div>
 
           <!-- Card 3 -->
           <div class="animate-float-3">
-            <div class="group relative bg-[#0a0a0a]/60 backdrop-blur-md border border-zinc-800/80 p-4 cyber-card transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(46,255,0,0.15)] cursor-default overflow-hidden">
-              <div class="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-[#2EFF00]"></div>
-              <div class="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-[#2EFF00]"></div>
+            <div class="group relative bg-[#0a0a0a]/60 backdrop-blur-md border border-zinc-800/80 p-4 cyber-card transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(46,255,0,0.15)] cursor-default rounded-2xl">
+              <div class="absolute top-1 left-1 w-3 h-3 border-t-2 border-l-2 border-[#2EFF00] rounded-tl-lg"></div>
+              <div class="absolute bottom-1 right-1 w-3 h-3 border-b-2 border-r-2 border-[#2EFF00] rounded-br-lg"></div>
               <p class="text-[10px] font-mono font-bold tracking-[0.1em] text-zinc-400 mb-1 uppercase relative z-10">ROI_MEDIO</p>
               <p class="text-2xl font-jakarta font-black text-white group-hover:text-[#2EFF00] transition-colors relative z-10">3.4x</p>
-              <div class="absolute inset-0 bg-gradient-to-br from-[#2EFF00]/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div class="absolute inset-0 bg-gradient-to-br from-[#2EFF00]/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
             </div>
           </div>
 
@@ -566,33 +632,31 @@
       </div>
     </section>
 
-    <!-- Fixed Transition Bars -->
-    <div id="transition-bars" class="fixed inset-0 flex z-20 overflow-hidden pointer-events-none">
-      <div class="flex-1 bg-black section-bar origin-bottom" style="transform: scaleY(0);"></div>
-      <div class="flex-1 bg-black section-bar origin-bottom" style="transform: scaleY(0);"></div>
-      <div class="flex-1 bg-black section-bar origin-bottom" style="transform: scaleY(0);"></div>
-      <div class="flex-1 bg-black section-bar origin-bottom" style="transform: scaleY(0);"></div>
-      <div class="flex-1 bg-black section-bar origin-bottom" style="transform: scaleY(0);"></div>
-    </div>
+
 
     <!-- 2. Statement -->
-    <section id="statement" class="relative z-40 h-screen flex items-center justify-center px-6 md:px-12 lg:px-24 bg-transparent pointer-events-none" style="z-index: 40;">
-      <div class="max-w-6xl mx-auto text-left md:text-center px-4 relative z-10">
-        <h2 class="font-jakarta text-3xl md:text-5xl lg:text-7xl leading-[1.2] text-zinc-300 font-medium">
-          <span class="scroll-masked-line">
-            <span>Desafiamos o comum.</span>
-          </span>
-          <span class="scroll-masked-line">
-            <span class="text-zinc-400">Criamos plataformas digitais escaláveis,</span>
-          </span>
-          <span class="scroll-masked-line">
-            <span class="text-zinc-500">focadas em performance e resultado.</span>
-          </span>
-        </h2>
+    <section id="statement" class="relative z-40 h-screen flex items-center justify-center px-6 md:px-12 lg:px-24 pointer-events-none" style="z-index: 40; background-image: url('https://res.cloudinary.com/djw0tqmiw/image/upload/v1779488880/yqpqkeul1njcogpjhlpx.png'); background-size: cover; background-position: center top; background-repeat: no-repeat;">
+      <div class="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-zinc-950 to-transparent z-0"></div>
+      <div class="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-zinc-950 to-transparent z-0"></div>
+      
+      <div class="max-w-6xl mx-auto w-full px-4 relative z-10 pointer-events-auto">
+        <div class="relative flex flex-col items-center justify-center p-8 md:p-16 lg:p-24 w-full">
+          <h2 class="font-jakarta text-3xl md:text-5xl lg:text-7xl leading-[1.2] text-zinc-300 font-medium relative z-20 text-center w-full" style="text-shadow: 0 4px 30px rgba(0,0,0,0.8), 0 2px 10px rgba(0,0,0,0.8);">
+            <span class="scroll-masked-line">
+              <span>Sistemas que crescem com você,</span>
+            </span>
+            <span class="scroll-masked-line">
+              <span class="text-zinc-400">eliminando o caos operacional</span>
+            </span>
+            <span class="scroll-masked-line">
+              <span class="text-zinc-500">para você focar no que importa.</span>
+            </span>
+          </h2>
+        </div>
       </div>
     </section>
 
-    <div class="relative z-40 bg-zinc-950">
+    <div class="relative z-40 bg-gradient-to-b from-black to-zinc-950">
       <!-- 3. Features -->
       <section id="features" class="relative py-32 px-6 md:px-12 lg:px-24 border-t border-zinc-900">
       <div class="max-w-7xl mx-auto">
@@ -611,7 +675,7 @@
         </div>
 
         <!-- Interactive Services Section -->
-        <div class="mt-24 relative w-full min-h-[600px] md:h-[800px] flex flex-col md:flex-row bg-zinc-950 overflow-hidden" id="services-interactive">
+        <div class="mt-24 relative w-full min-h-[600px] md:h-[800px] flex flex-col md:flex-row bg-transparent overflow-hidden" id="services-interactive">
           
           <div class="max-w-[85rem] mx-auto w-full flex flex-col md:flex-row items-stretch relative px-6 md:px-0">
              
@@ -640,7 +704,7 @@
              </div>
              
              <!-- Right Column: Sub-items & Number -->
-             <div class="w-full md:w-[25%] p-8 z-30 flex flex-col justify-between items-start md:pl-12 bg-zinc-950 text-left md:pt-24 mt-4 md:mt-0">
+             <div class="w-full md:w-[25%] p-8 z-30 flex flex-col justify-between items-start md:pl-12 bg-transparent text-left md:pt-24 mt-4 md:mt-0">
                 <div class="flex flex-col gap-3 pointer-events-auto transition-opacity duration-500" id="services-subitems">
                   <span class="font-geist font-light text-zinc-300 text-[15px] hover:text-white transition-colors cursor-default">Design de Logo</span>
                   <span class="font-geist font-light text-zinc-300 text-[15px] hover:text-white transition-colors cursor-default">Sistemas Visuais</span>
@@ -758,6 +822,143 @@
       </div>
     </section>
 
+    <!-- Project Types & Evolution Sprints -->
+    <section id="sprints" class="relative z-40 py-32 px-6 md:px-12 lg:px-24 bg-zinc-950 border-t border-zinc-900 overflow-hidden">
+      <div class="max-w-7xl mx-auto relative z-10">
+        <div class="mb-20 text-center md:text-left">
+          <span class="text-xs tracking-wide uppercase mb-2 block font-geist font-light text-[#2EFF00] fade-up">
+            &gt;_ [ PLANOS_E_SUSTENTAÇÃO ]
+          </span>
+          <h2 class="text-3xl md:text-5xl tracking-tight mb-6 fade-up font-jakarta font-medium text-zinc-100">
+            Investimento Transparente e Evolução Contínua
+          </h2>
+          <p class="max-w-2xl fade-up font-geist font-light text-zinc-400">
+            Escopo claro, sem surpresas. O que entregamos e como garantimos que seu projeto continue gerando resultados a longo prazo.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+          
+          <!-- Card 1 -->
+          <div class="fade-up relative p-8 group border border-zinc-800/80 bg-[#0c0c0e] hover:border-[#2EFF00] hover:shadow-[0_0_20px_rgba(46,255,0,0.15)] transition-all duration-300 rounded-2xl flex flex-col h-full">
+            <div class="absolute inset-0 bg-gradient-to-b from-[#2EFF00]/[0.03] to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            
+            <div class="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-8 text-[#2EFF00]">
+              <iconify-icon icon="solar:global-linear" width="28"></iconify-icon>
+            </div>
+            
+            <h3 class="text-2xl font-jakarta font-medium text-zinc-100 mb-4">Landing Pages</h3>
+            <p class="text-zinc-400 font-geist text-[15px] leading-relaxed mb-10 flex-grow">
+              Uma página objetiva para apresentar seu serviço, responder dúvidas e levar o visitante direto para o WhatsApp.
+            </p>
+            
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3">
+                <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
+                <span class="text-sm font-geist text-zinc-300">Mensagem clara e focada</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
+                <span class="text-sm font-geist text-zinc-300">Call to action bem posicionado</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
+                <span class="text-sm font-geist text-zinc-300">Leitura impecável no mobile</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="fade-up relative p-8 group border border-zinc-800/80 bg-[#0c0c0e] hover:border-[#2EFF00] hover:shadow-[0_0_20px_rgba(46,255,0,0.15)] transition-all duration-300 rounded-2xl flex flex-col h-full" style="transition-delay: 50ms;">
+            <div class="absolute inset-0 bg-gradient-to-b from-[#2EFF00]/[0.03] to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            
+            <div class="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-8 text-[#2EFF00]">
+              <iconify-icon icon="solar:pallete-2-linear" width="28"></iconify-icon>
+            </div>
+            
+            <h3 class="text-2xl font-jakarta font-medium text-zinc-100 mb-4">Sites Institucionais</h3>
+            <p class="text-zinc-400 font-geist text-[15px] leading-relaxed mb-10 flex-grow">
+              Um site organizado para mostrar quem você é, o que entrega e por que o cliente pode confiar no seu alto padrão.
+            </p>
+            
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3">
+                <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
+                <span class="text-sm font-geist text-zinc-300">Serviços bem explicados</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
+                <span class="text-sm font-geist text-zinc-300">Arquitetura de seções enxuta</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
+                <span class="text-sm font-geist text-zinc-300">Mais segurança na decisão (Trust)</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="fade-up relative p-8 group border border-zinc-800/80 bg-[#0c0c0e] hover:border-zinc-700 transition-colors rounded-2xl flex flex-col h-full" style="transition-delay: 100ms;">
+            <div class="absolute inset-0 bg-gradient-to-b from-[#2EFF00]/[0.03] to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            
+            <div class="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-8 text-[#2EFF00]">
+              <iconify-icon icon="solar:bolt-linear" width="28"></iconify-icon>
+            </div>
+            
+            <h3 class="text-2xl font-jakarta font-medium text-zinc-100 mb-4">Manutenção Mensal</h3>
+            <p class="text-zinc-400 font-geist text-[15px] leading-relaxed mb-10 flex-grow">
+              Cuidado técnico contínuo após a publicação, mantendo a página estável, atualizada e otimizada para vender mais.
+            </p>
+            
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3">
+                <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
+                <span class="text-sm font-geist text-zinc-300">Monitoramento 24/7 de uptime</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
+                <span class="text-sm font-geist text-zinc-300">Ajustes e atualizações de conteúdo</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
+                <span class="text-sm font-geist text-zinc-300">Melhorias e otimizações contínuas</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="fade-up relative p-8 group border border-zinc-800/80 bg-[#0c0c0e] hover:border-zinc-700 transition-colors rounded-2xl flex flex-col h-full" style="transition-delay: 150ms;">
+            <div class="absolute inset-0 bg-gradient-to-b from-[#2EFF00]/[0.03] to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            
+            <div class="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-8 text-[#2EFF00]">
+              <iconify-icon icon="solar:graph-up-linear" width="28"></iconify-icon>
+            </div>
+            
+            <h3 class="text-2xl font-jakarta font-medium text-zinc-100 mb-4">CRM & Dashboards</h3>
+            <p class="text-zinc-400 font-geist text-[15px] leading-relaxed mb-10 flex-grow">
+              Sistemas internos para organização de dados, acompanhamento de leads e centralização da inteligência do seu negócio.
+            </p>
+            
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3">
+                <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
+                <span class="text-sm font-geist text-zinc-300">Métricas centralizadas e visuais</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
+                <span class="text-sm font-geist text-zinc-300">Organização automática de fluxo de dados</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
+                <span class="text-sm font-geist text-zinc-300">Inteligência aplicada à operação real</span>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
     <!-- New Section: Economy -->
     <section class="relative z-40 py-32 px-6 md:px-12 lg:px-24 bg-zinc-950 border-t border-b border-zinc-900 border-opacity-50">
       <div class="max-w-7xl mx-auto">
@@ -773,39 +974,19 @@
 
         <style>
           .eco-card {
-            position: relative;
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: border-color 0.4s ease, box-shadow 0.4s ease;
           }
-          .eco-card::before, .eco-card::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 1px;
-            background: #2EFF00;
-            transition: all 0.4s ease;
-            box-shadow: 0 0 10px rgba(46,255,0,0.5);
+          .eco-card:hover {
+            border-color: #2EFF00 !important;
+            box-shadow: 0 0 20px rgba(46,255,0,0.15);
           }
-          .eco-card::before { top: -1px; left: 0; transition-delay: 0s; }
-          .eco-card::after { bottom: -1px; right: 0; transition-delay: 0.2s; }
-          
-          .eco-card .eco-card-v::before, .eco-card .eco-card-v::after {
-            content: '';
-            position: absolute;
-            width: 1px;
-            height: 0;
-            background: #2EFF00;
-            transition: all 0.4s ease;
-            box-shadow: 0 0 10px rgba(46,255,0,0.5);
-          }
-          .eco-card .eco-card-v::before { top: 0; right: -1px; transition-delay: 0.1s; }
-          .eco-card .eco-card-v::after { bottom: 0; left: -1px; transition-delay: 0.3s; }
-
-          .eco-card:hover::before, .eco-card:hover::after { width: 100%; }
-          .eco-card:hover .eco-card-v::before, .eco-card:hover .eco-card-v::after { height: 100%; }
         </style>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
           <!-- Card 1 -->
           <div class="md:col-span-2 md:row-span-2 bg-[#0f0f11] border border-zinc-800/80 p-8 md:p-12 relative flex flex-col group eco-card">
-            <div class="eco-card-v"></div>
+            
             <div class="absolute top-8 right-8 text-[10px] md:text-xs font-mono font-bold tracking-[0.2em] text-zinc-500 uppercase">AUTOMAÇÃO_PIPELINE</div>
             
             <h3 class="text-4xl md:text-5xl lg:text-6xl font-jakarta font-bold text-white mb-6 pr-0 md:pr-12 leading-tight tracking-tight mt-8 md:mt-0">
@@ -838,7 +1019,7 @@
 
           <!-- Card 2 -->
           <div class="col-span-1 bg-[#0f0f11] border border-zinc-800/80 p-8 relative flex flex-col justify-center group h-full min-h-[220px] eco-card">
-            <div class="eco-card-v"></div>
+            
             <div class="absolute top-6 right-6 text-right">
               <div class="text-[9px] font-mono font-bold tracking-[0.1em] text-zinc-500 uppercase mb-1">QUALITY_GATE</div>
               <div class="text-[9px] font-mono font-bold tracking-[0.1em] text-[#2EFF00] uppercase">STABILITY_MAX</div>
@@ -854,7 +1035,7 @@
 
           <!-- Card 3 -->
           <div class="col-span-1 bg-[#0f0f11] border border-zinc-800/80 p-8 relative flex flex-col justify-center group h-full min-h-[220px] eco-card">
-            <div class="eco-card-v"></div>
+            
             <div class="absolute top-6 right-6 text-right">
               <div class="text-[9px] font-mono font-bold tracking-[0.1em] text-zinc-500 uppercase mb-1">INFRA_ELÁSTICA</div>
               <div class="text-[9px] font-mono font-bold tracking-[0.1em] text-[#2EFF00] uppercase">AUTO_SCALE</div>
@@ -876,7 +1057,7 @@
 
           <!-- Card 4 -->
           <div class="col-span-1 bg-[#0f0f11] border border-zinc-800/80 p-8 relative flex flex-col justify-end group min-h-[200px] eco-card">
-            <div class="eco-card-v"></div>
+            
             <div class="absolute top-6 left-6 text-[10px] font-mono font-bold tracking-[0.15em] text-zinc-500 uppercase">CONVERSION_LIFT</div>
             <div class="absolute top-6 right-6 text-[10px] font-mono font-bold tracking-[0.15em] text-zinc-500 uppercase">MÉTRICA</div>
             
@@ -888,7 +1069,7 @@
 
           <!-- Card 5 -->
           <div class="col-span-1 bg-[#0f0f11] border border-zinc-800/80 p-8 relative flex flex-col justify-end group min-h-[200px] eco-card">
-            <div class="eco-card-v"></div>
+            
             <div class="absolute top-6 left-6 text-[10px] font-mono font-bold tracking-[0.15em] text-zinc-500 uppercase">LIGHTHOUSE_SCORE</div>
             <div class="absolute top-6 right-6 text-[10px] font-mono font-bold tracking-[0.15em] text-zinc-500 uppercase">MÉTRICA</div>
             
@@ -900,7 +1081,7 @@
 
           <!-- Card 6 -->
           <div class="col-span-1 bg-[#0f0f11] border border-zinc-800/80 p-8 relative flex flex-col justify-center group min-h-[200px] eco-card">
-            <div class="eco-card-v"></div>
+            
             <div class="absolute top-6 right-6 text-[10px] font-mono font-bold tracking-[0.15em] text-zinc-500 uppercase">TIME_TO_LAUNCH</div>
             
             <div class="mt-6">
@@ -1190,6 +1371,11 @@
       </div>
     </section>
 
+    <!-- Mobile Optimization Cinematic Hero -->
+    <section class="relative z-10 bg-[#0a0a0c]">
+      <div id="cinematic-hero-root"></div>
+    </section>
+
     <!-- 9. Manifesto & Bento -->
     <section class="relative z-40 py-32 px-6 md:px-12 lg:px-24 bg-zinc-950">
       <div class="max-w-7xl mx-auto mb-20 text-center font-jakarta fade-up">
@@ -1386,79 +1572,174 @@
           </p>
         </div>
 
-        <!-- Right Column (List) -->
-        <div class="md:w-2/3 flex flex-col fade-up">
+        <!-- Right Column (Radar Effect) -->
+        <div class="md:w-2/3 flex items-center justify-center fade-up relative min-h-[400px] md:min-h-[500px]" id="radar-effect-root">
+          <!-- React will render here -->
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="relative z-10 py-32 px-6 md:px-12 lg:px-24 bg-[#0a0a0c] border-t border-zinc-900">
+      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16">
+        
+        <div class="lg:w-1/3 fade-up">
+          <!-- Placeholder Image to match reference layout, adapted for dark theme -->
+          <div class="relative w-full h-48 sm:h-64 mb-8 rounded-xl overflow-hidden group">
+            <div class="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-transparent z-10 mix-blend-overlay"></div>
+            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Equipe" class="w-full h-full object-cover opacity-80 transition-transform duration-700 group-hover:scale-105" referrerpolicy="no-referrer" />
+          </div>
+          <h2 class="text-3xl md:text-5xl tracking-tight mb-4 font-jakarta font-medium text-zinc-100 leading-tight">
+            Ficou com <br />alguma dúvida?
+          </h2>
+          <p class="text-zinc-400 font-geist text-sm leading-relaxed mt-4 max-w-sm">
+            Aqui estão as respostas para as perguntas mais comuns sobre como funciona nossa parceria e método de trabalho.
+          </p>
+        </div>
+
+        <div class="lg:w-2/3 space-y-3 fade-up">
           
-          <!-- Item 01 -->
-          <div class="flex items-center gap-6 py-5 border-b border-zinc-800/50 group">
-            <span class="text-zinc-500 font-mono text-xs w-6 tracking-widest group-hover:text-zinc-300 transition-colors">01</span>
-            <svg class="w-5 h-5 text-[#2EFF00] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-            <span class="text-zinc-100 font-jakarta text-lg font-medium">Auditoria técnica + roadmap estratégico</span>
+          <!-- FAQ Item 1 -->
+          <div class="rounded-xl bg-zinc-900/40 overflow-hidden text-left transition-colors hover:bg-zinc-900/70">
+            <button class="w-full px-6 py-5 flex items-center justify-between focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.icon-plus').classList.toggle('hidden'); this.querySelector('.icon-minus').classList.toggle('hidden');">
+              <span class="font-jakarta font-medium text-lg text-zinc-100 text-left">Vocês integram com meus sistemas atuais?</span>
+              <div class="text-[#2EFF00] flex-shrink-0 ml-4 font-light">
+                <svg class="icon-plus w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
+                <svg class="icon-minus w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 12H4"></path></svg>
+              </div>
+            </button>
+            <div class="hidden px-6 pb-6 text-zinc-400 font-geist text-sm leading-relaxed">
+              Não fazemos integrações de sistemas. Nós desenvolvemos sistemas próprios sob medida que entregam resultados semelhantes ou superiores ao de ferramentas pagas do mercado. O objetivo principal é unificar a sua operação em uma única plataforma, eliminando o caos e reduzindo custos com licenças para a sua empresa.
+            </div>
           </div>
 
-          <!-- Item 02 -->
-          <div class="flex items-center gap-6 py-5 border-b border-zinc-800/50 group">
-            <span class="text-zinc-500 font-mono text-xs w-6 tracking-widest group-hover:text-zinc-300 transition-colors">02</span>
-            <svg class="w-5 h-5 text-[#2EFF00] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-            <span class="text-zinc-100 font-jakarta text-lg font-medium">Design system tokenizado e versionado</span>
+          <!-- FAQ Item 2 -->
+          <div class="rounded-xl bg-zinc-900/40 overflow-hidden text-left transition-colors hover:bg-zinc-900/70">
+            <button class="w-full px-6 py-5 flex items-center justify-between focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.icon-plus').classList.toggle('hidden'); this.querySelector('.icon-minus').classList.toggle('hidden');">
+              <span class="font-jakarta font-medium text-lg text-zinc-100 text-left">Qual o nível de envolvimento da minha equipe no processo?</span>
+              <div class="text-[#2EFF00] flex-shrink-0 ml-4 font-light">
+                <svg class="icon-plus w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
+                <svg class="icon-minus w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 12H4"></path></svg>
+              </div>
+            </button>
+            <div class="hidden px-6 pb-6 text-zinc-400 font-geist text-sm leading-relaxed">
+              Trabalhamos no modelo "done-for-you". Precisamos da sua equipe apenas para o briefing estratégico (kick-off) e aprovações nos marcos principais do projeto. Nós gerenciamos a execução técnica, design e implementação para não sobrecarregar sua operação com micro-gestão.
+            </div>
           </div>
 
-          <!-- Item 03 -->
-          <div class="flex items-center gap-6 py-5 border-b border-zinc-800/50 group">
-            <span class="text-zinc-500 font-mono text-xs w-6 tracking-widest group-hover:text-zinc-300 transition-colors">03</span>
-            <svg class="w-5 h-5 text-[#2EFF00] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-            <span class="text-zinc-100 font-jakarta text-lg font-medium">Sistema de componentes em React/TS</span>
+          <!-- FAQ Item 3 -->
+          <div class="rounded-xl bg-zinc-900/40 overflow-hidden text-left transition-colors hover:bg-zinc-900/70">
+            <button class="w-full px-6 py-5 flex items-center justify-between focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.icon-plus').classList.toggle('hidden'); this.querySelector('.icon-minus').classList.toggle('hidden');">
+              <span class="font-jakarta font-medium text-lg text-zinc-100 text-left">Vocês oferecem suporte após o lançamento?</span>
+              <div class="text-[#2EFF00] flex-shrink-0 ml-4 font-light">
+                <svg class="icon-plus w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
+                <svg class="icon-minus w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 12H4"></path></svg>
+              </div>
+            </button>
+            <div class="hidden px-6 pb-6 text-zinc-400 font-geist text-sm leading-relaxed">
+              Sim. Todo projeto completo inclui 60 dias de suporte pós-lançamento garantido para estabilização. Após isso, oferecemos planos contínuos de Manutenção Mensal e Sprints de Evolução para manter seu sistema vivo, moderno e sempre em alto desempenho.
+            </div>
           </div>
 
-          <!-- Item 04 -->
-          <div class="flex items-center gap-6 py-5 border-b border-zinc-800/50 group">
-            <span class="text-zinc-500 font-mono text-xs w-6 tracking-widest group-hover:text-zinc-300 transition-colors">04</span>
-            <svg class="w-5 h-5 text-[#2EFF00] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-            <span class="text-zinc-100 font-jakarta text-lg font-medium">Integrações com CRM e SaaS (Hubspot, Stripe, Notion API)</span>
+          <!-- FAQ Item 4 -->
+          <div class="rounded-xl bg-zinc-900/40 overflow-hidden text-left transition-colors hover:bg-zinc-900/70">
+            <button class="w-full px-6 py-5 flex items-center justify-between focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.icon-plus').classList.toggle('hidden'); this.querySelector('.icon-minus').classList.toggle('hidden');">
+              <span class="font-jakarta font-medium text-lg text-zinc-100 text-left">Já tenho Instagram. Ainda preciso de site?</span>
+              <div class="text-[#2EFF00] flex-shrink-0 ml-4 font-light">
+                <svg class="icon-plus w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
+                <svg class="icon-minus w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 12H4"></path></svg>
+              </div>
+            </button>
+            <div class="hidden px-6 pb-6 text-zinc-400 font-geist text-sm leading-relaxed">
+              O Instagram é um excelente canal de atenção e atração, mas um site próprio transmite verdadeiro profissionalismo, segurança e autoridade. Ele funciona 24 horas por dia, 7 dias por semana como seu vendedor digital exclusivo, sem distrações e concorrentes a um clique de distância, garantindo que o seu lead converta.
+            </div>
           </div>
 
-          <!-- Item 05 -->
-          <div class="flex items-center gap-6 py-5 border-b border-zinc-800/50 group">
-            <span class="text-zinc-500 font-mono text-xs w-6 tracking-widest group-hover:text-zinc-300 transition-colors">05</span>
-            <svg class="w-5 h-5 text-[#2EFF00] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-            <span class="text-zinc-100 font-jakarta text-lg font-medium">CI/CD em edge (Cloudflare/Vercel)</span>
+          <!-- FAQ Item 5 -->
+          <div class="rounded-xl bg-zinc-900/40 overflow-hidden text-left transition-colors hover:bg-zinc-900/70">
+            <button class="w-full px-6 py-5 flex items-center justify-between focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.icon-plus').classList.toggle('hidden'); this.querySelector('.icon-minus').classList.toggle('hidden');">
+              <span class="font-jakarta font-medium text-lg text-zinc-100 text-left">Quanto custa?</span>
+              <div class="text-[#2EFF00] flex-shrink-0 ml-4 font-light">
+                <svg class="icon-plus w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
+                <svg class="icon-minus w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 12H4"></path></svg>
+              </div>
+            </button>
+            <div class="hidden px-6 pb-6 text-zinc-400 font-geist text-sm leading-relaxed">
+              O investimento varia de acordo com a complexidade, as funcionalidades exigidas e o número de páginas do seu projeto. Agende nosso diagnóstico para entendermos suas demandas operacionais. Após essa etapa, enviaremos uma proposta comercial personalizada e transparente.
+            </div>
           </div>
 
-          <!-- Item 06 -->
-          <div class="flex items-center gap-6 py-5 border-b border-zinc-800/50 group">
-            <span class="text-zinc-500 font-mono text-xs w-6 tracking-widest group-hover:text-zinc-300 transition-colors">06</span>
-            <svg class="w-5 h-5 text-[#2EFF00] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-            <span class="text-zinc-100 font-jakarta text-lg font-medium">Observabilidade: logs, métricas e alertas</span>
+          <!-- FAQ Item 6 -->
+          <div class="rounded-xl bg-zinc-900/40 overflow-hidden text-left transition-colors hover:bg-zinc-900/70">
+            <button class="w-full px-6 py-5 flex items-center justify-between focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.icon-plus').classList.toggle('hidden'); this.querySelector('.icon-minus').classList.toggle('hidden');">
+              <span class="font-jakarta font-medium text-lg text-zinc-100 text-left">Em quanto tempo fica pronto?</span>
+              <div class="text-[#2EFF00] flex-shrink-0 ml-4 font-light">
+                <svg class="icon-plus w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
+                <svg class="icon-minus w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 12H4"></path></svg>
+              </div>
+            </button>
+            <div class="hidden px-6 pb-6 text-zinc-400 font-geist text-sm leading-relaxed">
+              Nosso prazo médio de entrega para Projetos Iniciais ou Landing Pages é de 2 a 4 semanas. Arquiteturas digitais completas e portais robustos sob medida costumam demorar entre 6 e 12 semanas, priorizando sempre a altíssima qualidade de desenvolvimento e acabamento.
+            </div>
           </div>
 
-          <!-- Item 07 -->
-          <div class="flex items-center gap-6 py-5 border-b border-zinc-800/50 group">
-            <span class="text-zinc-500 font-mono text-xs w-6 tracking-widest group-hover:text-zinc-300 transition-colors">07</span>
-            <svg class="w-5 h-5 text-[#2EFF00] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-            <span class="text-zinc-100 font-jakarta text-lg font-medium">Documentação técnica completa</span>
+          <!-- FAQ Item 7 -->
+          <div class="rounded-xl bg-zinc-900/40 overflow-hidden text-left transition-colors hover:bg-zinc-900/70">
+            <button class="w-full px-6 py-5 flex items-center justify-between focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.icon-plus').classList.toggle('hidden'); this.querySelector('.icon-minus').classList.toggle('hidden');">
+              <span class="font-jakarta font-medium text-lg text-zinc-100 text-left">Preciso saber mexer no site?</span>
+              <div class="text-[#2EFF00] flex-shrink-0 ml-4 font-light">
+                <svg class="icon-plus w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
+                <svg class="icon-minus w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 12H4"></path></svg>
+              </div>
+            </button>
+            <div class="hidden px-6 pb-6 text-zinc-400 font-geist text-sm leading-relaxed">
+              De forma alguma! Nós entregamos uma plataforma pronta ou, se desejar alterar conteúdos (textos/imagens) frequentemente, utilizamos um painel intuitivo e amigável (CMS). Além de incluirmos materiais práticos e treinamentos descomplicados para sua equipe durante a entrega.
+            </div>
           </div>
 
-          <!-- Item 08 -->
-          <div class="flex items-center gap-6 py-5 border-b border-zinc-800/50 group">
-            <span class="text-zinc-500 font-mono text-xs w-6 tracking-widest group-hover:text-zinc-300 transition-colors">08</span>
-            <svg class="w-5 h-5 text-[#2EFF00] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-            <span class="text-zinc-100 font-jakarta text-lg font-medium">60 dias de suporte pós-lançamento</span>
+          <!-- FAQ Item 8 -->
+          <div class="rounded-xl bg-zinc-900/40 overflow-hidden text-left transition-colors hover:bg-zinc-900/70">
+            <button class="w-full px-6 py-5 flex items-center justify-between focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.icon-plus').classList.toggle('hidden'); this.querySelector('.icon-minus').classList.toggle('hidden');">
+              <span class="font-jakarta font-medium text-lg text-zinc-100 text-left">O site funciona no celular?</span>
+              <div class="text-[#2EFF00] flex-shrink-0 ml-4 font-light">
+                <svg class="icon-plus w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
+                <svg class="icon-minus w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 12H4"></path></svg>
+              </div>
+            </button>
+            <div class="hidden px-6 pb-6 text-zinc-400 font-geist text-sm leading-relaxed">
+              Absolutamente. Nós construímos seguindo a arquitetura "Mobile-First" e responsividade adaptável total. Isso garante que a experiência, animações, botões de pagamento e leitura funcionem perfeitamente não apenas em celulares, como também em tablets, monitores ultra-wide ou qualquer outra tela.
+            </div>
+          </div>
+
+          <!-- FAQ Item 9 -->
+          <div class="rounded-xl bg-zinc-900/40 overflow-hidden text-left transition-colors hover:bg-zinc-900/70">
+            <button class="w-full px-6 py-5 flex items-center justify-between focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.icon-plus').classList.toggle('hidden'); this.querySelector('.icon-minus').classList.toggle('hidden');">
+              <span class="font-jakarta font-medium text-lg text-zinc-100 text-left">A manutenção é obrigatória?</span>
+              <div class="text-[#2EFF00] flex-shrink-0 ml-4 font-light">
+                <svg class="icon-plus w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
+                <svg class="icon-minus w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 12H4"></path></svg>
+              </div>
+            </button>
+            <div class="hidden px-6 pb-6 text-zinc-400 font-geist text-sm leading-relaxed">
+              Ela não é obrigatória, no entanto é fortemente recomendada. Tecnologias, plugins e navegadores são reescritos o tempo todo; nós mantemos tudo atualizado e protegido. Além disso, ter o nosso time em um plano de manutenção mensal traz acesso prioritário para refatorações ou publicações extras que você venha a precisar durante os meses.
+            </div>
           </div>
 
         </div>
       </div>
     </section>
 
-    <section class="relative z-10 py-32 px-6 md:px-12 lg:px-24 border-y overflow-hidden border-zinc-900">
-      <div id="contact-canvas-root" class="absolute inset-0 z-0"></div>
-      <div class="max-w-4xl mx-auto flex flex-col md:flex-row gap-16 relative z-10 bg-zinc-950/80 backdrop-blur-sm p-8 rounded-2xl border border-zinc-800">
+    <section class="relative z-10 py-32 px-6 md:px-12 lg:px-24 border-y overflow-hidden border-zinc-900 bg-zinc-950">
+      <div class="max-w-4xl mx-auto flex flex-col md:flex-row gap-16 relative z-10 w-full">
         <div class="md:w-1/2 fade-up">
           <h2 class="text-3xl md:text-4xl tracking-tight mb-6 font-jakarta font-medium text-zinc-100">
-            Pronto para elevar seu padrão?
+            Vamos conversar sobre seus gargalos operacionais?
           </h2>
-          <p class="text-sm mb-8 font-geist font-light text-zinc-400">
-            Preencha o formulário para agendarmos uma chamada de alinhamento.
-            Geralmente respondemos em até 24 horas úteis.
+          <p class="text-sm mb-4 font-geist font-light text-zinc-400">
+            Preencha o formulário para agendarmos um diagnóstico da sua infraestrutura digital.
+          </p>
+          <p class="text-sm mb-8 font-geist font-medium text-[#2EFF00]">
+            Dúvida rápida? Fale conosco agora pelo WhatsApp abaixo.
           </p>
 
           <div class="space-y-4 mt-12">
@@ -1484,30 +1765,19 @@
             <div class="relative">
               <input type="email" id="email" class="w-full bg-transparent border-b py-3 text-sm focus:outline-none focus:border-lime-400 transition-colors peer border-zinc-800 text-zinc-100" placeholder=" " required="">
               <label for="email" class="absolute left-0 top-3 text-sm text-zinc-500 transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-lime-400 peer-valid:-top-4 peer-valid:text-xs font-geist font-light">
-                E-mail corporativo
+                E-mail
               </label>
             </div>
             <div class="relative">
-              <select class="w-full bg-transparent border-b py-3 text-sm text-zinc-500 focus:outline-none focus:border-lime-400 transition-colors appearance-none border-zinc-800" required="">
-                <option value="" disabled="" selected="" class="font-geist font-light">
-                  Orçamento estimado
-                </option>
-                <option value="1" class="font-geist font-light">$5k - $10k</option>
-                <option value="2" class="font-geist font-light">$10k - $25k</option>
-                <option value="3" class="font-geist font-light">$25k+</option>
-              </select>
-              <iconify-icon icon="solar:alt-arrow-down-linear" width="16" class="absolute right-0 top-4 pointer-events-none text-zinc-600"></iconify-icon>
+              <input type="tel" id="whatsapp" class="w-full bg-transparent border-b py-3 text-sm focus:outline-none focus:border-lime-400 transition-colors peer border-zinc-800 text-zinc-100" placeholder=" " required="">
+              <label for="whatsapp" class="absolute left-0 top-3 text-sm text-zinc-500 transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-lime-400 peer-valid:-top-4 peer-valid:text-xs font-geist font-light">
+                WhatsApp
+              </label>
             </div>
-            <div class="relative pt-4">
-              <label class="flex items-center gap-3 cursor-pointer group">
-                <div class="relative flex items-center justify-center w-4 h-4">
-                  <input type="checkbox" class="peer sr-only">
-                  <div class="w-4 h-4 border rounded-sm bg-transparent peer-checked:bg-lime-400 peer-checked:border-lime-400 transition-all border-zinc-700"></div>
-                  <iconify-icon icon="solar:check-read-linear" width="12" class="absolute opacity-0 peer-checked:opacity-100 transition-opacity text-zinc-950"></iconify-icon>
-                </div>
-                <span class="text-xs text-zinc-500 group-hover:text-zinc-300 transition-colors font-geist font-light">
-                  Precisa de automações robustas além do site?
-                </span>
+            <div class="relative">
+              <input type="url" id="website" class="w-full bg-transparent border-b py-3 text-sm focus:outline-none focus:border-lime-400 transition-colors peer border-zinc-800 text-zinc-100" placeholder=" ">
+              <label for="website" class="absolute left-0 top-3 text-sm text-zinc-500 transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-lime-400 peer-valid:-top-4 peer-valid:text-xs font-geist font-light cursor-text">
+                Opcional - link do seu site atual (se tiver)
               </label>
             </div>
             <div class="relative pt-4">
@@ -1522,8 +1792,8 @@
                 </span>
               </label>
             </div>
-            <button type="button" class="magnetic w-full py-4 rounded text-sm transition-colors mt-4 font-geist font-light bg-white text-zinc-950 hover:bg-zinc-200">
-              Enviar Solicitação
+            <button type="button" class="magnetic w-full py-4 rounded text-sm transition-colors mt-4 font-geist font-medium bg-[#2EFF00] hover:bg-[#28e600] text-zinc-950 uppercase tracking-wide">
+              Iniciar Projeto
             </button>
           </form>
         </div>
@@ -1773,7 +2043,7 @@
       }
 
       // Video Intro Logic
-      playHeroReveal();
+      // playHeroReveal(); // Now called by loader
 
       // Nav bar scroll logic
       const mainNav = document.getElementById('main-nav');
@@ -1839,18 +2109,7 @@
           );
       });
 
-      // Section Bars Reveal
-      gsap.to(".section-bar", {
-          scrollTrigger: {
-              trigger: "#statement",
-              start: "top bottom",
-              end: "top center",
-              scrub: true
-          },
-          scaleY: 1,
-          ease: "none",
-          stagger: 0.05
-      });
+
 
       // Scroll Masked Reveal (animate text in statement)
       const scrollMaskedLines = document.querySelectorAll('.scroll-masked-line span');
@@ -2049,16 +2308,16 @@
                 </div>
                 <!-- Phone (optional) -->
                 <div class="relative">
-                    <input type="tel" id="modal-phone" name="phone" class="w-full bg-transparent border-b py-3 text-sm focus:outline-none focus:border-lime-400 transition-colors peer border-zinc-800 text-zinc-100" placeholder=" " />
+                    <input type="tel" id="modal-phone" name="phone" class="w-full bg-transparent border-b py-3 text-sm focus:outline-none focus:border-lime-400 transition-colors peer border-zinc-800 text-zinc-100" placeholder=" " required />
                     <label for="modal-phone" class="absolute left-0 top-3 text-sm text-zinc-500 transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-lime-400 peer-valid:-top-4 peer-valid:text-xs font-geist font-light cursor-text">
-                        WhatsApp (opcional)
+                        WhatsApp
                     </label>
                 </div>
-                <!-- Message -->
+                <!-- Website -->
                 <div class="relative">
-                    <textarea id="modal-message" name="message" rows="3" class="w-full bg-transparent border-b py-3 text-sm focus:outline-none focus:border-lime-400 transition-colors peer border-zinc-800 text-zinc-100 resize-none" placeholder=" " required></textarea>
-                    <label for="modal-message" class="absolute left-0 top-3 text-sm text-zinc-500 transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-lime-400 peer-valid:-top-4 peer-valid:text-xs font-geist font-light cursor-text">
-                        Como podemos te ajudar?
+                    <input type="url" id="modal-website" name="website" class="w-full bg-transparent border-b py-3 text-sm focus:outline-none focus:border-lime-400 transition-colors peer border-zinc-800 text-zinc-100" placeholder=" " />
+                    <label for="modal-website" class="absolute left-0 top-3 text-sm text-zinc-500 transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-lime-400 peer-valid:-top-4 peer-valid:text-xs font-geist font-light cursor-text">
+                        Opcional - link do seu site atual (se tiver)
                     </label>
                 </div>
                 <div class="relative flex items-start gap-3 mt-2">
@@ -2164,7 +2423,7 @@
         const name = document.getElementById('modal-name').value;
         const email = document.getElementById('modal-email').value;
         const phone = document.getElementById('modal-phone').value;
-        const message = document.getElementById('modal-message').value;
+        const message = document.getElementById('modal-message') ? document.getElementById('modal-message').value : 'Contato via Modal de Serviço (Contato Rápido)';
         
         const submitBtn = e.target.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
@@ -2196,6 +2455,30 @@
           submitBtn.disabled = false;
           submitBtn.innerHTML = originalText;
         }
+      });
+
+      // Handle all local anchor links for Lenis
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href');
+          if (targetId === '#') {
+            if (window.lenis) {
+              window.lenis.scrollTo(0, { duration: 1.5 });
+            } else {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            return;
+          }
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            if (window.lenis) {
+              window.lenis.scrollTo(targetElement, { duration: 1.5 });
+            } else {
+              targetElement.scrollIntoView({ behavior: 'smooth' });
+            }
+          }
+        });
       });
     </script>
 </body></html>

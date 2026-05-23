@@ -3,7 +3,7 @@ import { Header } from "../components/Header";
 import { 
   Search, ArrowRight, LayoutDashboard, UserCheck, Briefcase, Clock, 
   Loader2, Download, Globe, Mail, Phone, MessageSquare, Bookmark, 
-  ChevronRight, Building2, Send, Copy, Trash2, FileText
+  ChevronRight, Building2, Send, Copy, Trash2, FileText, Terminal
 } from "lucide-react";
 import { db } from "../../lib/firebase";
 import { collection, addDoc, serverTimestamp, getDocs, deleteDoc, doc, query, orderBy } from "firebase/firestore";
@@ -54,6 +54,7 @@ export default function Prospect() {
 
   const [jobState, setJobState] = useState<"idle" | "loading" | "results">("idle");
   const [jobResults, setJobResults] = useState<any[]>([]);
+  const [jobCategory, setJobCategory] = useState<"design" | "ai">("design");
 
   const [historyTab, setHistoryTab] = useState("LEADS");
   const [savedLeads, setSavedLeads] = useState<any[]>([]);
@@ -248,7 +249,8 @@ export default function Prospect() {
     setJobState("loading");
     try {
       const res = await fetch("/api/find-jobs", {
-        method: "POST", headers: { "Content-Type": "application/json" }
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobType: jobCategory })
       });
       const json = await res.json();
       if (json.success) {
@@ -555,16 +557,32 @@ export default function Prospect() {
                <h2 className="text-[#2EFF00] flex items-center gap-4 text-3xl font-mono tracking-widest uppercase mb-6">
                  <Briefcase size={32} /> JOB FINDER
                </h2>
-               <p className="text-gray-400 font-mono text-sm max-w-2xl leading-relaxed mb-8">
-                 Busca automática por vagas recentes (últimos 15 dias) para Web Design, Diretor de Arte e Designer Sênior em São Paulo ou Remoto.
+               <p className="text-gray-400 font-mono text-sm max-w-2xl leading-relaxed mb-6">
+                 Busca automática por vagas recentes (últimos 15 dias) em São Paulo ou Remoto, focadas em design de alta performance e engenharia voltada para inteligência artificial, mantendo sempre o piso ou fit estratégico.
                </p>
-               {jobState === "idle" && (
+               
+               <div className="flex gap-4 mb-8">
+                 <button 
+                  onClick={() => setJobCategory("design")} 
+                  className={`px-6 py-3 border font-mono tracking-widest text-xs uppercase flex items-center gap-2 rounded-lg transition-colors ${jobCategory === 'design' ? 'bg-[#2EFF00] border-[#2EFF00] text-black font-bold' : 'bg-transparent border-[#1a1a1a] text-gray-500 hover:border-gray-500 hover:text-white'}`}
+                 >
+                   <LayoutDashboard size={14} /> Web Design & Diretor de Arte
+                 </button>
+                 <button 
+                  onClick={() => setJobCategory("ai")} 
+                  className={`px-6 py-3 border font-mono tracking-widest text-xs uppercase flex items-center gap-2 rounded-lg transition-colors ${jobCategory === 'ai' ? 'bg-[#2EFF00] border-[#2EFF00] text-black font-bold' : 'bg-transparent border-[#1a1a1a] text-gray-500 hover:border-gray-500 hover:text-white'}`}
+                 >
+                   <Terminal size={14} /> Inteligência Artificial
+                 </button>
+               </div>
+
+               {(jobState === "idle" || jobState === "results") && (
                  <button onClick={handleJobSearch} className="bg-[#2EFF00] hover:bg-[#28e600] text-black font-mono tracking-widest font-bold flex items-center gap-3 px-8 py-5 rounded-lg transition-colors">
                    <Search size={20} />
                    BUSCAR VAGAS RECENTES
                  </button>
                )}
-               {jobState !== "idle" && (
+               {jobState === "loading" && (
                  <button className="bg-[#188C00] text-black font-mono tracking-widest font-bold flex items-center gap-3 px-8 py-5 rounded-lg opacity-80 cursor-not-allowed">
                    <Loader2 size={20} className="animate-spin" />
                    BUSCANDO VAGAS...

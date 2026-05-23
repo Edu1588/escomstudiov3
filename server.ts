@@ -7,6 +7,16 @@ import cors from "cors";
 import * as cheerio from "cheerio";
 import Groq from "groq-sdk";
 
+// Prevent cyclic object value crashes
+const origStringify = JSON.stringify;
+JSON.stringify = function(value, replacer, space) {
+  try {
+    return origStringify(value, replacer, space);
+  } catch (err) {
+    return '"[Cyclic Object]"';
+  }
+};
+
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -185,17 +195,47 @@ Obrigatório: gere pelo menos de 7 a 10 problemas cobrindo TODAS e múltiplas á
       const searchData = await response.json();
       const placesResults = searchData.places || [];
 
+      // Salvar na Planilha (Firebase Leads) e evitar repetição
+      const querySnapshot = await getDocs(collection(db, "leads"));
+      const existingLeads = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      const newLeads = [];
+      
+      for (const r of placesResults) {
+        const placeId = (r.cid || r.placeId || Date.now().toString()).toString();
+        // Verificar se já existe (usando placeId ou telefone para não duplicar)
+        let existing = existingLeads.find((l: any) => l.placeId === placeId || (l.phone && l.phone !== "Sem telefone" && l.phone === r.phoneNumber));
+        
+        if (!existing) {
+          // Criar novo
+          const newDocRef = await addDoc(collection(db, "leads"), {
+            title: r.title,
+            address: r.address,
+            phone: r.phoneNumber || "Sem telefone",
+            website: r.website || "",
+            rating: r.rating,
+            ratingCount: r.ratingCount,
+            placeId: placeId,
+            status: 'pending',
+            createdAt: serverTimestamp()
+          });
+          newLeads.push({
+            id: newDocRef.id,
+            title: r.title,
+            address: r.address,
+            phone: r.phoneNumber || "Sem telefone",
+            website: r.website || "",
+            rating: r.rating,
+            ratingCount: r.ratingCount,
+            placeId: placeId,
+            status: 'pending'
+          });
+        }
+      }
+
       res.json({ 
         success: true, 
-        data: placesResults.map((r: any) => ({
-          title: r.title,
-          address: r.address,
-          phone: r.phoneNumber || "Sem telefone",
-          website: r.website || "",
-          rating: r.rating,
-          ratingCount: r.ratingCount,
-          placeId: r.cid || r.placeId || Date.now().toString()
-        }))
+        data: newLeads
       });
 
     } catch (error) {
@@ -285,6 +325,13 @@ Return ONLY a valid JSON object: {"subject": "...", "body": "..."}`}],
          return res.status(500).json({ error: "SERPER_API_KEY is not configured in .env" });
       }
 
+      const { jobType } = req.body || {};
+      let queryStr = "(\"R$ 5.000\" OR \"5.000,00\" OR \"R$ 6.000\" OR \"R$ 7.000\" OR \"Sênior\" OR \"Pleno\") (Web Designer OR UI Designer OR UX Designer OR Diretor de Arte) site:vagas.com.br OR site:gupy.io OR site:linkedin.com/jobs/view/";
+      
+      if (jobType === "ai") {
+        queryStr = "(\"R$ 5.000\" OR \"5.000,00\" OR \"R$ 6.000\" OR \"R$ 7.000\" OR \"Sênior\" OR \"Pleno\") (Desenvolvedor IA Generativa OR Desenvolvedor Full Stack IA OR IA Pleno OR Engenheiro de IA OR Machine Learning) site:vagas.com.br OR site:gupy.io OR site:linkedin.com/jobs/view/";
+      }
+
       const response = await fetch("https://google.serper.dev/search", {
         method: "POST",
         headers: {
@@ -292,7 +339,7 @@ Return ONLY a valid JSON object: {"subject": "...", "body": "..."}`}],
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          q: "(\"R$ 5.000\" OR \"5.000,00\" OR \"R$ 6.000\" OR \"R$ 7.000\" OR \"Sênior\" OR \"Pleno\") (Web Designer OR UI Designer OR UX Designer) site:vagas.com.br OR site:gupy.io OR site:linkedin.com/jobs/view/",
+          q: queryStr,
           gl: "br",
           hl: "pt-br",
           tbs: "qdr:m", // past month

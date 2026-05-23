@@ -511,7 +511,7 @@ function ScienceCards() {
 
   const [isMobile, setIsMobile] = useState(false);
   
-  const cienciaTitle = useI18n('ciencia_tit', 'Projetado com base em <span class="highlight">dados.</span>');
+  const cienciaTitle = useI18n('ciencia_tit', 'Projetado com base em <span className="highlight">dados.</span>');
   const cienciaSub = useI18n('ciencia_sub', 'Decisões baseadas em psicologia cognitiva e engenharia de performance para maximizar a retenção e conversão.');
 
   useEffect(() => {

@@ -59,13 +59,13 @@ export const MouseDistortion = () => {
             distortedUv += dir * strength * smoothT * sin(dist * 12.0 - uTime * 4.0);
         }
 
-        // Object-fit: cover logic
+        // Object-fit: cover logic, bottom-aligned
         vec2 s = uResolution; // Screen resolution
         vec2 i = uImageRes;   // Image resolution
         float rs = s.x / s.y;
         float ri = i.x / i.y;
         vec2 newScale = rs < ri ? vec2(i.x * s.y / i.y, s.y) : vec2(s.x, i.y * s.x / i.x);
-        vec2 offset = (rs < ri ? vec2((newScale.x - s.x) / 2.0, 0.0) : vec2(0.0, (newScale.y - s.y) / 2.0)) / newScale;
+        vec2 offset = (rs < ri ? vec2((newScale.x - s.x) / 2.0, 0.0) : vec2(0.0, 0.0)) / newScale;
         vec2 finalUv = distortedUv * s / newScale + offset;
 
         vec4 texColor = texture2D(uTexture, finalUv);
@@ -94,7 +94,7 @@ export const MouseDistortion = () => {
     const textureLoader = new THREE.TextureLoader();
     textureLoader.setCrossOrigin('anonymous');
     textureLoader.load(
-      'https://res.cloudinary.com/djw0tqmiw/image/upload/v1779404073/u1vj21vt52wp5d6yk4zh.png',
+      'https://res.cloudinary.com/djw0tqmiw/image/upload/v1779483539/upbk0qco7n4axl66yilf.png',
       (texture) => {
         texture.minFilter = THREE.LinearFilter;
         texture.magFilter = THREE.LinearFilter;

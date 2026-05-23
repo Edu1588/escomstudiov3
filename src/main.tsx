@@ -5,18 +5,21 @@ import './index.css';
 import { BeamsBackground } from './components/ui/beams-background.tsx';
 import { Starfield } from './components/ui/starfield-1.tsx';
 import { MouseDistortion } from './components/ui/mouse-distortion.tsx';
+import { CinematicHero } from './components/ui/cinematic-landing-hero.tsx';
+import { RadarEffectDemo } from './components/ui/radar-effect-demo.tsx';
 
-// Suppress framer-motion warning about Tailwind v4 oklch colors
-const originalError = console.error;
-console.error = (...args) => {
-  if (typeof args[0] === 'string' && args[0].includes('oklch')) return;
-  originalError(...args);
+// Prevent cyclic object value crashes from third party libs
+const origStringify = JSON.stringify;
+JSON.stringify = function(value, replacer, space) {
+  try {
+    return origStringify(value, replacer, space);
+  } catch (err) {
+    console.warn("Cyclic object value caught in JSON.stringify", err);
+    return '"[Cyclic Object]"';
+  }
 };
-const originalWarn = console.warn;
-console.warn = (...args) => {
-  if (typeof args[0] === 'string' && args[0].includes('oklch')) return;
-  originalWarn(...args);
-};
+
+// Console warnings for oklch are expected with Tailwind v4 and framer-motion
 
 const rootElement = document.getElementById('root');
 if (rootElement) {
@@ -50,6 +53,32 @@ if (cyberHeroElement) {
   createRoot(cyberHeroElement).render(
     <StrictMode>
       <MouseDistortion />
+    </StrictMode>,
+  );
+}
+
+const cinematicHeroElement = document.getElementById('cinematic-hero-root');
+if (cinematicHeroElement) {
+  createRoot(cinematicHeroElement).render(
+    <StrictMode>
+      <CinematicHero 
+        brandName="Mobile"
+        tagline1="Experiências Imersivas"
+        tagline2="A qualquer momento."
+        cardHeading="100% Otimizado para Mobile."
+        cardDescription={<><span className="text-white font-semibold flex mb-2">Desempenho Sem Compromissos.</span> Desenvolvemos aplicações utilizando a arquitetura Mobile-First, garantindo velocidade incrível, fluidez e taxas de conversão superiores em qualquer dispositivo.</>}
+        metricValue={100}
+        metricLabel="Score Técnico"
+      />
+    </StrictMode>,
+  );
+}
+
+const radarEffectElement = document.getElementById('radar-effect-root');
+if (radarEffectElement) {
+  createRoot(radarEffectElement).render(
+    <StrictMode>
+      <RadarEffectDemo />
     </StrictMode>,
   );
 }
