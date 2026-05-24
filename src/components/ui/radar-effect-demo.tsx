@@ -16,34 +16,34 @@ export function RadarEffectDemo() {
         <div className="mx-auto w-full max-w-3xl">
           <div className="flex w-full items-center justify-center space-x-10 md:justify-between md:space-x-0">
             {/* @ts-ignore */}
-            <IconContainer text="Web Development" delay={0.2} icon={<HiDocumentText className="h-8 w-8 text-slate-600" />} />
+            <IconContainer text="Web Development" delay={0.2} icon={<HiDocumentText className="h-8 w-8 text-[#2EFF00] opacity-80" />} />
             {/* @ts-ignore */}
-            <IconContainer delay={0.4} text="Mobile apps" icon={<AiFillDollarCircle className="h-8 w-8 text-slate-600" />} />
+            <IconContainer delay={0.4} text="Mobile apps" icon={<AiFillDollarCircle className="h-8 w-8 text-[#2EFF00] opacity-80" />} />
             {/* @ts-ignore */}
-            <IconContainer text="Designing" delay={0.3} icon={<BsClipboardDataFill className="h-8 w-8 text-slate-600" />} />
+            <IconContainer text="Designing" delay={0.3} icon={<BsClipboardDataFill className="h-8 w-8 text-[#2EFF00] opacity-80" />} />
           </div>
         </div>
         {/* Row 2 */}
         <div className="mx-auto w-full max-w-md">
           <div className="flex w-full items-center justify-center space-x-10 md:justify-between md:space-x-0">
             {/* @ts-ignore */}
-            <IconContainer text="Maintenence" delay={0.5} icon={<BiSolidReport className="h-8 w-8 text-slate-600" />} />
+            <IconContainer text="Maintenence" delay={0.5} icon={<BiSolidReport className="h-8 w-8 text-[#2EFF00] opacity-80" />} />
             {/* @ts-ignore */}
-            <IconContainer text="Server management" delay={0.8} icon={<HiMiniDocumentArrowUp className="h-8 w-8 text-slate-600" />} />
+            <IconContainer text="Server management" delay={0.8} icon={<HiMiniDocumentArrowUp className="h-8 w-8 text-[#2EFF00] opacity-80" />} />
           </div>
         </div>
         {/* Row 3 */}
         <div className="mx-auto w-full max-w-3xl">
           <div className="flex w-full items-center justify-center space-x-10 md:justify-between md:space-x-0">
             {/* @ts-ignore */}
-            <IconContainer delay={0.6} text="GitHub Integration" icon={<HiDocumentReport className="h-8 w-8 text-slate-600" />} />
+            <IconContainer delay={0.6} text="GitHub Integration" icon={<HiDocumentReport className="h-8 w-8 text-[#2EFF00] opacity-80" />} />
             {/* @ts-ignore */}
-            <IconContainer delay={0.7} text="CMS Integration" icon={<RiFilePaper2Fill className="h-8 w-8 text-slate-600" />} />
+            <IconContainer delay={0.7} text="CMS Integration" icon={<RiFilePaper2Fill className="h-8 w-8 text-[#2EFF00] opacity-80" />} />
           </div>
         </div>
 
-        <Radar className="absolute -bottom-12" />
-        <div className="absolute bottom-0 z-[41] h-[2px] w-full bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
+        <Radar className="absolute -bottom-12 left-1/2 -translate-x-1/2" />
+        <div className="absolute bottom-0 z-[41] h-[2px] w-full bg-gradient-to-r from-transparent via-[#2EFF00] to-transparent opacity-20" />
       </div>
     </div>
   );

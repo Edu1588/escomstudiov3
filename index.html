@@ -77,6 +77,12 @@
       .scroll-masked-line span { display: inline-block; opacity: 0; }
 
       .fade-up { opacity: 0; transform: translateY(30px); }
+      
+      h1, h2, h3, h4, h5, h6 {
+         opacity: 1 !important;
+         transform: none !important;
+         filter: none !important;
+      }
 
       .gallery-item {
           transform-origin: center center;
@@ -442,156 +448,11 @@
 </head>
   <body class="font-inter font-light text-base overflow-x-hidden bg-zinc-950 text-white">
     
-    <!-- Loading Screen -->
-    <div id="loader-wrapper" class="fixed inset-0 z-[99998] pointer-events-auto bg-[#e4e4e4]">
-        
-        <!-- Panel Top Left -->
-        <div id="loader-panel-tl" class="absolute inset-0 bg-[#e4e4e4] z-[99998] flex flex-col justify-start items-start p-10 transform-gpu" style="clip-path: polygon(0 0, 100% 0, 0 100%); transition: transform 1.5s cubic-bezier(0.85, 0, 0.15, 1);">
-            <div class="text-zinc-950 text-xs font-semibold tracking-[0.3em] flex items-center gap-3">
-                <div class="w-2.5 h-2.5 rounded-full bg-zinc-950 animate-ping"></div>
-                LOADING SYSTEM
-            </div>
-        </div>
-
-        <!-- Panel Bottom Right -->
-        <div id="loader-panel-br" class="absolute inset-0 bg-[#e4e4e4] z-[99998] flex flex-col justify-end items-end p-10 transform-gpu" style="clip-path: polygon(100% 0, 100% 100%, 0 100%); transition: transform 1.5s cubic-bezier(0.85, 0, 0.15, 1);">
-            <div class="text-right text-zinc-950 select-none">
-                <div id="loading-pct" class="font-black text-7xl sm:text-9xl tracking-tighter font-jakarta">
-                    00
-                </div>
-                <div class="text-[10px] font-bold tracking-[0.4em] uppercase opacity-70 mt-1">
-                    Processando Elementos
-                </div>
-            </div>
-        </div>
-
-        <!-- Glow Line -->
-        <div id="loader-glow-line" class="absolute z-[99999] pointer-events-none opacity-0" style="width: 150%; height: 2px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), rgba(255,255,255,0.8), transparent); transform: rotate(-45deg); top: 50%; left: -25%; transition: opacity 0.3s ease, transform 1.5s cubic-bezier(0.85, 0, 0.15, 1);"></div>
-
-        <!-- Center Spinner -->
-        <div id="loader-center" class="absolute inset-0 flex items-center justify-center z-[99999] pointer-events-none transition-opacity duration-300">
-            <div class="flex flex-col items-center">
-                <div class="relative w-16 h-16 flex items-center justify-center">
-                    <div class="absolute inset-0 border-4 border-zinc-300 rounded-full"></div>
-                    <div class="absolute inset-0 border-4 border-t-zinc-900 border-r-zinc-900 rounded-full animate-spin"></div>
-                    <iconify-icon icon="solar:round-transfer-diagonal-linear" class="text-zinc-900 text-lg"></iconify-icon>
-                </div>
-                <!-- This text has to be large in the middle, then scale down to the nav logo -->
-                <h1 class="mt-8 text-4xl md:text-6xl font-geist font-light tracking-[0.3em] text-zinc-950 uppercase drop-shadow-sm">
-                  ESCOM <span class="font-bold text-zinc-600">STUDIO</span>
-                </h1>
-            </div>
-        </div>
-    </div>
-
-    <!-- Loader Logic -->
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const loaderWrapper = document.getElementById("loader-wrapper");
-        const panelTL = document.getElementById("loader-panel-tl");
-        const panelBR = document.getElementById("loader-panel-br");
-        const loaderCenter = document.getElementById("loader-center");
-        const glowLine = document.getElementById("loader-glow-line");
-        const pctDisplay = document.getElementById("loading-pct");
-        const navLogo = document.getElementById("nav-logo");
-
-        let currentPct = 0;
-        // Fast loading simulation to quickly show the site
-        const intervalTime = 8;
-        const interval = setInterval(() => {
-            currentPct += Math.floor(Math.random() * 20) + 15;
-            if (currentPct >= 100) {
-                currentPct = 100;
-                clearInterval(interval);
-                setTimeout(() => {
-                    triggerDiagonalSplit();
-                }, 50);
-            }
-            pctDisplay.innerText = currentPct < 10 ? '0' + currentPct : currentPct;
-        }, intervalTime);
-
-        function triggerDiagonalSplit() {
-            loaderWrapper.style.backgroundColor = 'transparent';
-            const spinnerBox = loaderCenter.querySelector('.relative.w-16.h-16');
-            const centerText = loaderCenter.querySelector('h1');
-            const centerBg = loaderCenter.firstElementChild;
-            
-            // Hide spinner box and background immediately
-            if (spinnerBox) spinnerBox.style.opacity = '0';
-            if (centerBg) {
-                centerBg.style.background = 'transparent';
-                centerBg.style.backdropFilter = 'none';
-                centerBg.style.border = 'none';
-                centerBg.style.boxShadow = 'none';
-            }
-
-            glowLine.style.opacity = '1';
-            
-            panelTL.style.transform = 'translate(-110%, -110%)';
-            panelBR.style.transform = 'translate(110%, 110%)';
-            glowLine.style.transform = 'rotate(-45deg) translate(-100%, 100%)';
-
-            if (typeof gsap !== 'undefined') {
-                const navRect = navLogo.getBoundingClientRect();
-                const textRect = centerText.getBoundingClientRect();
-                const deltaX = navRect.left - textRect.left;
-                const deltaY = navRect.top - textRect.top;
-
-                // Color transition to match nav logo
-                gsap.to(centerText, { color: "#f4f4f5", duration: 1.5, ease: "power3.inOut" });
-                const span = centerText.querySelector('span');
-                if (span) {
-                    gsap.to(span, { color: "#00ff41", duration: 1.5, ease: "power3.inOut" });
-                }
-
-                // Move and scale text
-                gsap.to(centerText, {
-                    x: deltaX,
-                    y: deltaY,
-                    scale: navRect.height / textRect.height,
-                    transformOrigin: "top left",
-                    duration: 1.5,
-                    ease: "power3.inOut",
-                    onComplete: () => {
-                        navLogo.style.opacity = "1";
-                        if (window.playHeroReveal) window.playHeroReveal();
-                        setTimeout(() => {
-                            loaderWrapper.style.display = 'none';
-                        }, 100);
-                    }
-                });
-            } else {
-                setTimeout(() => {
-                    navLogo.style.opacity = "1";
-                    if (window.playHeroReveal) window.playHeroReveal();
-                    loaderWrapper.style.display = 'none';
-                }, 500);
-            }
-
-            setTimeout(() => {
-                loaderWrapper.style.pointerEvents = 'none';
-            }, 500);
-        }
-      });
-    </script>
-    
-<!-- Background (component) added by Aura -->
-<div class="aura-background-component top-0 w-full h-screen -z-10 fixed" data-alpha-mask="80"><div data-us-project="0WrRbFIPaKoWVkiQWBG0" class="absolute w-full h-full left-0 top-0 -z-10"></div>
-<script type="text/javascript">
-  !function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.29/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||((function(){
-    var originalError = console.error;
-    console.error = function() {
-      if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].includes('WebGL')) return;
-      originalError.apply(console, arguments);
-    };
-    try{UnicornStudio.init()}catch(e){console.warn("UnicornStudio WebGL init failed", e)}
-    setTimeout(function() { console.error = originalError; }, 1000);
-  })(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();
-</script></div>
+<!-- Removed Unicorn Studio -->
 
     <!-- Navigation -->
     <nav id="main-nav" class="fixed top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center transition-all duration-300">
-      <div id="nav-logo" class="tracking-[0.2em] text-sm uppercase font-geist font-light text-zinc-100 drop-shadow-sm opacity-0" style="transition: opacity 0.3s">
+      <div id="nav-logo" class="tracking-[0.2em] text-sm uppercase font-geist font-light text-zinc-100 drop-shadow-sm opacity-100">
         ESCOM <span class="text-[#00ff41]">STUDIO</span>
       </div>
       <div class="hidden md:flex gap-8 text-sm text-zinc-400 items-center">
@@ -611,11 +472,11 @@
       <div class="flex items-center gap-4">
         <!-- Language Selector -->
         <div class="hidden md:flex items-center gap-2 text-[11px] font-geist font-bold text-zinc-500 uppercase tracking-widest pl-4">
-            <button class="text-zinc-100 hover:text-white transition-colors cursor-default">PT</button>
+            <button onclick="changeLanguage('pt')" class="text-zinc-100 hover:text-white transition-colors">PT</button>
             <span class="opacity-20 font-light">/</span>
-            <button class="hover:text-zinc-300 transition-colors">EN</button>
+            <button onclick="changeLanguage('en')" class="hover:text-zinc-300 transition-colors">EN</button>
             <span class="opacity-20 font-light">/</span>
-            <button class="hover:text-zinc-300 transition-colors">ES</button>
+            <button onclick="changeLanguage('es')" class="hover:text-zinc-300 transition-colors">ES</button>
         </div>
         <button onclick="const m = document.getElementById('contact-modal'); m.classList.remove('hidden'); m.classList.add('flex');" class="magnetic btn-primary px-5 py-2.5 rounded text-sm hover:bg-[#28e600] transition-colors duration-300 flex items-center gap-2 font-geist font-medium bg-[#2EFF00] text-zinc-950 uppercase">
           Iniciar Projeto
@@ -624,28 +485,28 @@
       </div>
     </nav>
 
-    <section id="hero" class="relative w-full z-10 grid items-start justify-center overflow-hidden" style="min-height: 100vh;">
-      <!-- Background Image invisible spacer to set correct height -->
-      <img src="https://res.cloudinary.com/djw0tqmiw/image/upload/v1779483539/upbk0qco7n4axl66yilf.png" class="col-start-1 row-start-1 pointer-events-none opacity-0 w-full h-auto z-0" alt="spacer" aria-hidden="true" />
+    <!-- Shared Area wrapper -->
+    <div class="relative w-full bg-[#09090b]">
       
-      <!-- Shader Background -->
-      <div class="col-start-1 row-start-1 w-full h-full z-0 pointer-events-none bg-black relative">
-        <div class="absolute inset-0 w-full h-full">
-          <div id="cyber-hero-shader-root" class="w-full h-full"></div>
-        </div>
-        <div class="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-[#09090b] to-transparent z-[1] pointer-events-none"></div>
+      <section id="hero" class="relative w-full z-10 flex min-h-screen items-center justify-center overflow-hidden">
+      <!-- Background Image -->
+      <div class="absolute inset-0 z-0 pointer-events-none">
+          <div class="absolute inset-0 bg-[url('https://res.cloudinary.com/djw0tqmiw/image/upload/q_auto,f_auto,w_1920/v1779483539/upbk0qco7n4axl66yilf.png')] bg-cover bg-center bg-no-repeat opacity-100"></div>
+          <div class="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-[#0c0c0e] to-transparent pointer-events-none z-10"></div>
       </div>
-      
       <!-- Content -->
-      <div class="col-start-1 row-start-1 w-full h-full px-6 md:px-12 lg:px-24 pt-32 md:pt-40 pb-24 z-10 flex flex-col pointer-events-none">
+      <div class="w-full h-full px-6 md:px-12 lg:px-24 pt-32 md:pt-40 pb-24 z-10 flex flex-col pointer-events-none">
         <div id="hero-content-wrapper" class="w-full relative mx-auto flex flex-col lg:flex-row items-center justify-between pointer-events-auto max-w-7xl mt-12 md:mt-24" style="visibility: hidden; opacity: 0;">
         <div id="hero-content" class="w-full lg:w-[60%] relative flex flex-col items-start text-left" style="transform-origin: center right;">
           
           <div class="hero-fade mb-6 w-full mt-8">
-            <h1 id="hero-heading" class="font-jakarta text-4xl md:text-6xl lg:text-[4.5rem] leading-[0.95] tracking-tighter text-white font-black uppercase">
-              REDUZA CUSTOS.<br/>
-              <span class="text-[#2EFF00]">OTIMIZE RESULTADOS.</span>
-            </h1>
+            <div id="hero-heading-react-root">
+              <!-- React will render the animated heading here -->
+              <h1 id="hero-heading" class="font-jakarta text-4xl md:text-6xl lg:text-[4.5rem] leading-[0.95] tracking-tighter text-white font-black uppercase">
+                REDUZA CUSTOS.<br/>
+                <span class="text-[#2EFF00]">OTIMIZE RESULTADOS.</span>
+              </h1>
+            </div>
           </div>
           
           <div class="hero-fade mb-10 w-full lg:w-[80%]">
@@ -726,13 +587,17 @@
         </div>
         </div>
       </div>
+      </div>
     </section>
 
     <!-- 2. Statement -->
     <section id="statement" class="relative z-40 min-h-screen flex items-center justify-center px-6 md:px-12 lg:px-24 pointer-events-none" style="z-index: 40; background-color: transparent;">
-      <div class="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-[#09090b] to-transparent z-0"></div>
-      <div class="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-zinc-950 to-transparent z-0"></div>
-      
+      <!-- Background Image -->
+      <div class="absolute inset-0 z-0 pointer-events-none">
+          <div class="absolute inset-0 bg-[url('https://res.cloudinary.com/djw0tqmiw/image/upload/v1779488880/yqpqkeul1njcogpjhlpx.png')] bg-cover bg-center bg-no-repeat opacity-100"></div>
+          <div class="absolute top-0 inset-x-0 h-48 bg-gradient-to-b from-[#09090b] to-transparent pointer-events-none z-10"></div>
+          <div class="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-black to-transparent pointer-events-none z-10"></div>
+      </div>
       <div class="max-w-6xl mx-auto w-full px-4 relative z-10 pointer-events-auto">
         <div class="relative flex flex-col items-center justify-center p-8 md:p-16 lg:p-24 w-full">
           <h2 class="blur-reveal font-jakarta text-3xl md:text-5xl lg:text-7xl leading-[1.2] text-zinc-300 font-medium relative z-20 text-center w-full" style="text-shadow: 0 4px 30px rgba(0,0,0,0.8), 0 2px 10px rgba(0,0,0,0.8);">
@@ -743,6 +608,7 @@
         </div>
       </div>
     </section>
+    </div> <!-- Close Shared Area wrapper -->
 
     <div class="relative z-40 bg-gradient-to-b from-black to-zinc-950">
       <!-- 3. Features -->
@@ -1048,7 +914,6 @@
     </section>
 
     <!-- New Section: Economy -->
-    <div id="deferred-sections" style="display: none;">
     <section class="relative z-40 py-32 px-6 md:px-12 lg:px-24 bg-white border-t border-b border-zinc-200 border-opacity-50">
       <div class="max-w-7xl mx-auto">
         
@@ -1973,8 +1838,6 @@
       </div>
     </footer>
     </div>
-    <!-- End deferred sections -->
-    </div>
 
     <!-- Floating Action Buttons -->
     <div id="fab-container" class="fixed z-50 bottom-6 right-6 flex flex-col gap-3 opacity-0 pointer-events-none transition-opacity duration-300">
@@ -2001,8 +1864,60 @@
         </div>
     </div>
 
+    <div id="toast-container" class="fixed top-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- Google Translate Script -->
+    <div id="google_translate_element" style="display:none;"></div>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'pt',
+          includedLanguages: 'pt,en,es',
+          autoDisplay: false
+        }, 'google_translate_element');
+      }
+
+      function changeLanguage(langCode) {
+        var combo = document.querySelector('.goog-te-combo');
+        if (combo) {
+            combo.value = langCode;
+            combo.dispatchEvent(new Event('change'));
+        } else {
+            // Fallback
+            document.cookie = 'googtrans=/auto/' + langCode + '; path=/; domain=' + window.location.hostname;
+            document.cookie = 'googtrans=/auto/' + langCode + '; path=/;';
+            window.location.reload();
+        }
+      }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
     <!-- Scripts for Animations -->
     <script>
+      function showToast(message) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        
+        const toast = document.createElement('div');
+        toast.className = 'bg-[#111] border border-zinc-800 text-zinc-100 px-4 py-3 rounded shadow-2xl font-geist text-sm flex items-center gap-3 transform translate-x-full opacity-0 transition-all duration-300';
+        toast.innerHTML = `<iconify-icon icon="solar:info-circle-linear" class="text-[#2EFF00]" width="20"></iconify-icon>${message}`;
+        
+        container.appendChild(toast);
+        
+        // Animate in
+        requestAnimationFrame(() => {
+          toast.classList.remove('translate-x-full', 'opacity-0');
+        });
+        
+        // Clean up
+        setTimeout(() => {
+          toast.classList.add('translate-x-full', 'opacity-0');
+          setTimeout(() => {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+          }, 300);
+        }, 3000);
+      }
+      
       // LGPD Cookie Banner Logic
       document.addEventListener("DOMContentLoaded", () => {
           if (!localStorage.getItem('lgpd_cookie_consent')) {
@@ -2055,59 +1970,16 @@
           }, 100);
       });
 
+      document.addEventListener('DOMContentLoaded', () => {
+         setTimeout(() => {
+            if (window.playHeroReveal) playHeroReveal();
+         }, 100);
+      });
+
       // Initial Load Reveal -> Called after video
       function playHeroReveal() {
           gsap.to('#hero-content-wrapper', { autoAlpha: 1, duration: 0.5 });
-
-          setTimeout(() => {
-              const defSect = document.getElementById('deferred-sections');
-              if (defSect) {
-                  defSect.style.display = 'block';
-                  // Refresh scroll triggers since dimensions changed
-                  setTimeout(() => {
-                      initFadeUps(defSect);
-                      ScrollTrigger.refresh();
-                      if (window.globalSwiper) {
-                          window.globalSwiper.update();
-                      }
-                  }, 100);
-              }
-          }, 1500);
           
-          const heroHeading = document.getElementById('hero-heading');
-          if(heroHeading && typeof SplitType !== 'undefined') {
-              const split = new SplitType(heroHeading, { types: 'words, chars' });
-              const targets = split.chars || split.words;
-              if (targets && targets.length > 0) {
-                  gsap.fromTo(targets,
-                      { filter: 'blur(20px)', opacity: 0 },
-                      {
-                          filter: 'blur(0px)',
-                          opacity: 1,
-                          duration: 1.2,
-                          stagger: { amount: 0.8, from: "random" },
-                          ease: "power3.out",
-                          delay: 0.2
-                      }
-                  );
-              }
-          } else {
-              const heroLines = document.querySelectorAll('.masked-line span');
-              if (heroLines.length > 0) {
-                  gsap.fromTo(heroLines,
-                      { yPercent: 100, opacity: 0 },
-                      {
-                          yPercent: 0,
-                          opacity: 1,
-                          duration: 1.2,
-                          stagger: 0.2,
-                          ease: "power4.out",
-                          delay: 0.2
-                      }
-                  );
-              }
-          }
-
           const heroFades = document.querySelectorAll('.hero-fade');
           gsap.fromTo(heroFades,
               { y: 30, opacity: 0 },
@@ -2117,7 +1989,7 @@
                   duration: 1,
                   stagger: 0.1,
                   ease: "power3.out",
-                  delay: 0.6
+                  delay: 0.2
               }
           );
       }
@@ -2238,33 +2110,7 @@
 
 
 
-      // Scroll Masked Reveal (animate text in statement)
-      const blurReveals = document.querySelectorAll('.blur-reveal');
-      if (typeof SplitType !== 'undefined' && blurReveals.length > 0) {
-          blurReveals.forEach(el => {
-              const split = new SplitType(el, { types: 'words, chars' });
-              const targets = split.chars || split.words;
-              if (targets && targets.length > 0) {
-                  gsap.fromTo(targets, 
-                      { filter: 'blur(20px)', opacity: 0 },
-                      {
-                          filter: 'blur(0px)',
-                          opacity: 1,
-                          duration: 1.2,
-                          stagger: {
-                              amount: 0.8,
-                              from: "random"
-                          },
-                          ease: "power2.out",
-                          scrollTrigger: {
-                              trigger: el,
-                              start: "top 80%"
-                          }
-                      }
-                  );
-              }
-          });
-      }
+      // Scroll Masked Reveal (animate text in statement) removed per user request
 
       // Floating Action Buttons Visibility
       const fabContainer = document.getElementById('fab-container');
@@ -2317,7 +2163,7 @@
       }
 
       // Initialize immediate ones
-      initFadeUps(document.body, '#deferred-sections');
+      initFadeUps(document.body);
 
       // Helper to align journey line elements to start exactly at the first dot and end exactly at the last dot
       function updateJourneyLineElements() {

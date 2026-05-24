@@ -7,6 +7,7 @@ import { Starfield } from './components/ui/starfield-1.tsx';
 import { MouseDistortion } from './components/ui/mouse-distortion.tsx';
 import { CinematicHero } from './components/ui/cinematic-landing-hero.tsx';
 import { RadarEffectDemo } from './components/ui/radar-effect-demo.tsx';
+import { initHeroMarquee } from './components/ui/hero-marquee.tsx';
 
 // Prevent cyclic object value crashes from third party libs
 const origStringify = JSON.stringify;
@@ -50,11 +51,6 @@ if (contactCanvasElement) {
 
 const cyberHeroElement = document.getElementById('cyber-hero-shader-root');
 if (cyberHeroElement) {
-  createRoot(cyberHeroElement).render(
-    <StrictMode>
-      <MouseDistortion />
-    </StrictMode>,
-  );
 }
 
 const cinematicHeroElement = document.getElementById('cinematic-hero-root');
@@ -82,5 +78,7 @@ if (radarEffectElement) {
     </StrictMode>,
   );
 }
+
+initHeroMarquee();
 
 

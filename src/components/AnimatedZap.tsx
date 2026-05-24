@@ -17,7 +17,15 @@ export default function AnimatedZap({ size = 48 }: { size?: number }) {
     let frameId: number;
     let t = 0;
 
+    let isVisible = true;
+    const observer = new IntersectionObserver((entries) => {
+        isVisible = entries[0].isIntersecting;
+    }, { threshold: 0 });
+    if (containerRef.current) observer.observe(containerRef.current);
+
     const animate = () => {
+      frameId = requestAnimationFrame(animate);
+      if (!isVisible) return;
       t += 0.05;
       if (containerRef.current) {
         const layers = containerRef.current.children;
@@ -63,6 +71,7 @@ export default function AnimatedZap({ size = 48 }: { size?: number }) {
     });
 
     return () => {
+      observer.disconnect();
       unsubscribe();
       cancelAnimationFrame(frameId);
     };

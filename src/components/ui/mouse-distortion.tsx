@@ -35,9 +35,16 @@ export const MouseDistortion = () => {
     }
 
     // Set real size
-    const dpr = Math.min(window.devicePixelRatio, 1.5);
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
+    const dpr = 1.0;
+    const maxDimension = 1920;
+    let actualWidth = width * dpr;
+    let actualHeight = height * dpr;
+    if (actualWidth > maxDimension) {
+       actualHeight = actualHeight * (maxDimension / actualWidth);
+       actualWidth = maxDimension;
+    }
+    canvas.width = actualWidth;
+    canvas.height = actualHeight;
     gl.viewport(0, 0, canvas.width, canvas.height);
 
     // Shaders
@@ -178,7 +185,12 @@ export const MouseDistortion = () => {
     };
     image.src = 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1779483539/upbk0qco7n4axl66yilf.png';
 
-    // State
+    let isVisible = true;
+    const observer = new IntersectionObserver((entries) => {
+      isVisible = entries[0].isIntersecting;
+    }, { threshold: 0 });
+    observer.observe(container);
+
     const targetMouse = { x: 0.5, y: 0.5 };
     const currentMouse = { x: 0.5, y: 0.5 };
     let startTime = performance.now();
@@ -187,8 +199,14 @@ export const MouseDistortion = () => {
     const onResize = () => {
       width = container.clientWidth;
       height = container.clientHeight;
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
+      let actualWidth = width * dpr;
+      let actualHeight = height * dpr;
+      if (actualWidth > maxDimension) {
+         actualHeight = actualHeight * (maxDimension / actualWidth);
+         actualWidth = maxDimension;
+      }
+      canvas.width = actualWidth;
+      canvas.height = actualHeight;
       gl.viewport(0, 0, canvas.width, canvas.height);
     };
     window.addEventListener('resize', onResize);
@@ -202,7 +220,7 @@ export const MouseDistortion = () => {
 
     const render = () => {
       animationFrameId = requestAnimationFrame(render);
-      if (!imageLoaded) return;
+      if (!imageLoaded || !isVisible) return;
 
       currentMouse.x += (targetMouse.x - currentMouse.x) * 0.08;
       currentMouse.y += (targetMouse.y - currentMouse.y) * 0.08;
@@ -227,6 +245,7 @@ export const MouseDistortion = () => {
     render();
 
     return () => {
+      observer.disconnect();
       window.removeEventListener('resize', onResize);
       window.removeEventListener('mousemove', onMouseMove);
       cancelAnimationFrame(animationFrameId);

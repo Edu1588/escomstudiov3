@@ -46,6 +46,8 @@ export function BeamsBackground({
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const beamsRef = useRef<Beam[]>([]);
     const animationFrameRef = useRef<number>(0);
+    const observerRef = useRef<IntersectionObserver | null>(null);
+    const isVisibleRef = useRef(true);
     const MINIMUM_BEAMS = 20;
 
     const opacityMap = {
@@ -77,6 +79,13 @@ export function BeamsBackground({
 
         updateCanvasSize();
         window.addEventListener("resize", updateCanvasSize);
+
+        if (!observerRef.current) {
+            observerRef.current = new IntersectionObserver((entries) => {
+                isVisibleRef.current = entries[0].isIntersecting;
+            }, { threshold: 0 });
+            observerRef.current.observe(canvas);
+        }
 
         function resetBeam(beam: Beam, index: number, totalBeams: number) {
             if (!canvas) return beam;
@@ -134,6 +143,11 @@ export function BeamsBackground({
 
         function animate() {
             if (!canvas || !ctx) return;
+            
+            if (!isVisibleRef.current) {
+                animationFrameRef.current = requestAnimationFrame(animate);
+                return;
+            }
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.filter = "blur(35px)";
@@ -157,6 +171,9 @@ export function BeamsBackground({
 
         return () => {
             window.removeEventListener("resize", updateCanvasSize);
+            if (observerRef.current) {
+                observerRef.current.disconnect();
+            }
             if (animationFrameRef.current) {
                 cancelAnimationFrame(animationFrameRef.current);
             }

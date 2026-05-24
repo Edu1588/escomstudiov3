@@ -44,6 +44,8 @@ export const Starfield = ({
   const mouse = useRef({ x: 0, y: 0 });
   const cursor = useRef({ x: 0, y: 0 });
   const animationFrameRef = useRef<number | null>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const isVisibleRef = useRef(true);
 
   const sd = useRef({
     w: 0,
@@ -230,6 +232,10 @@ export const Starfield = ({
   };
 
   const animate = () => {
+    if (!isVisibleRef.current) {
+        animationFrameRef.current = requestAnimationFrame(animate);
+        return;
+    }
     if (sd.current.prevTime === 0) {
       sd.current.prevTime = Date.now();
     }
@@ -305,6 +311,14 @@ export const Starfield = ({
 
   useEffect(() => {
     const el = canvasRef.current?.parentElement;
+    if (el) {
+        if (!observerRef.current) {
+            observerRef.current = new IntersectionObserver((entries) => {
+                isVisibleRef.current = entries[0].isIntersecting;
+            }, { threshold: 0 });
+            observerRef.current.observe(el);
+        }
+    }
     if (mouseAdjust) {
       el?.addEventListener('mousemove', mouseHandler);
     }
@@ -320,6 +334,9 @@ export const Starfield = ({
 
     return () => {
       destroy();
+      if (observerRef.current) {
+         observerRef.current.disconnect();
+      }
       if (mouseAdjust) {
         el?.removeEventListener('mousemove', mouseHandler);
       }

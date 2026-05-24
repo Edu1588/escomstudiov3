@@ -30,7 +30,7 @@ export const PixelVoyagerCanvas = () => {
         setTimeout(() => { console.error = originalError; }, 0);
     }
     renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     mountRef.current.appendChild(renderer.domElement);
 
     const mouse = new THREE.Vector2(0, 0);
@@ -123,6 +123,12 @@ export const PixelVoyagerCanvas = () => {
     }
     scene.add(coinGroup);
 
+    let isVisible = true;
+    const observer = new IntersectionObserver((entries) => {
+        isVisible = entries[0].isIntersecting;
+    }, { threshold: 0 });
+    observer.observe(mountRef.current);
+
     const mousePos = { clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 };
     
     const handleMouseMove = (event: MouseEvent) => {
@@ -131,8 +137,10 @@ export const PixelVoyagerCanvas = () => {
     };
     window.addEventListener('mousemove', handleMouseMove);
 
+    let animationFrameId: number;
     const animate = () => {
-        requestAnimationFrame(animate);
+        animationFrameId = requestAnimationFrame(animate);
+        if (!isVisible) return;
         const delta = clock.getDelta();
         const elapsedTime = clock.getElapsedTime();
 
@@ -213,9 +221,11 @@ export const PixelVoyagerCanvas = () => {
     handleResize();
 
     return () => {
+        observer.disconnect();
         resizeObserver.disconnect();
         window.removeEventListener('resize', handleResize);
         window.removeEventListener('mousemove', handleMouseMove);
+        cancelAnimationFrame(animationFrameId);
         mountRef.current?.removeChild(renderer.domElement);
     };
   }, []);
