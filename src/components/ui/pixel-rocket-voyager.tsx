@@ -15,7 +15,20 @@ export const PixelVoyagerCanvas = () => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000);
     camera.position.z = 25;
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    let renderer: THREE.WebGLRenderer;
+    const originalError = console.error;
+    try {
+        console.error = function() {
+            if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].includes('WebGL')) return;
+            originalError.apply(console, arguments);
+        };
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    } catch (e) {
+        console.warn("WebGL not supported, skipping pixel voyager canvas");
+        return;
+    } finally {
+        setTimeout(() => { console.error = originalError; }, 0);
+    }
     renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     mountRef.current.appendChild(renderer.domElement);

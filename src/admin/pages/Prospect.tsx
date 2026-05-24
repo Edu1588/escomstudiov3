@@ -258,10 +258,8 @@ export default function Prospect() {
         setJobResults(json.data);
       } else {
         console.error(json.error || "Erro ao buscar vagas");
-        // Simulate results so the UI doesn't look broken
-        setJobResults([
-          { title: "Sênior UX/UI Designer (Simulado)", company: "Tech Empresa", snippet: "Vaga simulada devido a falta de configuração da API KEY. Configure o SERPER_API_KEY no painel de ambiente.", link: "#" }
-        ]);
+        setJobResults([]); // Leave empty if error so the UI shows '0 vagas' or error state
+        alert(json.error || "Erro ao buscar vagas. Verifique a configuração da API nas variáveis de ambiente.");
       }
     } catch (err) {
       console.error("Erro na conexão:", err);

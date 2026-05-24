@@ -350,25 +350,32 @@ Return ONLY a valid JSON object: {"subject": "...", "body": "..."}`}],
       const searchData = await response.json();
       const organicResults = searchData.organic || [];
 
+      let dataList = organicResults.map((r: any) => {
+        let company = "Empresa não identificada";
+        if (r.title && r.title.includes("-")) {
+          const parts = r.title.split("-");
+          company = parts[parts.length - 1].trim();
+        } else if (r.title && r.title.includes("|")) {
+          const parts = r.title.split("|");
+          company = parts[parts.length - 1].trim();
+        }
+         
+        return {
+          title: r.title || "Vaga",
+          company: company,
+          snippet: r.snippet || "",
+          link: r.link || "#"
+        }
+      });
+
+      if (dataList.length === 0) {
+        // Return empty so the UI shows "Nenhuma vaga encontrada" instead of fake ones
+        dataList = [];
+      }
+
       res.json({ 
         success: true, 
-        data: organicResults.map((r: any) => {
-          let company = "Empresa não identificada";
-          if (r.title.includes("-")) {
-            const parts = r.title.split("-");
-            company = parts[parts.length - 1].trim();
-          } else if (r.title.includes("|")) {
-            const parts = r.title.split("|");
-            company = parts[parts.length - 1].trim();
-          }
-           
-          return {
-            title: r.title,
-            company: company,
-            snippet: r.snippet,
-            link: r.link
-          }
-        })
+        data: dataList
       });
 
     } catch (error) {

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import * as THREE from 'three';
 
 export const MouseDistortion = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -11,24 +10,48 @@ export const MouseDistortion = () => {
     let width = container.clientWidth;
     let height = container.clientHeight;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // optimize performance
-    renderer.setSize(width, height);
-    container.appendChild(renderer.domElement);
+    const canvas = document.createElement('canvas');
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    container.appendChild(canvas);
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    const clock = new THREE.Clock();
+    // Try WebGL 1
+    const gl = canvas.getContext('webgl', { antialias: true, alpha: true }) as WebGLRenderingContext 
+            || canvas.getContext('experimental-webgl', { antialias: true, alpha: true }) as WebGLRenderingContext;
 
-    const vertexShader = `
+    if (!gl) {
+      console.warn("WebGL not supported, falling back to static image");
+      const img = document.createElement('img');
+      img.src = 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1779483539/upbk0qco7n4axl66yilf.png';
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      img.style.objectPosition = 'center 30%';
+      container.innerHTML = '';
+      container.appendChild(img);
+      return () => {
+        if (img.parentNode) img.parentNode.removeChild(img);
+      };
+    }
+
+    // Set real size
+    const dpr = Math.min(window.devicePixelRatio, 1.5);
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+
+    // Shaders
+    const vsSource = `
+      attribute vec2 aPosition;
+      attribute vec2 aUv;
       varying vec2 vUv;
       void main() {
-        vUv = uv;
-        gl_Position = vec4(position, 1.0);
+        vUv = aUv;
+        gl_Position = vec4(aPosition, 0.0, 1.0);
       }
     `;
 
-    const fragmentShader = `
+    const fsSource = `
       precision highp float;
       varying vec2 vUv;
       uniform sampler2D uTexture;
@@ -39,42 +62,40 @@ export const MouseDistortion = () => {
 
       void main() {
         vec2 uv = vUv;
-        
-        // Aspect ratio correction for the mouse distance
         vec2 aspect = vec2(uResolution.x / uResolution.y, 1.0);
         vec2 mouse = uMouse;
         
         float dist = length((uv - mouse) * aspect);
         
-        // Mouse Ripple / Distortion - Made significantly LIGHTER
-        float radius = 0.35; // Larger radius, softer spread
-        float strength = 0.01; // Very light effect
+        float radius = 0.35;
+        float strength = 0.01;
         
         vec2 distortedUv = uv;
         if (dist < radius) {
             float t = dist / radius;
             float smoothT = smoothstep(1.0, 0.0, t);
             vec2 dir = normalize(uv - mouse);
-            // Light, elegant fluid wave
             distortedUv += dir * strength * smoothT * sin(dist * 12.0 - uTime * 4.0);
         }
 
-        // Object-fit: cover logic, bottom-aligned
-        vec2 s = uResolution; // Screen resolution
-        vec2 i = uImageRes;   // Image resolution
+        vec2 s = uResolution;
+        vec2 i = uImageRes;
         float rs = s.x / s.y;
         float ri = i.x / i.y;
         
         vec2 newScale = rs < ri ? vec2(i.x * s.y / i.y, s.y) : vec2(s.x, i.y * s.x / i.x);
         
-        // Horizontal: always center. offset.x = (newScale.x - s.x) / 2.0
-        // Vertical: offset.y to push the character down a bit so the head is not under the navbar.
         vec2 offset = vec2((newScale.x - s.x) / 2.0, (newScale.y - s.y) * 0.3) / newScale;
         vec2 finalUv = distortedUv * s / newScale + offset;
 
+        // basic bounds check to avoid smearing outside texture
+        if(finalUv.x < 0.0 || finalUv.x > 1.0 || finalUv.y < 0.0 || finalUv.y > 1.0) {
+            gl_FragColor = vec4(0.0);
+            return;
+        }
+
         vec4 texColor = texture2D(uTexture, finalUv);
         
-        // Add a very subtle light wash at the mouse epicenter
         float lightGlow = smoothstep(radius*0.5, 0.0, dist) * 0.03;
         texColor.rgb += vec3(lightGlow);
 
@@ -82,46 +103,93 @@ export const MouseDistortion = () => {
       }
     `;
 
-    const material = new THREE.ShaderMaterial({
-      vertexShader,
-      fragmentShader,
-      uniforms: {
-        uTexture: { value: null },
-        uMouse: { value: new THREE.Vector2(0.5, 0.5) },
-        uResolution: { value: new THREE.Vector2(width, height) },
-        uTime: { value: 0 },
-        uImageRes: { value: new THREE.Vector2(1920, 1080) }
-      },
-      transparent: true
-    });
-
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.setCrossOrigin('anonymous');
-    textureLoader.load(
-      'https://res.cloudinary.com/djw0tqmiw/image/upload/v1779483539/upbk0qco7n4axl66yilf.png',
-      (texture) => {
-        texture.minFilter = THREE.LinearFilter;
-        texture.magFilter = THREE.LinearFilter;
-        material.uniforms.uTexture.value = texture;
-        const img = texture.image;
-        if (img) {
-          material.uniforms.uImageRes.value.set(img.width, img.height);
-        }
+    function createShader(gl: WebGLRenderingContext, type: number, source: string) {
+      const shader = gl.createShader(type)!;
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+        return null;
       }
-    );
+      return shader;
+    }
 
-    const geometry = new THREE.PlaneGeometry(2, 2);
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
+    const vertexShader = createShader(gl, gl.VERTEX_SHADER, vsSource)!;
+    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fsSource)!;
 
-    const targetMouse = new THREE.Vector2(0.5, 0.5);
-    const currentMouse = new THREE.Vector2(0.5, 0.5);
+    const program = gl.createProgram()!;
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      console.error(gl.getProgramInfoLog(program));
+      return;
+    }
+    gl.useProgram(program);
+
+    // Quad data
+    const positions = new Float32Array([
+      -1, -1,   0, 0,
+       1, -1,   1, 0,
+      -1,  1,   0, 1,
+       1,  1,   1, 1,
+    ]);
+
+    const vbo = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+
+    const aPosition = gl.getAttribLocation(program, "aPosition");
+    gl.enableVertexAttribArray(aPosition);
+    gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 16, 0);
+
+    const aUv = gl.getAttribLocation(program, "aUv");
+    gl.enableVertexAttribArray(aUv);
+    gl.vertexAttribPointer(aUv, 2, gl.FLOAT, false, 16, 8);
+
+    // Uniforms
+    const uMouse = gl.getUniformLocation(program, "uMouse");
+    const uResolution = gl.getUniformLocation(program, "uResolution");
+    const uTime = gl.getUniformLocation(program, "uTime");
+    const uImageRes = gl.getUniformLocation(program, "uImageRes");
+    const uTexture = gl.getUniformLocation(program, "uTexture");
+
+    // Texture
+    const texture = gl.createTexture();
+    const image = new Image();
+    image.crossOrigin = 'anonymous';
+    let imageLoaded = false;
+    
+    // Default image res until loaded to avoid div 0
+    gl.uniform2f(uImageRes, 1920, 1080);
+
+    image.onload = () => {
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.uniform2f(uImageRes, image.width, image.height);
+      imageLoaded = true;
+    };
+    image.src = 'https://res.cloudinary.com/djw0tqmiw/image/upload/v1779483539/upbk0qco7n4axl66yilf.png';
+
+    // State
+    const targetMouse = { x: 0.5, y: 0.5 };
+    const currentMouse = { x: 0.5, y: 0.5 };
+    let startTime = performance.now();
+    let animationFrameId: number;
 
     const onResize = () => {
       width = container.clientWidth;
       height = container.clientHeight;
-      renderer.setSize(width, height);
-      material.uniforms.uResolution.value.set(width, height);
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      gl.viewport(0, 0, canvas.width, canvas.height);
     };
     window.addEventListener('resize', onResize);
 
@@ -132,28 +200,42 @@ export const MouseDistortion = () => {
     };
     window.addEventListener('mousemove', onMouseMove);
 
-    const animate = () => {
-      currentMouse.lerp(targetMouse, 0.08); // smooth interpolation
-      material.uniforms.uMouse.value.copy(currentMouse);
+    const render = () => {
+      animationFrameId = requestAnimationFrame(render);
+      if (!imageLoaded) return;
+
+      currentMouse.x += (targetMouse.x - currentMouse.x) * 0.08;
+      currentMouse.y += (targetMouse.y - currentMouse.y) * 0.08;
+
+      const time = (performance.now() - startTime) * 0.001;
+
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+
+      gl.useProgram(program);
+      gl.uniform2f(uMouse, currentMouse.x, currentMouse.y);
+      gl.uniform2f(uResolution, width, height);
+      gl.uniform1f(uTime, time);
       
-      material.uniforms.uTime.value = clock.getElapsedTime();
-      renderer.render(scene, camera);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.uniform1i(uTexture, 0);
+
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     };
-    renderer.setAnimationLoop(animate);
+    
+    render();
 
     return () => {
       window.removeEventListener('resize', onResize);
       window.removeEventListener('mousemove', onMouseMove);
-      renderer.setAnimationLoop(null);
-      
-      const canvas = renderer.domElement;
-      if (canvas && canvas.parentNode) {
-        canvas.parentNode.removeChild(canvas);
-      }
-      
-      material.dispose();
-      geometry.dispose();
-      renderer.dispose();
+      cancelAnimationFrame(animationFrameId);
+      if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+      gl.deleteTexture(texture);
+      gl.deleteBuffer(vbo);
+      gl.deleteProgram(program);
+      gl.deleteShader(vertexShader);
+      gl.deleteShader(fragmentShader);
     };
   }, []);
 
@@ -165,3 +247,4 @@ export const MouseDistortion = () => {
     />
   );
 };
+
