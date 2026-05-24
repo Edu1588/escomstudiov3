@@ -41,6 +41,7 @@
     <link href="https://fonts.cdnfonts.com/css/geist-sans" rel="stylesheet">
 
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <script src="https://unpkg.com/split-type"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.32/dist/lenis.min.js"></script>
@@ -540,8 +541,7 @@
       </button>
     </nav>
 
-    <!-- 1. Hero -->
-    <section id="hero" class="relative z-10 w-full min-h-screen grid items-start justify-center overflow-hidden">
+    <section id="hero" class="relative w-full z-10 grid items-start justify-center overflow-hidden" style="min-height: 100vh;">
       <!-- Background Image invisible spacer to set correct height -->
       <img src="https://res.cloudinary.com/djw0tqmiw/image/upload/v1779483539/upbk0qco7n4axl66yilf.png" class="col-start-1 row-start-1 pointer-events-none opacity-0 w-full h-auto z-0" alt="spacer" aria-hidden="true" />
       
@@ -554,12 +554,12 @@
       </div>
       
       <!-- Content -->
-      <div class="col-start-1 row-start-1 w-full h-full px-6 md:px-12 lg:px-24 pt-32 pb-24 z-10 flex flex-col pointer-events-none">
+      <div class="col-start-1 row-start-1 w-full h-full px-6 md:px-12 lg:px-24 pt-32 md:pt-40 pb-24 z-10 flex flex-col pointer-events-none">
         <div id="hero-content-wrapper" class="w-full relative mx-auto flex flex-col lg:flex-row items-center justify-between pointer-events-auto max-w-7xl mt-12 md:mt-24" style="visibility: hidden; opacity: 0;">
         <div id="hero-content" class="w-full lg:w-[60%] relative flex flex-col items-start text-left" style="transform-origin: center right;">
           
           <div class="hero-fade mb-6 w-full mt-8">
-            <h1 class="font-jakarta text-4xl md:text-6xl lg:text-[4.5rem] leading-[0.95] tracking-tighter text-white font-black uppercase">
+            <h1 id="hero-heading" class="font-jakarta text-4xl md:text-6xl lg:text-[4.5rem] leading-[0.95] tracking-tighter text-white font-black uppercase">
               REDUZA CUSTOS.<br/>
               <span class="text-[#2EFF00]">OTIMIZE RESULTADOS.</span>
             </h1>
@@ -582,7 +582,7 @@
         </div>
 
         <!-- 3 Floating Cyber Cards -->
-        <div class="hero-fade hidden lg:flex flex-col gap-4 w-full lg:w-[220px] mt-16 lg:mt-0" style="perspective: 1000px;">
+        <div class="hero-fade hidden lg:flex flex-col gap-4 w-full lg:w-[220px] mt-16 lg:mt-0 pointer-events-auto" style="perspective: 1000px;">
           <style>
             @keyframes float-slow {
               0%, 100% { transform: translateY(0); }
@@ -599,6 +599,12 @@
             .animate-float-1 { animation: float-slow 5s ease-in-out infinite; }
             .animate-float-2 { animation: float-medium 6s ease-in-out infinite 1s; }
             .animate-float-3 { animation: float-fast 4.5s ease-in-out infinite 0.5s; }
+
+            /* Fix SplitType word breaking */
+            .word {
+                white-space: nowrap !important;
+                display: inline-block !important;
+            }
           </style>
           
           <!-- Card 1 -->
@@ -635,29 +641,21 @@
           </div>
 
         </div>
-      </div>
+        </div>
       </div>
     </section>
 
-
-
     <!-- 2. Statement -->
-    <section id="statement" class="relative z-40 h-screen flex items-center justify-center px-6 md:px-12 lg:px-24 pointer-events-none" style="z-index: 40; background-image: url('https://res.cloudinary.com/djw0tqmiw/image/upload/v1779488880/yqpqkeul1njcogpjhlpx.png'); background-size: cover; background-position: center top; background-repeat: no-repeat;">
-      <div class="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-zinc-950 to-transparent z-0"></div>
+    <section id="statement" class="relative z-40 min-h-screen flex items-center justify-center px-6 md:px-12 lg:px-24 pointer-events-none" style="z-index: 40; background-color: transparent;">
+      <div class="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-[#09090b] to-transparent z-0"></div>
       <div class="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-zinc-950 to-transparent z-0"></div>
       
       <div class="max-w-6xl mx-auto w-full px-4 relative z-10 pointer-events-auto">
         <div class="relative flex flex-col items-center justify-center p-8 md:p-16 lg:p-24 w-full">
-          <h2 class="font-jakarta text-3xl md:text-5xl lg:text-7xl leading-[1.2] text-zinc-300 font-medium relative z-20 text-center w-full" style="text-shadow: 0 4px 30px rgba(0,0,0,0.8), 0 2px 10px rgba(0,0,0,0.8);">
-            <span class="scroll-masked-line">
-              <span>Sistemas que crescem com você,</span>
-            </span>
-            <span class="scroll-masked-line">
-              <span class="text-zinc-400">eliminando o caos operacional</span>
-            </span>
-            <span class="scroll-masked-line">
-              <span class="text-zinc-500">para você focar no que importa.</span>
-            </span>
+          <h2 class="blur-reveal font-jakarta text-3xl md:text-5xl lg:text-7xl leading-[1.2] text-zinc-300 font-medium relative z-20 text-center w-full" style="text-shadow: 0 4px 30px rgba(0,0,0,0.8), 0 2px 10px rgba(0,0,0,0.8);">
+            Websites de alta performance,<br/>
+            <span class="text-zinc-400">otimizados para atrair clientes</span><br/>
+            <span class="text-zinc-500">e acelerar os seus resultados.</span>
           </h2>
         </div>
       </div>
@@ -671,7 +669,7 @@
           <span class="text-xs tracking-wide uppercase mb-2 block font-geist font-light text-[#00ff41] fade-up">
             &gt;_ [ VISÃO_GERAL.EXE ] 
           </span>
-          <h2 class="text-3xl md:text-4xl tracking-tight mb-4 fade-up font-jakarta font-medium text-zinc-100">
+          <h2 class="blur-reveal text-3xl md:text-4xl tracking-tight mb-4 fade-up font-jakarta font-medium text-zinc-100">
             Serviços
           </h2>
           <p class="max-w-xl fade-up font-geist font-light text-zinc-400">
@@ -836,7 +834,7 @@
           <span class="text-xs tracking-wide uppercase mb-2 block font-geist font-light text-[#2EFF00] fade-up">
             &gt;_ [ PLANOS_E_SUSTENTAÇÃO ]
           </span>
-          <h2 class="text-3xl md:text-5xl tracking-tight mb-6 fade-up font-jakarta font-medium text-zinc-100">
+          <h2 class="blur-reveal text-3xl md:text-5xl tracking-tight mb-6 fade-up font-jakarta font-medium text-zinc-100">
             Investimento Transparente e Evolução Contínua
           </h2>
           <p class="max-w-2xl fade-up font-geist font-light text-zinc-400">
@@ -856,21 +854,21 @@
             
             <h3 class="text-2xl font-jakarta font-medium text-zinc-100 mb-4">Landing Pages</h3>
             <p class="text-zinc-400 font-geist text-[15px] leading-relaxed mb-10 flex-grow">
-              Uma página objetiva para apresentar seu serviço, responder dúvidas e levar o visitante direto para o WhatsApp.
+              Transforme visitantes em clientes com páginas de alta conversão. Ideal para lançamentos, campanhas de anúncios e captação de leads com gatilhos mentais estrategicamente posicionados.
             </p>
             
             <ul class="space-y-4">
               <li class="flex items-start gap-3">
                 <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
-                <span class="text-sm font-geist text-zinc-300">Mensagem clara e focada</span>
+                <span class="text-sm font-geist text-zinc-300">Design focado em conversão e vendas</span>
               </li>
               <li class="flex items-start gap-3">
                 <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
-                <span class="text-sm font-geist text-zinc-300">Call to action bem posicionado</span>
+                <span class="text-sm font-geist text-zinc-300">Carregamento instantâneo (alta performance)</span>
               </li>
               <li class="flex items-start gap-3">
                 <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
-                <span class="text-sm font-geist text-zinc-300">Leitura impecável no mobile</span>
+                <span class="text-sm font-geist text-zinc-300">Otimização de SEO (Search Engine Optimization)</span>
               </li>
             </ul>
           </div>
@@ -885,21 +883,21 @@
             
             <h3 class="text-2xl font-jakarta font-medium text-zinc-100 mb-4">Sites Institucionais</h3>
             <p class="text-zinc-400 font-geist text-[15px] leading-relaxed mb-10 flex-grow">
-              Um site organizado para mostrar quem você é, o que entrega e por que o cliente pode confiar no seu alto padrão.
+              Eleve o nível da sua marca com um portal imersivo. Transmita autoridade inquestionável, confiança e destaque-se brutalmente da concorrência no mercado digital.
             </p>
             
             <ul class="space-y-4">
               <li class="flex items-start gap-3">
                 <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
-                <span class="text-sm font-geist text-zinc-300">Serviços bem explicados</span>
+                <span class="text-sm font-geist text-zinc-300">Posicionamento premium de marca</span>
               </li>
               <li class="flex items-start gap-3">
                 <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
-                <span class="text-sm font-geist text-zinc-300">Arquitetura de seções enxuta</span>
+                <span class="text-sm font-geist text-zinc-300">Navegação imersiva e memorável</span>
               </li>
               <li class="flex items-start gap-3">
                 <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
-                <span class="text-sm font-geist text-zinc-300">Mais segurança na decisão (Trust)</span>
+                <span class="text-sm font-geist text-zinc-300">Painel CMS intuitivo para você mesmo alterar o conteúdo</span>
               </li>
             </ul>
           </div>
@@ -924,7 +922,7 @@
               </li>
               <li class="flex items-start gap-3">
                 <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
-                <span class="text-sm font-geist text-zinc-300">Ajustes e atualizações de conteúdo</span>
+                <span class="text-sm font-geist text-zinc-300">Backups diários para segurança total dos dados</span>
               </li>
               <li class="flex items-start gap-3">
                 <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
@@ -943,17 +941,17 @@
             
             <h3 class="text-2xl font-jakarta font-medium text-zinc-100 mb-4">CRM & Dashboards</h3>
             <p class="text-zinc-400 font-geist text-[15px] leading-relaxed mb-10 flex-grow">
-              Sistemas internos para organização de dados, acompanhamento de leads e centralização da inteligência do seu negócio.
+              Sistemas internos seguros para gestão blindada de dados. Centralize leads e controle sua operação com inteligência de negócios protegida.
             </p>
             
             <ul class="space-y-4">
               <li class="flex items-start gap-3">
                 <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
-                <span class="text-sm font-geist text-zinc-300">Métricas centralizadas e visuais</span>
+                <span class="text-sm font-geist text-zinc-300">Conformidade total com a LGPD</span>
               </li>
               <li class="flex items-start gap-3">
                 <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
-                <span class="text-sm font-geist text-zinc-300">Organização automática de fluxo de dados</span>
+                <span class="text-sm font-geist text-zinc-300">Criptografia e segurança de ponta a ponta</span>
               </li>
               <li class="flex items-start gap-3">
                 <iconify-icon icon="solar:check-circle-bold" class="text-[#2EFF00] mt-1" width="18"></iconify-icon>
@@ -971,7 +969,7 @@
       <div class="max-w-7xl mx-auto">
         
         <div class="mb-24 max-w-4xl">
-          <h2 class="text-4xl md:text-5xl lg:text-6xl tracking-tight mb-8 fade-up font-jakarta font-medium text-zinc-100 uppercase leading-[1.1]">
+          <h2 class="blur-reveal text-4xl md:text-5xl lg:text-6xl tracking-tight mb-8 fade-up font-jakarta font-medium text-zinc-100 uppercase leading-[1.1]">
             COMO ECONOMIZAMOS SEU DINHEIRO
           </h2>
           <p class="text-xl fade-up font-geist font-light text-zinc-300 max-w-2xl">
@@ -1107,7 +1105,7 @@
         <span class="text-xs tracking-wide uppercase mb-2 block font-geist font-light text-[#00ff41]">
           &gt;_ [ LOG_RESULTADOS.TXT ] 
         </span>
-        <h2 class="text-3xl md:text-4xl tracking-tight mb-2 font-jakarta font-medium text-zinc-100">
+        <h2 class="blur-reveal text-3xl md:text-4xl tracking-tight mb-2 font-jakarta font-medium text-zinc-100">
           Resultados
         </h2>
         <p class="font-geist font-light text-zinc-400 max-w-xl mx-auto">
@@ -1189,7 +1187,7 @@
           <span class="text-xs tracking-wide uppercase mb-2 block font-geist font-light text-[#00ff41]">
             &gt;_ [ CIÊNCIA_&amp;_PERFORMANCE ]
           </span>
-          <h2 class="text-4xl tracking-tight mb-4 font-jakarta font-medium text-zinc-100">
+          <h2 class="blur-reveal text-4xl tracking-tight mb-4 font-jakarta font-medium text-zinc-100">
             Racionalidade Aplicada.
           </h2>
           <p class="text-sm font-geist font-light text-zinc-400">
@@ -1308,7 +1306,7 @@
           <div class="absolute inset-0 bg-gradient-to-t via-transparent to-transparent from-zinc-950"></div>
         </div>
         <div class="md:w-1/2 fade-up">
-          <h2 class="text-3xl md:text-4xl tracking-tight mb-6 font-jakarta font-medium text-zinc-100">
+          <h2 class="blur-reveal text-3xl md:text-4xl tracking-tight mb-6 font-jakarta font-medium text-zinc-100">
             O controle absoluto do seu negócio em um só lugar.
           </h2>
           <p class="text-sm leading-relaxed mb-6 font-geist font-light text-zinc-400">
@@ -1332,7 +1330,7 @@
     <!-- 8. Gallery -->
     <section id="gallery" class="relative z-10 py-32 px-6 md:px-12 lg:px-24 bg-[#0c0c0e]">
       <div class="max-w-7xl mx-auto">
-        <h2 class="text-3xl md:text-4xl tracking-tight mb-16 text-center fade-up font-jakarta font-medium text-zinc-100">
+        <h2 class="blur-reveal text-3xl md:text-4xl tracking-tight mb-16 text-center fade-up font-jakarta font-medium text-zinc-100">
           Trabalhos Selecionados
         </h2>
 
@@ -1386,7 +1384,7 @@
     <!-- 9. Manifesto & Bento -->
     <section class="relative z-40 py-32 px-6 md:px-12 lg:px-24 bg-zinc-950">
       <div class="max-w-7xl mx-auto mb-20 text-center font-jakarta fade-up">
-        <h2 class="text-4xl md:text-5xl lg:text-7xl font-semibold text-zinc-300 tracking-tight leading-[1] uppercase mb-8">
+        <h2 class="blur-reveal text-4xl md:text-5xl lg:text-7xl font-semibold text-zinc-300 tracking-tight leading-[1] uppercase mb-8">
           <span class="text-zinc-500">Cada projeto exige</span><br/>
           pensamento, cuidado<br/>
           <span class="text-zinc-100">e dedicação extra</span>
@@ -1571,7 +1569,7 @@
           <div class="text-[#2EFF00] font-mono text-xs tracking-widest font-semibold uppercase flex items-center gap-2">
             &gt;_ [ INCLUSO.LIST ]
           </div>
-          <h2 class="text-5xl md:text-7xl font-jakarta font-bold text-white tracking-tighter leading-[0.95] mb-2 mt-4">
+          <h2 class="blur-reveal text-5xl md:text-7xl font-jakarta font-bold text-white tracking-tighter leading-[0.95] mb-2 mt-4">
             Tudo no<br/><span class="text-[#2EFF00]">pacote.</span>
           </h2>
           <p class="text-base text-zinc-400 font-geist leading-relaxed max-w-[90%]">
@@ -1596,7 +1594,7 @@
             <div class="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-transparent z-10 mix-blend-overlay"></div>
             <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Equipe" class="w-full h-full object-cover opacity-80 transition-transform duration-700 group-hover:scale-105" referrerpolicy="no-referrer" />
           </div>
-          <h2 class="text-3xl md:text-5xl tracking-tight mb-4 font-jakarta font-medium text-zinc-100 leading-tight">
+          <h2 class="blur-reveal text-3xl md:text-5xl tracking-tight mb-4 font-jakarta font-medium text-zinc-100 leading-tight">
             Ficou com <br />alguma dúvida?
           </h2>
           <p class="text-zinc-400 font-geist text-sm leading-relaxed mt-4 max-w-sm">
@@ -1739,7 +1737,7 @@
     <section class="relative z-10 py-32 px-6 md:px-12 lg:px-24 border-y overflow-hidden border-zinc-900 bg-zinc-950">
       <div class="max-w-4xl mx-auto flex flex-col md:flex-row gap-16 relative z-10 w-full">
         <div class="md:w-1/2 fade-up">
-          <h2 class="text-3xl md:text-4xl tracking-tight mb-6 font-jakarta font-medium text-zinc-100">
+          <h2 class="blur-reveal text-3xl md:text-4xl tracking-tight mb-6 font-jakarta font-medium text-zinc-100">
             Vamos conversar sobre seus gargalos operacionais?
           </h2>
           <p class="text-sm mb-4 font-geist font-light text-zinc-400">
@@ -1975,18 +1973,39 @@
       function playHeroReveal() {
           gsap.to('#hero-content-wrapper', { autoAlpha: 1, duration: 0.5 });
           
-          const heroLines = document.querySelectorAll('.masked-line span');
-          gsap.fromTo(heroLines,
-              { yPercent: 100, opacity: 0 },
-              {
-                  yPercent: 0,
-                  opacity: 1,
-                  duration: 1.2,
-                  stagger: 0.2,
-                  ease: "power4.out",
-                  delay: 0.2
+          const heroHeading = document.getElementById('hero-heading');
+          if(heroHeading && typeof SplitType !== 'undefined') {
+              const split = new SplitType(heroHeading, { types: 'words, chars' });
+              const targets = split.chars || split.words;
+              if (targets && targets.length > 0) {
+                  gsap.fromTo(targets,
+                      { filter: 'blur(20px)', opacity: 0 },
+                      {
+                          filter: 'blur(0px)',
+                          opacity: 1,
+                          duration: 1.2,
+                          stagger: { amount: 0.8, from: "random" },
+                          ease: "power3.out",
+                          delay: 0.2
+                      }
+                  );
               }
-          );
+          } else {
+              const heroLines = document.querySelectorAll('.masked-line span');
+              if (heroLines.length > 0) {
+                  gsap.fromTo(heroLines,
+                      { yPercent: 100, opacity: 0 },
+                      {
+                          yPercent: 0,
+                          opacity: 1,
+                          duration: 1.2,
+                          stagger: 0.2,
+                          ease: "power4.out",
+                          delay: 0.2
+                      }
+                  );
+              }
+          }
 
           const heroFades = document.querySelectorAll('.hero-fade');
           gsap.fromTo(heroFades,
@@ -2119,26 +2138,31 @@
 
 
       // Scroll Masked Reveal (animate text in statement)
-      const scrollMaskedLines = document.querySelectorAll('.scroll-masked-line span');
-      if(scrollMaskedLines.length) {
-          const tl = gsap.timeline({
-              scrollTrigger: {
-                  trigger: '#statement',
-                  start: "top center", // Trigger when reaching center of viewport
-                  toggleActions: "play none none reverse"
+      const blurReveals = document.querySelectorAll('.blur-reveal');
+      if (typeof SplitType !== 'undefined' && blurReveals.length > 0) {
+          blurReveals.forEach(el => {
+              const split = new SplitType(el, { types: 'words, chars' });
+              const targets = split.chars || split.words;
+              if (targets && targets.length > 0) {
+                  gsap.fromTo(targets, 
+                      { filter: 'blur(20px)', opacity: 0 },
+                      {
+                          filter: 'blur(0px)',
+                          opacity: 1,
+                          duration: 1.2,
+                          stagger: {
+                              amount: 0.8,
+                              from: "random"
+                          },
+                          ease: "power2.out",
+                          scrollTrigger: {
+                              trigger: el,
+                              start: "top 80%"
+                          }
+                      }
+                  );
               }
           });
-          
-          tl.fromTo(scrollMaskedLines,
-              { y: 60, opacity: 0 },
-              {
-                  y: 0,
-                  opacity: 1,
-                  duration: 1.2,
-                  stagger: 0.2,
-                  ease: "power3.out"
-              }
-          );
       }
 
       // Floating Action Buttons Visibility

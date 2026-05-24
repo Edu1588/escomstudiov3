@@ -15,22 +15,29 @@ export function RadarEffectDemo() {
         {/* Row 1 */}
         <div className="mx-auto w-full max-w-3xl">
           <div className="flex w-full items-center justify-center space-x-10 md:justify-between md:space-x-0">
+            {/* @ts-ignore */}
             <IconContainer text="Web Development" delay={0.2} icon={<HiDocumentText className="h-8 w-8 text-slate-600" />} />
+            {/* @ts-ignore */}
             <IconContainer delay={0.4} text="Mobile apps" icon={<AiFillDollarCircle className="h-8 w-8 text-slate-600" />} />
+            {/* @ts-ignore */}
             <IconContainer text="Designing" delay={0.3} icon={<BsClipboardDataFill className="h-8 w-8 text-slate-600" />} />
           </div>
         </div>
         {/* Row 2 */}
         <div className="mx-auto w-full max-w-md">
           <div className="flex w-full items-center justify-center space-x-10 md:justify-between md:space-x-0">
+            {/* @ts-ignore */}
             <IconContainer text="Maintenence" delay={0.5} icon={<BiSolidReport className="h-8 w-8 text-slate-600" />} />
+            {/* @ts-ignore */}
             <IconContainer text="Server management" delay={0.8} icon={<HiMiniDocumentArrowUp className="h-8 w-8 text-slate-600" />} />
           </div>
         </div>
         {/* Row 3 */}
         <div className="mx-auto w-full max-w-3xl">
           <div className="flex w-full items-center justify-center space-x-10 md:justify-between md:space-x-0">
+            {/* @ts-ignore */}
             <IconContainer delay={0.6} text="GitHub Integration" icon={<HiDocumentReport className="h-8 w-8 text-slate-600" />} />
+            {/* @ts-ignore */}
             <IconContainer delay={0.7} text="CMS Integration" icon={<RiFilePaper2Fill className="h-8 w-8 text-slate-600" />} />
           </div>
         </div>

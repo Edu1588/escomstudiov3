@@ -257,6 +257,7 @@ export function CinematicHero({
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top 80%",
+          toggleActions: "play none none reverse"
         }
       });
       introTl
@@ -267,7 +268,8 @@ export function CinematicHero({
       const cardTl = gsap.timeline({
         scrollTrigger: {
           trigger: mainCardRef.current,
-          start: "top 75%",
+          start: "top 80%",
+          toggleActions: "play none none reverse"
         },
       });
 
