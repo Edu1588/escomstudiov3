@@ -17,7 +17,8 @@ export default function Leads() {
   const fetchLeads = async () => {
     try {
       const res = await fetch("/api/leads");
-      if (res.ok) {
+      const contentType = res.headers.get("content-type");
+      if (res.ok && contentType && contentType.includes("application/json")) {
         const data = await res.json();
         const loaded = data.leads;
         

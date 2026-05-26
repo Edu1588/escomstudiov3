@@ -17,7 +17,8 @@ export default function Contratos() {
     setLoading(true);
     try {
       const res = await fetch("/api/contracts");
-      if (res.ok) {
+      const contentType = res.headers.get("content-type");
+      if (res.ok && contentType && contentType.includes("application/json")) {
         const data = await res.json();
         setContracts(data.contracts || []);
       }

@@ -1,13 +1,26 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-const GLSLHills = ({ width = '100vw', height = '100vh', cameraZ = 125, planeSize = 256, speed = 0.5 }) => {
-  const canvasRef = useRef(null);
-  const containerRef = useRef(null);
+interface GLSLHillsProps {
+  width?: string;
+  height?: string;
+  cameraZ?: number;
+  planeSize?: number;
+  speed?: number;
+  color?: string;
+}
+
+const GLSLHills = ({ width = '100vw', height = '100vh', cameraZ = 125, planeSize = 256, speed = 0.5, color }: GLSLHillsProps) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Plane class
     class Plane {
+      uniforms: { time: { type: string; value: number } };
+      mesh: THREE.Mesh;
+      time: number;
+
       constructor() {
         this.uniforms = {
           time: { type: 'f', value: 0 },

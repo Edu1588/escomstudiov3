@@ -94,8 +94,8 @@ async function runJobFinderCron() {
     // 2. Fetch new jobs (Design and AI) until ~20 are gathered
     let newJobsFound = 0;
     const queries = [
-      "vagas emprego web designer ui designer linkedin gupy vagas.com",
-      "vagas emprego engenheiro IA inteligencia artificial machine learning linkedin gupy vagas.com"
+      '("web designer" OR "ui designer" OR "diretor de arte" OR "product designer") ("vagas" OR "vaga" OR "emprego") (site:gupy.io OR site:linkedin.com OR site:vagas.com.br)',
+      '("engenheiro de ia" OR "inteligencia artificial" OR "machine learning") ("vagas" OR "vaga" OR "emprego") (site:gupy.io OR site:linkedin.com OR site:vagas.com.br)'
     ];
     
     for (const queryStr of queries) {
@@ -299,7 +299,7 @@ async function startServer() {
       // Save Lead to Firebase
       let leadId = null;
       try {
-        const docRef = await addDoc(collection(db, 'leads'), { name, email, phone: phone || null, message, status: 'novo', createdAt: serverTimestamp() });
+        const docRef = await addDoc(collection(db, 'leads'), { name, email, phone: phone || null, message, status: 'novo', origem: 'Site', createdAt: serverTimestamp() });
         leadId = docRef.id;
       } catch (err) { console.error("Firebase save lead error:", err); }
 
@@ -612,10 +612,10 @@ Return ONLY a valid JSON object: {"subject": "...", "body": "..."}`}],
       }
 
       const { jobType } = req.body || {};
-      let queryStr = "vagas emprego web designer ui designer linkedin gupy vagas.com";
+      let queryStr = '("web designer" OR "ui designer" OR "diretor de arte" OR "product designer") ("vagas" OR "vaga" OR "emprego") (site:gupy.io OR site:linkedin.com OR site:vagas.com.br)';
       
       if (jobType === "ai") {
-        queryStr = "vagas emprego engenheiro IA inteligencia artificial machine learning linkedin gupy vagas.com";
+        queryStr = '("engenheiro de ia" OR "inteligencia artificial" OR "machine learning") ("vagas" OR "vaga" OR "emprego") (site:gupy.io OR site:linkedin.com OR site:vagas.com.br)';
       }
 
       const response = await fetch("https://google.serper.dev/search", {
@@ -628,8 +628,7 @@ Return ONLY a valid JSON object: {"subject": "...", "body": "..."}`}],
           q: queryStr,
           gl: "br",
           hl: "pt-br",
-          tbs: "qdr:d15", // past 15 days
-          num: 15
+          num: 20
         })
       });
       
@@ -852,12 +851,20 @@ Return ONLY a valid JSON object: {"subject": "...", "body": "..."}`}],
   // LEADS API
   app.get("/api/leads", async (req, res) => {
     try {
+      const type = req.query.type;
       const querySnapshot = await getDocs(collection(db, "leads"));
       const leadsList: any[] = [];
       querySnapshot.forEach((docSnap) => {
         const data = docSnap.data();
-        if (data && data.title && data.title !== 'Empresa não identificada' && !data.title.includes('undefined')) {
-          leadsList.push({ id: docSnap.id, ...data });
+        if (type === 'mined') {
+          if (data && data.title && data.title !== 'Empresa não identificada' && !data.title.includes('undefined')) {
+            leadsList.push({ id: docSnap.id, ...data });
+          }
+        } else {
+          // CRM 'Leads' only 
+          if (data && (data.origem === 'Site' || data.message)) {
+            leadsList.push({ id: docSnap.id, ...data });
+          }
         }
       });
       res.json({ success: true, leads: leadsList });

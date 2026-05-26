@@ -85,7 +85,7 @@ export default function Mineracao() {
     // Fetch initial leads from DB
     const fetchLeads = async () => {
       try {
-        const res = await fetch('/api/leads');
+        const res = await fetch('/api/leads?type=mined');
         const resText = await res.text();
         let data: any = {};
         try { data = JSON.parse(resText); } catch(e) {}

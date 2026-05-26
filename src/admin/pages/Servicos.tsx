@@ -23,7 +23,8 @@ export default function Servicos() {
   const fetchServices = async () => {
     try {
       const res = await fetch("/api/services");
-      if (res.ok) {
+      const contentType = res.headers.get("content-type");
+      if (res.ok && contentType && contentType.includes("application/json")) {
         const data = await res.json();
         // Convert prices to string to match the local interface easily
         const formatted = data.services.map((s: any) => ({

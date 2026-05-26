@@ -121,8 +121,8 @@ export default function Dashboard() {
                 <option>Últimos 30 dias</option>
               </select>
             </div>
-            <div className="h-[250px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
+            <div className="min-h-[250px] w-full">
+              <ResponsiveContainer width="100%" height={250}>
                 <LineChart data={chartData}>
                   <XAxis dataKey="name" stroke="#333" fontSize={10} tickMargin={10} />
                   <YAxis stroke="#333" fontSize={10} tickFormatter={(value) => `${value}`} />

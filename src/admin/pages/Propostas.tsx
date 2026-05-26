@@ -23,7 +23,8 @@ export default function Propostas() {
   const fetchServices = async () => {
     try {
       const res = await fetch("/api/services");
-      if (res.ok) {
+      const contentType = res.headers.get("content-type");
+      if (res.ok && contentType && contentType.includes("application/json")) {
         const data = await res.json();
         // optionally filter for only active services
         setServices(data.services.filter((s:any) => s.active));
@@ -36,7 +37,8 @@ export default function Propostas() {
   const fetchPropostas = async () => {
     try {
       const res = await fetch("/api/proposals");
-      if (res.ok) {
+      const contentType = res.headers.get("content-type");
+      if (res.ok && contentType && contentType.includes("application/json")) {
         const data = await res.json();
         const sorted = data.proposals.sort((a: any, b: any) => 
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -121,7 +123,8 @@ export default function Propostas() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
-        if (res.ok) {
+        const contentType = res.headers.get("content-type");
+        if (res.ok && contentType && contentType.includes("application/json")) {
             const data = await res.json();
             alert(`Proposta gerada! Link: /${data.slug}`);
             setFormData({ clientName: "", phone: "", company: "", observations: "" });
@@ -129,8 +132,12 @@ export default function Propostas() {
             setExtraPages(0);
             setAdditionalPercentage(0);
             fetchPropostas();
+        } else if (res.ok) {
+            throw new Error("Backend indisponível no Vercel (retornou HTML). Teste locally.");
         } else {
-            const error = await res.json();
+            const txt = await res.text();
+            let error = { error: "Erro ao gerar" };
+            try { error = JSON.parse(txt); } catch(e) {}
             alert(error.error || "Erro ao gerar");
         }
     } catch (error) {

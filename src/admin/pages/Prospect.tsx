@@ -151,7 +151,7 @@ export default function Prospect() {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: uxInput })
       });
-      const json = await res.json();
+      const rawText = await res.text(); let json: any = {}; try { json = JSON.parse(rawText); } catch { throw new Error("Backend indisponível."); }
       if (json.success && json.data) {
         setUxResults(json.data);
       } else {
@@ -218,7 +218,7 @@ export default function Prospect() {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ niche: leadInput })
       });
-      const json = await res.json();
+      const rawText = await res.text(); let json: any = {}; try { json = JSON.parse(rawText); } catch { throw new Error("Backend indisponível."); }
       if (json.success) {
         setLeadResults(json.data);
       } else {
@@ -239,7 +239,7 @@ export default function Prospect() {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ siteInfo })
       });
-      const json = await res.json();
+      const rawText = await res.text(); let json: any = {}; try { json = JSON.parse(rawText); } catch { throw new Error("Backend indisponível."); }
       if (json.success && json.data) {
         const newLeads = [...leadResults];
         newLeads[index].generatedText = json.data;
@@ -263,7 +263,7 @@ export default function Prospect() {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jobType: jobCategory })
       });
-      const json = await res.json();
+      const rawText = await res.text(); let json: any = {}; try { json = JSON.parse(rawText); } catch { throw new Error("Backend indisponível."); }
       if (json.success) {
         setJobResults(json.data);
       } else {
