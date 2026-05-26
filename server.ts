@@ -25,13 +25,26 @@ const __dirname = path.dirname(__filename);
 
 import { Resend } from "resend";
 import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, collection, addDoc, serverTimestamp, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc } from 'firebase/firestore';
 import fs from 'fs';
 
 const firebaseConfig = JSON.parse(fs.readFileSync(path.join(__dirname, 'firebase-applet-config.json'), 'utf-8'));
 
 const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp, firebaseConfig.firestoreDatabaseId || '(default)');
+
+// Server Admin Login
+async function loginFirebaseServer() {
+  try {
+    await signInWithEmailAndPassword(auth, "admin@escom.com", "Edu@1508001");
+    console.log("[SERVER_START_LOG] Autenticação Firebase do servidor bem sucedida");
+  } catch(e: any) {
+    console.error("[SERVER_START_LOG] Falha ao autenticar o servidor no Firebase:", e.message);
+  }
+}
+loginFirebaseServer();
 
 // Resend initialization (Lazy loaded for security)
 const getResend = () => {
@@ -104,7 +117,9 @@ async function runJobFinderCron() {
         })
       });
       
-      const searchData = await response.json();
+      const txtReq1 = await response.text();
+      let searchData: any = {};
+      try { searchData = JSON.parse(txtReq1); } catch(e) {}
       const organicResults = searchData.organic || [];
       
       for (const r of organicResults) {
@@ -154,8 +169,8 @@ async function runMineraLeadsCron() {
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     const chatCompletion = await groq.chat.completions.create({
       messages: [
-        { role: "system", content: "Você é um analista de marketing focado em encontrar nichos que precisam de landing pages." },
-        { role: "user", content: "Gere apenas UMA query de pesquisa do Google (apenas o texto) buscando empresas ou profissionais locais no Brasil (ex: dentista, arquitetura, contabilidade, clinica veterinaria, advogados) em uma cidade brasileira (pode ser capitais ou cidades de médio porte). Seja diversificado. Exemplo: 'Clínica de Estética em Campinas'. Apenas retorne a frase curta de busca." }
+        { role: "system", content: "Você é um analista de marketing. Seu objetivo é encontrar pequenas empresas e profissionais locais no Brasil que POSSAM PRECISAR de um novo site ou landing page. NUNCA busque por agências de marketing, agências de publicidade, desenvolvedores, empresas de software ou 'criação de sites'." },
+        { role: "user", content: "Gere apenas uma frase curta de busca para o Google (apenas o texto) focada em comércios físicos, consultórios, lojas ou prestadores de serviço tradicionais (ex: dentista, arquitetura, restaurante, contabilidade, medicos, padaria, oficinas, corretores) em uma cidade brasileira (capitais ou cidades de médio porte). Seja diversificado para não repetir. Exemplo: 'Clínica Odontológica em Curitiba'. Retorne EXATAMENTE APENAS a frase da busca, sem mais nenhum texto e sem aspas." }
       ],
       model: "llama-3.3-70b-versatile",
       temperature: 0.9,
@@ -180,11 +195,16 @@ async function runMineraLeadsCron() {
       })
     });
     
-    const searchData = await response.json();
+    const txtReq2 = await response.text();
+    let searchData: any = {};
+    try { searchData = JSON.parse(txtReq2); } catch(e) {}
     const placesResults = searchData.places || [];
 
-    // Pegar 10 resultados
-    const top10 = placesResults.slice(0, 10);
+    // Filter out results that do not have a phone number
+    const validResults = placesResults.filter((r: any) => !!r.phoneNumber && r.phoneNumber.trim() !== "");
+
+    // Pegar 10 resultados válidos
+    const top10 = validResults.slice(0, 10);
 
     const querySnapshot = await getDocs(collection(db, "leads"));
     const existingLeads = new Set(querySnapshot.docs.map(doc => doc.id));
@@ -328,21 +348,25 @@ async function startServer() {
 
   app.post("/api/generate-copy", async (req, res) => {
     try {
-      const { promptText } = req.body;
+      const { promptText, jsonMode } = req.body;
       if (!promptText) return res.status(400).json({ error: "Prompt is required" });
       if (!process.env.GROQ_API_KEY) {
         return res.status(500).json({ error: "GROQ_API_KEY is not configured in .env" });
       }
 
       const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-      const chatCompletion = await groq.chat.completions.create({
+      const payload: any = {
         messages: [
-          { role: "system", content: "Você é um Copywriter Sênior de Resposta Direta, Head de Growth e Diretor de Arte (Front-end). Suas respostas são altamente detalhadas para equipes de engenharia (React/Tailwind/GSAP) e entregam copys refinados, livres de clichês e 'AI slop'. Você sempre adapta o design rigorosamente ao nicho do cliente." },
+          { role: "system", content: "Você é um Copywriter Sênior de Resposta Direta, Head de Growth e Diretor de Arte." + (jsonMode ? " RETORNE APENAS JSON VALIDO." : "") },
           { role: "user", content: promptText }
         ],
         model: "llama-3.3-70b-versatile",
         temperature: 0.7,
-      });
+      };
+
+      if (jsonMode) payload.response_format = { type: "json_object" };
+
+      const chatCompletion = await groq.chat.completions.create(payload);
 
       res.json({ success: true, text: chatCompletion.choices[0]?.message?.content || "" });
     } catch (error) {
@@ -445,7 +469,9 @@ Gere pelo menos 5 a 7 problemas.`}],
         })
       });
       
-      const searchData = await response.json();
+      const textResponse = await response.text();
+      let searchData: any = {};
+      try { searchData = JSON.parse(textResponse); } catch(e) {}
       const placesResults = searchData.places || [];
 
       // Salvar na Planilha (Firebase Leads) e evitar repetição
@@ -458,6 +484,21 @@ Gere pelo menos 5 a 7 problemas.`}],
       for (const r of placesResults) {
         const placeId = (r.cid || r.placeId || Date.now().toString()).toString();
         
+        let leadScore = 0;
+        const titleLower = (r.title || "").toLowerCase();
+        
+        // Penalize corporate/large business terms
+        const corporateTerms = ["laboratório", "laboratorio", "clínica", "clinica", "instituto", "centro", "hospital", "grupo", "empresa", "associação", "sociedade", "rede", "escola"];
+        if (corporateTerms.some(term => titleLower.includes(term))) {
+          leadScore -= 10;
+        }
+
+        // Boost professional terms or single names
+        const professionalTerms = ["dr.", "dra.", "dr ", "dra ", "advogado", "advogada", "arquiteto", "arquiteta", "psicólogo", "psicóloga", "dentista"];
+        if (professionalTerms.some(term => titleLower.includes(term))) {
+          leadScore += 5;
+        }
+
         const newLeadItem = {
           id: placeId,
           title: r.title || "Empresa não identificada",
@@ -467,10 +508,14 @@ Gere pelo menos 5 a 7 problemas.`}],
           rating: r.rating || 0,
           ratingCount: r.ratingCount || 0,
           placeId: placeId,
-          status: 'pending'
+          status: 'pending',
+          _score: leadScore
         };
         returnedLeads.push(newLeadItem);
       }
+      
+      // Sort so highest score comes first
+      returnedLeads.sort((a, b) => (b._score || 0) - (a._score || 0));
 
       res.json({ 
         success: true, 
@@ -507,7 +552,9 @@ Gere pelo menos 5 a 7 problemas.`}],
         })
       });
       
-      const searchData = await response.json();
+      const txtReq2 = await response.text();
+      let searchData: any = {};
+      try { searchData = JSON.parse(txtReq2); } catch(e) {}
       const organicResults = searchData.organic || [];
 
       res.json({ 
@@ -586,7 +633,9 @@ Return ONLY a valid JSON object: {"subject": "...", "body": "..."}`}],
         })
       });
       
-      const searchData = await response.json();
+      const txtReq1 = await response.text();
+      let searchData: any = {};
+      try { searchData = JSON.parse(txtReq1); } catch(e) {}
       const organicResults = searchData.organic || [];
 
       let dataList = organicResults.map((r: any) => {

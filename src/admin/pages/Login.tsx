@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Lock } from "lucide-react";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { app } from "../../lib/firebase";
 
 interface LoginProps {
   onLogin: () => void;
@@ -8,13 +10,23 @@ interface LoginProps {
 export default function Login({ onLogin }: LoginProps) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === "Edu@wordpress2025") {
+    if (!password) return;
+    
+    setLoading(true);
+    setError("");
+    try {
+      const auth = getAuth(app);
+      await signInWithEmailAndPassword(auth, "admin@escom.com", password);
       onLogin();
-    } else {
+    } catch (err) {
+      console.error("Login falhou:", err);
       setError("Senha incorreta. Tente novamente.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,9 +58,10 @@ export default function Login({ onLogin }: LoginProps) {
 
           <button
             type="submit"
-            className="w-full bg-[#2EFF00] hover:bg-[#28e600] text-black font-bold py-3 rounded-lg transition-colors"
+            disabled={loading}
+            className={`w-full bg-[#2EFF00] hover:bg-[#28e600] text-black font-bold py-3 rounded-lg transition-colors ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            Acessar Sistema
+            {loading ? 'Acessando...' : 'Acessar Sistema'}
           </button>
         </form>
       </div>

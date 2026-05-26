@@ -8,6 +8,7 @@ import { MouseDistortion } from './components/ui/mouse-distortion.tsx';
 import { CinematicHero } from './components/ui/cinematic-landing-hero.tsx';
 import { RadarEffectDemo } from './components/ui/radar-effect-demo.tsx';
 import { initHeroMarquee } from './components/ui/hero-marquee.tsx';
+import { GLSLHills } from './components/ui/glsl-hills.tsx';
 
 // Prevent cyclic object value crashes from third party libs
 const origStringify = JSON.stringify;
@@ -80,5 +81,14 @@ if (radarEffectElement) {
 }
 
 initHeroMarquee();
+
+const statementHillsElement = document.getElementById('statement-glsl-hills-root');
+if (statementHillsElement) {
+  createRoot(statementHillsElement).render(
+    <StrictMode>
+      <GLSLHills width="100%" height="100%" color="#999999" />
+    </StrictMode>,
+  );
+}
 
 

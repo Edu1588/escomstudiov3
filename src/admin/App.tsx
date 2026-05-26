@@ -37,7 +37,13 @@ function Sidebar({ onLogout, isOpen, setIsOpen }: { onLogout: () => void, isOpen
   const [openSubmenu, setOpenSubmenu] = useState<string | null>("Prospect");
 
   React.useEffect(() => {
-    setIsOpen(false);
+    if (window.innerWidth < 1280) {
+      setIsOpen(false);
+    } else {
+      if (location.pathname !== '/mineracao') {
+        setIsOpen(true);
+      }
+    }
   }, [location.pathname, setIsOpen]);
 
   const menuPrincipal = [
@@ -68,9 +74,9 @@ function Sidebar({ onLogout, isOpen, setIsOpen }: { onLogout: () => void, isOpen
     <>
       {/* Mobile overlay */}
       {isOpen && (
-        <div className="fixed inset-0 bg-black/60 z-40 md:hidden" onClick={() => setIsOpen(false)} />
+        <div className="fixed inset-0 bg-black/60 z-40 lg:hidden" onClick={() => setIsOpen(false)} />
       )}
-      <div className={`fixed inset-y-0 left-0 z-50 transform ${isOpen ? "translate-x-0" : "-translate-x-full"} md:relative md:translate-x-0 transition-transform duration-300 w-64 h-full bg-[#0a0a0a] border-r border-[#1a1a1a] flex flex-col pt-6 pb-4 shrink-0 overflow-y-auto`}>
+      <div className={`fixed inset-y-0 left-0 z-50 transform ${isOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 w-64 h-full bg-[#0a0a0a] border-r border-[#1a1a1a] flex flex-col pt-6 pb-4 shrink-0 overflow-y-auto ${isOpen ? 'xl:relative xl:translate-x-0' : ''}`}>
         <div className="px-6 mb-8 flex items-center justify-between">
           <span className="font-bold text-xl text-white tracking-wider flex items-center">
             EDU<span className="text-[#2EFF00]">SANTOS</span>
@@ -171,12 +177,20 @@ export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return localStorage.getItem("admin_auth") === "true";
   });
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth >= 1280);
 
   React.useEffect(() => {
     const handleToggle = () => setIsSidebarOpen(prev => !prev);
+    const handleClose = () => setIsSidebarOpen(false);
+    const handleOpen = () => setIsSidebarOpen(true);
     window.addEventListener('toggle-sidebar', handleToggle);
-    return () => window.removeEventListener('toggle-sidebar', handleToggle);
+    window.addEventListener('close-sidebar', handleClose);
+    window.addEventListener('open-sidebar', handleOpen);
+    return () => {
+      window.removeEventListener('toggle-sidebar', handleToggle);
+      window.removeEventListener('close-sidebar', handleClose);
+      window.removeEventListener('open-sidebar', handleOpen);
+    };
   }, []);
 
   const handleLogin = () => {

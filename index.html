@@ -488,20 +488,24 @@
     </nav>
 
     <!-- Shared Area wrapper -->
-    <div class="relative w-full bg-[#09090b]">
+    <div class="relative w-full bg-black">
       
       <section id="hero" class="relative w-full z-10 flex min-h-screen items-center justify-center overflow-hidden">
       <!-- Background Image -->
       <div class="absolute inset-0 z-0 pointer-events-none">
-          <div class="absolute inset-0 bg-[url('https://res.cloudinary.com/djw0tqmiw/image/upload/q_auto,f_auto,w_1920/v1779483539/upbk0qco7n4axl66yilf.png')] bg-cover bg-center bg-no-repeat opacity-100"></div>
-          <div class="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-[#0c0c0e] to-transparent pointer-events-none z-10"></div>
+          <div class="absolute inset-0 bg-black opacity-100"></div>
+          <div class="absolute bottom-0 inset-x-0 h-[50vh] bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none z-20"></div>
       </div>
       <!-- Content -->
       <div class="w-full h-full px-6 md:px-12 lg:px-24 pt-32 md:pt-40 pb-24 z-10 flex flex-col pointer-events-none">
         <div id="hero-content-wrapper" class="w-full relative mx-auto flex flex-col lg:flex-row items-center justify-between pointer-events-auto max-w-7xl mt-12 md:mt-24" style="visibility: hidden; opacity: 0;">
         <div id="hero-content" class="w-full lg:w-[60%] relative flex flex-col items-start text-left" style="transform-origin: center right;">
           
-          <div class="hero-fade mb-6 w-full mt-8">
+          <div class="hero-fade w-full mt-8 flex flex-col items-start">
+            <div class="mb-6 flex items-center gap-2 border border-[#2EFF00]/30 bg-[#2EFF00]/5 px-3 py-1.5 text-[10px] md:text-[11px] tracking-[0.2em] font-mono uppercase text-[#2EFF00] w-max font-medium">
+              <div class="w-2 h-2 rounded-full bg-[#2EFF00] animate-pulse"></div>
+              ALL SYSTEMS OPERATIONAL
+            </div>
             <div id="hero-heading-react-root">
               <!-- React will render the animated heading here -->
               <h1 id="hero-heading" class="font-jakarta text-4xl md:text-6xl lg:text-[4.5rem] leading-[0.95] tracking-tighter text-white font-black uppercase">
@@ -593,37 +597,37 @@
     </section>
 
     <!-- 2. Statement -->
-    <section id="statement" class="relative z-40 min-h-screen flex items-center justify-center px-6 md:px-12 lg:px-24 pointer-events-none" style="z-index: 40; background-color: transparent;">
+    <section id="statement" class="relative z-40 min-h-screen flex items-center justify-center px-6 md:px-12 lg:px-24 pointer-events-none bg-black" style="z-index: 40;">
       <!-- Background Image -->
       <div class="absolute inset-0 z-0 pointer-events-none">
-          <div class="absolute inset-0 bg-[url('https://res.cloudinary.com/djw0tqmiw/image/upload/v1779488880/yqpqkeul1njcogpjhlpx.png')] bg-cover bg-center bg-no-repeat opacity-100"></div>
-          <div class="absolute top-0 inset-x-0 h-48 bg-gradient-to-b from-[#09090b] to-transparent pointer-events-none z-10"></div>
-          <div class="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-black to-transparent pointer-events-none z-10"></div>
+          <div id="statement-glsl-hills-root" class="absolute inset-0 z-0 opacity-60"></div>
+          <div class="absolute top-0 inset-x-0 h-48 bg-gradient-to-b from-black to-transparent pointer-events-none z-10"></div>
+          <div class="absolute bottom-[-2px] inset-x-0 h-96 bg-gradient-to-t from-black via-black/90 to-transparent pointer-events-none z-10"></div>
       </div>
-      <div class="max-w-6xl mx-auto w-full px-4 relative z-10 pointer-events-auto">
+      <div class="max-w-6xl mx-auto w-full px-4 relative z-10 pointer-events-auto mix-blend-difference">
         <div class="relative flex flex-col items-center justify-center p-8 md:p-16 lg:p-24 w-full">
-          <h2 class="blur-reveal font-jakarta text-3xl md:text-5xl lg:text-7xl leading-[1.2] text-zinc-300 font-medium relative z-20 text-center w-full" style="text-shadow: 0 4px 30px rgba(0,0,0,0.8), 0 2px 10px rgba(0,0,0,0.8);">
-            Websites de alta performance,<br/>
-            <span class="text-zinc-400">otimizados para atrair clientes</span><br/>
-            <span class="text-zinc-500">e acelerar os seus resultados.</span>
+          <h2 class="blur-reveal font-jakarta text-3xl md:text-5xl lg:text-7xl leading-[1.2] text-white relative z-20 text-center w-full focus-text">
+            <span class="font-medium">Websites de alta performance,</span><br/>
+            <span class="text-white font-thin tracking-wide">otimizados para atrair clientes</span><br/>
+            <span class="text-white font-thin tracking-wide">e acelerar os seus resultados.</span>
           </h2>
         </div>
       </div>
     </section>
     </div> <!-- Close Shared Area wrapper -->
 
-    <div class="relative z-40 bg-gradient-to-b from-black to-zinc-950">
+    <div class="relative z-40 bg-white">
       <!-- 3. Features -->
-      <section id="features" style="content-visibility: auto; contain-intrinsic-size: auto 1000px;" class="relative py-32 px-6 md:px-12 lg:px-24 border-t border-zinc-900">
+      <section id="features" style="content-visibility: auto; contain-intrinsic-size: auto 1000px;" class="relative py-32 px-6 md:px-12 lg:px-24">
       <div class="max-w-7xl mx-auto">
         <div class="mb-20">
-          <span class="text-xs tracking-wide uppercase mb-2 block font-geist font-light text-[#00ff41] fade-up">
+          <span class="text-xs tracking-wide uppercase mb-2 block font-geist font-light text-[#00e300] fade-up">
             &gt;_ [ VISÃO_GERAL.EXE ] 
           </span>
-          <h2 class="blur-reveal text-3xl md:text-4xl tracking-tight mb-4 fade-up font-jakarta font-medium text-zinc-100">
+          <h2 class="blur-reveal text-3xl md:text-4xl tracking-tight mb-4 fade-up font-jakarta font-medium text-zinc-900">
             Serviços
           </h2>
-          <p class="max-w-xl fade-up font-geist font-light text-zinc-400">
+          <p class="max-w-xl fade-up font-geist font-light text-zinc-600">
             Não basta ser bonito. Tem que vender. Projetos digitais de alta
             performance que unem design, automação e inteligência de dados em um
             único ecossistema.
@@ -637,17 +641,17 @@
              
              <!-- Left Column: Navigation -->
              <div class="w-full md:w-[25%] py-12 md:py-24 md:pr-8 z-30 flex flex-col justify-start gap-4" id="services-nav">
-                <button class="service-btn text-left font-jakarta text-lg lg:text-xl font-medium text-[#00ff41] transition-colors" data-index="0">Identidade de Marca</button>
-                <button class="service-btn text-left font-jakarta text-lg lg:text-xl font-medium text-zinc-500 hover:text-zinc-300 transition-colors" data-index="1">Design de Produto</button>
-                <button class="service-btn text-left font-jakarta text-lg lg:text-xl font-medium text-zinc-500 hover:text-zinc-300 transition-colors" data-index="2">Sistemas Web</button>
-                <button class="service-btn text-left font-jakarta text-lg lg:text-xl font-medium text-zinc-500 hover:text-zinc-300 transition-colors" data-index="3">Desenvolvimento</button>
-                <button class="service-btn text-left font-jakarta text-lg lg:text-xl font-medium text-zinc-500 hover:text-zinc-300 transition-colors" data-index="4">Conteúdo & Mensagem</button>
-                <button class="service-btn text-left font-jakarta text-lg lg:text-xl font-medium text-zinc-500 hover:text-zinc-300 transition-colors" data-index="5">Motion & Interação</button>
+                <button class="service-btn bg-transparent border-none outline-none text-left font-jakarta text-lg lg:text-xl font-medium text-[#00e300] transition-colors" data-index="0">Identidade de Marca</button>
+                <button class="service-btn bg-transparent border-none outline-none text-left font-jakarta text-lg lg:text-xl font-medium text-zinc-400 hover:text-zinc-600 transition-colors" data-index="1">Design de Produto</button>
+                <button class="service-btn bg-transparent border-none outline-none text-left font-jakarta text-lg lg:text-xl font-medium text-zinc-400 hover:text-zinc-600 transition-colors" data-index="2">Sistemas Web</button>
+                <button class="service-btn bg-transparent border-none outline-none text-left font-jakarta text-lg lg:text-xl font-medium text-zinc-400 hover:text-zinc-600 transition-colors" data-index="3">Desenvolvimento</button>
+                <button class="service-btn bg-transparent border-none outline-none text-left font-jakarta text-lg lg:text-xl font-medium text-zinc-400 hover:text-zinc-600 transition-colors" data-index="4">Conteúdo & Mensagem</button>
+                <button class="service-btn bg-transparent border-none outline-none text-left font-jakarta text-lg lg:text-xl font-medium text-zinc-400 hover:text-zinc-600 transition-colors" data-index="5">Motion & Interação</button>
              </div>
              
-             <!-- Center Image -->
-             <div class="w-full md:w-[50%] h-64 md:h-full relative z-10 bg-zinc-900 border-x border-zinc-900 overflow-hidden flex items-center justify-center">
-                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop" id="services-img" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 opacity-80" alt="Service Visualization">
+             <!-- Center Image/Video -->
+             <div class="w-full md:w-[50%] h-64 md:h-full relative z-10 bg-zinc-100 border-x border-zinc-200 overflow-hidden flex items-center justify-center">
+                <video src="https://res.cloudinary.com/djw0tqmiw/video/upload/v1779824400/yqeskrttuawrsj9zcf0d.mp4" id="services-video" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 opacity-100" autoplay loop muted playsinline aria-hidden="true"></video>
              </div>
              
              <!-- Huge Title Overlapping -->
@@ -662,15 +666,15 @@
              <!-- Right Column: Sub-items & Number -->
              <div class="w-full md:w-[25%] p-8 z-30 flex flex-col justify-between items-start md:pl-12 bg-transparent text-left md:pt-24 mt-4 md:mt-0">
                 <div class="flex flex-col gap-3 pointer-events-auto transition-opacity duration-500" id="services-subitems">
-                  <span class="font-geist font-light text-zinc-300 text-[15px] hover:text-white transition-colors cursor-default">Design de Logo</span>
-                  <span class="font-geist font-light text-zinc-300 text-[15px] hover:text-white transition-colors cursor-default">Sistemas Visuais</span>
-                  <span class="font-geist font-light text-zinc-300 text-[15px] hover:text-white transition-colors cursor-default">Guias de Marca</span>
-                  <span class="font-geist font-light text-zinc-300 text-[15px] hover:text-white transition-colors cursor-default">Rebranding</span>
-                  <span class="font-geist font-light text-zinc-300 text-[15px] hover:text-white transition-colors cursor-default">Tipografia</span>
+                  <span class="font-geist font-light text-zinc-600 text-[15px] hover:text-black transition-colors cursor-default">Design de Logo</span>
+                  <span class="font-geist font-light text-zinc-600 text-[15px] hover:text-black transition-colors cursor-default">Sistemas Visuais</span>
+                  <span class="font-geist font-light text-zinc-600 text-[15px] hover:text-black transition-colors cursor-default">Guias de Marca</span>
+                  <span class="font-geist font-light text-zinc-600 text-[15px] hover:text-black transition-colors cursor-default">Rebranding</span>
+                  <span class="font-geist font-light text-zinc-600 text-[15px] hover:text-black transition-colors cursor-default">Tipografia</span>
                 </div>
    
                 <div class="mt-20 md:mt-auto self-end md:self-end pr-4 md:pr-0">
-                   <span id="services-number" class="text-7xl md:text-[8rem] font-jakarta font-bold text-zinc-800 transition-opacity duration-500 leading-none">.01</span>
+                   <span id="services-number" class="text-7xl md:text-[8rem] font-jakarta font-bold text-zinc-100 transition-opacity duration-500 leading-none">.01</span>
                 </div>
              </div>
 
@@ -683,37 +687,37 @@
               title: "Identidade de<br>Marca",
               subitems: ["Design de Logo", "Sistemas Visuais", "Guias de Marca", "Rebranding", "Tipografia"],
               number: ".01",
-              image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"
+              video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1779824400/yqeskrttuawrsj9zcf0d.mp4"
             },
             {
               title: "Design de<br>Produto",
               subitems: ["Pesquisa UX", "Wireframes", "Prototipagem Ágil", "Testes de Usabilidade", "Design Systems"],
               number: ".02",
-              image: "https://images.unsplash.com/photo-1616423640778-28d1b53229bd?q=80&w=2574&auto=format&fit=crop"
+              video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1779824400/biayyjpzidhjetnytavb.mp4"
             },
             {
               title: "Sistemas<br>Web",
               subitems: ["Interfaces Enterprise", "Módulos Customizados", "Infraestrutura Cloud", "Portais Corporativos", "Alta Escalabilidade"],
               number: ".03",
-              image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop"
+              video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1779824400/fubvmghpobclz2wvnnlp.mp4"
             },
             {
               title: "Desenvol-<br>vimento",
               subitems: ["Frontend", "Framer", "Componentes Mágicos", "Animação Fluidas", "Otimização de SEO"],
               number: ".04",
-              image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop"
+              video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1779824400/d8h6liduvxqjbjnrjigv.mp4"
             },
             {
               title: "Conteúdo &<br>Mensagem",
               subitems: ["Posicionamento", "Mensagem Central", "Copywriting de Sites", "História do Produto", "Editorial"],
               number: ".05",
-              image: "https://images.unsplash.com/photo-1483058712412-4245e9b90334?q=80&w=2070&auto=format&fit=crop"
+              video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1779824400/ldhfftupzjfowoslbmse.mp4"
             },
             {
               title: "Motion &<br>Interação",
               subitems: ["Micro-interações", "Lógica de UI", "Transitions 3D", "Videos Promocionais", "GSAP & WebGL"],
               number: ".06",
-              image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop"
+              video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1779824400/thjguiaphttpaxrmyo4r.mp4"
             }
           ];
 
@@ -721,7 +725,7 @@
           const titleEl = document.getElementById('services-title');
           const subitemsContainer = document.getElementById('services-subitems');
           const numberEl = document.getElementById('services-number');
-          const imgEl = document.getElementById('services-img');
+          const videoEl = document.getElementById('services-video');
           
           let currentIndex = 0;
 
@@ -733,11 +737,11 @@
 
                // Update nav colors
                btns.forEach(b => {
-                 b.classList.remove('text-[#00ff41]');
-                 b.classList.add('text-zinc-500');
+                 b.classList.remove('text-[#00e300]');
+                 b.classList.add('text-zinc-400');
                });
-               btn.classList.remove('text-zinc-500');
-               btn.classList.add('text-[#00ff41]');
+               btn.classList.remove('text-zinc-400');
+               btn.classList.add('text-[#00e300]');
 
                const data = servicesData[index];
 
@@ -748,13 +752,13 @@
                
                subitemsContainer.style.opacity = 0;
                numberEl.style.opacity = 0;
-               imgEl.style.opacity = 0;
+               videoEl.style.opacity = 0;
 
                setTimeout(() => {
                  titleEl.innerHTML = data.title;
                  numberEl.textContent = data.number;
-                 subitemsContainer.innerHTML = data.subitems.map(item => `<span class="font-geist font-light text-zinc-300 text-[15px] hover:text-white transition-colors cursor-default">${item}</span>`).join('');
-                 imgEl.src = data.image;
+                 subitemsContainer.innerHTML = data.subitems.map(item => `<span class="font-geist font-light text-zinc-600 text-[15px] hover:text-black transition-colors cursor-default">${item}</span>`).join('');
+                 videoEl.src = data.video;
 
                  // Set to bottom before starting entry
                  titleEl.style.transition = "none";
@@ -769,7 +773,7 @@
                  titleEl.style.opacity = 1;
 
                  subitemsContainer.style.opacity = 1;
-                 imgEl.style.opacity = 0.8;
+                 videoEl.style.opacity = 1;
                  numberEl.style.opacity = 1;
                }, 400);
             });

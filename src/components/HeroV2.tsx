@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Heart } from 'lucide-react';
 import { TextEffect } from '@/components/ui/text-effect';
 import CornerFrameScrambleText from '@/components/ui/corner-frame-scramble-text';
-import { TextMarquee } from '@/components/ui/text-marquee';
+import { TextMorph } from '@/components/ui/text-morph';
+import { GLSLHills } from '@/components/ui/glsl-hills';
 
 export default function HeroV2() {
   const bgColor = '#111111';
@@ -184,20 +185,13 @@ export default function HeroV2() {
                   </div>
 
                   <div className="w-full relative pr-24">
-                    <div className="mb-2">
-                      <TextMarquee
-                        prefix={<span className="text-xs md:text-sm font-medium text-[#00e300] uppercase tracking-[0.2em] mr-2">SUA MARCA MAIS</span>}
-                        height={40}
-                        speed={1.0}
-                        className="text-xs md:text-sm font-medium text-[#00e300] uppercase tracking-[0.2em] font-rajdhani"
-                      >
-                        <span>VISTA</span>
-                        <span>REQUISITADA</span>
-                        <span>VELOZ</span>
-                        <span>PRESTIGIADA</span>
-                        <span>IMPORTANTE</span>
-                        <span>RESPEITADA</span>
-                      </TextMarquee>
+                    <div className="mb-2 flex items-center h-10">
+                      <span className="text-xs md:text-sm font-medium text-[#00e300] uppercase tracking-[0.2em] mr-2">SUA MARCA MAIS</span>
+                      <TextMorph 
+                        words={['VISTA', 'REQUISITADA', 'VELOZ', 'PRESTIGIADA', 'IMPORTANTE', 'RESPEITADA']} 
+                        color="#00e300" 
+                        className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] font-rajdhani"
+                      />
                     </div>
                     <div className="flex justify-between items-end w-full">
                       <p className="text-white/30 text-[11px] uppercase tracking-[0.3em] font-bold font-rajdhani">
@@ -254,11 +248,9 @@ export default function HeroV2() {
               willChange: 'opacity, filter'
             }}
           >
-            {/* BACKGROUND DEBRIS */}
-            <div className="absolute inset-0 pointer-events-none opacity-20">
-              <div className="floating-rock absolute top-20 left-[10%] w-32 h-32 bg-white/5 rounded-none blur-[80px]" />
-              <div className="floating-rock absolute bottom-40 right-[15%] w-48 h-48 bg-white/5 rounded-none blur-[100px]" style={{ animationDelay: '1s' }} />
-              <div className="floating-rock absolute top-1/2 left-[5%] w-24 h-24 bg-white/5 rounded-none blur-xl" style={{ animationDelay: '2s' }} />
+            {/* BACKGROUND ANIMATION */}
+            <div className="absolute inset-0 z-0 pointer-events-none opacity-40 mix-blend-screen">
+              <GLSLHills width="100%" height="100%" color="#00e300" />
             </div>
 
             <div className="max-w-6xl mx-auto px-10 text-center relative z-10 space-y-12">
@@ -271,24 +263,24 @@ export default function HeroV2() {
                     isTextVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-20 scale-95'
                   }`}
                 >
-                  <div className="text-4xl md:text-6xl lg:text-8xl font-black tracking-tighter text-gradient-custom mb-4 uppercase leading-[0.9]">
+                  <div className="text-4xl md:text-5xl lg:text-7xl font-light tracking-tight text-white mb-4 leading-[1.1]">
                     <TextEffect preset="blur" trigger={isTextVisible}>
-                      Um site não deve ser apenas uma vitrine.
+                      Websites de alta performance,
                     </TextEffect>
                   </div>
-                  <span className="block text-3xl md:text-5xl lg:text-7xl font-black tracking-tighter text-white uppercase opacity-90 leading-[0.9]">
-                    Deve funcionar como <br/> uma ferramenta.
+                  <span className="block text-4xl md:text-6xl lg:text-8xl font-black tracking-tighter text-white uppercase opacity-90 leading-[0.9]">
+                    otimizados para atrair <br/>
+                    <span className="text-gradient-custom">clientes</span>
                   </span>
                 </div>
               </div>
 
               <div className={`mt-10 max-w-3xl mx-auto transition-all duration-1000 delay-300 ease-out transform ${isTextVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                <p className="font-rajdhani text-sm md:text-lg font-light text-white/70 tracking-wide leading-relaxed">
-                  Cada projeto é estruturado para operar como parte do negócio — 
-                  combinando experiência, automação e inteligência de dados em um único 
-                  sistema.
+                <p className="font-rajdhani text-2xl md:text-3xl font-light text-white/70 tracking-wide leading-relaxed">
+                  e acelerar os seus <br/>
+                  <span className="font-bold text-white">resultados.</span>
                 </p>
-                <div className="pt-8">
+                <div className="pt-12">
                   <button className="font-rajdhani font-bold text-[#00e300] text-xs tracking-[0.4em] uppercase hover:text-white transition-colors">
                     DESCUBRA A ENGENHARIA_ [+]
                   </button>
