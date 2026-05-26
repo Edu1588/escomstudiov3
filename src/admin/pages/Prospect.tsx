@@ -6,7 +6,7 @@ import {
   ChevronRight, Building2, Send, Copy, Trash2, FileText, Terminal
 } from "lucide-react";
 import { db } from "../../lib/firebase";
-import { collection, addDoc, serverTimestamp, getDocs, deleteDoc, doc, query, orderBy } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, getDocs, deleteDoc, doc, query, orderBy, updateDoc } from "firebase/firestore";
 import { toJpeg } from 'html-to-image';
 import { jsPDF } from "jspdf";
 
@@ -108,12 +108,22 @@ export default function Prospect() {
     try {
       await addDoc(collection(db, "jobs"), {
         ...job,
+        status: 'Pendente',
         createdAt: serverTimestamp()
       });
       alert('Vaga salva no histórico!');
     } catch (error) {
       alert('Erro ao salvar vaga.');
       handleFirestoreError(error, OperationType.CREATE, "jobs");
+    }
+  };
+
+  const handleUpdateJobStatus = async (id: string, newStatus: string) => {
+    try {
+      await updateDoc(doc(db, "jobs", id), { status: newStatus });
+      setSavedJobs(savedJobs.map(j => j.id === id ? { ...j, status: newStatus } : j));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, "jobs");
     }
   };
 
@@ -765,6 +775,19 @@ export default function Prospect() {
                      <div className="flex justify-between items-start mb-4 pl-2">
                        <h3 className="text-xl font-bold text-white">{job.title}</h3>
                        <div className="flex items-center gap-4">
+                         <select
+                           value={job.status || 'Pendente'}
+                           onChange={(e) => handleUpdateJobStatus(job.id, e.target.value)}
+                           className={`px-3 py-1 text-xs font-mono rounded outline-none border ${
+                             job.status === 'Inscrito' ? 'bg-[#2EFF00]/10 border-[#2EFF00]/30 text-[#2EFF00]' :
+                             job.status === 'Descartado' ? 'bg-red-500/10 border-red-500/30 text-red-500' :
+                             'bg-orange-500/10 border-orange-500/30 text-orange-500'
+                           }`}
+                         >
+                           <option value="Pendente" className="bg-[#0a0a0a] text-orange-500">Pendente</option>
+                           <option value="Inscrito" className="bg-[#0a0a0a] text-[#2EFF00]">Inscrito</option>
+                           <option value="Descartado" className="bg-[#0a0a0a] text-red-500">Descartado</option>
+                         </select>
                          <div className="border border-[#188C00]/30 text-[#188C00] px-3 py-1 text-xs font-mono rounded bg-[#188C00]/5">{job.company}</div>
                          <button onClick={() => handleDeleteJob(job.id)} className="text-xs font-mono text-gray-500 hover:text-red-500 underline decoration-gray-500 underline-offset-4 transition-colors">Remover</button>
                        </div>

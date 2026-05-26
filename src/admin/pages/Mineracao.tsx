@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   PenTool, 
@@ -37,10 +38,18 @@ import {
   MapPin,
   Trash2,
   CheckCircle,
-  Clock
+  Clock,
+  Box,
+  Quote,
+  ChevronDown,
+  Image as ImageIcon,
+  PenTool,
+  Menu
 } from 'lucide-react';
+import Markdown from 'react-markdown';
 
 export default function Mineracao() {
+  const routerNavigate = useNavigate();
   // Estados da Aplicação ('leads' | 'generator' | 'loading' | 'preview' | 'pdf-loading' | 'brand-pdf' | 'success')
   const [currentView, setCurrentView] = useState('leads'); 
   
@@ -67,7 +76,7 @@ export default function Mineracao() {
           setLeadsList(data.leads.map((lead: any) => ({
             ...lead,
             updatedAt: new Date(lead.createdAt || Date.now()).toLocaleString('pt-BR'),
-            name: lead.title ? lead.title.split('-')[0].trim() : 'Empresa não identificada'
+            name: (lead.title && lead.title.split('-')[0].trim()) || lead.name || lead.nome || 'Empresa não identificada'
           })));
         }
       } catch (err) {
@@ -87,6 +96,8 @@ export default function Mineracao() {
     goal: 'Geração de Leads',
     tone: 'Profissional e Persuasivo',
     differentiators: '',
+    colors: '',
+    primaryHex: '#2EFF00',
     sections: {
       hero: true,
       about: true,
@@ -138,7 +149,7 @@ export default function Mineracao() {
           const newFetched = data.data.map((lead: any) => ({
             ...lead,
             updatedAt: new Date().toLocaleString('pt-BR'),
-            name: lead.title.split('-')[0].trim()
+            name: lead.title?.split('-')[0].trim() || 'Empresa'
           }));
           
           const combined = [...newFetched, ...prev];
@@ -169,9 +180,9 @@ export default function Mineracao() {
     // Pré-preenche os dados no Gerador
     setFormData(prev => ({
       ...prev,
-      companyName: lead.name || lead.title.split('-')[0].trim(),
-      hasWebsite: !!lead.website,
-      websiteUrl: lead.website || '',
+      companyName: lead.title?.split('-')[0].trim() || lead.name || lead.nome,
+      hasWebsite: !!(lead.website || lead.link || lead.site),
+      websiteUrl: lead.website || lead.link || lead.site || '',
       niche: searchQuery.split(' ')[0] || 'Serviços', // Tenta pegar a primeira palavra da busca (ex: Psicólogo)
     }));
     
@@ -195,7 +206,7 @@ export default function Mineracao() {
       
       if (data.success && data.data) {
         const issuesSummary = data.data.summary || '';
-        const issuesText = data.data.issues?.map((i: any) => `${i.title}: ${i.description}`).join(' ') || '';
+        const issuesText = data.data.issues?.map((i: any) => `- ERRO: ${i.title}\n  IMPACTO: ${i.description}\n  CORREÇÃO UX/COPY: ${i.recommendation || ''}`).join('\n\n') || '';
         
         const urlObj = new URL(formData.websiteUrl.startsWith('http') ? formData.websiteUrl : `https://${formData.websiteUrl}`);
         const domainParts = urlObj.hostname.replace('www.', '').split('.');
@@ -203,14 +214,16 @@ export default function Mineracao() {
         
         setFormData(prev => ({
           ...prev,
-          companyName: prev.companyName || simulatedName,
-          niche: prev.niche || 'Negócio Local',
-          audience: 'Público que precisa de maior clareza e credibilidade, eliminando fricções de conversão do site atual.',
-          differentiators: 'Aplicar Heurísticas de Nielsen, remover vieses negativos e focar em conversão extrema com UX aprimorada.',
-          tone: 'Profissional e Persuasivo'
+          companyName: data.data.brandAnalysis?.companyName || prev.companyName || simulatedName,
+          niche: data.data.brandAnalysis?.niche || prev.niche || 'Negócio Local',
+          audience: data.data.brandAnalysis?.audience || 'Público que precisa de maior clareza e credibilidade.',
+          differentiators: data.data.brandAnalysis?.differentiators || 'Foco em conversão extrema com UX aprimorada.',
+          tone: data.data.brandAnalysis?.tone || 'Profissional e Persuasivo',
+          colors: data.data.brandAnalysis?.colors || prev.colors || '',
+          primaryHex: data.data.brandAnalysis?.primaryHex || prev.primaryHex || '#2EFF00'
         }));
 
-        setGeneratedPrompt(`[DADOS DA ANÁLISE PROFUNDA DO SITE ATUAL]\n${issuesSummary}\n\n[PRINCIPAIS PROBLEMAS ENCONTRADOS]\n${issuesText}\n\n-> Use esses dados para basear o novo copy.\n`);
+        setGeneratedPrompt(`[DADOS DA ANÁLISE PROFUNDA DO SITE ATUAL]\n${issuesSummary}\n\n[PRINCIPAIS PROBLEMAS ENCONTRADOS NO SITE ATUAL A SEREM CORRIGIDOS]\n${issuesText}\n\n-> INSTRUÇÃO: Mapeie as 'CORREÇÕES UX/COPY' apontadas acima para as seções (Hero, Problema, Solução, etc) neste novo copywriting.\n`);
       }
     } catch (e) {
       console.error(e);
@@ -232,38 +245,91 @@ export default function Mineracao() {
     setIsAnalyzingUrl(false);
   };
 
-  const generatePrompt = () => {
+  const [isGeneratingCopy, setIsGeneratingCopy] = useState(false);
+
+  const generatePrompt = async () => {
     const activeSections = Object.entries(formData.sections)
       .filter(([_, isActive]) => isActive)
       .map(([key]) => {
         const labels: Record<string, string> = {
-          hero: 'Hero Section', about: 'Sobre Nós', services: 'Serviços', benefits: 'Benefícios',
-          testimonials: 'Depoimentos', faq: 'FAQ', contact: 'Contato', pricing: 'Preços'
+          hero: 'Hero Section (Foco em Proposição de Valor Única Mapeada)', 
+          about: 'Sobre Nós (Construção de Autoridade e Storytelling)', 
+          services: 'Serviços/Soluções (Apresentação orientada a resolução de dores)', 
+          benefits: 'Benefícios (Por que a solução resolve a dor baseada em aversão à perda)',
+          testimonials: 'Depoimentos (Uso de Prova Social robusta com quebra de objeções)', 
+          faq: 'Perguntas Frequentes (FAQ estratégico para neutralizar atritos)', 
+          contact: 'Contato (CTA claro com formulário otimizado para conversão)', 
+          pricing: 'Planos/Preços (Uso de viés de ancoragem e Efeito Isca C-Decoy)'
         };
-        return `- ${labels[key]}`;
+        return `- [ ] **${labels[key]}**: [Criar Copywriter específico aqui...]`;
       }).join('\n');
 
     const analysisBase = generatedPrompt.includes('[DADOS DA ANÁLISE PROFUNDA') ? generatedPrompt : '';
 
-    const promptText = `Atue como um Especialista em Copywriting de Resposta Direta, Neuromarketing e Diretor de UX/UI.
-Você deve desenhar o mapa de conteúdo completo e a arquitetura visual/texto para o projeto abaixo, utilizando Vieses Cognitivos (ex: Ancoragem, Prova Social, Aversão à Perda) e Heurísticas de Nielsen para máxima conversão.
+    const promptText = `URGENTE E ESTRITO: ATUE COMO Diretor de UX/UI, Head de Growth e Copywriter de Resposta Direta Sênior.
 
-${analysisBase ? `\n[CONTEXTO: ANÁLISE DO SITE ANTIGO]\nO cliente já possuía um site, e eu fiz uma auditoria completa. Aqui estão os problemas que você DEVE resolver no novo copy:\n${analysisBase}\n----------------------------------\n` : ''}
+Sua missão é projetar mentalmente e GERAR A ESTRUTURA, O COPY COMPLETO E A DIREÇÃO DE ARTE EXATA para a nova Landing Page de alta conversão do cliente. Esta LP será desenvolvida por um engenheiro focado em design de elite usando React, Tailwind CSS, GSAP, WebGL, e Unicorn Studio. O design DEVE fugir do "AI slop" genérico. Chega de templates em blocos padrão, fundos escuros para qualquer nicho, e fontes sem personalidade. Pense de forma criativa e disruptiva, mas baseada em CRO. Entregue texto real e persuasivo. SEM "Lorem Ipsum".
 
-MARCA: ${formData.companyName || '[Nome da Empresa]'} | NICHO: ${formData.niche || '[Nicho]'} 
-PÚBLICO-ALVO: ${formData.audience || '[Público]'}
-OBJETIVO DE CONVERSÃO: ${formData.goal} 
-TOM DE VOZ: ${formData.tone} 
-DIFERENCIAIS: ${formData.differentiators || 'Qualidade'}
+CONTEXTO DO NEGÓCIO ====================
+MARCA: ${formData.companyName || '[Nome da Empresa]'} 
+NICHO: ${formData.niche || '[Nicho]'} (ATENÇÃO: A estética DEVE combinar com o nicho. Ex: Se for odontologia, fuja do "dark mode hacker". Seja clean, acolhedor, sofisticado. Se for SaaS de nicho infra, aí sim use dark mode tech).
+PÚBLICO-ALVO: ${formData.audience || '[Público-alvo]'}
+OBJETIVO DE CONVERSÃO: ${formData.goal}
+TOM DE VOZ: ${formData.tone}
+DIFERENCIAIS: ${formData.differentiators || 'Qualidade, Rapidez, Segurança'}
 
-SEÇÕES OBRIGATÓRIAS (Descreva o copy exato e sugira o comportamento UI para cada uma):
-${activeSections || '- Estrutura Básica'}
+${analysisBase ? `[RESULTADO DA AUDITORIA DO SITE ANTIGO - RESOLVA ESTES PROBLEMAS NESTE NOVO COPY E DESIGN]:\n${analysisBase}\n======================================================\n` : ''}
 
-[DIRETRIZES FINAIS]:
-Entregue em Markdown formatado. Defina títulos magnéticos (H2 e H3), textos de suporte (p), label dos botões (CTAs orientados a benefício) e dê instruções de hierarquia visual para o desenvolvedor. Não entregue textos genéricos ("Lorem ipsum"), escreva como se a página fosse entrar no ar hoje.`;
+DIRETRIZES DE DESIGN, ESTRUTURA E COPY (MANDATÓRIO):
+1. O ESTILO E DIREÇÃO DE ARTE:
+   - Proponha uma VIBE coerente com o ${formData.niche || 'negócio'}. Defina cores precisas (Evite o roxo padrão de GenAI, seja original. Use paletas monocromáticas com acento vibrante, duotones, editorial, etc.). Dite exatamente qual a tipografia Display (uma fonte moderna, inesperada, com personalidade) e a Sans para leitura.
+   - Texturas e Estilo: Defina se será Glassmorphism minimalista, Neobrutalismo, Skewed geometric, Soft/Pastel, ou 3D WebGL scenes.
 
-    setGeneratedPrompt(promptText);
+2. THE ABOVE-THE-FOLD FORMULA (Hero Section):
+   - Headline: 6-12 palavras, focada no RESULTADO DO CLIENTE FINAL. ZERO clichês empresariais (ex: Nada de "Bem-vindo à nossa clínica" ou "Ajudamos negócios a crescer"). 
+   - Subheadline: 15-25 palavras que detalham o "COMO" resolvendo a dor.
+   - Hero Visuals (GSAP/WebGL): Descreva explicitamente a imagem da Hero focada em PESSOAS COM RESULTADOS, não o produto/serviço puramente técnico. Inclua recomendações sobre as animações de entrada usando \`GSAP\` (staggered reveals, scroll triggers) e se haverá um asset do Unicorn Studio.
+   - Primary CTA: Verbo de Ação Específico + Benefício (ex: "Agendar Minha Avaliação Gratuita", nunca "Saiba Mais").
+
+3. ARQUITETURA DA LANDING PAGE (Ordem de leitura):
+   Hero -> Prova Social Rápida -> O Problema / Empatia -> Apresentação da Solução -> Benefícios Reais -> Depoimentos / Casos Reais -> Oferta e Preço (Ancoragem) -> FAQ -> CTA Final com urgência.
+
+4. INSTRUÇÕES DE ENGENHARIA DE FRONTEND & COPY PARA CADA SEÇÃO:
+   Para CADA seção a seguir, especifique DENTRO DE UM BLOCO CLARO:
+   A) [TECH & UX/UI]: Exatamente como a equipe dev aplicará (ex: \`scroll-trigger\`, \`framer-motion\`, gradientes radiais em Tailwind, espaçamentos \`py-32\`, imagens on-scroll).
+   B) [IMAGEM RECOMENDADA]: Sugira uma imagem realista e de alta conversão. IMPORTANTE: Forneça um link de imagem renderizável usando a API gratuita do Pollinations! O formato do link deve ser: \`https://image.pollinations.ai/prompt/{prompt-em-ingles-detalhado}?width=1200&height=800&nologo=true\`.
+   C) [COPY FINAL]: Os textos exatos que vão para a tela. (H2, paragrafos curtos, bullets que vendem a transformação).
+
+ESTRUTURA DE SEÇÕES SOLICITADAS:
+${activeSections || '- [ ] ESTRUTURA COMPLETA MÍNIMA VIÁVEL DA LP'}
+
+FORMATO DE RETORNO (MANDATÓRIO):
+Responda APENAS E ESTRITAMENTE o output no formato Markdown profissional. Não responda conversar, apenas o layout Markdown. Crie uma grande seção inicial de [DIREÇÃO DE ARTE & BRANDING] e depois vá seção por seção do site.`;
+
+    setIsGeneratingCopy(true);
+    setGeneratedPrompt('Iniciando geração com Inteligência Artificial...');
+    
+    try {
+      const response = await fetch('/api/generate-copy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ promptText })
+      });
+      const data = await response.json();
+      
+      if (data.success && data.text) {
+        setGeneratedPrompt(data.text);
+      } else {
+        // Fallback to prompt if API fails
+        setGeneratedPrompt("Falha na IA. Use este prompt no ChatGPT:\n\n" + promptText);
+      }
+    } catch (e) {
+      console.error(e);
+      setGeneratedPrompt("Erro de conexão. Use este prompt:\n\n" + promptText);
+    }
+    
     setCopied(false);
+    setIsGeneratingCopy(false);
   };
 
   const copyToClipboard = () => {
@@ -273,8 +339,11 @@ Entregue em Markdown formatado. Defina títulos magnéticos (H2 e H3), textos de
   };
 
   // --- NAVEGAÇÃO ---
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const navigateTo = (view: string) => {
     setCurrentView(view);
+    setIsMobileMenuOpen(false);
   };
 
   const handleContinue = () => {
@@ -301,9 +370,20 @@ Entregue em Markdown formatado. Defina títulos magnéticos (H2 e H3), textos de
   return (
     <div className="flex h-full bg-[#0a0a0a] text-zinc-300 font-sans overflow-hidden selection:bg-[#2EFF00] selection:text-black">
       
+      {/* Mobile Sidebar Overlay */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setIsMobileMenuOpen(false)}></div>
+      )}
+
       {/* Sidebar (Internal for this tool) */}
-      <aside className="w-56 bg-[#0f0f0f] border-r border-[#1a1a1a] flex flex-col hidden md:flex shrink-0 z-20">
+      <aside className={`w-56 bg-[#0f0f0f] border-r border-[#1a1a1a] flex-col shrink-0 z-50 fixed md:relative h-full transition-transform duration-300 ${isMobileMenuOpen ? 'flex translate-x-0' : 'hidden md:flex -translate-x-full md:translate-x-0'}`}>
         <div className="flex-1 overflow-y-auto py-6 px-4 custom-scrollbar">
+          <div className="flex justify-between items-center mb-8 md:hidden px-2">
+            <h3 className="text-white font-bold">Mineração</h3>
+            <button onClick={() => setIsMobileMenuOpen(false)} className="text-zinc-400">
+              <ChevronDown className="rotate-90" size={20} />
+            </button>
+          </div>
           <div className="mb-8">
             <h3 className="text-[10px] uppercase text-zinc-500 font-bold tracking-widest mb-4 px-2">Fluxo do Projeto</h3>
             <nav className="space-y-1">
@@ -331,9 +411,12 @@ Entregue em Markdown formatado. Defina títulos magnéticos (H2 e H3), textos de
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-full overflow-hidden relative">
         {/* Header */}
-        <header className="h-16 flex items-center justify-between px-8 bg-[#0f0f0f] border-b border-[#1a1a1a] z-10 shrink-0">
-          <div>
-            <h1 className="text-lg font-bold text-white">
+        <header className="h-16 flex items-center justify-between px-4 md:px-8 bg-[#0f0f0f] border-b border-[#1a1a1a] z-10 shrink-0">
+          <div className="flex items-center gap-3">
+            <button className="md:hidden text-zinc-400 hover:text-white" onClick={() => setIsMobileMenuOpen(true)}>
+              <Menu size={24} />
+            </button>
+            <h1 className="text-lg font-bold text-white truncate max-w-[200px] md:max-w-none">
               {currentView === 'leads' ? 'Mineração de Leads' :
                currentView === 'generator' ? 'Criar Copy para Site' : 
                currentView === 'preview' ? 'Pré-visualização do Template' : 
@@ -452,7 +535,7 @@ Entregue em Markdown formatado. Defina títulos magnéticos (H2 e H3), textos de
                         {/* Corpo do Card */}
                         <div className="pl-3 flex-1 flex flex-col w-full">
                           <div className="flex justify-between items-start mb-2">
-                            <h4 className="text-lg font-bold text-white line-clamp-1 leading-tight">{lead.title}</h4>
+                            <h4 className="text-lg font-bold text-white line-clamp-1 leading-tight">{lead.title || lead.name || lead.nome || 'Empresa não identificada'}</h4>
                             <div className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider ${
                               lead.status === 'pending' ? 'text-orange-500' : 
                               lead.status === 'approved' ? 'text-[#2EFF00]' : 'text-red-500'
@@ -466,12 +549,12 @@ Entregue em Markdown formatado. Defina títulos magnéticos (H2 e H3), textos de
                           <div className="flex flex-wrap gap-4 mb-4 text-xs text-zinc-500">
                             <div className="flex items-center gap-1.5 max-w-xs shrink-0">
                               <MapPin size={12} className="shrink-0" /> 
-                              <span className="truncate">{lead.address}</span>
+                              <span className="truncate">{lead.address || 'Sem endereço'}</span>
                             </div>
-                            {lead.website ? (
+                            {(lead.website || lead.link || lead.site) ? (
                               <div className="flex items-center gap-1.5 text-[#2EFF00] shrink-0">
                                 <Globe size={12} className="shrink-0" /> 
-                                <a href={lead.website} target="_blank" rel="noreferrer" className="hover:underline text-zinc-300 truncate max-w-[200px]">{lead.website}</a>
+                                <a href={lead.website || lead.link || lead.site} target="_blank" rel="noreferrer" className="hover:underline text-zinc-300 truncate max-w-[200px]">{lead.website || lead.link || lead.site}</a>
                               </div>
                             ) : (
                               <div className="flex items-center gap-1.5 text-zinc-600 shrink-0">
@@ -578,6 +661,19 @@ Entregue em Markdown formatado. Defina títulos magnéticos (H2 e H3), textos de
                       <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Público-Alvo (Persona)</label>
                       <textarea name="audience" value={formData.audience} onChange={handleInputChange} rows={2} className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-md px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#2EFF00] transition-all resize-none custom-scrollbar"></textarea>
                     </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Cores da Marca</label>
+                        <input type="text" name="colors" value={formData.colors} onChange={handleInputChange} placeholder="Ex: Roxo Escuro e Branco" className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-md px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#2EFF00] transition-all" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Cor Principal (HEX)</label>
+                        <div className="flex gap-2">
+                            <input type="color" name="primaryHex" value={formData.primaryHex} onChange={handleInputChange} className="w-10 h-[42px] bg-[#0a0a0a] border border-zinc-800 rounded-md p-1 cursor-pointer" />
+                            <input type="text" name="primaryHex" value={formData.primaryHex} onChange={handleInputChange} placeholder="Ex: #2EFF00" className="flex-1 bg-[#0a0a0a] border border-zinc-800 rounded-md px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#2EFF00] transition-all font-mono" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -600,26 +696,29 @@ Entregue em Markdown formatado. Defina títulos magnéticos (H2 e H3), textos de
 
                   <div className="bg-[#121212] border border-zinc-800/60 rounded-xl p-6 shadow-xl">
                     <div className="flex items-center gap-2 mb-4">
-                      <Layers className="text-[#2EFF00]" size={20} />
+                      <Layers style={{ color: formData.primaryHex }} size={20} />
                       <h2 className="text-lg font-semibold text-white">Seções</h2>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
-                      {Object.entries({ hero: 'Hero', about: 'Sobre', services: 'Serviços', benefits: 'Benefícios', testimonials: 'Depoimentos', faq: 'FAQ', contact: 'Contato', pricing: 'Preços' }).map(([key, label]) => (
-                        <label key={key} className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all ${formData.sections[key as keyof typeof formData.sections] ? 'bg-[#2EFF00]/5 border-[#2EFF00]/50 text-white' : 'bg-[#0a0a0a] border-zinc-800 text-zinc-400 hover:border-zinc-700'}`}>
-                          <div className={`w-3 h-3 rounded-[3px] border flex items-center justify-center ${formData.sections[key as keyof typeof formData.sections] ? 'bg-[#2EFF00] border-[#2EFF00]' : 'border-zinc-600'}`}>
-                            {formData.sections[key as keyof typeof formData.sections] && <CheckSquare size={10} className="text-black" />}
+                      {Object.entries({ hero: 'Hero', about: 'Sobre', services: 'Serviços', benefits: 'Benefícios', testimonials: 'Depoimentos', faq: 'FAQ', contact: 'Contato', pricing: 'Preços' }).map(([key, label]) => {
+                        const isActive = formData.sections[key as keyof typeof formData.sections];
+                        return (
+                        <label key={key} style={isActive ? { backgroundColor: `${formData.primaryHex}11`, borderColor: `${formData.primaryHex}80`, color: 'white' } : {}} className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all ${isActive ? '' : 'bg-[#0a0a0a] border-zinc-800 text-zinc-400 hover:border-zinc-700'}`}>
+                          <div style={isActive ? { backgroundColor: formData.primaryHex, borderColor: formData.primaryHex } : {}} className={`w-3 h-3 rounded-[3px] border flex items-center justify-center ${isActive ? '' : 'border-zinc-600'}`}>
+                            {isActive && <CheckSquare size={10} className="text-black" />}
                           </div>
                           <span className="text-xs font-medium">{label}</span>
-                          <input type="checkbox" className="hidden" checked={formData.sections[key as keyof typeof formData.sections]} onChange={() => handleSectionToggle(key as keyof typeof formData.sections)} />
+                          <input type="checkbox" className="hidden" checked={isActive} onChange={() => handleSectionToggle(key as keyof typeof formData.sections)} />
                         </label>
-                      ))}
+                      )})}
                     </div>
                   </div>
                 </div>
 
                 <div className="flex justify-end pt-2 pb-8 xl:pb-0">
-                  <button onClick={generatePrompt} className="bg-[#2EFF00] hover:bg-[#28e600] text-black font-bold px-8 py-3 rounded-md flex items-center gap-2 transition-all shadow-[0_0_20px_rgba(46,255,0,0.15)] hover:shadow-[0_0_25px_rgba(46,255,0,0.3)] transform hover:-translate-y-0.5">
-                    <Sparkles size={20} /> Gerar Prompt Master
+                  <button onClick={generatePrompt} disabled={isGeneratingCopy} style={{ backgroundColor: formData.primaryHex, boxShadow: `0 0 25px ${formData.primaryHex}33` }} className="text-black font-bold px-8 py-3 rounded-md flex items-center gap-2 transition-all transform hover:-translate-y-0.5 hover:brightness-110 disabled:opacity-70 disabled:cursor-wait">
+                    {isGeneratingCopy ? <Loader2 size={20} className="animate-spin" /> : <Sparkles size={20} />} 
+                    {isGeneratingCopy ? 'Gerando Copy com IA...' : 'Gerar Output (IA)'}
                   </button>
                 </div>
 
@@ -630,8 +729,8 @@ Entregue em Markdown formatado. Defina títulos magnéticos (H2 e H3), textos de
                 <div className="bg-[#121212] border border-zinc-800/60 rounded-xl flex flex-col h-full shadow-xl relative overflow-hidden xl:sticky xl:top-0">
                   <div className="p-4 border-b border-zinc-800/60 flex items-center justify-between bg-[#18181b]/50">
                     <div className="flex items-center gap-2">
-                      <Megaphone className="text-[#2EFF00]" size={18} />
-                      <h2 className="text-sm font-semibold text-white">Resultado do Prompt</h2>
+                      <Megaphone style={{ color: formData.primaryHex }} size={18} />
+                      <h2 className="text-sm font-semibold text-white">Copy do Template Gerada</h2>
                     </div>
                     {generatedPrompt && (
                       <button onClick={copyToClipboard} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${copied ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white border border-zinc-700'}`}>
@@ -643,10 +742,12 @@ Entregue em Markdown formatado. Defina títulos magnéticos (H2 e H3), textos de
                   <div className="flex-1 p-0 relative flex flex-col">
                     {generatedPrompt ? (
                       <>
-                        <textarea readOnly value={generatedPrompt} className="flex-1 w-full bg-[#0a0a0a] text-zinc-300 p-5 text-sm font-mono leading-relaxed focus:outline-none resize-none custom-scrollbar" />
+                        <div className="flex-1 w-full bg-[#0a0a0a] overflow-y-auto p-5 custom-scrollbar text-sm markdown-body max-w-none text-zinc-300">
+                          <Markdown>{generatedPrompt}</Markdown>
+                        </div>
                         <div className="p-4 bg-[#121212] border-t border-zinc-800/60 shrink-0">
                           <button onClick={handleContinue} className="w-full bg-white hover:bg-zinc-200 text-black font-bold px-6 py-3 rounded-md flex items-center justify-center gap-2 transition-all shadow-lg">
-                            Seguir com o Prompt <ArrowRight size={18} />
+                            Seguir para a Estrutura (Wireframe) <ArrowRight size={18} />
                           </button>
                         </div>
                       </>
@@ -666,15 +767,15 @@ Entregue em Markdown formatado. Defina títulos magnéticos (H2 e H3), textos de
           {isLoading && (
             <div className="h-full flex flex-col items-center justify-center space-y-6 animate-in fade-in duration-500">
               <div className="relative">
-                <div className="absolute inset-0 bg-[#2EFF00] blur-[30px] opacity-20 rounded-full"></div>
-                <Loader2 size={64} className="text-[#2EFF00] animate-spin relative z-10" />
+                <div style={{ backgroundColor: formData.primaryHex }} className="absolute inset-0 blur-[30px] opacity-20 rounded-full"></div>
+                <Loader2 size={64} style={{ color: formData.primaryHex }} className="animate-spin relative z-10" />
               </div>
               <div className="text-center space-y-2">
                 <h2 className="text-2xl font-bold text-white tracking-tight">{loadingData.title}</h2>
                 <p className="text-zinc-500">{loadingData.desc}</p>
               </div>
               <div className="w-64 h-2 bg-zinc-800 rounded-full overflow-hidden mt-8">
-                <div className="h-full bg-[#2EFF00] rounded-full animate-[progress_2.5s_ease-in-out_forwards]"></div>
+                <div style={{ backgroundColor: formData.primaryHex }} className="h-full rounded-full animate-[progress_2.5s_ease-in-out_forwards]"></div>
               </div>
             </div>
           )}
@@ -704,40 +805,191 @@ Entregue em Markdown formatado. Defina títulos magnéticos (H2 e H3), textos de
 
               <div className="bg-[#0a0a0a] border-x border-b border-zinc-800 rounded-b-xl overflow-hidden shadow-2xl relative text-zinc-300 font-sans">
                 
-                <div className="bg-gradient-to-r from-[#2EFF00] to-emerald-500 text-black px-4 py-3 flex flex-col sm:flex-row justify-center items-center gap-4 text-sm font-bold z-50 shadow-md">
+                <div style={{ backgroundImage: `linear-gradient(to right, ${formData.primaryHex}, #000)` }} className="text-white px-4 py-3 flex flex-col sm:flex-row justify-center items-center gap-4 text-sm font-bold z-50 shadow-md">
                   <div className="flex items-center gap-2"><span className="animate-pulse">⏳</span>Oferta e template ativos por apenas 7 dias, não perca a oportunidade!</div>
-                  <button onClick={handleGenerateBrandPdf} className="bg-black text-[#2EFF00] px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider hover:bg-zinc-900 transition-colors shadow-sm flex items-center gap-2">
+                  <button onClick={handleGenerateBrandPdf} style={{ color: formData.primaryHex }} className="bg-black px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider hover:bg-zinc-900 transition-colors shadow-sm flex items-center gap-2">
                     <FileText size={14} /> Visualizar PDF da Marca
                   </button>
                 </div>
 
                 <nav className="border-b border-zinc-800/50 p-5 flex justify-between items-center bg-[#0a0a0a]/90 backdrop-blur-sm sticky top-0 z-40">
                   <div className="text-xl font-black text-white tracking-tighter flex items-center gap-2">
-                    <div className="w-6 h-6 bg-[#2EFF00] rounded-sm flex items-center justify-center text-black"><Sparkles size={14} /></div>
+                    <div style={{ backgroundColor: formData.primaryHex }} className="w-6 h-6 rounded-sm flex items-center justify-center text-black"><Sparkles size={14} /></div>
                     {formData.companyName ? formData.companyName.toUpperCase() : 'SUA EMPRESA'}
                   </div>
-                  <button className="px-5 py-2 bg-[#2EFF00] text-black font-bold text-xs rounded hover:bg-[#28e600] transition-colors">Fale Connosco</button>
+                  <button style={{ backgroundColor: formData.primaryHex }} className="px-5 py-2 text-black font-bold text-xs rounded transition-colors opacity-90 hover:opacity-100">Fale Connosco</button>
                 </nav>
 
                 <div className="divide-y divide-zinc-800/30">
                   {formData.sections.hero && (
                     <section className="p-16 lg:px-24 lg:py-32 flex flex-col items-center text-center relative overflow-hidden bg-gradient-to-b from-[#121212] to-[#0a0a0a]">
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#2EFF00]/5 blur-[120px] rounded-full pointer-events-none"></div>
-                      <div className="inline-block px-4 py-1.5 bg-zinc-800/40 text-[#2EFF00] border border-[#2EFF00]/20 rounded-full text-[10px] font-bold uppercase tracking-wider mb-8 backdrop-blur-sm">
+                      <div style={{ backgroundColor: formData.primaryHex }} className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] blur-[120px] rounded-full pointer-events-none opacity-5"></div>
+                      <div style={{ color: formData.primaryHex, borderColor: `${formData.primaryHex}33` }} className="inline-block px-4 py-1.5 bg-zinc-800/40 border rounded-full text-[10px] font-bold uppercase tracking-wider mb-8 backdrop-blur-sm">
                         {formData.goal === 'Geração de Leads' ? '🚀 Aumente as suas conversões' : '✨ A solução definitiva'}
                       </div>
                       <h1 className="text-5xl md:text-6xl font-extrabold text-white tracking-tight mb-6 max-w-4xl leading-[1.1]">
-                        Transforme a realidade de <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2EFF00] to-emerald-400">{formData.audience || 'seus clientes'}</span> com soluções em {formData.niche || 'seu nicho'}
+                        Transforme a realidade de <span style={{ color: formData.primaryHex }}>{(formData.audience || 'seus clientes').substring(0,35)}...</span>
                       </h1>
-                      <button className="px-8 py-4 bg-[#2EFF00] text-black font-bold rounded-md shadow-[0_0_20px_rgba(46,255,0,0.2)]">Começar Agora Mesmo</button>
+                      <button style={{ backgroundColor: formData.primaryHex, boxShadow: `0 0 20px ${formData.primaryHex}33` }} className="px-8 py-4 text-black font-bold rounded-md">Começar Agora Mesmo</button>
+                    </section>
+                  )}
+
+                  {formData.sections.about && (
+                    <section className="p-16 lg:px-24 py-20 flex flex-col items-center text-center bg-[#0a0a0a]">
+                      <h2 className="text-3xl font-bold text-white mb-6">Sobre a {formData.companyName || 'Empresa'}</h2>
+                      <div className="w-full max-w-3xl h-64 bg-zinc-900 rounded-2xl flex items-center justify-center border border-zinc-800 overflow-hidden relative group">
+                         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center opacity-40 group-hover:opacity-60 transition-opacity"></div>
+                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                         <h3 className="relative z-10 text-white font-bold text-xl uppercase tracking-widest opacity-80 mix-blend-overlay">Construindo Autoridade</h3>
+                      </div>
+                      <p className="text-zinc-500 mt-8 max-w-2xl text-lg">
+                        Uma breve descrição sobre a missão, visão e valores da {formData.companyName || 'empresa'}, estabelecendo autoridade no nicho de {formData.niche || 'atuação'}. 
+                      </p>
+                    </section>
+                  )}
+
+                  {formData.sections.services && (
+                    <section className="p-16 lg:px-24 py-20 bg-[#121212]">
+                      <h2 className="text-3xl font-bold text-white mb-12 text-center">Nossos Serviços</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {[1, 2, 3].map(i => (
+                          <div key={i} className="bg-zinc-900/50 p-8 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition-all hover:-translate-y-1">
+                            <div style={{ backgroundColor: `${formData.primaryHex}22`, color: formData.primaryHex }} className="w-12 h-12 rounded-xl flex items-center justify-center mb-6">
+                              <Box size={24} />
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-3">Serviço {i}</h3>
+                            <p className="text-zinc-500 text-sm">Descrição estratégica do serviço focada nos benefícios diretos para o cliente.</p>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+
+                  {formData.sections.benefits && (
+                    <section className="p-16 lg:px-24 py-20 bg-[#0a0a0a] flex flex-col md:flex-row items-center gap-12">
+                      <div className="flex-1">
+                        <h2 className="text-3xl font-bold text-white mb-8">Por que nos escolher?</h2>
+                        <ul className="space-y-6">
+                          {[1, 2, 3, 4].map(i => (
+                            <li key={i} className="flex items-start gap-4">
+                              <div style={{ color: formData.primaryHex }} className="mt-1"><CheckCircle2 size={24} /></div>
+                              <div>
+                                <h4 className="text-white font-bold mb-1 text-lg">Benefício exclusivo {i}</h4>
+                                <p className="text-zinc-500 text-sm">Explicação de como isso resolve uma dor específica baseada na aversão à perda.</p>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="flex-1">
+                         <div className="w-full aspect-square bg-zinc-900 rounded-3xl border border-zinc-800 flex items-center justify-center overflow-hidden relative shadow-2xl">
+                            <div style={{ backgroundColor: formData.primaryHex }} className="absolute w-full h-full opacity-10 mix-blend-color"></div>
+                            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80')] bg-cover bg-center opacity-40"></div>
+                            <Rocket style={{ color: formData.primaryHex }} className="w-20 h-20 relative z-10 drop-shadow-[0_0_15px_rgba(46,255,0,0.5)]" />
+                         </div>
+                      </div>
+                    </section>
+                  )}
+
+                  {formData.sections.testimonials && (
+                    <section className="p-16 lg:px-24 py-20 bg-[#121212] flex flex-col items-center">
+                      <h2 className="text-3xl font-bold text-white mb-12 text-center">O que dizem sobre nós</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
+                         {[1, 2].map(i => (
+                           <div key={i} className="bg-[#0a0a0a] p-8 rounded-2xl border border-zinc-800 relative shadow-lg">
+                             <div style={{ color: formData.primaryHex }} className="absolute -top-5 -left-5 bg-[#121212] p-3 rounded-full border border-zinc-800 shadow-xl">
+                               <Quote size={20} />
+                             </div>
+                             <p className="text-zinc-300 italic mb-8 mt-2">"Este é um depoimento forte que usa Prova Social para validar os diferenciais da marca e quebrar objeções comuns dos clientes."</p>
+                             <div className="flex items-center gap-4">
+                               <img src={`https://i.pravatar.cc/150?img=${10+i}`} alt="Avatar" className="w-12 h-12 bg-zinc-800 rounded-full object-cover" />
+                               <div>
+                                 <h4 className="text-white font-bold">Cliente Satisfeito {i}</h4>
+                                 <span className="text-zinc-500 text-xs uppercase tracking-wider">CEO, Empresa Exemplo {i}</span>
+                               </div>
+                             </div>
+                           </div>
+                         ))}
+                      </div>
+                    </section>
+                  )}
+
+                  {formData.sections.pricing && (
+                    <section className="p-16 lg:px-24 py-20 bg-[#0a0a0a] flex flex-col items-center">
+                      <h2 className="text-3xl font-bold text-white mb-4 text-center">Investimento</h2>
+                      <p className="text-zinc-500 mb-12 text-center max-w-2xl">Planos estruturados utilizando o viés cognitivo de Ancoragem para facilitar a decisão de compra.</p>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl items-center">
+                         {[
+                           { name: 'Básico', price: '99', highlight: false },
+                           { name: 'Profissional', price: '199', highlight: true },
+                           { name: 'Enterprise', price: '399', highlight: false },
+                         ].map((plan, i) => (
+                           <div key={i} className={`p-8 rounded-3xl border transition-all duration-300 hover:-translate-y-2 ${plan.highlight ? 'bg-[#121212] scale-105 shadow-2xl relative' : 'border-zinc-800 bg-[#0a0a0a]'}`} style={plan.highlight ? { borderColor: formData.primaryHex, boxShadow: `0 20px 40px ${formData.primaryHex}22` } : {}}>
+                             {plan.highlight && (
+                               <div style={{ backgroundColor: formData.primaryHex }} className="absolute -top-4 left-1/2 -translate-x-1/2 text-black text-[10px] font-black uppercase tracking-widest py-1.5 px-4 rounded-full">
+                                 Mais Escolhido
+                               </div>
+                             )}
+                             <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
+                             <div className="text-4xl font-black text-white mb-6">R$ {plan.price}<span className="text-zinc-600 text-lg font-medium">/mês</span></div>
+                             <ul className="space-y-4 mb-8">
+                               {[1,2,3,4].map(f => (
+                                 <li key={f} className="flex items-center gap-3 text-zinc-300 text-sm">
+                                   <CheckCircle2 size={16} style={{ color: formData.primaryHex }} /> Funcionalidade principal {f}
+                                 </li>
+                               ))}
+                             </ul>
+                             <button style={plan.highlight ? { backgroundColor: formData.primaryHex, color: 'black' } : { backgroundColor: 'transparent', color: 'white', borderColor: 'white' }} className={`w-full py-4 rounded-xl font-bold border transition-colors ${plan.highlight ? 'hover:brightness-110 border-transparent' : 'hover:bg-white hover:text-black'}`}>
+                               Assinar Agora
+                             </button>
+                           </div>
+                         ))}
+                      </div>
+                    </section>
+                  )}
+
+                  {formData.sections.faq && (
+                    <section className="p-16 lg:px-24 py-20 bg-[#121212] flex flex-col items-center">
+                      <h2 className="text-3xl font-bold text-white mb-12 text-center">Dúvidas Frequentes</h2>
+                      <div className="w-full max-w-3xl space-y-4">
+                        {[1, 2, 3, 4].map(i => (
+                          <div key={i} className="bg-[#0a0a0a] p-6 rounded-2xl border border-zinc-800 flex justify-between items-center cursor-pointer hover:border-zinc-700 transition-colors">
+                            <h4 className="text-white font-medium">Qual é a objeção ou dúvida comum {i}?</h4>
+                            <ChevronDown className="text-zinc-600" />
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+
+                  {formData.sections.contact && (
+                    <section className="p-16 lg:px-24 py-20 bg-[#0a0a0a] flex flex-col items-center relative overflow-hidden">
+                      <div style={{ backgroundColor: formData.primaryHex }} className="absolute bottom-0 right-0 w-[600px] h-[600px] blur-[150px] rounded-full pointer-events-none opacity-[0.03]"></div>
+                      <h2 className="text-4xl font-bold text-white mb-4 text-center">Vamos impulsionar o seu negócio?</h2>
+                      <p className="text-zinc-500 mb-12 text-center max-w-xl">Entre em contato hoje. Descubra como a nossa solução exclusiva para o nicho de {formData.niche || 'atuação'} vai aumentar a sua conversão.</p>
+                      
+                      <div className="w-full max-w-xl bg-[#121212] border border-zinc-800 p-8 rounded-3xl z-10 shadow-2xl relative">
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4">
+                             <input type="text" placeholder="Nome Completo" className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-xl px-4 py-3.5 text-white outline-none focus:border-zinc-600 transition-colors text-sm" />
+                             <input type="text" placeholder="Empresa" className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-xl px-4 py-3.5 text-white outline-none focus:border-zinc-600 transition-colors text-sm" />
+                          </div>
+                          <input type="email" placeholder="E-mail Corporativo" className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-xl px-4 py-3.5 text-white outline-none focus:border-zinc-600 transition-colors text-sm" />
+                          <textarea placeholder="Fale um pouco sobre o seu desafio atual..." className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-xl px-4 py-3.5 text-white outline-none focus:border-zinc-600 transition-colors h-32 resize-none text-sm"></textarea>
+                          <button style={{ backgroundColor: formData.primaryHex }} className="w-full py-4 rounded-xl text-black font-extrabold text-base mt-2 transition-all transform hover:scale-[1.02] shadow-[0_0_20px_rgba(46,255,0,0.15)] flex items-center justify-center gap-2">
+                            Enviar Solicitação <ArrowRight size={18} />
+                          </button>
+                        </div>
+                      </div>
                     </section>
                   )}
                   
                   <section className="p-12 bg-[#121212] border-t border-zinc-800 flex flex-col items-center text-center">
-                    <h3 className="text-2xl font-bold text-white mb-4">Gostou da proposta apresentada?</h3>
-                    <p className="text-zinc-400 mb-8 max-w-md">Ao aceitar, o nosso time começará imediatamente o processo para colocar este projeto no ar.</p>
+                    <h3 className="text-2xl font-bold text-white mb-4">Gostou do wireframe?</h3>
+                    <p className="text-zinc-400 mb-8 max-w-md">Isso é apenas um mock inicial. Use o prompt extraído acima e gere o conteúdo em um AI para implementar com código perfeito.</p>
                     <button onClick={handleAcceptProposal} className="bg-white hover:bg-zinc-200 text-black font-black px-12 py-5 rounded-xl flex items-center gap-3 transition-all transform hover:scale-105 shadow-[0_10px_40px_rgba(255,255,255,0.1)] text-lg uppercase tracking-wider">
-                      <Rocket size={24} /> Aceitar Proposta e Lançar
+                      <Rocket size={24} /> Aceitar e Avançar
                     </button>
                   </section>
                 </div>
@@ -749,7 +1001,7 @@ Entregue em Markdown formatado. Defina títulos magnéticos (H2 e H3), textos de
             <div className="max-w-4xl mx-auto animate-in slide-in-from-bottom-8 fade-in duration-500 pb-12">
                <div className="flex justify-between items-center mb-6">
                  <div>
-                   <h2 className="text-2xl font-bold text-white flex items-center gap-2"><Palette className="text-[#2EFF00]"/> Identidade da Marca (PDF)</h2>
+                   <h2 className="text-2xl font-bold text-white flex items-center gap-2"><Palette style={{ color: formData.primaryHex }}/> Identidade da Marca (PDF)</h2>
                  </div>
                  <button className="bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-md flex items-center gap-2 text-sm transition-colors border border-zinc-700">
                     <Download size={16} /> Baixar PDF
@@ -757,13 +1009,13 @@ Entregue em Markdown formatado. Defina títulos magnéticos (H2 e H3), textos de
                </div>
                <div className="bg-[#121212] border border-zinc-800 rounded-xl overflow-hidden shadow-2xl">
                  <div className="bg-[#0a0a0a] p-12 border-b border-zinc-800 text-center relative overflow-hidden">
-                    <div className="w-16 h-16 bg-[#2EFF00] rounded-xl mx-auto mb-6 flex items-center justify-center text-black"><Sparkles size={32} /></div>
+                    <div style={{ backgroundColor: formData.primaryHex }} className="w-16 h-16 rounded-xl mx-auto mb-6 flex items-center justify-center text-black"><Sparkles size={32} /></div>
                     <h1 className="text-4xl font-black text-white mb-2">{formData.companyName || 'Sua Empresa'}</h1>
                     <p className="text-zinc-500 uppercase tracking-[0.3em] text-sm font-bold">Brandbook & Identidade Visual</p>
                  </div>
                  <div className="p-8 bg-[#0a0a0a] border-t border-zinc-800 flex flex-col items-center text-center">
                     <h3 className="text-xl font-bold text-white mb-2">Aprovar Identidade Visual e Site</h3>
-                    <button onClick={handleAcceptProposal} className="bg-[#2EFF00] hover:bg-[#28e600] text-black font-black px-10 py-4 rounded-xl flex items-center gap-2 transition-all transform hover:scale-105 text-lg">
+                    <button onClick={handleAcceptProposal} style={{ backgroundColor: formData.primaryHex }} className="text-black font-black px-10 py-4 rounded-xl flex items-center gap-2 transition-all transform hover:scale-105 text-lg hover:brightness-110">
                       <CheckCircle2 size={24} /> Aceitar Todos os Itens
                     </button>
                  </div>
@@ -773,8 +1025,8 @@ Entregue em Markdown formatado. Defina títulos magnéticos (H2 e H3), textos de
 
           {currentView === 'success' && (
             <div className="h-full flex flex-col items-center justify-center animate-in zoom-in-95 duration-500 text-center px-4">
-              <div className="w-24 h-24 bg-[#2EFF00]/20 rounded-full flex items-center justify-center mb-8 relative">
-                <Rocket size={48} className="text-[#2EFF00] relative z-10" />
+              <div style={{ backgroundColor: `${formData.primaryHex}33` }} className="w-24 h-24 rounded-full flex items-center justify-center mb-8 relative">
+                <Rocket size={48} style={{ color: formData.primaryHex }} className="relative z-10" />
               </div>
               <h1 className="text-4xl font-black text-white mb-4">Projeto no Ar! 🚀</h1>
               <p className="text-xl text-zinc-400 mb-8 max-w-lg">A proposta foi aceita com sucesso.</p>

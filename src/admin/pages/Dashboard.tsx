@@ -4,8 +4,10 @@ import { DollarSign, MousePointerClick, Users, FileSignature, Loader2 } from "lu
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { db } from "../../lib/firebase";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [totalViews, setTotalViews] = useState(0);
   const [totalLeads, setTotalLeads] = useState(0);
@@ -182,7 +184,7 @@ export default function Dashboard() {
           <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-bold">Páginas em Monitoramento</h3>
-              <button className="text-[#2EFF00] text-sm font-medium hover:underline">Ver todas</button>
+              <button onClick={() => navigate('/paginas')} className="text-[#2EFF00] text-sm font-medium hover:underline cursor-pointer">Ver todas</button>
             </div>
             
             <table className="w-full text-sm">
@@ -212,7 +214,7 @@ export default function Dashboard() {
           <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-bold">Leads Recentes</h3>
-              <button className="text-[#2EFF00] text-sm font-medium hover:underline">Ir para CRM</button>
+              <button onClick={() => navigate('/leads')} className="text-[#2EFF00] text-sm font-medium hover:underline cursor-pointer">Ir para CRM</button>
             </div>
             
             <table className="w-full text-sm">

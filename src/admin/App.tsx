@@ -13,7 +13,9 @@ import {
   BarChart2, 
   Settings,
   LogOut,
-  Search
+  Search,
+  ChevronDown,
+  ChevronRight
 } from "lucide-react";
 
 import Dashboard from "./pages/Dashboard";
@@ -32,6 +34,7 @@ import Login from "./pages/Login";
 
 function Sidebar({ onLogout, isOpen, setIsOpen }: { onLogout: () => void, isOpen: boolean, setIsOpen: (val: boolean) => void }) {
   const location = useLocation();
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>("Prospect");
 
   React.useEffect(() => {
     setIsOpen(false);
@@ -42,9 +45,15 @@ function Sidebar({ onLogout, isOpen, setIsOpen }: { onLogout: () => void, isOpen
     { name: "Valores & Serviços", path: "/servicos", icon: <Tags size={18} /> },
     { name: "Gestão de Páginas", path: "/paginas", icon: <Layers size={18} /> },
     { name: "Gerar Propostas", path: "/propostas", icon: <FileText size={18} /> },
-    { name: "Prospect", path: "/prospect", icon: <Target size={18} /> },
-    { name: "Mineração de Leads", path: "/mineracao", icon: <Search size={18} /> },
-    { name: "Leads", path: "/leads", icon: <Users size={18} /> },
+    { 
+      name: "Prospect", 
+      icon: <Target size={18} />,
+      subItems: [
+        { name: "Prospect Suite", path: "/prospect" },
+        { name: "Mineração de Leads", path: "/mineracao" },
+        { name: "Leads", path: "/leads" }
+      ]
+    },
     { name: "Contratos", path: "/contratos", icon: <FileSignature size={18} /> },
     { name: "Projetos do Portfolio", path: "/portfolio", icon: <Briefcase size={18} /> },
     { name: "Instagram GEM", path: "/instagram", icon: <Instagram size={18} /> },
@@ -73,17 +82,50 @@ function Sidebar({ onLogout, isOpen, setIsOpen }: { onLogout: () => void, isOpen
           <ul className="space-y-1 mb-8">
             {menuPrincipal.map((item) => (
               <li key={item.name}>
-                <Link 
-                  to={item.path} 
-                  className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    location.pathname === item.path ? "bg-[#2EFF00]/10 text-[#2EFF00] border border-[#2EFF00]/20" : "text-gray-400 hover:text-white hover:bg-white/5"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    {item.icon}
-                    <span>{item.name}</span>
+                {item.subItems ? (
+                  <div className="flex flex-col">
+                    <button 
+                      onClick={() => setOpenSubmenu(openSubmenu === item.name ? null : item.name)}
+                      className={`flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        item.subItems.some(sub => location.pathname === sub.path) || openSubmenu === item.name ? "text-white" : "text-gray-400 hover:text-white hover:bg-white/5"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        {item.icon}
+                        <span>{item.name}</span>
+                      </div>
+                      {openSubmenu === item.name ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                    </button>
+                    {openSubmenu === item.name && (
+                      <ul className="mt-1 ml-9 space-y-1">
+                        {item.subItems.map((subItem) => (
+                          <li key={subItem.name}>
+                            <Link 
+                              to={subItem.path} 
+                              className={`flex items-center px-3 py-2 rounded-lg text-sm transition-colors ${
+                                location.pathname === subItem.path ? "bg-[#2EFF00]/10 text-[#2EFF00] font-semibold" : "text-gray-500 hover:text-gray-300 hover:bg-white/5"
+                              }`}
+                            >
+                              <span>{subItem.name}</span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
-                </Link>
+                ) : (
+                  <Link 
+                    to={item.path!} 
+                    className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                      location.pathname === item.path ? "bg-[#2EFF00]/10 text-[#2EFF00] border border-[#2EFF00]/20" : "text-gray-400 hover:text-white hover:bg-white/5"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {item.icon}
+                      <span>{item.name}</span>
+                    </div>
+                  </Link>
+                )}
               </li>
             ))}
           </ul>

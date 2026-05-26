@@ -51,6 +51,16 @@
   }
 }
 
+.markdown-body h1 { @apply text-2xl font-bold mb-4 mt-6 text-white; }
+.markdown-body h2 { @apply text-xl font-bold mb-3 mt-5 text-emerald-400; }
+.markdown-body h3 { @apply text-lg font-semibold mb-2 mt-4 text-emerald-200; }
+.markdown-body p { @apply mb-4 leading-relaxed; }
+.markdown-body ul { @apply list-disc list-inside mb-4 space-y-1; }
+.markdown-body ol { @apply list-decimal list-inside mb-4 space-y-1; }
+.markdown-body strong { @apply text-white font-bold; }
+.markdown-body hr { @apply border-zinc-800 my-6; }
+.markdown-body li > p { @apply inline; }
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 4px;

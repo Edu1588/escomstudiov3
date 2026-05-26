@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import * as cheerio from "cheerio";
 import Groq from "groq-sdk";
+import cron from "node-cron";
 
 // Prevent cyclic object value crashes
 const origStringify = JSON.stringify;
@@ -42,12 +43,221 @@ const getResend = () => {
   return new Resend(apiKey);
 };
 
+async function runJobFinderCron() {
+  console.log("[CRON] Running daily job finder...");
+  if (!process.env.SERPER_API_KEY) {
+    console.log("[CRON] No SERPER_API_KEY, skipping job finder.");
+    return;
+  }
+  
+  try {
+    // 1. Clean up jobs older than 15 days
+    const jobsSnap = await getDocs(collection(db, "jobs"));
+    const now = Date.now();
+    const fifteenDaysMs = 15 * 24 * 60 * 60 * 1000;
+    let existingLinks = new Set<string>();
+    let deletedCount = 0;
+
+    for (const d of jobsSnap.docs) {
+      const jobData = d.data();
+      let createdAtMs = jobData.createdAt?.toMillis?.() || Date.now(); // Assume now if missing timestamp objects
+      if (jobData.createdAt && typeof jobData.createdAt === 'number') {
+        createdAtMs = jobData.createdAt;
+      } else if (jobData.createdAt?.seconds) {
+        createdAtMs = jobData.createdAt.seconds * 1000;
+      }
+
+      if (now - createdAtMs > fifteenDaysMs) {
+        // Older than 15 days, remove
+        await deleteDoc(d.ref);
+        deletedCount++;
+      } else {
+        if (jobData.link) existingLinks.add(jobData.link);
+      }
+    }
+    
+    console.log(`[CRON] Deleted ${deletedCount} old jobs.`);
+
+    // 2. Fetch new jobs (Design and AI) until ~20 are gathered
+    let newJobsFound = 0;
+    const queries = [
+      "vagas emprego web designer ui designer linkedin gupy vagas.com",
+      "vagas emprego engenheiro IA inteligencia artificial machine learning linkedin gupy vagas.com"
+    ];
+    
+    for (const queryStr of queries) {
+      if (newJobsFound >= 20) break;
+      
+      // Search
+      const response = await fetch("https://google.serper.dev/search", {
+        method: "POST",
+        headers: {
+          "X-API-KEY": process.env.SERPER_API_KEY,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          q: queryStr,
+          gl: "br",
+          hl: "pt-br",
+          tbs: "qdr:d15", // past 15 days
+          num: 30 // try to get more at once to reach 20 new ones easily
+        })
+      });
+      
+      const searchData = await response.json();
+      const organicResults = searchData.organic || [];
+      
+      for (const r of organicResults) {
+        if (newJobsFound >= 20) break;
+        if (r.link && existingLinks.has(r.link)) continue; // skip already tracked
+        
+        let company = "Empresa não identificada";
+        if (r.title && r.title.includes("-")) {
+          const parts = r.title.split("-");
+          company = parts[parts.length - 1].trim();
+        } else if (r.title && r.title.includes("|")) {
+          const parts = r.title.split("|");
+          company = parts[parts.length - 1].trim();
+        }
+        
+        const newJob = {
+          title: r.title || "Vaga",
+          company: company,
+          snippet: r.snippet || "",
+          link: r.link || "",
+          status: "Pendente",
+          createdAt: serverTimestamp()
+        };
+        
+        await addDoc(collection(db, "jobs"), newJob);
+        existingLinks.add(r.link);
+        newJobsFound++;
+      }
+    }
+    
+    console.log(`[CRON] Saved ${newJobsFound} new jobs to history.`);
+    return { deletedCount, newJobsFound };
+  } catch (err) {
+    console.error("[CRON] Error in job finder script:", err);
+    throw err;
+  }
+}
+
+async function runMineraLeadsCron() {
+  console.log("[CRON] Running daily Mineração de Leads finder at 6 AM...");
+  if (!process.env.SERPER_API_KEY || !process.env.GROQ_API_KEY) {
+    console.log("[CRON] No SERPER_API_KEY or GROQ_API_KEY, skipping MineraLeads.");
+    return;
+  }
+  
+  try {
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        { role: "system", content: "Você é um analista de marketing focado em encontrar nichos que precisam de landing pages." },
+        { role: "user", content: "Gere apenas UMA query de pesquisa do Google (apenas o texto) buscando empresas ou profissionais locais no Brasil (ex: dentista, arquitetura, contabilidade, clinica veterinaria, advogados) em uma cidade brasileira (pode ser capitais ou cidades de médio porte). Seja diversificado. Exemplo: 'Clínica de Estética em Campinas'. Apenas retorne a frase curta de busca." }
+      ],
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.9,
+    });
+
+    let query = chatCompletion.choices[0]?.message?.content?.trim() || "Dentista em São Paulo";
+    // Clean quotes
+    query = query.replace(/^["']|["']$/g, '');
+    
+    console.log("[CRON] Mineração Query Generated:", query);
+
+    const response = await fetch("https://google.serper.dev/places", {
+      method: "POST",
+      headers: {
+        "X-API-KEY": process.env.SERPER_API_KEY,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        q: query,
+        gl: "br",
+        hl: "pt-br"
+      })
+    });
+    
+    const searchData = await response.json();
+    const placesResults = searchData.places || [];
+
+    // Pegar 10 resultados
+    const top10 = placesResults.slice(0, 10);
+
+    const querySnapshot = await getDocs(collection(db, "leads"));
+    const existingLeads = new Set(querySnapshot.docs.map(doc => doc.id));
+
+    let addedCount = 0;
+    for (const r of top10) {
+      const placeId = (r.cid || r.placeId || Date.now().toString()).toString();
+      
+      if (!existingLeads.has(placeId)) {
+        await setDoc(doc(db, "leads", placeId), {
+          title: r.title || "Empresa não identificada",
+          address: r.address || "Sem endereço",
+          phone: r.phoneNumber || "Sem telefone",
+          website: r.website || r.link || "",
+          rating: r.rating || 0,
+          ratingCount: r.ratingCount || 0,
+          placeId: placeId,
+          status: 'pending', // pendentes
+          niche: query,
+          createdAt: Date.now()
+        });
+        addedCount++;
+        existingLeads.add(placeId);
+      }
+    }
+    
+    console.log(`[CRON] Added ${addedCount} new leads from query: ${query}`);
+    return { query, count: addedCount, leadsAdded: Array.from(existingLeads).slice(-addedCount) };
+  } catch (error) {
+    console.error("[CRON] Error in minera leads cron:", error);
+    throw error;
+  }
+}
+
+function initCronJobs() {
+  console.log("[CRON] Initializing CRON jobs");
+  cron.schedule('0 8 * * *', async () => {
+    await runJobFinderCron();
+  });
+  cron.schedule('0 6 * * *', async () => {
+    await runMineraLeadsCron();
+  });
+}
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  initCronJobs();
+
   app.use(cors());
   app.use(express.json());
+
+  app.get("/api/trigger-cron", async (req, res) => {
+    try {
+      const result = await runJobFinderCron();
+      res.json({ success: true, result });
+    } catch (err: any) {
+      console.error(err);
+      fs.writeFileSync("cron-error.txt", err.stack || err.toString());
+      res.status(500).json({ success: false, error: "Failed to run cron" });
+    }
+  });
+
+  app.get("/api/trigger-minera", async (req, res) => {
+    try {
+      const result = await runMineraLeadsCron();
+      res.json({ success: true, result });
+    } catch (err: any) {
+      console.error(err);
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
 
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
@@ -116,6 +326,31 @@ async function startServer() {
     }
   });
 
+  app.post("/api/generate-copy", async (req, res) => {
+    try {
+      const { promptText } = req.body;
+      if (!promptText) return res.status(400).json({ error: "Prompt is required" });
+      if (!process.env.GROQ_API_KEY) {
+        return res.status(500).json({ error: "GROQ_API_KEY is not configured in .env" });
+      }
+
+      const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+      const chatCompletion = await groq.chat.completions.create({
+        messages: [
+          { role: "system", content: "Você é um Copywriter Sênior de Resposta Direta, Head de Growth e Diretor de Arte (Front-end). Suas respostas são altamente detalhadas para equipes de engenharia (React/Tailwind/GSAP) e entregam copys refinados, livres de clichês e 'AI slop'. Você sempre adapta o design rigorosamente ao nicho do cliente." },
+          { role: "user", content: promptText }
+        ],
+        model: "llama-3.3-70b-versatile",
+        temperature: 0.7,
+      });
+
+      res.json({ success: true, text: chatCompletion.choices[0]?.message?.content || "" });
+    } catch (error) {
+      console.error("GROQ API Error:", error);
+      res.status(500).json({ error: "Erro ao gerar copy" });
+    }
+  });
+
   // UX ANALYZER API
   app.post("/api/analyze-ux", async (req, res) => {
     try {
@@ -125,37 +360,55 @@ async function startServer() {
         return res.status(500).json({ error: "GROQ_API_KEY is not configured in .env" });
       }
 
-      // Fetch url content
-      const response = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" }});
-      if (!response.ok) return res.status(400).json({ error: "Could not fetch URL content" });
-      const html = await response.text();
-      const $ = cheerio.load(html);
-      
-      // Clean up body content
-      $('script, style, nav, footer, header').remove();
-      const pageText = $("body").text().replace(/\s+/g, ' ').substring(0, 10000); // 10k chars
+      let pageText = "";
+      try {
+        const response = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)" }});
+        if (response.ok) {
+           const html = await response.text();
+           const $ = cheerio.load(html);
+           $('script, style, nav, footer, header').remove();
+           pageText = $("body").text().replace(/\s+/g, ' ').substring(0, 10000); // 10k chars
+        }
+      } catch (e) {
+        console.warn("Could not fetch URL:", e);
+      }
 
       // Use Groq API for Deep Audit
       const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-      const chatCompletion = await groq.chat.completions.create({
-        messages: [{ role: "system", content: "You always return ONLY purely valid JSON, with absolutely NO markdown backticks." }, { role: "user", content: `Você é um diretor sênior de UX/UI, Heurísticas, Psicologia Cognitiva e CRO. Faça uma auditoria extremamente profunda, rigorosa e técnica no conteúdo extraído do site:
-"${pageText}"
+      let promptText = "";
+      if (pageText.length > 50) {
+        promptText = `Você é um diretor sênior de UX/UI, Heurísticas e CRO. Faça uma auditoria profunda no conteúdo extraído do site (${url}):\n"${pageText}"`;
+      } else {
+        promptText = `Você é um diretor sênior de UX/UI, Heurísticas e CRO. O site alvo é: ${url}. Como não foi possível extrair o texto, use seu amplo conhecimento sobre esta marca ou deduza as informações com base no domínio e nome para fazer uma auditoria completa.`;
+      }
 
-Retorne APENAS um JSON válido. Não inclua os caracteres de markdown. 
+      const chatCompletion = await groq.chat.completions.create({
+        messages: [{ role: "system", content: "You always return ONLY purely valid JSON, with absolutely NO markdown backticks." }, { role: "user", content: `${promptText}
+
+Retorne APENAS um JSON válido. Não inclua Markdown. 
 Formato exigido:
 { 
-  "summary": "Um sumário analítico profissional de alto nível, com no mínimo 6 a 8 frases detalhando vulnerabilidades cognitivas, deficiências na arquitetura de informação e fricções de interface.", 
+  "summary": "Um sumário analítico profissional.", 
+  "brandAnalysis": {
+    "companyName": "nome real ou deduzido",
+    "niche": "nicho do mercado",
+    "audience": "descrição detalhada do público alvo",
+    "differentiators": "principais diferenciais (ex: preço, qualidade, exclusividade)",
+    "tone": "tom de voz (ex: corporativo, jovem, luxuoso)",
+    "colors": "nome das cores",
+    "primaryHex": "# hex color (ex: #000000)"
+  },
   "issues": [
     { 
       "category": "tipografia" | "cores" | "heuristica" | "vies" | "arquitetura" | "acessibilidade",
-      "tab": "IDENTIDADE VISUAL E UI" | "HEURÍSTICAS DE NIELSEN" | "VIESES COGNITIVOS E PSICOLOGIA" | "ARQUITETURA DA INFORMAÇÃO" | "ACESSIBILIDADE E INCLUSÃO",
-      "title": "Nome técnico e robusto do problema.",
-      "description": "Explicação muito detalhada (ao menos um parágrafo longo) baseada em princípios avançados de design e comportamento do usuário. Explique os custos ocultos de conversão que esse erro causa.",
-      "recommendation": "O passo a passo incrivelmente exato de como aplicar a correção, sugerindo diretrizes e práticas modernas."
+      "tab": "IDENTIDADE VISUAL E UI" | "HEURÍSTICAS DE NIELSEN" | "VIESES COGNITIVOS",
+      "title": "Nome focado no problema.",
+      "description": "Explicação do custo oculto em conversão.",
+      "recommendation": "Passo a passo de correção."
     }
   ]
 }
-Obrigatório: gere pelo menos de 7 a 10 problemas cobrindo TODAS e múltiplas áreas diferentes.`}],
+Gere pelo menos 5 a 7 problemas.`}],
         model: "llama-3.3-70b-versatile",
         temperature: 0.3,
         response_format: { type: "json_object" }
@@ -200,46 +453,32 @@ Obrigatório: gere pelo menos de 7 a 10 problemas cobrindo TODAS e múltiplas á
       const existingLeads = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       
       const newLeads = [];
+      const returnedLeads = [];
       
       for (const r of placesResults) {
         const placeId = (r.cid || r.placeId || Date.now().toString()).toString();
-        // Verificar se já existe (usando placeId ou telefone para não duplicar)
-        let existing = existingLeads.find((l: any) => l.placeId === placeId || (l.phone && l.phone !== "Sem telefone" && l.phone === r.phoneNumber));
         
-        if (!existing) {
-          // Criar novo
-          const newDocRef = await addDoc(collection(db, "leads"), {
-            title: r.title,
-            address: r.address,
-            phone: r.phoneNumber || "Sem telefone",
-            website: r.website || "",
-            rating: r.rating,
-            ratingCount: r.ratingCount,
-            placeId: placeId,
-            status: 'pending',
-            createdAt: serverTimestamp()
-          });
-          newLeads.push({
-            id: newDocRef.id,
-            title: r.title,
-            address: r.address,
-            phone: r.phoneNumber || "Sem telefone",
-            website: r.website || "",
-            rating: r.rating,
-            ratingCount: r.ratingCount,
-            placeId: placeId,
-            status: 'pending'
-          });
-        }
+        const newLeadItem = {
+          id: placeId,
+          title: r.title || "Empresa não identificada",
+          address: r.address || "Sem endereço",
+          phone: r.phoneNumber || "Sem telefone",
+          website: r.website || r.link || "",
+          rating: r.rating || 0,
+          ratingCount: r.ratingCount || 0,
+          placeId: placeId,
+          status: 'pending'
+        };
+        returnedLeads.push(newLeadItem);
       }
 
       res.json({ 
         success: true, 
-        data: newLeads
+        data: returnedLeads
       });
 
     } catch (error) {
-      console.error(error);
+      console.error("Maps Leads Error:", error);
       res.status(500).json({ error: "Failed to search maps" });
     }
   });
@@ -326,10 +565,10 @@ Return ONLY a valid JSON object: {"subject": "...", "body": "..."}`}],
       }
 
       const { jobType } = req.body || {};
-      let queryStr = "(\"R$ 5.000\" OR \"5.000,00\" OR \"R$ 6.000\" OR \"R$ 7.000\" OR \"Sênior\" OR \"Pleno\") (Web Designer OR UI Designer OR UX Designer OR Diretor de Arte) site:vagas.com.br OR site:gupy.io OR site:linkedin.com/jobs/view/";
+      let queryStr = "vagas emprego web designer ui designer linkedin gupy vagas.com";
       
       if (jobType === "ai") {
-        queryStr = "(\"R$ 5.000\" OR \"5.000,00\" OR \"R$ 6.000\" OR \"R$ 7.000\" OR \"Sênior\" OR \"Pleno\") (Desenvolvedor IA Generativa OR Desenvolvedor Full Stack IA OR IA Pleno OR Engenheiro de IA OR Machine Learning) site:vagas.com.br OR site:gupy.io OR site:linkedin.com/jobs/view/";
+        queryStr = "vagas emprego engenheiro IA inteligencia artificial machine learning linkedin gupy vagas.com";
       }
 
       const response = await fetch("https://google.serper.dev/search", {
@@ -342,7 +581,7 @@ Return ONLY a valid JSON object: {"subject": "...", "body": "..."}`}],
           q: queryStr,
           gl: "br",
           hl: "pt-br",
-          tbs: "qdr:m", // past month
+          tbs: "qdr:d15", // past 15 days
           num: 15
         })
       });
@@ -567,7 +806,10 @@ Return ONLY a valid JSON object: {"subject": "...", "body": "..."}`}],
       const querySnapshot = await getDocs(collection(db, "leads"));
       const leadsList: any[] = [];
       querySnapshot.forEach((docSnap) => {
-        leadsList.push({ id: docSnap.id, ...docSnap.data() });
+        const data = docSnap.data();
+        if (data && data.title && data.title !== 'Empresa não identificada' && !data.title.includes('undefined')) {
+          leadsList.push({ id: docSnap.id, ...data });
+        }
       });
       res.json({ success: true, leads: leadsList });
     } catch (e) {

@@ -10,6 +10,7 @@ export default function Navbar() {
     >
       <div className="flex items-center gap-12 bg-white/5 backdrop-blur-md border border-white/10 px-6 py-3 rounded-2xl rounded-tl-none">
         <div className="flex items-center gap-1">
+          <img src="https://res.cloudinary.com/djw0tqmiw/image/upload/v1779720673/peoloi6ok6i4ma0rqtvh.png" alt="ESCOM Logo" className="h-6 w-auto mr-1 filter brightness-100" />
           <span className="font-bold tracking-tighter text-xl font-display">ESCOM</span>
           <span className="font-bold tracking-tighter text-xl font-display text-primary">STUDIO</span>
         </div>
