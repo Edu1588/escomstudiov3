@@ -34,7 +34,7 @@ export default function AnimatedGraph({ size = 48 }: { size?: number }) {
         // Animated draw effect using clip loop
         const drawPercent = ((Math.sin(t * 0.8) + 1) / 2) * 100; 
         graphIcon.style.clipPath = `polygon(0 0, ${drawPercent}% 0, ${drawPercent}% 100%, 0 100%)`;
-        // graphIcon.style.filter = `drop-shadow(0 0 6px rgba(46,255,0,0.8))`;
+        // graphIcon.style.filter = `drop-shadow(0 0 6px rgba(0,209,255,0.8))`;
 
         // Floating glowing data point 1
         const yBase1 = Math.sin(t * 1.5) * 4;
@@ -65,10 +65,10 @@ export default function AnimatedGraph({ size = 48 }: { size?: number }) {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative text-[#2EFF00] origin-center flex items-center justify-center no-global-anim" style={{ width: size, height: size }}>
+    <div ref={containerRef} className="relative text-[#00d1ff] origin-center flex items-center justify-center no-global-anim" style={{ width: size, height: size }}>
       {/* Floating data particles */}
-      <div className="absolute w-[6px] h-[6px] bg-[#2EFF00] rounded-full" />
-      <div className="absolute w-[4px] h-[4px] bg-[#2EFF00] rounded-full" />
+      <div className="absolute w-[6px] h-[6px] bg-[#00d1ff] rounded-full" />
+      <div className="absolute w-[4px] h-[4px] bg-[#00d1ff] rounded-full" />
       {/* Graph Icon */}
       <div className="absolute overflow-hidden">
         <TrendingUp size={size} strokeWidth={2.5} />

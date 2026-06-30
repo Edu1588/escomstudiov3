@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dossiê Estratégico | Silva & Associados Advocacia</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            light: '#fafafa',
+                            primary: '#C5A880', /* Ouro Champanhe */
+                            accent: '#0A192F',  /* Azul Marinho */
+                            text: '#334155',    /* Slate 700 */
+                            darkText: '#0A192F' /* Marinho */
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        body {
+            background-color: #f4f4f5;
+            color: #334155;
+            user-select: none;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            font-family: 'Inter', sans-serif;
+        }
+        .pdf-page {
+            width: 210mm;
+            height: 297mm;
+            padding: 20mm;
+            margin: 30px auto;
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            position: relative;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            page-break-after: always;
+            page-break-inside: avoid;
+            border: 1px solid #e2e8f0;
+        }
+        .decor-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #C5A880 0%, #0A192F 100%);
+            z-index: 20;
+        }
+        @media print {
+            body {
+                background-color: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                height: 100% !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .pdf-page {
+                margin: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                background: #ffffff !important;
+                color: #334155 !important;
+                page-break-after: always !important;
+                page-break-inside: avoid !important;
+            }
+            .print\:hidden {
+                display: none !important;
+            }
+        }
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 7rem;
+            color: rgba(10, 25, 47, 0.012);
+            font-weight: 800;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header flutuante de navegação para a Web -->
+    <div class="max-w-[210mm] mx-auto mb-2 mt-4 px-4 flex justify-between items-center text-xs text-stone-500 print:hidden">
+        <div>
+            <a href="index.html" class="text-stone-600 hover:text-brand-primary font-bold transition flex items-center gap-1">
+                <i class="fa-solid fa-arrow-left"></i> Voltar para o Site
+            </a>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>MODO DE IMPRESSÃO (A4 JURÍDICO CLEAN)</span>
+        </div>
+    </div>
+
+    <!-- PÁGINA 1: CAPA EDITORIAL JURÍDICA -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer justify-between h-full py-8">
+            <div class="space-y-2">
+                <p class="text-stone-400 font-mono text-sm tracking-[0.2em] uppercase">ESCOM Studio &bull; Business Intelligence</p>
+                <h1 class="text-[#0A192F] font-display font-black text-5xl leading-tight">
+                    Análise Estratégica &<br>
+                    <span class="text-[#C5A880]">Dossiê Comercial</span>
+                </h1>
+                <div class="w-16 h-1.5 bg-[#C5A880] mt-4"></div>
+            </div>
+
+            <!-- Imagem Centralizada com Borda Premium -->
+            <div class="my-6 relative overflow-hidden rounded-2xl border border-stone-200 shadow-md h-[110mm]">
+                <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=2070&auto=format&fit=crop');"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#0A192F]/60 via-transparent to-transparent"></div>
+            </div>
+
+            <div class="flex justify-between items-end border-t border-stone-100 pt-6">
+                <div>
+                    <p class="text-xs text-stone-400 uppercase tracking-wider">Documento Preparado para</p>
+                    <p class="text-[#0A192F] font-bold text-lg">Silva & Associados Advocacia</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-stone-400 uppercase tracking-wider">Status</p>
+                    <p class="text-emerald-600 font-mono font-bold text-sm uppercase tracking-wider flex items-center gap-1.5 justify-end">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Confidencial
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 2: ÍNDICE -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="watermark">CONFIDENCIAL</div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-[#0A192F] mb-8 pb-3 border-b-2 border-stone-100 flex items-center gap-3">
+                Conteúdo <span class="text-[#C5A880] text-sm font-mono font-normal">/ Índice Geral</span>
+            </h2>
+            
+            <div class="grid grid-cols-2 gap-y-6 gap-x-12 text-base flex-1 py-4">
+                <div class="flex items-baseline gap-3 border-b border-stone-100 pb-2">
+                    <span class="font-black text-[#C5A880] text-lg font-mono">03</span>
+                    <span class="text-stone-900 font-semibold">Contexto & Diagnóstico</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-stone-100 pb-2">
+                    <span class="font-black text-[#C5A880] text-lg font-mono">08</span>
+                    <span class="text-stone-900 font-semibold">Vantagens Competitivas</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-stone-100 pb-2">
+                    <span class="font-black text-[#C5A880] text-lg font-mono">04</span>
+                    <span class="text-stone-900 font-semibold">Maturidade do Mercado</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-stone-100 pb-2">
+                    <span class="font-black text-[#C5A880] text-lg font-mono">09</span>
+                    <span class="text-stone-900 font-semibold">Funil de Captação Digital</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-stone-100 pb-2">
+                    <span class="font-black text-[#C5A880] text-lg font-mono">05</span>
+                    <span class="text-stone-900 font-semibold">O Campo de Batalha</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-stone-100 pb-2">
+                    <span class="font-black text-[#C5A880] text-lg font-mono">10</span>
+                    <span class="text-stone-900 font-semibold">Plano de Ação Estratégico</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-stone-100 pb-2">
+                    <span class="font-black text-[#C5A880] text-lg font-mono">06</span>
+                    <span class="text-stone-900 font-semibold">O Espaço Vazio</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-stone-100 pb-2">
+                    <span class="font-black text-[#C5A880] text-lg font-mono">11</span>
+                    <span class="text-stone-900 font-semibold">Oceano Azul & Síntese</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-stone-100 pb-2">
+                    <span class="font-black text-[#C5A880] text-lg font-mono">07</span>
+                    <span class="text-stone-900 font-semibold">Diretriz de Comunicação</span>
+                </div>
+            </div>
+            
+            <div class="bg-slate-50 p-6 rounded-xl border-l-4 border-[#C5A880] mt-auto">
+                <p class="text-sm text-stone-600 leading-relaxed">
+                    Este documento apresenta um diagnóstico crítico da presença digital da advocacia corporativa na região de São Paulo, detalhando gargalos de captação digital no nicho de advocacia empresarial e a janela de oportunidade comercial não ocupada.
+                </p>
+            </div>
+            <div class="mt-4 flex justify-end text-xs text-stone-400 font-mono">Página 2</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 3: DIAGNÓSTICO DO NEGÓCIO ATUAL -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="watermark">CONFIDENCIAL</div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-[#0A192F] mb-6 leading-tight">
+                Diagnóstico do Negócio:<br>
+                <span class="text-[#C5A880]">Silva & Associados Advocacia</span>
+            </h2>
+            
+            <p class="text-xs text-stone-600 leading-relaxed mb-5">
+                Durante a fase de mineração do negócio <strong>Silva & Associados Advocacia</strong>, em São Paulo, identificamos gargalos clássicos de captação digital corporativa que prejudicam a aquisição de clientes empresariais qualificados:
+            </p>
+
+            <div class="space-y-4 flex-1 text-sm">
+                <div class="p-5 border border-stone-200 bg-stone-50/40 rounded-xl">
+                    <h3 class="text-[#0A192F] font-bold text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Excesso de Textos Jurídicos Complexos
+                    </h3>
+                    <p class="text-xs text-stone-650 leading-relaxed">
+                        A antiga presença digital do escritório funcionava como um repositório de artigos técnicos densos e de difícil compreensão (\"juridiquês\"). Isso repele empresários ocupados que buscam soluções rápidas, segurança societária ou assessoria consultiva ágil.
+                    </p>
+                </div>
+
+                <div class="p-5 border border-stone-200 bg-stone-50/40 rounded-xl">
+                    <h3 class="text-[#0A192F] font-bold text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Design Visual Frágil e Domínio Inativo
+                    </h3>
+                    <p class="text-xs text-stone-650 leading-relaxed">
+                        A estética visual anterior (remetendo a portais antigos) não transmitia o prestígio e o rigor que uma holding ou média/grande empresa busca ao contratar um escritório de advocacia. Além disso, o domínio `silvaassociados.adv.br` ficou fora do ar, cortando o canal digital de atração.
+                    </p>
+                </div>
+
+                <div class="bg-emerald-50/40 p-5 border border-emerald-100 rounded-xl">
+                    <h3 class="text-emerald-800 font-bold text-xs uppercase tracking-wider mb-1">A Janela de Oportunidade (Score 98)</h3>
+                    <p class="text-[11px] text-stone-650 leading-relaxed">
+                        Ativação de um ecossistema digital institucional de prestígio (Dark Theme Premium) que traduz autoridade e sofisticação jurídica sem clichês, focado nas áreas chave (Societário, Tributário e Trabalhista Patronal) com pontos diretos de agendamento de consultas.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-stone-400 font-mono border-t border-stone-100 pt-4">Página 3</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 4: CONTEXTO & MATURIDADE DO MERCADO -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="watermark">CONFIDENCIAL</div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-[#0A192F] mb-3">Contexto & Maturidade do Mercado</h2>
+            
+            <div class="grid grid-cols-2 gap-4 flex-1 text-xs">
+                <!-- Coluna da Esquerda: Contexto -->
+                <div class="space-y-3">
+                    <div class="bg-stone-50 p-4 rounded-xl border border-stone-200">
+                        <h3 class="font-bold text-stone-900 mb-1.5 flex items-center gap-2">
+                            <i class="fa-solid fa-gavel text-[#C5A880]"></i> Assessoria Preventiva Ativa
+                        </h3>
+                        <p class="text-[10px] text-stone-600 leading-relaxed">
+                            O empresário moderno de alto padrão busca prevenção de passivos (trabalhistas/tributários) e segurança societária no formato digital direto, valorizando soluções focadas em negócios, e não apenas o contencioso tradicional.
+                        </p>
+                    </div>
+
+                    <div class="bg-stone-50 p-4 rounded-xl border border-stone-200">
+                        <h3 class="font-bold text-stone-900 mb-1.5 flex items-center gap-2">
+                            <i class="fa-solid fa-users text-emerald-700"></i> Tamanho do Mercado Corporativo
+                        </h3>
+                        <ul class="space-y-1.5 text-[9px] text-stone-600">
+                            <li>&bull; <strong class="text-stone-850">São Paulo (Av. Paulista):</strong> Maior densidade de holdings e sedes corporativas da América Latina.</li>
+                            <li>&bull; <strong class="text-stone-850">Alta Demanda B2B:</strong> Crescimento de 28% na busca por defesas tributárias de elisão fiscal e assessoria em LGPD.</li>
+                            <li>&bull; <strong class="text-stone-850">Credibilidade Visual:</strong> 92% das empresas consultam o site de uma banca antes de assinar contratos de Retainer.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Coluna da Direita: Tabela de Maturidade -->
+                <div class="flex flex-col justify-between">
+                    <div class="border border-stone-200 rounded-xl overflow-hidden">
+                        <div class="bg-stone-50 py-1.5 px-2 font-bold text-stone-800 text-[10px] uppercase border-b border-stone-200 text-center">Níveis de Intenção Jurídica</div>
+                        <table class="w-full text-left text-[9px] leading-tight">
+                            <thead>
+                                <tr class="bg-stone-100 text-stone-700 font-bold">
+                                    <th class="py-1 px-1.5">Nível de Dor</th>
+                                    <th class="py-1 px-1.5 text-center">%</th>
+                                    <th class="py-1 px-1.5">Foco LP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-stone-100">
+                                    <td class="py-1 px-1.5 font-semibold">Sofreu autuação fiscal</td>
+                                    <td class="py-1 px-1.5 text-center text-[#C5A880] font-bold">35%</td>
+                                    <td class="py-1 px-1.5 text-stone-500">Defesa urgente e ágil.</td>
+                                </tr>
+                                <tr class="border-b border-stone-100 bg-emerald-50/20">
+                                    <td class="py-1 px-1.5 font-bold text-emerald-800">Prevenção / Compliance</td>
+                                    <td class="py-1 px-1.5 text-center text-emerald-700 font-extrabold">30%</td>
+                                    <td class="py-1 px-1.5 text-emerald-800 font-bold">Assessoria Mensal (Retainer).</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1 px-1.5 font-semibold">Societário & Fusões</td>
+                                    <td class="py-1 px-1.5 text-center text-[#C5A880] font-bold">15%</td>
+                                    <td class="py-1 px-1.5 text-stone-500">Segurança de contratos.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="bg-emerald-50/30 p-3 border border-emerald-100 rounded-xl text-center text-[10px] text-emerald-800 font-bold mt-2">
+                        65% das médias empresas em SP buscam ativamente readequação societária e assessoria trabalhista patronal para mitigar riscos de passivos.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-stone-400 font-mono border-t border-stone-100 pt-3">Página 4</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 5: O CAMPO DE BATALHA -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-[#0A192F] mb-3 border-l-8 border-[#C5A880] pl-4 leading-none">
+                O Campo de Batalha:<br>
+                <span class="text-[#C5A880] text-2xl font-bold">Quem Está Competindo e Onde</span>
+            </h2>
+            <p class="text-sm mb-4 text-stone-600">Bancas tradicionais operam em dois extremos em São Paulo, deixando um espaço vazio no meio.</p>
+            
+            <div class="space-y-4 flex-1">
+                <div>
+                    <h3 class="text-base font-bold text-stone-900 mb-2">1. Bancas Jurídicas Tradicionais (Faria Lima)</h3>
+                    <div class="grid grid-cols-4 border border-stone-200 rounded-lg overflow-hidden text-xs">
+                        <div class="col-span-1 bg-blue-50 py-2 px-3 font-bold text-blue-800 flex items-center justify-center uppercase tracking-wider text-center">Faixa</div>
+                        <div class="col-span-3 bg-stone-50/50 py-2 px-3 font-semibold text-stone-800">Retainers altíssimos (R$ 8.000 a R$ 25.000+/mês)</div>
+                        
+                        <div class="col-span-1 bg-emerald-50 py-2 px-3 font-bold text-emerald-800 flex items-center justify-center uppercase tracking-wider text-center">Forte</div>
+                        <div class="col-span-3 bg-white py-2 px-3 text-stone-600 border-t border-stone-100">Status, sedes corporativas gigantescas, grande histórico.</div>
+                        
+                        <div class="col-span-1 bg-red-50 py-2 px-3 font-bold text-red-800 flex items-center justify-center uppercase tracking-wider text-center">Fraco</div>
+                        <div class="col-span-3 bg-stone-50/50 py-2 px-3 text-stone-600 border-t border-stone-100">Custo inacessível para médias empresas, atendimento distante e impessoal por estagiários.</div>
+                        
+                        <div class="col-span-1 bg-amber-50 py-2 px-3 font-bold text-amber-800 flex items-center justify-center uppercase tracking-wider text-center">GAP</div>
+                        <div class="col-span-3 bg-emerald-50/30 py-2 px-3 text-emerald-700 font-bold border-t border-stone-100">Clientes de médio porte que querem a mesma sofisticação técnica, mas com atendimento personalizado e direto de sócios.</div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-base font-bold text-stone-900 mb-2">2. Advogados Autônomos Generalistas</h3>
+                    <div class="grid grid-cols-4 border border-stone-200 rounded-lg overflow-hidden text-xs">
+                        <div class="col-span-1 bg-blue-50 py-2 px-3 font-bold text-blue-800 flex items-center justify-center uppercase tracking-wider text-center">Faixa</div>
+                        <div class="col-span-3 bg-stone-50/50 py-2 px-3 font-semibold text-stone-800">Valores baixos ou ad-exitum sem retainer</div>
+                        
+                        <div class="col-span-1 bg-emerald-50 py-2 px-3 font-bold text-emerald-800 flex items-center justify-center uppercase tracking-wider text-center">Forte</div>
+                        <div class="col-span-3 bg-white py-2 px-3 text-stone-600 border-t border-stone-100">Flexibilidade máxima de honorários, proximidade física.</div>
+                        
+                        <div class="col-span-1 bg-red-50 py-2 px-3 font-bold text-red-800 flex items-center justify-center uppercase tracking-wider text-center">Fraco</div>
+                        <div class="col-span-3 bg-stone-50/50 py-2 px-3 text-stone-600 border-t border-stone-100">Falta de especialização empresarial, ausência de identidade visual forte, comunicação amadora.</div>
+                        
+                        <div class="col-span-1 bg-amber-50 py-2 px-3 font-bold text-amber-800 flex items-center justify-center uppercase tracking-wider text-center">GAP</div>
+                        <div class="col-span-3 bg-emerald-50/30 py-2 px-3 text-emerald-700 font-bold border-t border-stone-100">Empresas evitam generalistas por insegurança em litígios complexos societários e fiscais.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-stone-400 font-mono border-t border-stone-100 pt-4">Página 5</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 6: O ESPAÇO VAZIO -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h3 class="text-base font-bold text-stone-900 mb-2">3. Escritórios de Advocacia Tradicionais Estáticos</h3>
+            <div class="grid grid-cols-4 border border-stone-200 rounded-lg overflow-hidden mb-6 text-xs">
+                <div class="col-span-1 bg-blue-50 py-2 px-3 font-bold text-blue-800 flex items-center justify-center uppercase tracking-wider text-center">Faixa</div>
+                <div class="col-span-3 bg-stone-50/50 py-2 px-3 font-semibold text-stone-800">Honorários intermediários</div>
+                
+                <div class="col-span-1 bg-emerald-50 py-2 px-3 font-bold text-emerald-800 flex items-center justify-center uppercase tracking-wider text-center">Forte</div>
+                <div class="col-span-3 bg-white py-2 px-3 text-stone-600 border-t border-stone-100">Indicações boca a boca locais, estabilidade técnica.</div>
+                
+                <div class="col-span-1 bg-red-50 py-2 px-3 font-bold text-red-800 flex items-center justify-center uppercase tracking-wider text-center">Fraco</div>
+                <div class="col-span-3 bg-stone-50/50 py-2 px-3 text-stone-600 border-t border-stone-100">Sem presença digital expressiva, site antigo ou fora do ar, processos lentos.</div>
+                
+                <div class="col-span-1 bg-amber-50 py-2 px-3 font-bold text-amber-800 flex items-center justify-center uppercase tracking-wider text-center">GAP</div>
+                <div class="col-span-3 bg-emerald-50/30 py-2 px-3 text-emerald-700 font-bold border-t border-stone-100">Não atraem novas holdings ativamente. Dependem apenas de indicações passivas de clientes antigos.</div>
+            </div>
+            
+            <h2 class="text-3xl font-display font-black text-[#0A192F] mb-4 text-center">
+                O Espaço que Ninguém Ocupa
+            </h2>
+            
+            <div class="bg-emerald-50/30 rounded-xl p-5 border border-emerald-100 relative overflow-hidden flex-1 flex flex-col justify-center">
+                <p class="text-lg font-bold text-stone-850 mb-3 text-center">
+                    O posicionamento exclusivo e de alto valor:
+                </p>
+                <h3 class="text-2xl text-emerald-700 font-display font-black text-center mb-4 leading-tight">
+                    Postura Jurídica Premium<br>+<br>Foco em Defesa Trabalhista/Societária<br>+<br>Atendimento Digital Direto & Ágil
+                </h3>
+                <p class="text-center text-sm text-stone-600 max-w-md mx-auto leading-relaxed">
+                    A Silva & Associados Advocacia se posiciona exatamente nesta lacuna: oferece a credibilidade e sofisticação de grandes escritórios com a agilidade, transparência e custos viáveis de uma estrutura sob medida na Paulista.
+                </p>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-stone-400 font-mono border-t border-stone-100 pt-4">Página 6</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 7: DIRETRIZ DE COMUNICAÇÃO -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-[#0A192F] mb-4">Diretrizes de Comunicação e Conformidade OAB</h2>
+            
+            <ol class="space-y-3 mb-6 text-sm text-stone-600">
+                <li class="flex gap-4 items-start">
+                    <strong class="text-[#C5A880] text-xl leading-none">1.</strong> 
+                    <span>Atração Ética de Clientes: Focar na prestação de informações úteis sobre direitos societários e planejamentos fiscais em vez de captação explícita.</span>
+                </li>
+                <li class="flex gap-4 items-start">
+                    <strong class="text-[#C5A880] text-xl leading-none">2.</strong> 
+                    <span>Design Visual Impecável: Paleta sóbria (Marinho e Champanhe), tipografia limpa (Inter e Plus Jakarta Sans) e imagens premium que traduzem rigor corporativo.</span>
+                </li>
+                <li class="flex gap-4 items-start">
+                    <strong class="text-[#C5A880] text-xl leading-none">3.</strong> 
+                    <span>Acesso Simples: Substituição de formulários jurídicos maçantes por pontos diretos de agendamento de consultas com a banca técnica.</span>
+                </li>
+            </ol>
+            
+            <div class="border border-stone-200 rounded-lg overflow-hidden flex-1 flex flex-col mb-4">
+                <div class="bg-red-50 py-2.5 px-4 text-center font-bold text-red-800 text-sm tracking-wider uppercase border-b border-stone-200">
+                    <i class="fa-solid fa-ban text-red-500 mr-2"></i> Palavras Jurídicas a Evitar (Regras OAB)
+                </div>
+                <table class="w-full text-left text-xs flex-1">
+                    <thead>
+                        <tr class="bg-stone-50 text-stone-900">
+                            <th class="py-2 px-4 border-b border-stone-200">Expressões Proibidas</th>
+                            <th class="py-2 px-4 border-b border-stone-200">Risco / Motivo</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-stone-600">
+                        <tr class="border-b border-stone-100">
+                            <td class="py-2 px-4 font-bold text-stone-800">"Resultado Garantido"</td>
+                            <td class="py-2 px-4">Gera expectativa enganosa. A advocacia é atividade-meio, não fim.</td>
+                        </tr>
+                        <tr class="border-b border-stone-100">
+                            <td class="py-2 px-4 font-bold text-stone-800">"Preços Promocionais"</td>
+                            <td class="py-2 px-4">Proibido pela OAB. Fere a ética e a mercantilização da profissão.</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-4 font-bold text-stone-800">"O Melhor Escritório"</td>
+                            <td class="py-2.5 px-4">Subjetividade. Prática de concorrência desleal vetada pelo Tribunal de Ética.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-stone-400 font-mono border-t border-stone-100 pt-4">Página 7</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 8: VANTAGENS COMPETITIVAS -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-[#0A192F] mb-6">6 Diferenciais Técnicos do Novo Ecossistema</h2>
+            
+            <div class="grid grid-cols-2 gap-4 flex-1">
+                <div class="flex gap-4 p-4 border border-stone-200 bg-stone-50/50 rounded-xl items-start">
+                    <div class="text-2xl text-[#C5A880] mt-1"><i class="fa-solid fa-hotel"></i></div>
+                    <div>
+                        <h3 class="text-base font-bold text-stone-900 mb-1">Visual "High Luxury"</h3>
+                        <p class="text-xs text-stone-650 leading-relaxed">Fundo marinho e detalhes dourados champanhe remetem a prestígio corporativo e segurança patrimonial.</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-4 p-4 border border-stone-200 bg-stone-50/50 rounded-xl items-start">
+                    <div class="text-2xl text-emerald-600 mt-1"><i class="fa-solid fa-scale-balanced"></i></div>
+                    <div>
+                        <h3 class="text-base font-bold text-stone-900 mb-1">Conformidade com OAB</h3>
+                        <p class="text-xs text-stone-650 leading-relaxed">Textos de cunho estritamente informativo, respeitando as exigências éticas da publicidade advocatícia.</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-4 p-4 border border-stone-200 bg-stone-50/50 rounded-xl items-start">
+                    <div class="text-2xl text-[#C5A880] mt-1"><i class="fa-solid fa-briefcase"></i></div>
+                    <div>
+                        <h3 class="text-base font-bold text-stone-900 mb-1">Foco Societário/Tributário</h3>
+                        <p class="text-xs text-stone-650 leading-relaxed">Seções estruturadas voltadas para holding familiar, contencioso tributário e blindagem trabalhista patronal.</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-4 p-4 border border-stone-200 bg-stone-50/50 rounded-xl items-start">
+                    <div class="text-2xl text-emerald-600 mt-1"><i class="fa-solid fa-comment-dots"></i></div>
+                    <div>
+                        <h3 class="text-base font-bold text-stone-900 mb-1">Triagem Automatizada</h3>
+                        <p class="text-xs text-stone-650 leading-relaxed">Ponto de conversão ágil no WhatsApp para agendamento e encaminhamento direto da demanda ao advogado especializado.</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-4 p-4 border border-stone-200 bg-stone-50/50 rounded-xl items-start">
+                    <div class="text-2xl text-[#C5A880] mt-1"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div>
+                        <h3 class="text-base font-bold text-stone-900 mb-1">Segurança Criptografada</h3>
+                        <p class="text-xs text-stone-650 leading-relaxed">Ambiente seguro com conexões criptografadas SSL para garantir a máxima confidencialidade no contato do cliente.</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-4 p-4 border border-stone-200 bg-stone-50/50 rounded-xl items-start">
+                    <div class="text-2xl text-emerald-600 mt-1"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                    <div>
+                        <h3 class="text-base font-bold text-stone-900 mb-1">Mobile-First Responsivo</h3>
+                        <p class="text-xs text-stone-650 leading-relaxed">Visualização rápida e impecável em smartphones para empresários em trânsito.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-stone-400 font-mono border-t border-stone-100 pt-4">Página 8</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 9: FUNIL DE CAPTAÇÃO DIGITAL -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="watermark">CONFIDENCIAL</div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-[#0A192F] mb-4">O Funil de Captação Digital de Clientes</h2>
+            
+            <p class="text-sm text-stone-600 mb-6 leading-relaxed">
+                Empresários buscam assessoria jurídica a partir de buscas de alta relevância e conexões diretas. O ecossistema digital foi planejado para maximizar essa captação:
+            </p>
+            
+            <div class="space-y-4 flex-1">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 border border-stone-200 bg-stone-50/50 rounded-xl">
+                        <h3 class="text-[#C5A880] font-bold text-xs uppercase tracking-wider mb-2">1. Tráfego de Alta Relevância</h3>
+                        <p class="text-[11px] text-stone-650 leading-relaxed">Posicionamento estratégico no Google Maps para a região da Paulista nas buscas corporativas locais.</p>
+                    </div>
+                    <div class="p-4 border border-stone-200 bg-stone-50/50 rounded-xl">
+                        <h3 class="text-[#C5A880] font-bold text-xs uppercase tracking-wider mb-2">2. Experiência e Autoridade Visual</h3>
+                        <p class="text-[11px] text-stone-650 leading-relaxed">A Landing Page corporativa gera a imediata percepção de segurança, tradição e robustez corporativa.</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 border border-stone-200 bg-stone-50/50 rounded-xl">
+                        <h3 class="text-[#C5A880] font-bold text-xs uppercase tracking-wider mb-2">3. Direcionamento e Práticas</h3>
+                        <p class="text-[11px] text-stone-650 leading-relaxed">Exibição clara e objetiva de soluções empresariais em vez de feed de artigos confusos, facilitando o entendimento do potencial cliente.</p>
+                    </div>
+                    <div class="p-4 border border-stone-200 bg-stone-50/50 rounded-xl">
+                        <h3 class="text-[#C5A880] font-bold text-xs uppercase tracking-wider mb-2">4. Contato Seguro de Triagem</h3>
+                        <p class="text-[11px] text-stone-650 leading-relaxed">Botão de WhatsApp integrado e formulário seguro para agendar reuniões estratégicas online ou presenciais na Paulista.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-emerald-50/30 p-4 border border-emerald-100 rounded-xl">
+                    <h3 class="text-emerald-800 font-bold text-xs uppercase tracking-wider mb-1">Benefício do Ecossistema Ativo</h3>
+                    <p class="text-[11px] text-stone-650 leading-relaxed">
+                        Em vez de depender apenas de indicações de networking, a banca de advocacia Silva & Associados passa a contar com uma máquina previsível e contínua de atração de novos contatos de holdings e médias corporativas locais.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-stone-400 font-mono border-t border-stone-100 pt-4">Página 9</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 10: PLANO DE AÇÃO ESTRATÉGICO -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="watermark">CONFIDENCIAL</div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-[#0A192F] mb-4">Plano de Ação Estratégico (90 Dias)</h2>
+            <p class="text-xs text-stone-650 mb-4">
+                Etapas necessárias para lançar o novo ecossistema e começar a atração digital em conformidade ética com a OAB:
+            </p>
+            
+            <div class="space-y-4 flex-1 text-xs">
+                <div class="p-4 border border-stone-200 bg-stone-50/30 rounded-xl flex items-start gap-4">
+                    <div class="w-8 h-8 rounded-full bg-[#C5A880] text-black flex items-center justify-center font-bold text-xs shrink-0 font-mono">1</div>
+                    <div>
+                        <h3 class="text-stone-900 font-bold text-sm mb-1">Dia 1 a 30: Publicação & Alinhamento de Imagem</h3>
+                        <p class="text-[11px] text-stone-600 leading-relaxed">Lançamento da Landing Page de alta performance. Ajuste do Google Meu Negócio do endereço da Av. Paulista. Criação de fotos profissionais do escritório e dos sócios.</p>
+                    </div>
+                </div>
+
+                <div class="p-4 border border-stone-200 bg-stone-50/30 rounded-xl flex items-start gap-4">
+                    <div class="w-8 h-8 rounded-full bg-[#C5A880] text-black flex items-center justify-center font-bold text-xs shrink-0 font-mono">2</div>
+                    <div>
+                        <h3 class="text-stone-900 font-bold text-sm mb-1">Dia 31 a 60: SEO Local Jurídico & Tráfego de Intenção</h3>
+                        <p class="text-[11px] text-stone-600 leading-relaxed">Início de campanhas estratégicas de links patrocinados no Google Ads para termos específicos e qualificados de direito societário e trabalhista de defesa.</p>
+                    </div>
+                </div>
+
+                <div class="p-4 border border-stone-200 bg-stone-50/30 rounded-xl flex items-start gap-4">
+                    <div class="w-8 h-8 rounded-full bg-[#C5A880] text-black flex items-center justify-center font-bold text-xs shrink-0 font-mono">3</div>
+                    <div>
+                        <h3 class="text-stone-900 font-bold text-sm mb-1">Dia 61 a 90: Captação B2B de Planos Mensais</h3>
+                        <p class="text-[11px] text-stone-600 leading-relaxed">Prospecção de contratos corporativos de advocacia de partido (Retainers mensais) voltados a empresas de TI, comércio e holdings locais em São Paulo.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-stone-400 font-mono border-t border-stone-100 pt-4">Página 10</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 11: OCEANO AZUL & SÍNTESE -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="watermark">CONFIDENCIAL</div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-[#0A192F] mb-6 text-center">
+                O Oceano Azul & Síntese
+            </h2>
+            
+            <div class="grid grid-cols-2 gap-6 mb-4">
+                <div class="bg-stone-50 p-5 rounded-xl border border-stone-200 relative overflow-hidden">
+                    <h3 class="text-lg font-bold text-[#C5A880] mb-2">Pilar 1: Assessoria de Partido</h3>
+                    <p class="text-xs text-stone-600 leading-relaxed">Contratos mensais recorrentes de consultoria trabalhista e contratual. Garante previsibilidade financeira e blindagem jurídica constante.</p>
+                </div>
+                <div class="bg-stone-50 p-5 rounded-xl border border-stone-200 relative overflow-hidden">
+                    <h3 class="text-lg font-bold text-emerald-600 mb-2">Pilar 2: Recuperação de Créditos</h3>
+                    <p class="text-xs text-stone-650 leading-relaxed">Tese de recuperação tributária ativa para indústrias e holdings, com comissão ad-exitum baseada em economia real de impostos.</p>
+                </div>
+            </div>
+            
+            <div class="bg-stone-50 p-6 rounded-2xl border border-stone-200 flex-1 flex flex-col justify-center shadow-sm">
+                <h3 class="text-xl font-display font-black text-[#0A192F] mb-3">Síntese Estratégica</h3>
+                <p class="text-sm text-stone-650 leading-relaxed mb-3">
+                    A advocacia empresarial em São Paulo exige mais que competência jurídica. Exige postura de mercado, design visual impecável que converse de igual para igual com diretores executivos, e canais ágeis de contato digital.
+                </p>
+                <p class="text-sm text-emerald-650 font-bold leading-relaxed mb-4">
+                    O relançamento da presença digital da Silva & Associados com este novo site premium representa o início de uma nova fase de atração e blindagem corporativa da banca.
+                </p>
+                <p class="text-xs text-stone-700 font-medium leading-relaxed italic border-t border-stone-100 pt-3">
+                    Vamos bater um papo para planejar a ativação desse novo ecossistema e os próximos passos de captação digital?<br>
+                    <span class="block mt-2 text-[10px] text-stone-500 font-sans not-italic font-semibold">Contato: es.comunicacao@outlook.com | WhatsApp: (13) 98106-2787</span>
+                </p>
+            </div>
+            
+            <div class="mt-auto flex justify-between items-center text-xs text-stone-400 font-mono border-t border-stone-100 pt-4">
+                <span>Dossiê Silva & Associados - Projetado por ESCOM Studio</span>
+                <span>Página 11</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

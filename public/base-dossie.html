@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Dossiê Confidencial - {{COMPANY_NAME}}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .page { width: 210mm; min-height: 297mm; padding: 20mm; margin: 10mm auto; border-radius: 5px; background: #0A0A0A; position: relative; overflow: hidden; page-break-after: always; }
+        @media print { body, page { margin: 0; box-shadow: none; background: #0A0A0A; } .page { width: 100%; height: 100%; border-radius: 0; padding: 15mm; } }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .text-gold { color: #07dc40; } /* Default tech color, can be customized */
+        .bg-grid { background-size: 40px 40px; background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px); }
+    </style>
+</head>
+<body class="bg-zinc-950">
+    <div class="page bg-grid flex flex-col justify-center items-center text-center relative">
+        <div class="absolute top-10 left-10 text-xs tracking-[0.3em] text-zinc-500 uppercase">Documento Confidencial</div>
+        <div class="w-24 h-24 rounded-full border border-gold flex items-center justify-center text-gold font-serif text-4xl mb-12">{{INITIALS}}</div>
+        <p class="text-gold uppercase tracking-[0.3em] text-sm font-medium mb-4">Análise Estratégica & UX</p>
+        <h1 class="text-5xl font-serif leading-tight mb-8">Auditoria de UX/UI <br><span class="italic text-zinc-400">{{COMPANY_NAME}}</span></h1>
+        <div class="w-16 h-1 bg-gold mb-12 mx-auto"></div>
+        <p class="text-zinc-500 max-w-md mx-auto text-sm leading-relaxed">Estudo focado na otimização de conversão, redução de gargalos visuais e estruturação de Landing Page.</p>
+    </div>
+
+    <!-- PÁGINA 2: AUDITORIA UX/UI E HEURÍSTICAS -->
+    <div class="page bg-grid">
+        <div class="border-b border-white/10 pb-6 mb-10">
+            <span class="text-gold text-xs tracking-widest uppercase font-bold">Diagnóstico Clínico</span>
+            <h2 class="text-3xl font-serif mt-2">Auditoria UX/UI & Heurísticas de Venda</h2>
+        </div>
+        <p class="text-sm text-zinc-400 leading-relaxed mb-8">
+            Nossa tecnologia de <strong>UX Analyzer</strong> rastreou a presença digital e detectou vazamentos baseados em padrões de comportamento do consumidor moderno.
+        </p>
+        <div class="space-y-6">
+            <div class="bg-zinc-900 border border-zinc-800 p-6 rounded">
+                <h4 class="text-white font-bold mb-2 flex items-center gap-3"><i class="fa-solid fa-eye-slash text-red-500"></i> Bagunça visual e excesso de estímulos</h4>
+                <p class="text-xs text-zinc-400">Presença de cores conflitantes e fundos poluídos que embaralham a leitura. O uso desorganizado de fontes cansa os olhos rapidamente.</p>
+            </div>
+            <div class="bg-zinc-900 border border-zinc-800 p-6 rounded">
+                <h4 class="text-white font-bold mb-2 flex items-center gap-3"><i class="fa-solid fa-map-location-dot text-orange-500"></i> Layout desorganizado e navegação confusa</h4>
+                <p class="text-xs text-zinc-400">A página atua como um labirinto, forçando o cliente a procurar serviços. Espaços desproporcionais quebram a autoridade percebida.</p>
+            </div>
+            <div class="bg-zinc-900 border border-zinc-800 p-6 rounded">
+                <h4 class="text-white font-bold mb-2 flex items-center gap-3"><i class="fa-solid fa-file-word text-yellow-500"></i> Excesso de texto e falta de apelo visual</h4>
+                <p class="text-xs text-zinc-400">Falta divisões visuais, ícones de alto padrão e blocos de leitura dinâmica, ignorando a escaneabilidade.</p>
+            </div>
+            <div class="bg-zinc-900 border border-zinc-800 p-6 rounded">
+                <h4 class="text-white font-bold mb-2 flex items-center gap-3"><i class="fa-solid fa-filter-circle-xmark text-red-600"></i> Falta de mecanismos essenciais para conversão</h4>
+                <p class="text-xs text-zinc-400">Visitantes chegam, mas não encontram botões claros de contato, resultando em perda direta de agendamentos.</p>
+            </div>
+        </div>
+        <div class="mt-12 text-center border-t border-white/10 pt-8">
+            <p class="text-gold font-serif italic text-lg">Confira a Proposta de Investimento na página principal para iniciar o desenvolvimento.</p>
+        </div>
+    </div>
+</body>
+</html>

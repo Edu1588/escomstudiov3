@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defesa Criminal - Advocacia Estratégica</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold-primary: #C5A059;
+            --gold-light: #E8D399;
+            --gold-dark: #8A6D3B;
+            --bg-black: #050505;
+            --bg-darker: #0a0a0a;
+            --bg-card: #111111;
+            --ivory: #F5F2EB;
+        }
+        body {
+            background-color: var(--bg-black);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, h4, h5, h6, .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+        .text-gold { color: var(--gold-primary); }
+        .bg-gold { background-color: var(--gold-primary); }
+        .border-gold { border-color: var(--gold-primary); }
+        
+        .gold-gradient-text {
+            background: linear-gradient(to right, var(--gold-dark), var(--gold-light), var(--gold-primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+        
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: #fff;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--gold-light);
+        }
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px var(--gold-primary);
+        }
+        .btn-gold::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.6s ease;
+        }
+        .btn-gold:hover::after {
+            left: 100%;
+        }
+
+        .card-dark {
+            background: var(--bg-card);
+            border: 1px solid rgba(197, 160, 89, 0.15);
+            transition: all 0.4s ease;
+        }
+        .card-dark:hover {
+            border-color: rgba(197, 160, 89, 0.5);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .bg-ivory { background-color: var(--ivory); color: #1a1a1a; }
+        
+        /* Timeline styling */
+        .timeline-line {
+            position: absolute;
+            top: 24px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gold-primary);
+            z-index: 0;
+        }
+        .timeline-node {
+            position: relative;
+            z-index: 10;
+            width: 20px; height: 20px;
+            border-radius: 50%;
+            background: var(--gold-light);
+            box-shadow: 0 0 10px var(--gold-primary);
+        }
+        
+        .hero-bg {
+            background: radial-gradient(circle at 70% 50%, rgba(197, 160, 89, 0.15) 0%, rgba(0,0,0,1) 60%), url('https://images.unsplash.com/photo-1589829085413-56de8ae18c73?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+            background-blend-mode: overlay;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- ESCOM Injetado -->
+    <div id="escom-added-header">
+        <div class="bg-red-600 text-white text-center py-2 text-sm font-bold tracking-wider uppercase shadow-md relative z-[100]">
+            Aviso Urgente: Últimas 24 horas para garantir as condições de proposta
+        </div>
+        <nav class="w-full bg-[#0a0a0a] border-b border-white/10 px-8 py-4 flex justify-between items-center relative z-[99]">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full border border-[var(--gold-primary)] flex items-center justify-center text-[var(--gold-primary)] font-serif text-xl">
+                    S
+                </div>
+                <span class="text-white font-serif tracking-widest text-lg">SILVA <span class="text-[var(--gold-primary)]">&</span> ASSOCIADOS</span>
+            </div>
+            <div class="hidden md:flex gap-8 text-sm font-medium tracking-wide text-zinc-300">
+                <a href="#atuacao" class="hover:text-[var(--gold-primary)] transition-colors">Áreas de Atuação</a>
+                <a href="#especialistas" class="hover:text-[var(--gold-primary)] transition-colors">Nossos Especialistas</a>
+                <a href="#resultados" class="hover:text-[var(--gold-primary)] transition-colors">Casos de Sucesso</a>
+                <a href="#contato" class="hover:text-[var(--gold-primary)] transition-colors">Contato</a>
+            </div>
+            <a href="#contato" class="bg-[var(--gold-primary)] hover:bg-[var(--gold-light)] text-black px-6 py-2 rounded font-semibold transition-all">
+                Plantão 24h
+            </a>
+        </nav>
+    </div>
+    <!-- Fim ESCOM Injetado -->
+    
+
+    <!-- 1. HEADER -->
+    <header class="fixed w-full top-0 z-50 transition-all duration-300 bg-black/80 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full border border-gold-primary flex items-center justify-center text-gold font-serif text-xl">S</div>
+                <span class="font-serif text-xl tracking-widest text-white">SILVA <span class="text-xs text-gray-400 block tracking-widest">ADVOCACIA</span></span>
+            </div>
+            <a href="#" class="hidden md:flex items-center gap-2 text-sm text-gold hover:text-white transition-colors">
+                <i class="fa-regular fa-clock"></i> Atendimento 24 horas
+            </a>
+        </div>
+    </header>
+
+    <!-- 2. HERO SECTION -->
+    <section class="relative min-h-[90vh] flex items-center pt-20 hero-bg">
+        <div class="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent"></div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="max-w-xl">
+                <div class="w-16 h-16 rounded-full border border-gold-primary flex items-center justify-center text-gold font-serif text-3xl mb-8">S</div>
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-serif leading-tight mb-6">
+                    <span class="gold-gradient-text block mb-2">DEFESA CRIMINAL</span>
+                    EXPERIENTE,<br>DISPONÍVEL 24 HORAS
+                </h1>
+                <p class="text-lg text-gray-300 mb-8 leading-relaxed">
+                    Garantimos seus direitos com soluções personalizadas de defesa criminal, trazendo a <span class="text-gold font-medium">tranquilidade e segurança que você precisa.</span>
+                </p>
+                <p class="text-sm text-gray-400 mb-8">Urgência em defesa criminal? Nossa equipe está aqui para ajudar agora mesmo.</p>
+                <a href="#" class="btn-gold inline-flex items-center gap-3 px-8 py-4 rounded-md text-sm font-semibold uppercase tracking-wider">
+                    <i class="fa-brands fa-whatsapp text-xl"></i> ENTRAR EM CONTATO AGORA
+                </a>
+            </div>
+            <!-- Lawyer Image placeholder -->
+            <div class="hidden lg:block relative h-[600px]">
+                <!-- Usually a transparent PNG of the lawyer goes here -->
+                <img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Advogado Especialista" class="absolute bottom-0 right-0 h-full object-cover object-top mask-image-b" style="-webkit-mask-image: linear-gradient(to top, transparent 0%, black 20%); mask-image: linear-gradient(to top, transparent 0%, black 20%);">
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. JUSTIÇA & LIBERDADE (Ivory Card) -->
+    <section class="py-24 relative bg-bg-darker">
+        <div class="max-w-6xl mx-auto px-6 relative">
+            <div class="bg-ivory rounded-2xl p-12 md:p-20 grid grid-cols-1 md:grid-cols-2 gap-12 items-center shadow-2xl relative overflow-hidden">
+                <!-- Decorative leaves/elements -->
+                <i class="fa-solid fa-leaf absolute top-10 right-10 text-4xl text-gold opacity-30 transform rotate-45"></i>
+                
+                <div class="relative z-10">
+                    <h2 class="text-4xl md:text-5xl font-serif mb-8 text-black leading-tight">Quando o Medo Encontra a Esperança:<br><span class="text-gray-600">Sua História Importa</span></h2>
+                    <p class="text-gray-700 mb-6 leading-relaxed">Enfrentar acusações criminais pode ser um dos momentos mais desafiadores da sua vida, impactando não só sua liberdade, mas também sua carreira e relações pessoais.</p>
+                    <p class="text-gray-700 leading-relaxed">No limiar entre a angústia e a esperança, muitos encontram nosso escritório. Aqui, iniciamos uma jornada da escuridão para a luz, transformando o medo em uma força propulsora para a defesa de seus direitos. Com uma abordagem empática e determinada, nós guiaremos você à luz da justiça, redefinindo o seu futuro.</p>
+                </div>
+                <div class="relative z-10 text-center flex flex-col items-center justify-center">
+                    <h2 class="text-6xl md:text-8xl font-serif gold-gradient-text tracking-tighter opacity-90 relative z-0">JUSTIÇA<br>& LIBERDADE</h2>
+                    <!-- Hourglass 3D placeholder -->
+                    <img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Ampulheta" class="w-48 h-auto object-cover rounded-full shadow-2xl mt-8 border-4 border-gold mix-blend-multiply opacity-80 filter sepia">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. POR QUE ESCOLHER (Xadrez) -->
+    <section class="py-24 bg-black relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20" style="background-image: url('https://images.unsplash.com/photo-1589829085413-56de8ae18c73?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: right;"></div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+            <div class="order-2 md:order-1">
+                <img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Estratégia" class="rounded-lg shadow-2xl border border-white/10 filter grayscale contrast-125">
+            </div>
+            <div class="order-1 md:order-2">
+                <h2 class="text-4xl md:text-5xl font-serif mb-8 leading-tight">Por que escolher nossa<br><span class="gold-gradient-text">defesa especializada?</span></h2>
+                <div class="space-y-6 text-gray-300">
+                    <p>Nossa defesa se distingue por uma abordagem que é tão única quanto cada história que nos chega.</p>
+                    <p>Diante das incertezas legais e acusações que podem mudar vidas, nos comprometemos a proteger seus direitos, minimizar riscos e alcançar a resolução mais favorável.</p>
+                    <p>Nossa estratégia, construída desde a análise inicial até o julgamento, é fundamentada no entendimento profundo e na personalização da defesa para refletir as particularidades de cada situação, combinando conhecimento técnico profundo com uma conexão pessoal genuína.</p>
+                    <p>Assim, garantimos que nossa atuação reflita uma compreensão detalhada do direito e do impacto humano de cada situação jurídica.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. ÁREAS DA DEFESA CRIMINAL -->
+    <section class="py-24 bg-bg-darker border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <p class="text-gray-400 uppercase tracking-widest text-sm mb-2">Especialistas em diversas</p>
+                <h2 class="text-4xl md:text-5xl font-serif gold-gradient-text">ÁREAS DA DEFESA CRIMINAL</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Cards -->
+                <div class="card-dark p-8 rounded-xl text-center flex flex-col items-center justify-center aspect-square">
+                    <i class="fa-solid fa-cannabis text-4xl text-gold mb-6"></i>
+                    <h3 class="font-serif text-xl">Defesa em Lei<br>de Drogas</h3>
+                </div>
+                <div class="card-dark p-8 rounded-xl text-center flex flex-col items-center justify-center aspect-square">
+                    <i class="fa-solid fa-money-bill-transfer text-4xl text-gold mb-6"></i>
+                    <h3 class="font-serif text-xl">Defesa em Lavagem<br>de Dinheiro</h3>
+                </div>
+                <div class="card-dark p-8 rounded-xl text-center flex flex-col items-center justify-center aspect-square">
+                    <i class="fa-solid fa-link-slash text-4xl text-gold mb-6"></i>
+                    <h3 class="font-serif text-xl">Habeas<br>Corpus</h3>
+                </div>
+                <div class="card-dark p-8 rounded-xl text-center flex flex-col items-center justify-center aspect-square">
+                    <i class="fa-solid fa-building-shield text-4xl text-gold mb-6"></i>
+                    <h3 class="font-serif text-xl">Grandes<br>Operações</h3>
+                </div>
+                <div class="card-dark p-8 rounded-xl text-center flex flex-col items-center justify-center aspect-square">
+                    <i class="fa-solid fa-handcuffs text-4xl text-gold mb-6"></i>
+                    <h3 class="font-serif text-xl">Defesa em Flagrante<br>24 Horas</h3>
+                </div>
+                <div class="card-dark p-8 rounded-xl text-center flex flex-col items-center justify-center aspect-square">
+                    <i class="fa-solid fa-fingerprint text-4xl text-gold mb-6"></i>
+                    <h3 class="font-serif text-xl">Defesa em Crimes<br>Sexuais</h3>
+                </div>
+                <div class="card-dark p-8 rounded-xl text-center flex flex-col items-center justify-center aspect-square">
+                    <i class="fa-solid fa-user-tie text-4xl text-gold mb-6"></i>
+                    <h3 class="font-serif text-xl">Crime de Colarinho<br>Branco</h3>
+                </div>
+                <div class="card-dark p-8 rounded-xl text-center flex flex-col items-center justify-center aspect-square">
+                    <i class="fa-solid fa-gavel text-4xl text-gold mb-6"></i>
+                    <h3 class="font-serif text-xl">Tribunal do<br>Júri</h3>
+                </div>
+            </div>
+            <div class="mt-16 text-center">
+                 <a href="#" class="btn-gold inline-flex items-center gap-3 px-8 py-4 rounded-md text-sm font-semibold uppercase tracking-wider">
+                    <i class="fa-brands fa-whatsapp text-xl"></i> QUERO DEFESA ESPECIALIZADA
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. HUMANIZANDO A JUSTIÇA -->
+    <section class="py-24 bg-black relative">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="card-dark border-gold/30 rounded-3xl overflow-hidden relative grid grid-cols-1 md:grid-cols-2">
+                <div class="p-12 md:p-16 flex flex-col justify-center relative z-10">
+                    <h2 class="text-4xl font-serif mb-4 leading-tight">Humanizando a Justiça:<br><span class="gold-gradient-text">Mais que Defensores,<br>Seus Aliados</span></h2>
+                    <p class="text-gray-300 leading-relaxed text-sm">Nossa abordagem vai além da sala de audiência, focando nas pessoas, não apenas nos processos. Entendemos a importância de cada caso, trabalhando incansavelmente pela sua defesa.</p>
+                </div>
+                <div class="relative min-h-[400px]">
+                    <img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" class="absolute inset-0 w-full h-full object-cover filter brightness-50" alt="Livros Jurídicos">
+                    <div class="absolute inset-0 bg-gradient-to-r from-[var(--bg-card)] to-transparent"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. SOCIAL PROOF (Clientes Falam) -->
+    <section class="py-24 bg-bg-darker text-center overflow-hidden">
+        <h2 class="text-3xl md:text-4xl font-serif mb-16">O que nossos <span class="gold-gradient-text">clientes</span><br>falam sobre nós:</h2>
+        
+        <div class="flex justify-center gap-6 max-w-7xl mx-auto px-6 relative">
+            <!-- Blur effect sides -->
+            <div class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-bg-darker to-transparent z-10 pointer-events-none"></div>
+            <div class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-bg-darker to-transparent z-10 pointer-events-none"></div>
+            
+            <div class="card-dark p-8 rounded-xl text-left min-w-[350px] max-w-[400px]">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-full bg-gray-700 overflow-hidden"><img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="User"></div>
+                    <div>
+                        <h4 class="font-semibold text-lg">João Silva</h4>
+                        <p class="text-xs text-gray-500">@joaosilva</p>
+                    </div>
+                    <i class="fa-brands fa-google text-2xl ml-auto text-blue-500"></i>
+                </div>
+                <div class="text-gold text-sm mb-4"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                <p class="text-sm text-gray-400 leading-relaxed">Profissionalismo impecável. Conseguiu resolver meu caso com uma agilidade que eu não esperava. Transmite muita segurança.</p>
+            </div>
+            
+            <div class="card-dark p-8 rounded-xl text-left min-w-[350px] max-w-[400px]">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-full bg-gray-700 overflow-hidden"><img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="User"></div>
+                    <div>
+                        <h4 class="font-semibold text-lg">Marcos Souza</h4>
+                        <p class="text-xs text-gray-500">@marcosouza</p>
+                    </div>
+                    <i class="fa-brands fa-google text-2xl ml-auto text-blue-500"></i>
+                </div>
+                <div class="text-gold text-sm mb-4"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                <p class="text-sm text-gray-400 leading-relaxed">Atendimento humanizado e direto ao ponto. Em nenhum momento me senti desamparado. Recomendo de olhos fechados.</p>
+            </div>
+        </div>
+        <div class="mt-12 flex justify-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-gray-600"></div>
+            <div class="w-2 h-2 rounded-full bg-gold"></div>
+            <div class="w-2 h-2 rounded-full bg-gray-600"></div>
+        </div>
+        <div class="mt-12">
+            <a href="#" class="btn-gold inline-flex items-center gap-3 px-8 py-4 rounded-md text-sm font-semibold uppercase tracking-wider">
+                <i class="fa-brands fa-whatsapp text-xl"></i> QUERO DEFESA ESPECIALIZADA
+            </a>
+        </div>
+    </section>
+
+    <!-- 8. JORNADA PASSO A PASSO -->
+    <section class="py-24 bg-black border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start mb-16">
+                <div class="lg:col-span-1">
+                    <h2 class="text-4xl font-serif mb-2">Sua Jornada de Defesa,<br><span class="gold-gradient-text uppercase">PASSO A PASSO!</span></h2>
+                </div>
+                <div class="lg:col-span-2">
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-lg">Desde o primeiro contato, nos dedicamos a esclarecer e simplificar o processo criminal para você, garantindo a melhor estratégia de defesa e representação em todas as fases legais.</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card-dark rounded-xl p-8 pt-12 relative mt-8">
+                    <div class="absolute -top-8 left-8 w-16 h-16 bg-ivory rounded-lg flex items-center justify-center text-3xl text-gold shadow-lg">
+                        <i class="fa-regular fa-file-lines"></i>
+                    </div>
+                    <p class="text-lg">Avaliação detalhada das acusações e evidências.</p>
+                </div>
+                <div class="card-dark rounded-xl p-8 pt-12 relative mt-8">
+                    <div class="absolute -top-8 left-8 w-16 h-16 bg-ivory rounded-lg flex items-center justify-center text-3xl text-gold shadow-lg">
+                        <i class="fa-solid fa-scale-unbalanced"></i>
+                    </div>
+                    <p class="text-lg">Desenvolvimento de uma estratégia de defesa sob medida.</p>
+                </div>
+                <div class="card-dark rounded-xl p-8 pt-12 relative mt-8">
+                    <div class="absolute -top-8 left-8 w-16 h-16 bg-ivory rounded-lg flex items-center justify-center text-3xl text-gold shadow-lg">
+                        <i class="fa-solid fa-gavel"></i>
+                    </div>
+                    <p class="text-lg">Representação firme em todas as etapas legais.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. FASES DO PROCESSO CRIMINAL -->
+    <section class="py-24 bg-bg-darker overflow-hidden">
+        <div class="max-w-6xl mx-auto px-6 text-center mb-20">
+            <h2 class="text-4xl font-serif mb-4 text-white">Fases do Processo Criminal:</h2>
+            <p class="text-gray-400 text-sm max-w-2xl mx-auto">Visualize como atuamos em cada etapa do processo criminal, assegurando a defesa mais eficaz para seu caso.</p>
+        </div>
+        
+        <!-- Simplified Timeline UI for robust HTML/CSS -->
+        <div class="max-w-5xl mx-auto px-6 relative">
+            <!-- Continuous Line -->
+            <div class="absolute left-1/2 top-0 bottom-0 w-1 bg-gold-dark/30 transform -translate-x-1/2 hidden md:block"></div>
+            
+            <div class="space-y-12">
+                <!-- Step 1 -->
+                <div class="flex flex-col md:flex-row items-center justify-between w-full relative">
+                    <div class="md:w-5/12 text-center md:text-right mb-4 md:mb-0">
+                        <div class="w-16 h-16 mx-auto md:ml-auto md:mr-0 bg-bg-card border border-white/10 rounded-xl flex items-center justify-center text-gold text-2xl mb-4 shadow-lg"><i class="fa-solid fa-shield-halved"></i></div>
+                        <h3 class="text-xl font-serif text-white mb-2">1. Inquérito Policial</h3>
+                        <p class="text-gray-400 text-xs">Investigação inicial conduzida pela polícia para coletar evidências sobre o crime.</p>
+                    </div>
+                    <div class="w-6 h-6 rounded-full bg-gold border-4 border-black relative z-10 my-4 md:my-0 shadow-[0_0_15px_rgba(197,160,89,0.5)]"></div>
+                    <div class="md:w-5/12"></div>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="flex flex-col md:flex-row items-center justify-between w-full relative">
+                    <div class="md:w-5/12 hidden md:block"></div>
+                    <div class="w-6 h-6 rounded-full bg-gold border-4 border-black relative z-10 my-4 md:my-0 shadow-[0_0_15px_rgba(197,160,89,0.5)]"></div>
+                    <div class="md:w-5/12 text-center md:text-left mb-4 md:mb-0">
+                        <div class="w-16 h-16 mx-auto md:mr-auto md:ml-0 bg-bg-card border border-white/10 rounded-xl flex items-center justify-center text-gold text-2xl mb-4 shadow-lg"><i class="fa-solid fa-handshake-angle"></i></div>
+                        <h3 class="text-xl font-serif text-white mb-2">2. Acordo de Não Persecução Penal</h3>
+                        <p class="text-gray-400 text-xs">Negociação entre o acusado e o Ministério Público para evitar a ação penal.</p>
+                    </div>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="flex flex-col md:flex-row items-center justify-between w-full relative">
+                    <div class="md:w-5/12 text-center md:text-right mb-4 md:mb-0">
+                        <div class="w-16 h-16 mx-auto md:ml-auto md:mr-0 bg-bg-card border border-white/10 rounded-xl flex items-center justify-center text-gold text-2xl mb-4 shadow-lg"><i class="fa-solid fa-users-viewfinder"></i></div>
+                        <h3 class="text-xl font-serif text-white mb-2">3. Audiência de Custódia</h3>
+                        <p class="text-gray-400 text-xs">Primeira apresentação do detido perante um juiz, que avalia a necessidade da prisão.</p>
+                    </div>
+                    <div class="w-6 h-6 rounded-full bg-gold border-4 border-black relative z-10 my-4 md:my-0 shadow-[0_0_15px_rgba(197,160,89,0.5)]"></div>
+                    <div class="md:w-5/12"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10. BENEFÍCIOS (Com nossa defesa) -->
+    <section class="py-24 bg-black">
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-serif text-center mb-16 uppercase tracking-wider text-white">Com nossa defesa<br>especializada, você vai:</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="card-dark p-8 rounded-xl">
+                    <i class="fa-solid fa-handshake text-3xl text-gold mb-6"></i>
+                    <p class="text-lg text-gray-200 leading-snug">Navegar pelo processo com confiança</p>
+                </div>
+                <div class="card-dark p-8 rounded-xl">
+                    <i class="fa-solid fa-scale-balanced text-3xl text-gold mb-6"></i>
+                    <p class="text-lg text-gray-200 leading-snug">Proteger seus direitos e liberdade</p>
+                </div>
+                <div class="card-dark p-8 rounded-xl">
+                    <i class="fa-solid fa-gavel text-3xl text-gold mb-6"></i>
+                    <p class="text-lg text-gray-200 leading-snug">Minimizar as consequências legais</p>
+                </div>
+                <div class="card-dark p-8 rounded-xl">
+                    <i class="fa-regular fa-comments text-3xl text-gold mb-6"></i>
+                    <p class="text-lg text-gray-200 leading-snug">Ter suporte emocional e legal</p>
+                </div>
+                <div class="card-dark p-8 rounded-xl">
+                    <i class="fa-solid fa-chess text-3xl text-gold mb-6"></i>
+                    <p class="text-lg text-gray-200 leading-snug">Ter orientação para evitar erros comuns</p>
+                </div>
+                <div class="card-dark p-8 rounded-xl">
+                    <i class="fa-solid fa-award text-3xl text-gold mb-6"></i>
+                    <p class="text-lg text-gray-200 leading-snug">Preservar sua reputação</p>
+                </div>
+            </div>
+            <div class="mt-16 text-center">
+                 <a href="#" class="btn-gold inline-flex items-center gap-3 px-10 py-4 rounded-md text-sm font-semibold uppercase tracking-wider">
+                    <i class="fa-brands fa-whatsapp text-xl"></i> QUERO DEFESA ESPECIALIZADA
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 11. BIO ESPECIALISTA -->
+    <section class="py-24 bg-bg-darker relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="relative z-10 order-2 lg:order-1">
+                <p class="text-gray-400 uppercase tracking-widest text-sm mb-2">Conheça o especialista</p>
+                <h2 class="text-4xl md:text-5xl font-serif gold-gradient-text mb-8">Yonatan Silva</h2>
+                
+                <p class="text-gray-300 text-sm leading-relaxed mb-6">Yonatan Silva é mais do que um advogado de defesa criminal; é um defensor apaixonado pelos direitos de seus clientes.</p>
+                <p class="text-gray-300 text-sm leading-relaxed mb-10">Com anos de experiência e uma carreira dedicada ao ensino do direito penal, Yonatan traz um profundo conhecimento técnico e uma compreensão empática para cada caso.</p>
+                
+                <h3 class="text-xl font-serif text-white mb-6">Currículo:</h3>
+                <ul class="space-y-6">
+                    <li class="flex items-start gap-4">
+                        <i class="fa-solid fa-scale-unbalanced text-gold mt-1"></i>
+                        <span class="text-gray-400 text-sm">Professor do Curso de graduação em Direito da UNOCHAPECÓ nas cadeiras de Direito Penal e Direito Processual Penal.</span>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <i class="fa-solid fa-scale-unbalanced text-gold mt-1"></i>
+                        <span class="text-gray-400 text-sm">Especialista em Direito Penal e Processo Penal.</span>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <i class="fa-solid fa-scale-unbalanced text-gold mt-1"></i>
+                        <span class="text-gray-400 text-sm">Mestrando em Direito pela UNOCHAPECÓ.</span>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <i class="fa-solid fa-scale-unbalanced text-gold mt-1"></i>
+                        <span class="text-gray-400 text-sm">Autor de artigos e capítulos de livros.</span>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <i class="fa-solid fa-scale-unbalanced text-gold mt-1"></i>
+                        <span class="text-gray-400 text-sm">Membro da Associação dos Advogados Criminalistas do Estado de Santa Catarina (AACRIMESC).</span>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <i class="fa-solid fa-scale-unbalanced text-gold mt-1"></i>
+                        <span class="text-gray-400 text-sm">Fiscal OAB/SC (2022-2024).</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="order-1 lg:order-2 relative">
+                <!-- Using Unsplash to represent the serious lawyer -->
+                <img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Dr. Yonatan Silva" class="rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5 relative z-10 w-full object-cover h-[600px] filter contrast-125">
+            </div>
+        </div>
+    </section>
+
+    <!-- 12. ATENDIMENTO NACIONAL -->
+    <section class="py-24 bg-black border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <!-- Simplified abstract representation of Brazil map using an icon/image -->
+            <div class="flex justify-center items-center h-[400px] relative">
+                <i class="fa-solid fa-globe text-[300px] text-white/5"></i>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                     <i class="fa-solid fa-location-dot text-4xl text-gold mb-2 drop-shadow-[0_0_10px_rgba(197,160,89,1)]"></i>
+                     <span class="text-gold font-serif">Nossa Sede<br><span class="text-gray-400 text-sm font-sans">Chapecó - SC</span></span>
+                </div>
+            </div>
+            <div>
+                <span class="inline-block px-4 py-1 rounded-full border border-white/10 bg-white/5 text-gray-400 text-xs tracking-widest mb-6">ESTAMOS EM TODO O BRASIL</span>
+                <h2 class="text-4xl font-serif text-white mb-6">Atendimento em todo Brasil</h2>
+                <div class="space-y-4 text-gray-400 text-sm leading-relaxed mb-10">
+                    <p>Onde quer que você esteja no Brasil, nosso suporte jurídico especializado está acessível.</p>
+                    <p>Nossa equipe está pronta para atendê-lo em qualquer estado, assegurando defesa criminal de excelência nacionalmente. Utilizando tecnologia avançada e comunicação eficiente, cuidamos do seu caso com precisão, independentemente da distância.</p>
+                    <p>Estamos comprometidos em proteger seus direitos e garantir sua liberdade, em todo território nacional.</p>
+                </div>
+                <a href="#" class="btn-gold inline-flex items-center gap-3 px-8 py-4 rounded-md text-sm font-semibold uppercase tracking-wider">
+                    <i class="fa-brands fa-whatsapp text-xl"></i> CONTATE-NOS PARA SUPORTE NACIONAL
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 13. FAQ / DÚVIDAS -->
+    <section class="py-24 bg-bg-darker">
+        <div class="max-w-4xl mx-auto px-6">
+            <h2 class="text-6xl font-serif gold-gradient-text text-center opacity-30 tracking-widest -mb-6">DÚVIDAS</h2>
+            <h3 class="text-2xl font-serif text-white text-center mb-16 relative z-10">Perguntas Frequentes</h3>
+            
+            <div class="space-y-2">
+                <!-- Simple accordions (visual only for static html) -->
+                <div class="border-b border-white/10 py-5 flex justify-between items-center cursor-pointer hover:text-gold transition-colors">
+                    <span class="text-sm">Como posso saber se tenho um caso?</span>
+                    <i class="fa-solid fa-play text-gold text-xs"></i>
+                </div>
+                <div class="border-b border-white/10 py-5 flex justify-between items-center cursor-pointer hover:text-gold transition-colors">
+                    <span class="text-sm">Quais são os custos envolvidos na minha defesa?</span>
+                    <i class="fa-solid fa-play text-gold text-xs"></i>
+                </div>
+                <div class="border-b border-white/10 py-5 flex justify-between items-center cursor-pointer hover:text-gold transition-colors">
+                    <span class="text-sm">Como o processo de defesa criminal funciona?</span>
+                    <i class="fa-solid fa-play text-gold text-xs"></i>
+                </div>
+                <div class="border-b border-white/10 py-5 flex justify-between items-center cursor-pointer hover:text-gold transition-colors">
+                    <span class="text-sm">O que torna sua equipe diferente dos outros advogados?</span>
+                    <i class="fa-solid fa-play text-gold text-xs"></i>
+                </div>
+                <div class="border-b border-white/10 py-5 flex justify-between items-center cursor-pointer hover:text-gold transition-colors">
+                    <span class="text-sm">Como posso escolher o melhor advogado para meu caso?</span>
+                    <i class="fa-solid fa-play text-gold text-xs"></i>
+                </div>
+            </div>
+            
+            <div class="mt-16 text-center">
+                <a href="#" class="btn-gold inline-flex items-center gap-3 px-8 py-4 rounded-md text-sm font-semibold uppercase tracking-wider">
+                    <i class="fa-brands fa-whatsapp text-xl"></i> QUERO SOLUÇÕES PARA DEFENDER MEU CASO
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 14. FOOTER CLIENTE -->
+    <footer class="bg-black border-t border-white/10 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+            <div>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-12 h-12 rounded-full border border-gold-primary flex items-center justify-center text-gold font-serif text-2xl">S</div>
+                    <span class="font-serif text-2xl tracking-widest text-white">SILVA <span class="text-xs text-gray-400 block tracking-widest">ADVOCACIA</span></span>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-serif text-xl text-white mb-6">Contatos:</h4>
+                <ul class="space-y-4 text-sm text-gray-400">
+                    <li class="flex items-center gap-3"><i class="fa-brands fa-whatsapp text-gold text-lg"></i> (49) 99926-0000</li>
+                    <li class="flex items-center gap-3"><i class="fa-regular fa-envelope text-gold text-lg"></i> yonatan.adv@gmail.com</li>
+                    <li class="flex items-center gap-3"><i class="fa-regular fa-clock text-gold text-lg"></i> Atendimento 24 horas.</li>
+                    <li class="flex items-start gap-3 mt-4"><i class="fa-solid fa-location-dot text-gold text-lg mt-1"></i> <span>R. Afonso Pena, 1137 - D - Bela Vista, Chapecó - SC, 89804-111</span></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-serif text-xl text-white mb-6">Aonde nos encontrar:</h4>
+                <!-- Placeholder for map -->
+                <div class="w-full h-40 bg-gray-800 rounded-xl overflow-hidden grayscale contrast-125 opacity-80 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer border border-white/10 flex items-center justify-center relative">
+                    <i class="fa-solid fa-map-location-dot text-4xl text-white/20 absolute"></i>
+                    <img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" class="w-full h-full object-cover opacity-50" alt="Map">
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-white/10 pt-8 text-center text-xs text-gray-500 font-serif">
+            Copyright Yonatan Silva &ndash; Todos os direitos reservados 2024.
+        </div>
+    </footer>
+
+    <!-- INSERÇÃO DO BLOCO COMERCIAL ESCOM -->
+    <section id="dossie-comercial" class="py-16 bg-[#111] text-center border-t-2 border-zinc-800">
+    <div class="max-w-3xl mx-auto px-6">
+        <h3 class="text-[#02c5ba] font-mono text-xs font-bold uppercase tracking-widest mb-4"><i class="fa-solid fa-lock mr-2"></i> Documento Confidencial</h3>
+        <h2 class="text-3xl font-bold text-white mb-6">Análise Estratégica & Dossiê de Mercado</h2>
+        <p class="text-zinc-400 mb-8 text-sm">Acesso restrito ao estudo de arquitetura de conversão, dados reais de faturamento local e projeção financeira para Silva & Associados.</p>
+        <a href="/proposta-silva-associados/dossie.pdf" target="_blank" class="btn-pdf-shimmer active:scale-95 active:translate-y-[1px] bg-transparent hover:bg-stone-850 border-2 border-[#02c5ba]/30 text-white font-bold py-4 px-8 rounded-xl transition-all flex items-center justify-center gap-3 mx-auto group inline-flex hover:border-[#02c5ba]">
+            <i class="fa-solid fa-file-pdf text-[#02c5ba] text-xl group-hover:scale-110 transition-transform"></i> Acessar Dossiê Estratégico (Acessar PDF da Análise)
+        </a>
+    </div>
+</section>
+  
+<!-- SEÇÃO COMERCIAL ESCOM STUDIO (PROPOSTA) -->
+<section id="proposta-comercial" class="py-24 bg-[#0a0a0a] relative overflow-hidden text-white border-t-8 border-[#02c5ba]">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-stone-900/20 via-[#0a0a0a] to-[#0a0a0a] pointer-events-none"></div>
+    
+    <div class="container mx-auto px-6 max-w-6xl relative z-10">
+        <div class="text-center mb-16">
+            <span class="bg-[#02c5ba]/10 text-[#02c5ba] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border border-[#02c5ba]/20 mb-6 inline-block">Proposta Exclusiva ESCOM Studio</span>
+            <h2 class="text-4xl md:text-5xl font-display font-extrabold text-white mb-6">Investimento do Projeto</h2>
+            <p class="text-zinc-400 max-w-2xl mx-auto text-lg">Este é o escopo financeiro exato para a implementação do site da sua empresa, com design de alta performance e engenharia de conversão voltada para captação.</p>
+        </div>
+
+        <!-- PRAZO DE ENTREGA -->
+        <div class="max-w-2xl mx-auto bg-stone-900/40 p-6 rounded-2xl border border-stone-800 mb-12 text-center">
+            <div class="flex items-center justify-center gap-3 mb-2">
+                <i class="fa-solid fa-clock text-[#02c5ba] text-2xl"></i>
+                <h3 class="text-xl font-bold text-white">Cronograma de Entrega</h3>
+            </div>
+            <p class="text-stone-400 text-sm">O seu projeto será concluído e entregue em um prazo recorde.</p>
+            <div class="mt-4 inline-block bg-[#02c5ba]/10 border border-[#02c5ba]/20 text-[#02c5ba] font-black text-2xl px-6 py-2 rounded-xl">
+                Apenas 3 Dias Úteis
+            </div>
+        </div>
+            
+
+        <!-- Card Principal de Preço -->
+        <div class="max-w-2xl mx-auto bg-gradient-to-b from-stone-900/60 to-zinc-900/60 p-10 rounded-3xl border border-stone-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] mb-16 relative backdrop-blur-sm transform transition hover:scale-[1.01]">
+            <div class="absolute top-0 right-0 bg-[#02c5ba] text-black text-xs font-bold px-4 py-1 rounded-tr-3xl rounded-bl-xl z-20">OFERTA DE PROSPECÇÃO</div>
+            
+            <h3 class="text-2xl font-bold mb-2">Website de Conversão Ativa</h3>
+            <p class="text-zinc-400 text-sm mb-6 pb-6 border-b border-white/10">Design UI/UX Sob Medida, Otimização de SEO, Responsividade Mobile-First, Integração WhatsApp, Copywriting Persuasivo.</p>
+            
+            <!-- Destaque Investimento à Vista -->
+            <div class="bg-stone-950/85 border border-stone-800 rounded-2xl p-6 mb-8 relative shadow-[0_10px_30px_rgba(0,0,0,0.4)] mt-8">
+                <div class="flex items-center justify-center gap-2 mb-4 mt-2">
+                    <i class="fa-solid fa-wallet text-[#02c5ba] text-lg"></i>
+                    <span class="text-[#02c5ba] text-xs font-bold uppercase tracking-widest">Investimento Único</span>
+                </div>
+                <div class="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1">
+                    <span class="text-xl sm:text-2xl font-bold text-stone-400">R$</span>
+                    <span class="text-5xl sm:text-6xl font-black text-[#02c5ba] tracking-tighter drop-shadow-[0_0_15px_rgba(46,255,0,0.35)]">990</span>
+                    <span class="text-2xl sm:text-3xl font-bold text-[#02c5ba]">,00</span>
+                </div>
+                <p class="text-center text-stone-500 text-[10px] mt-3 font-semibold tracking-wider uppercase">À VISTA VIA PIX, BOLETO OU TRANSFERÊNCIA</p>
+            </div>
+
+            <ul class="space-y-4 mb-10 text-sm text-zinc-300">
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#02c5ba] text-lg"></i> Configuração completa de domínio e hospedagem</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#02c5ba] text-lg"></i> SEO integrado para posicionamento local</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#02c5ba] text-lg"></i> Certificado SSL de Conexão Segura</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#02c5ba] text-lg"></i> Suporte técnico prioritário de 30 dias</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-shield-halved text-[#02c5ba] text-lg"></i> <strong class="text-white">Pagamento 100% seguro em ambiente criptografado</strong></li>
+            </ul>
+
+            <button id="btn-aceitar-proposta" class="btn-pdf-shimmer w-full bg-[#02c5ba] hover:bg-[#00a89d] text-black text-lg font-black py-5 rounded-2xl transition-all shadow-lg shadow-[#02c5ba]/30 flex items-center justify-center gap-3 group relative overflow-hidden">
+                ACEITAR PROPOSTA AGORA <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+            </button>
+            <p class="text-center text-xs text-zinc-500 mt-4"><i class="fa-solid fa-lock text-zinc-600 mr-1"></i> Contrato e Nota Fiscal emitidos logo após a aprovação.</p>
+        </div>
+
+        <!-- Seção de Serviços Adicionais (Upsells) - 2 COLUNAS -->
+        <div class="max-w-5xl mx-auto mt-24 bg-gradient-to-b from-[#1c1917]/40 to-[#0c0a09]/80 p-8 md:p-12 rounded-3xl border border-[#02c5ba]/20 shadow-[0_0_50px_rgba(46,255,0,0.05)] relative backdrop-blur-md">
+            <div class="absolute -top-4 left-8 bg-[#02c5ba] text-black text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">
+                Expansões Tecnológicas
+            </div>
+            
+            <h3 class="text-2xl md:text-3xl font-display font-extrabold text-white mb-4 flex items-center gap-3">
+                <i class="fa-solid fa-square-plus text-[#02c5ba]"></i> Módulos Avançados sob Demanda
+            </h3>
+            <p class="text-stone-400 mb-10 text-sm max-w-3xl leading-relaxed">
+                Leve a sua captação, operação e análise para o próximo nível. Integre novos recursos tecnológicos desenvolvidos sob medida pela ESCOM Studio:
+            </p>
+            
+            <div class="grid md:grid-cols-2 gap-6 mb-12">
+                <!-- CRM -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#02c5ba]/50 hover:shadow-[0_0_30px_rgba(46,255,0,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="CRM">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#02c5ba] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">CRM Jurídico de Alto Valor</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Funil de consultorias automatizado, lembretes de audiências e acompanhamento via WhatsApp. Histórico de processos.</p>
+                        </div>
+                        <span class="text-[10px] text-[#02c5ba] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Retenção & Recorrência</span>
+                    </div>
+                </div>
+
+                <!-- Dashboard -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#02c5ba]/50 hover:shadow-[0_0_30px_rgba(46,255,0,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Dashboard">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#02c5ba] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Dashboard de Faturamento e Casos</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Visualização de novos contratos, ticket médio de honorários e taxa de fechamento. Gestão do funil B2B.</p>
+                        </div>
+                        <span class="text-[10px] text-[#02c5ba] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Gestão & Lucro</span>
+                    </div>
+                </div>
+
+                <!-- Agente IA -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#02c5ba]/50 hover:shadow-[0_0_30px_rgba(46,255,0,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="AI Agent">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#02c5ba] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Agente IA Jurídico</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Triagem automática de novos casos via WhatsApp, coletando informações preliminares 24h por dia.</p>
+                        </div>
+                        <span class="text-[10px] text-[#02c5ba] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Atendimento 24/7</span>
+                    </div>
+                </div>
+
+                <!-- Estoque -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#02c5ba]/50 hover:shadow-[0_0_30px_rgba(46,255,0,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Inventory">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#02c5ba] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-folder-open"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Gestão Eletrônica de Documentos (GED)</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Acesso centralizado e seguro a contratos, procurações e peças jurídicas estruturadas na nuvem.</p>
+                        </div>
+                        <span class="text-[10px] text-[#02c5ba] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Organização & Agilidade</span>
+                    </div>
+                </div>
+
+                <!-- Processos -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#02c5ba]/50 hover:shadow-[0_0_30px_rgba(46,255,0,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Process">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#02c5ba] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Automação de Fluxos Internos</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Automação de tarefas burocráticas e integração de sistemas para acelerar a produtividade da equipe legal.</p>
+                        </div>
+                        <span class="text-[10px] text-[#02c5ba] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Produtividade Técnica</span>
+                    </div>
+                </div>
+
+                <!-- E-commerce -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#02c5ba]/50 hover:shadow-[0_0_30px_rgba(46,255,0,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="E-commerce">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#02c5ba] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-building-columns"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Área VIP do Cliente Corporativo</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Portal seguro para o cliente corporativo acompanhar o andamento de seus processos online e enviar arquivos confidenciais.</p>
+                        </div>
+                        <span class="text-[10px] text-[#02c5ba] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Canal de Vendas Extra</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulário Upsell -->
+            <div class="bg-stone-950/90 p-8 rounded-2xl border border-stone-800 shadow-inner">
+                <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane text-[#02c5ba]"></i> Solicitar Orçamento das Expansões
+                </h4>
+                <p class="text-stone-400 text-xs mb-6">Selecione o módulo de seu interesse. Nossa equipe de arquitetura técnica analisará a infraestrutura necessária e enviará o orçamento detalhado.</p>
+                
+                <form id="form-upsell" class="space-y-4 text-xs">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="upsell-nome" placeholder="Seu Nome / Responsável" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#02c5ba] text-white placeholder-stone-600 text-xs transition" required>
+                        <input type="email" id="upsell-email" placeholder="E-mail Corporativo" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#02c5ba] text-white placeholder-stone-600 text-xs transition" required>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <select id="upsell-servico" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#02c5ba] text-stone-400 text-xs transition" required>
+                            <option value="" disabled selected>Selecione o Módulo Tecnológico</option>
+                            <option value="crm">CRM</option>
+                            <option value="dashboard">Dashboard</option>
+                            <option value="bot">WhatsApp Bot</option>
+                            <option value="estoque">Estoque Digital</option>
+                            <option value="otimizacao">Automação de Fluxos Internos</option>
+                            <option value="ecommerce">E-commerce</option>
+                        </select>
+                        <input type="tel" id="upsell-whatsapp" placeholder="WhatsApp para Contato" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#02c5ba] text-white placeholder-stone-600 text-xs transition" required>
+                    </div>
+                    <button type="submit" class="w-full bg-[#02c5ba] hover:bg-[#00a89d] text-black font-bold py-4 rounded-xl transition shadow-lg shadow-[#02c5ba]/20 border border-[#02c5ba]/10 text-xs uppercase tracking-wider">Enviar Solicitação de Adicionais</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+  
+
+<script>
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 150;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        // Initial check
+        reveal();
+
+        // Change header background on scroll
+        window.addEventListener("scroll", function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('bg-background/90', 'shadow-sm');
+                header.classList.remove('bg-transparent');
+            } else {
+                header.classList.remove('bg-background/90', 'shadow-sm');
+                header.classList.add('bg-transparent');
+            }
+        });
+    </script>
+
+<script>
+    // Accordion do FAQ
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const answer = item.querySelector('.faq-answer');
+            const icon = item.querySelector('.material-symbols-outlined');
+            const isActive = item.classList.contains('active');
+            
+            // Fecha todos
+            faqItems.forEach(i => {
+                i.classList.remove('active');
+                i.querySelector('.faq-answer').style.maxHeight = '0px';
+                i.querySelector('.material-symbols-outlined').style.transform = 'rotate(0deg)';
+            });
+            
+            if (!isActive) {
+                item.classList.add('active');
+                answer.style.maxHeight = answer.scrollHeight + 'px';
+                icon.style.transform = 'rotate(180deg)';
+            }
+        });
+    });
+
+    // Ajuste do navbar no scroll
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('navbar');
+        if (window.scrollY > 50) {
+            nav.classList.remove('top-10');
+            nav.classList.add('top-0', 'shadow-md');
+        } else {
+            const statusCache = localStorage.getItem('escom_lead_status');
+            if (statusCache !== 'pago') {
+                nav.classList.remove('top-0');
+                nav.classList.add('top-10');
+            }
+        }
+    });
+
+    // Clique em Aceitar Proposta
+    const btnAceitar = document.getElementById('btn-aceitar-proposta');
+    if (btnAceitar) {
+        btnAceitar.addEventListener('click', function(e) {
+            e.preventDefault();
+            btnAceitar.innerHTML = 'Processando...';
+            btnAceitar.classList.add('opacity-80', 'cursor-wait');
+
+            setTimeout(() => {
+                const leadData = {
+                    id: 'lead_' + Date.now(),
+                    empresa: 'Silva & Associados',
+                    status: 'pagamento_pendente',
+                    valor: 990,
+                    data: new Date().toISOString()
+                };
+                
+                localStorage.setItem('escom_new_lead_conversion', JSON.stringify(leadData));
+                window.dispatchEvent(new CustomEvent('escom-lead-converted', { detail: leadData }));
+
+                btnAceitar.innerHTML = 'PROPOSTA ACEITA!';
+                btnAceitar.classList.remove('bg-primary', 'hover:bg-primary-container');
+                btnAceitar.classList.add('bg-zinc-800', 'text-primary', 'cursor-not-allowed');
+                
+                alert("Obrigado! Seu aceite foi registrado. A equipe da ESCOM Studio entrará em contato para os detalhes de faturamento.");
+            }, 1500);
+        });
+    }
+
+    // Ocultar seções se já pago
+    function verificarStatusDoLead() {
+        const statusCache = localStorage.getItem('escom_lead_status');
+        if (statusCache === 'pago') {
+            const banner = document.getElementById('banner-urgencia');
+            const dossie = document.getElementById('dossie-comercial');
+            const proposta = document.getElementById('proposta-comercial');
+            const navbar = document.getElementById('navbar');
+            
+            if (banner) banner.style.display = 'none';
+            if (navbar) {
+                navbar.classList.remove('top-10');
+                navbar.classList.add('top-0');
+            }
+            if (dossie) dossie.style.display = 'none';
+            if (proposta) proposta.style.display = 'none';
+        }
+    }
+    verificarStatusDoLead();
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'escom_lead_status' && e.newValue === 'pago') {
+            verificarStatusDoLead();
+        }
+    });
+</script>
+
+
+  
+<script>
+    // FAQ Accordion
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+        const details = item.querySelector('details');
+        const summary = item.querySelector('summary');
+        if (details && summary) {
+            summary.addEventListener('click', (e) => {
+                // Fechar outros accordions abertos se desejado, ou deixar nativo
+            });
+        }
+    });
+    
+    // Scroll Navbar Effect
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('navbar');
+        if (nav) {
+            if (window.scrollY > 50) {
+                nav.classList.remove('top-10');
+                nav.classList.add('top-0', 'shadow-md');
+            } else {
+                const statusCache = localStorage.getItem('escom_lead_status');
+                if (statusCache !== 'pago') {
+                    nav.classList.remove('top-0');
+                    nav.classList.add('top-10');
+                }
+            }
+        }
+    });
+
+    // Accept Proposal Event Handler
+    const btnAceitar = document.getElementById('btn-aceitar-proposta');
+    if (btnAceitar) {
+        btnAceitar.addEventListener('click', function(e) {
+            e.preventDefault();
+            btnAceitar.innerHTML = 'Processando...';
+            btnAceitar.classList.add('opacity-80', 'cursor-wait');
+
+            setTimeout(() => {
+                const leadData = {
+                    id: 'lead_' + Date.now(),
+                    empresa: 'Silva & Associados',
+                    status: 'pagamento_pendente',
+                    valor: 990,
+                    data: new Date().toISOString()
+                };
+                
+                localStorage.setItem('escom_new_lead_conversion', JSON.stringify(leadData));
+                window.dispatchEvent(new CustomEvent('escom-lead-converted', { detail: leadData }));
+
+                btnAceitar.innerHTML = 'PROPOSTA ACEITA!';
+                btnAceitar.classList.remove('bg-[#02c5ba]', 'hover:bg-[#00a89d]', 'text-black', 'cursor-wait');
+                btnAceitar.classList.add('bg-zinc-800', 'text-[#02c5ba]', 'border', 'border-[#02c5ba]', 'cursor-not-allowed');
+                
+                alert("Obrigado! Seu aceite foi registrado. A equipe da ESCOM Studio entrará em contato para os detalhes de faturamento.");
+            }, 1500);
+        });
+    }
+
+    // Client Mode Check
+    function verificarStatusDoLead() {
+        const statusCache = localStorage.getItem('escom_lead_status');
+        if (statusCache === 'pago') {
+            const banner = document.getElementById('banner-urgencia');
+            const dossie = document.getElementById('dossie-comercial');
+            const proposta = document.getElementById('proposta-comercial');
+            const navbar = document.getElementById('navbar');
+            
+            if (banner) banner.style.display = 'none';
+            if (navbar) {
+                navbar.classList.remove('top-10');
+                navbar.classList.add('top-0');
+            }
+            if (dossie) dossie.style.display = 'none';
+            if (proposta) proposta.style.display = 'none';
+        }
+    }
+    verificarStatusDoLead();
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'escom_lead_status' && e.newValue === 'pago') {
+            verificarStatusDoLead();
+        }
+    });
+
+    // Blindagem Anti-Cópia Silenciosa
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.addEventListener('keydown', (e) => {
+        const isCopying = (e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C');
+        const isSaving = (e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S');
+        const isPrinting = (e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P');
+        const isPrintScreen = e.key === 'PrintScreen';
+        const isMacSnippet = e.metaKey && e.shiftKey;
+
+        if (isCopying || isSaving || isPrinting || isPrintScreen || isMacSnippet) {
+            e.preventDefault();
+        }
+    });
+    document.addEventListener('copy', (e) => {
+        e.clipboardData.setData('text/plain', '');
+        e.preventDefault();
+    });
+</script>
+  
+<!-- Footer -->
+<footer class="w-full px-margin-desktop py-stack-lg flex flex-col md:flex-row justify-between items-center gap-stack-md border-t border-secondary/10 bg-surface-container dark:bg-surface-container flat no shadows">
+<div class="flex items-center gap-stack-md">
+<img alt="Silva &amp; Associados Logo" class="h-8 w-8 object-contain rounded-DEFAULT opacity-80" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABAAAAAQACAYAAAB/HSuDAAAQAElEQVR4AezdB5wdZb3/8ec5uyEUwXaFq6hgbygW/hCyi2LvKGLIbijZDSrYsJerXsV+7b0DuwmQ3RAV1CtiRWF3CYgCiiI28NoAu9KTPc//+9tk4+bszKnPnDNzzieveXLOmXnmKe+Zc3bmN63k+IcAAggggAACCCCAAAIIIIAAAt0u4AgAdP0ipoMIIIAAAggggAACCCCAAAIIOAIArAQIIIAAAggggAACCCCAAAIIdL2AOsgZAEJgQAABBBBAAAEEEEAAAQQQQKCbBaxvBABMgYQAAggggAACCCCAAAIIIIBA9wrM9YwAwBwD/yGAAAIIIIAAAggggAACCCDQrQJb+0UAYKsD/yOAAAIIIIAAAggggAACCCDQnQLbekUAYBsELwgggAACCCCAAAIIIIAAAgh0o8B8nwgAzEvwigACCCCAAAIIIIAAAggggED3CWzvEQGA7RS8QQABBBBAAAEEEEAAAQQQQKDbBP7dHwIA/7bgHQIIIIAAAggggAACCCCAAALdJbCgNwQAFmDwFgEEEEAAAQQQQAABBBBAAIFuEljYFwIACzV4jwACCCCAAAIIIIAAAggggED3COzQEwIAO3DwAQEEEEAAAQQQQAABBBBAAIFuEdixHwQAdvTgEwIIIIAAAggggAACCCCAAALdIVDRCwIAFSB8RAABBBBAAAEEEEAAAQQQQKAbBCr7QACgUoTPCCCAAAIIIIAAAggggAACCBRfYFEPCAAsImEEAggggAACCCCAAAIIIIAAAkUXWNx+AgCLTRiDAAIIIIAAAggggAACCCCAQLEFElpPACABhVEIIIAAAggggAACCCCAAAIIFFkgqe0EAJJUGIcAAggggAACCCCAAAIIIIBAcQUSW04AIJGFkQgggAACCCCAAAIIIIAAAggUVSC53QQAkl0YiwACCCCAAAIIIIAAAggggEAxBVJaTQAgBYbRCCCAAAIIIIAAAggggAACCBRRIK3NBADSZBiPAAIIIIAAAggggAACCCCAQPEEUltMACCVhgkIIIAAAggggAACCCCAAAIIFE0gvb0EANJtmIIAAggggAACCCCAAAIIIIBAsQSqtJYAQBUcJiGAAAIIIIAAAggggAACCCBQJIFqbSUAUE2HaQgggAACCCCAAAII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AAII1COQdR4CAFkLUz4CCCCAAAIIIIAAAggggAACtQUyz0EAIHNiKkAAAQQQQAABBBBAAAEEEECglkD20wkAZG9MDQgggAACCCCAAAIIIIAAAghUF2jDVAIAbUCmCgQQQAABBBBAAAEEEEAAAQSqCbRjGgGAdihTBwIIIIAAAggggAACCCCAAALpAm2ZQgCgLcxUggACCCCAAAIIIIAAAggggECaQHvGEwBojzO1IIAAAggggAACCCCAAAIIIJAs0KaxBADaBE01CCCAAAIIIIAAAggggAACCCQJtGscAYB2SVMPAggggAACCCCAAAIIIIAAAosF2jaGAEDbqKkIAQQQQAABBBBAAAEEEEAAgUqB9n0mANA+a2pCAAEEEEAAAQQQQAABBBBAYEeBNn4iANBGbKpCAAEEEEAAAQQQQAABBBBAYKFAO98TAGinNnUhgAACCCCAAAIIIIAAAggg8G+Btr4jANBWbipDAAEEEEAAAQQQQAABBBBAYF6gva8EANrrTW0IIIAAAggggAACCCCAAAIIbBVo8/8EANoMTnUIIIAAAggggAACCCCAAAIImEC7EwGAdotTHwIIIIAAAggggAACCCCAAALOtd2AAEDbyakQAQQQQAABBBBAAAEEEEAAgfYLEABovzk1IoAAAggggAACCCCAAAII9LpAB/pPAKAD6FSJAAIIIIAAAggggAACCCDQ2wKd6D0BgE6oUycCCCCAAAIIIIAAAggggEAvC3Sk7wQAOsJOpQgggAACCCCAAAIIIIAAAr0r0JmeEwDojDu1IoAAAggggAACCCCAAAII9KpAh/pNAKBD8FSLAAIIIIAAAggggAACCCDQmwKd6jUBgE7JUy8CCCCAAAIIIIAAAggggEAvCnSszwQAOkZPxQgggAACCCCAAAIIIIAAAr0n0LkeEwDonD01I4AAAggggAACCCCAAAII9JpAB/tLAKCD+FSNAAIIIIAAAggggAACCCDQWwKd7C0BgE7qUzcCCCCAAAIIIIAAAggggEAvCXS0rwQAOspP5QgggAACCCCAAAIIIIAAAr0j0NmeEgDorD+1I4AAAggggAACCCCAAAII9IpAh/tJAKDDC4DqEUAAAQQQQAABBBBAAAEEekOg070kANDpJUD9CCCAAAIIIIAAAggggAACvSDQ8T4SAOj4IqABCCCAAAIIIIAAAggg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LtAbUwgA9MZyppcIIIAAAggggAACCCCAAAJpAj0yngBAjyxouokAAggggAACCCCAAAIIIJAs0CtjCQD0ypKmnwgggAACCCCAAAIIIIAAAkkCPTOOAEDPLGo6igACCCCAAAIIIIAAAgggsFigd8YQAOidZU1PEUAAAQQQQAABBBBAAAEEKgV66DMBgB5a2HQVAQQQQAABBBBAAAEEEEBgR4Fe+kQAoJeWNn1FAAEEEEAAAQQQQAABBBBYKNBT7wkA9NTiprMIIIAAAggggAACCCCAAAL/FuitdwQAemt501sEEEAAAQQQQAABBBBAAIF5gR57JQDQYwuc7iKAAAIIIIAAAggggAACCGwV6LX/CQD02hKnvwgggAACCCCAAAIIIIAAAibQc4kAQM8tcjqMAAIIIIAAAggggAACCCDgXO8ZEADovWVOjxFAAAEEEEAAAQQQQAABBHpQgABADy50uowAAggggAACCCCAAAII9LpAL/afAEAvLnX6jAACCCCAAAIIIIAAAgj0tkBP9p4AQE8udjqNAAIIIIAAAggggAACCPSyQG/2nQBAby53eo0AAggggAACCCCAAAII9K5Aj/acAECPLni6jQACCCCAAAIIIIAAAgj0qkCv9psAQK8uefqNAAIIIIAAAggggAACCPSmQM/2mgBAzy56Oo4AAggggAACCCCAAAII9KJA7/aZAEDvLnt6jgACCCCAAAIIIIAAAgj0nkAP95gAQA8vfLqOAAIIIIAAAggggAACCPSaQC/3lwBALy99+o4AAggggAACCCCAAAII9JZAT/eWAEBPL346jwACCCCAAAIIIIAAAgj0kkBv95UAQG8vf3qPAAIIIIAAAggggAACCPSOQI/3lABAj68AdB8BBBBAAAEEEEAAAQQQ6BWBXu8nAYBeXwPoPwIIIIAAAggggAACCCDQGwI930sCAD2/CgCAAAIIIIAAAggggAACCPSCAH0kAMA6gAACCCCAAAIIIIAAAggg0P0C9NARAGAlQAABBBBAAAEEEEAAAQQQ6HoBOugIALASIIAAAggggAACCCCAAAIIdL0AHZQAZwAIgQEBBBBAAAEEEEAAAQQQQKCbBeibCRAAMAUSAggggAACCCCAAAIIIIBA9wrQszkBAgBzDPyHAAIIIIAAAggggAACCCDQrQL0a6sAAYCtDvyPAAIIIIAAAggggAACCCDQnQL0apsAAYBtELwggAACCCCAAAIIIIAAAgh0owB9mhcgADAvwSsCCCCAAAIIIIAAAggggED3CdCj7QIEALZT8AYBBBBAAAEEEEAAAQQQQKDbBOjPvwUIAPzbgncIIIAAAggggAACCCCAAALdJUBvFggQAFiAwVsEEEAAAQQQQAABBBBAAIFuEqAvCwUIACzU4D0CCCCAAAIIIIAAAggggED3CNCTHQQIAOzAwQcEEEAAAQQQQAABBBBAAIFuEaAfOwoQANjRg08IIIAAAggggAACCCCAAALdIUAvKgQIAFSA8BEBBBBAAAEEEEAAAQQQQKAbBOhDpQABgEoRPiOAAAIIIIAAAggggAACCBRfgB4sEiAAsIiEEQgggAACCCCAAAIIIIAAAkUXoP2LBQgALDZhDAIIIIAAAggggAACCCCAQLEFaH2CAAGABBRGIYAAAggggAACCCCAAAIIFFmAticJEABIUmEcAggggAACCCCAAAIIIIBAcQVoeaIAAYBEFkYigAACCCCAAAIIIIAAAggUVYB2JwsQAEh2YSwCCCCAAAIIIIAAAggggEAxBWh1igABgBQYRiOAAAIIIIAAAggggAACCBRRgDanCRAASJNhPAIIIIAAAggggAACCCCAQPEEaHGqAAGAVBomIIAAAggggAACCCCAAAIIFE2A9qYLEABIt2EKAggggAACCCCAAAIIIIBAsQRobRUBAgBVcJiEAAIIIIAAAggggAACCCBQJAHaWk2AAEA1HaYhgAACCCCAAAIIIIAAAggUR4CWVhUgAFCVh4kIIIAAAggggAACCCCAAAJFEaCd1QUIAFT3YSoCCCCAAAIIIIAAAggggEAxBGhlDQECADWAmIwAAggggAACCCCAAAIIIFAEAdpYS4AAQC0hpiOAAAIIIIAAAggggAACCORfgBbWFCAAUJOIDAgggAACCCCAAAIIIIAAAnkXoH21BQgA1DYiBwIIIIAAAggggAACCCCAQL4FaF0dAgQA6kAiCwIIIIAAAggggAACCCCAQJ4FaFs9AgQA6lEiDwIIIIAAAggggAACCCCAQH4FaFldAgQA6mIiEwIIIIAAAggggAACCCCAQF4FaFd9AgQA6nMiFwIIIIAAAggggAACCCCAQD4FaFWdAgQA6oQiGwIIIIAAAggggAACCCCAQB4FaFO9AgQA6pUi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PrVRgABAG7GpCgEEEEAAAQQQQAABBBBAYKEA79spQACgndrUhQACCCCAAAIIIIAAAggg8G8B3rVVgABAW7mpDAEEEEAAAQQQQAABBBBAYF6A1/YKEABorze1IYAAAggggAACCCCAAAIIbBXg/zYLEABoMzjVIYAAAggggAACCCCAAAIImACp3QIEANotTn0IIIAAAggggAACCCCAAALOYdB2AQIAbSenQgQQQAABBBBAAAEEEEAAAQTaL0AAoP3m1IgAAggggAACCCCAAAII9LoA/e+AAAGADqBTJQIIIIAAAggggAACCCDQ2wL0vhMCBAA6oU6dCCCAAAIIIIAAAggggEAvC9D3jggQAOgIO5UigAACCCCAAAIIIIAAAr0rQM87I0AAoDPu1IoAAggggAACCCCAAAII9KoA/e6QAAGADsFTLQIIIIAAAggggAACCCDQmwL0ulMCBAA6JU+9CCCAAAIIIIAAAggggEAvCtDnjgkQAOgYPRUjgAACCCCAAAIIIIAAAr0nQI87J0AAoHP21IwAAggggAACCCCAAAII9JoA/e2gAAGADuJTNQIIIIAAAggggAACCCDQWwL0tpMCBAA6qU/dCCCAAAIIIIAAAggggEAvCdDXjgoQAOgoP5UjgAACCCCAAAIIIIAAAr0jQE87K0AAoLP+1I4AAggggAACCCCAAAII9IoA/eywAAGADi8AqkcAAQQQQAABBBBAAAEEekOAXnZagABAp5cA9SOAAAIIIIAAAggggAACvSBAHzsuQACg44uABiCAAAIIIIAAAggggAAC3S9ADzsvQACg88uAFiCAAAIIIIAAAggggAAC3S5A/3IgQAAgBwuBJiCAAAIIIIAAAggggAAC3S1A7/IgQAAgD0uBNiCAAAIIIIAAAggggAAC3SxA33IhQAAgF4uBRiCAAAIIIIAAAggggAAC3StAz/IhQAAgH8uBViCAAAIIIIAAAggggAAC3SpAv3IiQAAgJwuCZiCAAAIIIIAAAggggAAC3SlAr/IiQAAgL0uCdiCAAAIIIIAAAggggAAC3ShAn3IjQAAgN4uChiCAAAIIIIAAAggggAAC3SdAj/IjQAAgP8uCliCAAAIIIIAAAggggAAC3SZAf3IkQAAgRwuDpiCAAAIIIIAAAggggAAC3SVAb/IkQAAgT0uDtiCAAAIIIIAAAggggAAC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YBKTmwhEFVAXAQIECBAgQIAAAQIEpgkIAKY5uYtATAFVESBAgAABAgQIECBAYKKAAGAilNsIRBRQEwECBAgQIECAAAECBKYKCACmSrmPQDwBFREgQIAAAQIECBAgQGCygABgMpUbCUQTUA8BAgQIECBAgAABAgSmCwgAplu5k0AsAdUQIECAAAECBAgQIEBghoAAYAaWWwlEElALAQIECBAgQIAAAQIE5ggIAOZouZdAHAGVECBAgAABAgQIECBAYJaAAGAWl5sJRBFQBwECBAgQIECAAAECBOYJCADmebmbQAwBVRAgQIAAAQIECBAgQGCmgABgJpjbCUQQUAMBAgQIECBAgAABAgTmCggA5oq5n0B9ARUQIECAAAECBAgQIEBgtoAAYDaZBQRqCzifAAECBAgQIECAAAEC8wUEAPPNrCBQV8DpBAgQIECAAAECBAgQWCAgAFiAZgmBmgLOJkCAAAECBAgQIECAwBIBAcASNWsI1BNwMgECBAgQIECAAAECBBYJCAAWsVlEoJaAcwkQIECAAAECBAgQILBMQACwzM0qAnUEnEqAAAECBAgQIECAAIGFAgKAhXCWEagh4EwCBAgQIECAAAECBAgsFRAALJWzjkB5AScSIECAAAECBAgQIEBgsYAAYDGdhQRKCziPAAECBAgQIECAAAECywUEAMvtrCRQVsBpBAgQIECAAAECBAgQWCEgAFiBZymBkgLOIkCAAAECBAgQIECAwBoBAcAaPWsJlBNwEgECBAgQIECAAAECBFYJCABW8VlMoJSAcwgQIECAAAECBAgQILBOQACwzs9qAmUEnEKAAAECBAgQIECAAIGVAgKAlYCWEygh4AwCBAgQIECAAAECBAisFRAArBW0nsD2Ak4gQIAAAQIECBAgQIDAagEBwGpCGxDYWsD+BAgQIECAAAECBAgQWC8gAFhvaAcC2wrYnQABAgQIECBAgAABAhkEBAAZEG1BYEsBexMgQIAAAQIECBAgQCCHgAAgh6I9CGwnYGcCBAgQIECAAAECBAhkERAAZGG0CYGtBOxLgAABAgQIECBAgACBPAICgDyOdiGwjYBdCRAgQIAAAQIECBAgkElAAJAJ0jYEthCwJwECBAgQIECAAAECBHIJCABySdqHQH4BOxIgQIAAAQIECBAgQCCbgAAgG6WNCOQWsB8BAgQIECBAgAABAgTyCQgA8lnaiUBeAbsRIECAAAECBAgQIEAgo4AAICOmrQjkFLAXAQIECBAgQIAAAQIEcgoIAHJq2otAPgE7ESBAgAABAgQIECBAIKuAACArp80I5BKwDwECBAgQIECAAAECBPIKCADyetqNQB4BuxAgQIAAAQIECBAgQCCzgAAgM6jtCOQQsAcBAgQIECBAgAABAgRyCwgAcovaj8B6ATsQIECAAAECBAgQIEAgu4AAIDupDQmsFbCeAAECBAgQIECAAAEC+QUEAPlN7UhgnYDVBAgQIECAAJJSMF8AABAASURBVAECBAgQ2EBAALABqi0JrBGwlgABAgQIECBAgAABAlsICAC2ULUngeUCVhIgQIAAAQIECBAgQGATAQHAJqw2JbBUwDoCBAgQIECAAAECBAhsIyAA2MbVrgSWCVhFgAABAgQIECBAgACBjQQEABvB2pbAEgFrCBAgQIAAAQIECBAgsJWAAGArWfsSmC9gBQECBAgQIECAAAECBDYTEABsRmtjAnMF3E+AAAECBAgQIECAAIHtBAQA29namcA8AXcTIECAAAECBAgQIEBgQwEBwIa4tiYwR8C9BAgQIECAAAECBAgQ2FJAALClrr0JTBdwJwECBAgQIECAAAECBDYVEABsymtzAlMF3EeAAAECBAgQIECAAIFtBQQA2/rancA0AXcRIECAAAECBAgQIEBgYwEBwMbAticwRcA9BAgQIECAAAECBAgQ2FpAALC1sP0J3C3gDgIECBAgQIAAAQIECGwuIADYnNgBBO4S8DgBAgQIECBAgAABAgS2FxAAbG/sBAK3C3iUAAECBAgQIECAAAECBQQEAAWQHUHgNgGPESBAgAABAgQIECBAoISAAKCEsjMI3CzgEQIECBAgQIAAAQIECBQREAAUYXYIgZsEXCdAgAABAgQIECBAgEAZAQFAGWenELhewFUCBAgQIECAAAECBAgUEhAAFIJ2DIHrBFwjQIAAAQIECBAgQIBAKQEBQClp5xB4UcAVAgQIECBAgAABAgQIFBMQABSjdhCB5wV8TIAAAQIECBAgQIAAgXICAoBy1k4i8KyAjwgQIECAAAECBAgQIFBQQABQENtRBJ4W8D4BAgQIECBAgAABAgRKCggASmo7i8CbAt4jQIAAAQIECBAgQIBAUQEBQFFuhxF4IuAtAQIECBAgQIAAAQIEygoIAMp6O43AYwGvCRAgQIAAAQIECBAgUFhAAFAY3HEEzgJeCBAgQIAAAQIECBAgUFpAAFBa3HkELi4YECBAgAABAgQIECBAoLiAAKA4uQMJECBAgAABAgQIECBAgEB5AQFAeXMnji6gfwIECBAgQIAAAQIECFQQEABUQHfk2AK6J0CAAAECBAgQIECAQA0BAUANdWeOLKB3AgQIECBAgAABAgQIVBEQAFRhd+i4AjonQIAAAQIECBAgQIBAHQEBQB13p44qoG8CBAgQIECAAAECBAhUEhAAVIJ37JgCuiZAgAABAgQIECBAgEAtAQFALXnnjiigZwIECBAgQIAAAQIECFQTEABUo3fweAI6JkCAAAECBAgQIECAQD0BAUA9eyePJqBfAgQIECBAgAABAgQIVBQQAFTEd/RYArolQIAAAQIECBAgQIBATQEBQE19Z48koFcCBAgQIECAAAECBAhUFRAAVOV3+DgCOiVAgAABAgQIECBAgEBdAQFAXX+njyKgTwIECBAgQIAAAQIECFQWEABUHoDjxxDQJQECBAgQIECAAAECBGoLCABqT8D5IwjokQABAgQIECBAgAABAtUFBADVR6CA/gV0SIAAAQIECBAgQIAAgfoCAoD6M1BB7wL6I0CAAAECBAgQIECAQAABAUCAISihbwHdESBAgAABAgQIECBAIIKAACDCFNTQs4DeCBAgQIAAAQIECBAgEEJAABBiDIroV0BnBAgQIECAAAECBAgQiCEgAIgxB1X0KqAvAgQIECBAgAABAgQIBBEQAAQZhDL6FNAVAQIECBAgQIAAAQIEoggIAKJMQh09CuiJAAECBAgQIECAAAECYQQEAGFGoZD+BHREgAABAgQIECBAgACBOAICgDizUElvAvohQIAAAQIECBAgQIBAIAEBQKBhKKUvAd0QIECAAAECBAgQIEAgkoAAINI01NKTgF4IECBAgAABAgQIECAQSkAAEGociulHQCcECBAgQIAAAQIECBCIJSAAiDUP1fQioA8CBAgQIECAAAECBAgEExAABBuIcvoQ0AUBAgQIECBAgAABAgSiCQgAok1EPT0I6IEAAQIECBAgQIAAAQLhBAQA4UaioPYFdECAAAECBAgQIECAAIF4AgKAeDNRUesC6idAgAABAgQIECBAgEBAAQFAwKEoqW0B1RMgQIAAAQIECBAgQCCigAAg4lTU1LKA2gkQIECAAAECBAgQIBBSQAAQciyKaldA5QQIECBAgAABAgQIEIgpIACIORdVtSqgbgIECBAgQIAAAQIECAQVEAAEHYyy2hRQNQECBAgQIECAAAECBKIKCACiTkZdLQqomQABAgQIECBAgAABAmEFBABhR6Ow9gRUTIAAAQIECBAgQIAAgbgCAoC4s1FZawLqJUCAAAECBAgQIECAQGABAUDg4SitLQHVEiBAgAABAgQIECBAILKAACDydNTWkoBaCRAgQIAAAQIECBAgEFpAABB6PIprR0ClBAgQIECAAAECBAgQiC0gAIg9H9W1IqBOAgQIECBAgAABAgQIBBcQAAQfkPLaEFAlAQIECBAgQIAAAQIEogsIAKJPSH0tCKiRAAECBAgQIECAAAEC4QUEAOFHpMD4AiokQIAAAQIECBAgQIBAfAEBQPwZqTC6gPoIECBAgAABAgQIECDQgIAAoIEhKTG2gOoIECBAgAABAgQIECDQgoAAoIUpqTGygNoIECBAgAABAgQIECDQhIAAoIkxKTKugMoIECBAgAABAgQIECDQhoAAoI05qTKqgLoIECBAgAABAgQIECDQiIAAoJFBKTOmgKoIECBAgAABAgQIECDQioAAoJVJqTOigJoIECBAgAABAgQIECDQjIAAoJlRKTSegIoIECBAgAABAgQIECDQjoAAoJ1ZqTSagHoIECBAgAABAgQIECDQkIAAoKFhKTWWgGoIECBAgAABAgQIECDQkoAAoKVpqTWSgFoIECBAgAABAgQIECDQlIAAoKlxKTaOgEoIECBAgAABAgQIECDQloAAoK15qTaKgDoIECBAgAABAgQIECDQmIAAoLGBKTeGgCoIECBAgAABAgQIECDQmoAAoLWJqTeCgBoIECBAgAABAgQIECDQnIAAoLmRKbi+gAoIECBAgAABAgQIECDQnoAAoL2Zqbi2gPMJECBAgAABAgQIECDQoIAAoMGhKbmugNMJECBAgAABAgQIECDQooAAoMWpqbmmgLMJECBAgAABAgQIECDQpIAAoMmxKbqegJMJECBAgAABAgQIECDQpoAAoM25qbqWgHMJECBAgAABAgQIECDQqIAAoNHBKbuOgFMJECBAgAABAgQIECDQqoAAoNXJqbuGgDMJECBAgAABAgQIECDQrIAAoNnRKby8gBMJECBAgAABAgQIECDQroAAoN3Zqby0gPMIECBAgAABAgQIECDQsIAAoOHhKb2sgNMIECBAgAABAgQIECDQsoAAoOXpqb2kgLMIECBAgAABAgQIECDQtIAAoOnxKb6cgJMIECBAgAABAgQIECDQtoAAoO35qb6UgHMIECBAgAABAgQIECDQuIAAoPEBKr+MgFMIECBAgAABAgQIECDQuoAAoPUJqr+EgDMIECBAgAABAgQIECDQvIAAoPkRamB7AScQIECAAAECBAgQIECgfQEBQPsz1MHWAvYnQIAAAQIECBAgQIBABwICgA6GqIVtBexOgAABAgQIECBAgACBHgQEAD1MUQ9bCtibAAECBAgQIECAAAECXQgIALoYoya2E7AzAQIECBAgQIAAAQIE+hAQAPQxR11sJWBfAgQIECBAgAABAgQIdCIgAOhkkNrYRsCuBAgQIECAAAECBAgQ6EVAANDLJPWxhYA9CRAgQIAAAQIECBAg0I2AAKCbUWokv4AdCRAgQIAAAQIECBAg0I+AAKCfWeokt4D9CBAgQIAAAQIECBAg0JGAAKCjYWolr4DdCBAgQIAAAQIECBAg0JOAAKCnaeolp4C9CBAgQIAAAQIECBAg0JWAAKCrcWomn4CdCBAgQIAAAQIECBAg0JeAAKCveeoml4B9CBAgQIAAAQIECBAg0JmAAKCzgWonj4BdCBAgQIAAAQIECBAg0JuAAKC3ieonh4A9CBAgQIAAAQIECBAg0J2AAKC7kWpovYAdCBAgQIAAAQIECBAg0J+AAKC/meporYD1BAgQIECAAAECBAgQ6FBAANDhULW0TsBqAgQIECBAgAABAgQI9CggAOhxqnpaI2AtAQIECBAgQIAAAQIEuhQQAHQ5Vk0tF7CSAAECBAgQIECAAAECfQoIAPqcq66WClhHgAABAgQIECBAgACBTgUEAJ0OVlvLBKwiQIAAAQIECBAgQIBArwICgF4nq68lAtYQIECAAAECBAgQIECgWwEBQLej1dh8ASsIECBAgAABAgQIECDQr4AAoN/Z6myugPsJECBAgAABAgQIECDQsYAAoOPham2egLsJECBAgAABAgQIECDQs4AAoOfp6m2OgHsJECBAgAABAgQIECDQtYAAoOvxam66gDsJECBAgAABAgQIECDQt4AAoO/56m6qgPsIECBAgAABAgQIECDQuYAAoPMBa2+agLsIECBAgAABAgQIECDQu4AAoPcJ62+KgHsIECBAgAABAgQIECDQvYAAoPsRa/BuAXcQIECAAAECBAgQIECgfwEBQP8z1uFdAh4nQIAAAQIECBAgQIDAAAICgAGGrMXbBTxKgAABAgQIECBAgACBEQQEACNMWY+3CXiMAAECBAgQIECAAAECQwgIAIYYsyZvFvAIAQIECBAgQIAAAQIExhAQAIwxZ13eJOA6AQIECBAgQIAAAQIEBhEQAAwyaG1eL+AqAQIECBAgQIAAAQIERhEQAIwyaX1eJ+AaAQIECBAgQIAAAQIEhhEQAAwzao2+KOAKAQIECBAgQIAAAQIExhEQAIwza50+L+BjAgQIECBAgAABAgQIDCQgABho2Fp9VsBHBAgQIECAAAECBAgQGElAADDStPX6tID3CRAgQIAAAQIECBAgMJSAAGCocWv2TQHvESBAgAABAgQIECBAYCwBAcBY89btEwFvCRAgQIAAAQIECBAgMJiAAGCwgWv3sYDXBAgQIECAAAECBAgQGE1AADDaxPV7FvBCgAABAgQIECBAgACB4QQEAMONXMMXFwwIECBAgAABAgQIECAwnoAAYLyZ65gAAQIECBAgQIAAAQIEBhQQAAw49NFb1j8BAgQIECBAgAABAgRGFBAAjDj1sXvWPQECBAgQIECAAAECBIYUEAAMOfaRm9Y7AQIECBAgQIAAAQIExhQQAIw593G71jkBAgQIECBAgAABAgQGFRAADDr4UdvWNwECBAgQIECAAAECBEYVEACMOvkx+9Y1AQIECBAgQIAAAQIEhhUQAAw7+hEb1zMBAgQIECBAgAABAgTGFRAAjDv78TrXMQECBAgQIECAAAECBAYWEAAMPPzRWtcvAQIECBAgQIAAAQIERhYQAIw8/bF61y0BAgQIECBAgAABAgSGFhAADD3+kZrXKwECBAgQIEDVPQTTAAAQAElEQVSAAAECBMYWEACMPf9xutcpAQIECBAgQIAAAQIEBhcQAAz+CTBK+/okQIAAAQIECBAgQIDA6AICgNE/A8boX5cECBAgQIAAAQIECBAYXkAAMPynwAgAeiRAgAABAgQIECBAgAABAYDPgf4FdEiAAAECBAgQIECAAAECFwIAnwTdC2iQAAECBAgQIECAAAECBC4EAD4JuhfQIAECBAgQIECAAAECBAgkAb8BkBD827OA3ggQIECAAAECBAgQIEDgLCAAOCt46VdAZwQIECBAgAABAgQIECDwSEAA8IjBq14F9EWAAAECBAgQIECAAAECjwUEAI8dvO5TQFcECBAgQIAAAQIECBAg8IaAAOANCG96FNATAQIECBAgQIAAAQIECDwREAA8kfC2PwEdESBAgAABAgQIECBAgMAXBAQAX6DwTm8C+iFAgAABAgQIECBAgACBNwUEAG9aeK8vAd0QIECAAAECBAgQIECAwFMCAoCnMLzbk4BeCBAgQIAAAQIECBAgQOBpAQHA0xre70dAJwQIECBAgAABAgQIECDwjIAA4BkOH/QioA8CBAgQIECAAAECBAgQeFZAAPCsh4/6ENAFAQIECBAgQIAAAQIECDwnIAB4DsSHPQjogQABAgQIECBAgAABAgSeFxAAPC/i4/YFdECAAAECBAgQIECAAAECLwgIAF4gcaF1AfUTIECAAAECBAgQIECAwIsCAoAXTVxpW0D1BAgQIECAAAECBAgQIHCNgADgGhSXWhZQOwECBAgQIECAAAECBAhcJyAAuE7FtXYFVE6AAAECBAgQIECAAAEC1woIAK5lcbFVAXUTIECAAAECBAgQIECAwPUCAoDrXVxtU0DVBAgQIECAAAECBAgQIHCDgADgBhiXWxRQMwECBAgQIECAAAECBAjcJCAAuEnG9fYEVEyAAAECBAgQIECAAAECNwoIAG6k8UBrAuolQIAAAQIECBAgQIAAgZsFBAA323ikLQHVEiBAgAABAgQIECBAgMAtAgKAW3A81JKAWgkQIECAAAECBAgQIEDgNgEBwG06HmtHQKUECBAgQIAAAQIECBAgcKuAAOBWHg+2IqBOAgQIECBAgAABAgQIELhdQABwu49H2xBQJQECBAgQIECAAAECBAjcISAAuAPIwy0IqJEAAQIECBAgQIAAAQIE7hIQANwl5PH4AiokQIAAAQIECBAgQIAAgTsFBAB3ErkhuoD6CBAgQIAAAQIECBAgQOBuAQHA3UbuiC2gOgIECBAgQIAAAQIECBCYICAAmIDklsgCaiNAgAABAgQIECBAgACBKQICgClK7okroDICBAgQIECAAAECBAgQmCQgAJjE5KaoAuoiQIAAAQIECBAgQIAAgWkCAoBpTu6KKaAqAgQIECBAgAABAgQIEJgoIACYCOW2iAJqIkCAAAECBAgQIECAAIGpAgKAqVLuiyegIgIECBAgQIAAAQIECBCYLCAAmEzlxmgC6iFAgAABAgQIECBAgACB6QICgOlW7owloBoCBAgQIECAAAECBAgQmCEgAJiB5dZIAmohQIAAAQIECBAgQIAAgTkCAoA5Wu6NI6ASAgQIECBAgAABAgQIEJglIACYxeXmKALqIECAAAECBAgQIECAAIF5AgKAeV7ujiGgCgIECBAgQIAAAQIECBCYKSAAmAnm9ggCaiBAgAABAgQIECBAgACBuQICgLli7q8voAICBAgQIECAAAECBAgQmC0gAJhNZkFtAecTIECAAAECBAgQIECAwHwBAcB8MyvqCjidAAECBAgQIECAAAECBBYICAAWoFlSU8DZBAgQIECAAAECBAgQILBEQACwRM2aegJOJkCAAAECBAgQIECAAIFFAgKARWwW1RJwLgECBAgQIECAAAECBAgsExAALHOzqo6AUwkQIECAAAECBAgQIEBgoYAAYCGcZTUEnEmAAAECBAgQIECAAAECSwUEAEvlrCsv4EQCBAgQIECAAAECBAgQWCwgAFhMZ2FpAecRIECAAAECBAgQIECAwHIBAcByOyvLCjiNAAECBAgQIECAAAECBFYICABW4FlaUsBZBAgQIECAAAECBAgQILBGQACwRs/acgJOIkCAAAECBAgQIECAAIFVAgKAVXwWlxJwDgECBAgQIECAAAECBAisExAArPOzuoyAUwgQIECAAAECBAgQIEBgpYAAYCWg5SUEnEGAAAECBAgQIECAAAECawUEAGsFrd9ewAkECBAgQIAAAQIECBAgsFpAALCa0AZbC9ifAAECBAgQIECAAAECBNYLCADWG9phWwG7EyBAgAABAgQIECBAgEAGAQFABkRbbClgbwIECBAgQIAAAQIECBDIISAAyKFoj+0E7EyAAAECBAgQIECAAAECWQQEAFkYbbKVgH0JECBAgAABAgQIECBAII+AACCPo122EbArAQIECBAgQIAAAQIECGQSEABkgrTNFgL2JECAAAECBAgQIECAAIFcAgKAXJL2yS9gRwIECBAgQIAAAQIECBDIJiAAyEZpo9wC9iNAgAABAgQIECBAgACBfAICgHyWdsorYDcCBAgQIECAAAECBAgQyCggAMiIaaucAvYiQIAAAQIECBAgQIAAgZwCAoCcmvbKJ2AnAgQIECBAgAABAgQIEMgqIADIymmzXAL2IUCAAAECBAgQIECAAIG8AgKAvJ52yyNgFwIECBAgQIAAAQIECBDILCAAyAxquxwC9iBAgAABAgQIECBAgACB3AICgNyi9lsvYAcCBAgQIECAAAECBAgQyC4gAMhOasO1AtYTIECAAAECBAgQIECAQH4BAUB+UzuuE7CaAAECBAgQIECAAAECBDYQEABsgGrLNQLWEiBAgAABAgQIECBAgMAWAgKALVTtuVzASgIECBAgQIAAAQIECBDYREAAsAmrTZcKWEeAAAECBAgQIECAAAEC2wgIALZxtesyAasIECBAgAABAgQIECBAYCMBAcBGsLZdImANAQIECBAgQIAAAQIECGwlIADYSta+8wWsIECAAAECBAgQIECAAIHNBAQAm9HaeK6A+wkQIECAAAECBAgQIEBgOwEBwHa2dp4n4G4CBAgQIECAAAECBAgQ2FBAALAhrq3nCLiXAAECBAgQIECAAAECBLYUEABsqWvv6QLuJECAAAECBAgQIECAAIFNBQQAm/LafKqA+wgQIECAAAECBAgQIEBgWwEBwLa+dp8m4C4CBAgQIECAAAECBAgQ2FhAALAxsO2nCLiHAAECBAgQIECAAAECBLYWEABsLWz/uwXcQYAAAQIECBAgQIAAAQKbCwgANid2wF0CHidAgAABAgQIECBAgACB7QUEANsbO+F2AY8SIECAAAECBAgQIECAQAEBAUABZEfcJuAxAgQIECBAgAABAgQIECghIAAooeyMmwU8QoAAAQIECBAgQIAAAQJFBAQARZgdcpOA6wQIECBAgAABAgQIECBQRkAAUMbZKdcLuEqAAAECBAgQIECAAAEChQQEAIWgHXOdgGsECBAgQIAAAQIECBAgUEpAAFBK2jkvCrhCgAABAgQIECBAgAABAsUEBADFqB30vICPCRAgQIAAAQIECBAgQKCcgACgnLWTnhXwEQECBAgQIECAAAECBAgUFBAAFMR21NMC3idAgAABAgQIECBAgACBkgICgJLaznpTwHsECBAgQIAAAQIECBAgUFRAAFCU22FPBLwlQIAAAQIECBAgQIAAgbICAoCy3k57LOA1AQIECBAgQIAAAQIECBQWEAAUBnfcWcALAQIECBAgQIAAAQIECJQWEACUFnfexQUDAgQIECBAgAABAgQIECguIAAoTu5AAgQIECBAgAABAgQIECBQXkAAUN589BP1T4AAAQIECBAgQIAAAQIVBAQAFdDHPlL3BAgQIECAAAECBAgQIFBDQABQQ33kM/VOgAABAgQIECBAgAABAlUEBABV2Mc9VOcECBAgQIAAAQIECBAgUEdAAFDHfdRT9U2AAAECBAgQIECAAAEClQQEAJXgxzxW1wQIECBAgAABAgQIECBQS0AAUEt+xHP1TIAAAQIECBAgQIAAAQLVBAQA1ejHO1jHBAgQIECAAAECBAgQIFBPQABQz360k/VLgAABAgQIECBAgAABAhUFBAAV8cc6WrcECBAgQIAAAQIECBAgUFNAAFBTf6Sz9UqAAAECBAgQIECAAAECVQUEAFX5xzlcpwQIECBAgAABAgQIECBQV0AAUNd/lNP1SYAAAQIECBAgQIAAAQKVBQQAlQcwxvG6JECAAAECBAgQIECAAIHaAgKA2hMY4Xw9EiBAgAABAgQIECBAgEB1AQFA9RH0X4AOCRAgQIAAAQIECBAgQKC+gACg/gx6r0B/BAgQIECAAAECBAgQIBBAQAAQYAh9l6A7AgQIECBAgAABAgQIEIggIACIMIWea9AbAQIECBAgQIAAAQIECIQQEACEGEO/ReiMAAECBAgQIECAAAECBGIICABizKHXKvRFgAABAgQIECBAgAABAkEEBABBBtFnGboiQIAAAQIECBAgQIAAgSgCAoAok+ixDj0RIECAAAECBAgQIECAQBgBAUCYUfRXiI4IECBAgAABAgQIECBAII6AACDOLHqrRD8ECBAgQIAAAQIECBAgEEhAABBoGH2VohsCBAgQIECAAAECBAgQiCQgAIg0jZ5q0QsBAgQIECBAgAABAgQIhBIQAIQaRz/F6IQAAQIECBAgQIAAAQIEYgkIAGLNo5dq9EGAAAECBAgQIECAAAECwQQEAMEG0kc5uiBAgAABAgQIECBAgACBaAICgGgT6aEePRAgQIAAAQIECBAgQIBAOAEBQLiRtF+QDggQIECAAAECBAgQIEAgnoAAIN5MWq9I/QQIECBAgAABAgQIECAQUEAAEHAobZekegIECBAgQIAAAQIECBCIKCAAiDiVlmtSOwECBAgQIECAAAECBAiEFBAAhBxLu0WpnAABAgQIECBAgAABAgRiCggAYs6l1arUTYAAAQIECBAgQIAAAQJBBQQAQQfTZlmqJkCAAAECBAgQIECAAIGoAgKAqJNpsS41EyBAgAABAgQIECBAgEBYAQFA2NG0V5iKCRAgQIAAAQIECBAgQCCugAAg7mxaq0y9BAgQIECAAAECBAgQIBBYQAAQeDhtlaZaAgQIECBAgAABAgQIEIgsIACIPJ2WalMrAQIECBAgQIAAAQIECIQWEACEHk87xamUAAECBAgQIECAAAECBGILCABiz6eV6tRJgAABAgQIECBAgAABAsEFBADBB9RGeaokQIAAAQIECBAgQIAAgegCAoDoE2qhPjUSIECAAAECBAgQIECAQHgBAUD4EcUvUIUECBAgQIAAAQIECBAgEF9AABB/RtErVB8BAgQIECBAgAABAgQINCAgAGhgSLFLVB0BAgQIECBAgAABAgQItCAgAGhhSpFrVBsBAgQIEUgq/gAAAKJJREFUECBAgAABAgQINCEgAGhiTHGLVBkBAgQIECBAgAABAgQItCEgAGhjTlGrVBcBAgQIECBAgAABAgQINCIgAGhkUDHLVBUBAgQIECBAgAABAgQItCIgAGhlUhHrVBMBAgQIECBAgAABAgQINCMgAGhmVPEKVREBAgQIECBAgAABAgQItCMgAGhnVtEqVQ8BAgQIECBAgAABAgQINCTweQAAAP//zsGIHwAAAAZJREFUAwCbhgOzQN7bDAAAAABJRU5ErkJggg=="/>
+<span class="text-headline-md font-headline-md text-secondary dark:text-secondary text-lg">Silva &amp; Associados</span>
+</div>
+<div class="text-caption font-caption text-on-surface-variant dark:text-on-surface-variant text-center md:text-left">
+<p>Av. Paulista, 491 - andar 1 - Bela Vista, São Paulo - SP, 01311-000</p>
+<p>+55 (11) 3456-7890 | WhatsApp: (11) 99999-9999 | contato@silvaassociados.com.br</p>
+</div>
+<div class="flex flex-wrap justify-center gap-stack-md text-label-md font-label-md">
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors hover:underline decoration-secondary" href="/politica_de_privacidade.html">Privacidade</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors hover:underline decoration-secondary" href="/termos_de_servico.html">Termos de Uso</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors hover:underline decoration-secondary" href="#contato">Contato</a>
+</div>
+<div class="text-caption font-caption text-on-surface-variant dark:text-on-surface-variant w-full md:w-auto text-center mt-4 md:mt-0">
+            © 2026 Silva &amp; Associados Advocacia. Todos os direitos reservados.
+        </div>
+</footer>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Controle de Accordion FAQ
+        const faqItems = document.querySelectorAll('.faq-item details');
+        faqItems.forEach(item => {
+            item.addEventListener('toggle', (event) => {
+                if (item.open) {
+                    faqItems.forEach(el => {
+                        if (el !== item) el.removeAttribute('open');
+                    });
+                }
+            });
+        });
+
+        // Botão de Aceitar Proposta
+        const btnAceitar = document.getElementById('btn-aceitar-proposta');
+        if (btnAceitar) {
+            btnAceitar.addEventListener('click', async () => {
+                btnAceitar.disabled = true;
+                btnAceitar.innerHTML = 'Enviando aprovação... <i class="fa-solid fa-spinner animate-spin"></i>';
+                try {
+                    const res = await fetch('/api/approve-site', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            projectId: '12943424911819052785',
+                            slug: 'proposta-silva-associados'
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        btnAceitar.className = 'btn-pdf-shimmer w-full bg-emerald-600 text-white text-lg font-black py-5 rounded-2xl flex items-center justify-center gap-3';
+                        btnAceitar.innerHTML = 'PROPOSTA ACEITA COM SUCESSO! <i class="fa-solid fa-check-double"></i>';
+                        alert('Parabéns! Proposta aceita e deploy iniciado na Vercel.');
+                    } else {
+                        throw new Error(data.error || 'Erro desconhecido');
+                    }
+                } catch (err) {
+                    btnAceitar.disabled = false;
+                    btnAceitar.innerHTML = 'ACEITAR PROPOSTA AGORA <i class="fa-solid fa-arrow-right"></i>';
+                    alert('Erro ao aceitar proposta: ' + err.message);
+                }
+            });
+        }
+    });
+</script>
+
+<!-- Script Injetado ESCOM -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Replace background images that might be the Ridley cover
+        document.querySelectorAll('img').forEach(img => {
+            if(img.src.includes('ridley') || img.src.includes('book') || img.alt.toLowerCase().includes('ridley')) {
+                img.src = 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80';
+            }
+        });
+        
+        // Also check any div with background-image
+        document.querySelectorAll('*').forEach(el => {
+            const bg = window.getComputedStyle(el).backgroundImage;
+            if (bg && bg !== 'none' && (bg.includes('ridley') || bg.includes('book'))) {
+                el.style.backgroundImage = 'url("https://images.unsplash.com/photo-1589829085413-56de8ae18c73?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80")';
+            }
+        });
+    });
+</script>
+</body>
+</html>
+    
+</body>
+</html>

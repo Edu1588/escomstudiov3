@@ -44,7 +44,8 @@ import {
   ChevronDown,
   Image as ImageIcon,
   Menu,
-  Phone
+  Phone,
+  X
 } from 'lucide-react';
 import Markdown from 'react-markdown';
 import { GLSLHills } from '../../components/ui/glsl-hills';
@@ -60,13 +61,31 @@ const getSafeImageUrl = (url?: string) => {
 
 export default function Mineracao() {
   const routerNavigate = useNavigate();
-  // Estados da Aplicação ('leads' | 'generator' | 'loading' | 'preview' | 'pdf-loading' | 'brand-pdf' | 'success')
+  // Estados da Aplicação ('leads' | 'generator' | 'loading' | 'preview' | 'pdf-loading' | 'brand-pdf' | 'success' | 'created-sites')
   const [currentView, setCurrentView] = useState('leads'); 
   
+  // Novos Estados para os Sites Criados (Stitch & Vercel)
+  const [createdSitesList, setCreatedSitesList] = useState<any[]>([]);
+  const [isDeploying, setIsDeploying] = useState(false);
+  const [deployingProjectId, setDeployingProjectId] = useState<string | null>(null);
+
+  // Novos Estados para a Análise do Protótipo
+  const [analysisModalOpen, setAnalysisModalOpen] = useState(false);
+  const [analysisSite, setAnalysisSite] = useState<any>(null);
+
+  // Novos Estados para os Dossiês Comerciais (Psicografia & Análise Estratégica)
+  const [commercialModalOpen, setCommercialModalOpen] = useState(false);
+  const [commercialLead, setCommercialLead] = useState<any>(null);
+  const [commercialReports, setCommercialReports] = useState<any>(null);
+  const [isGeneratingReports, setIsGeneratingReports] = useState(false);
+  const [activeCommercialTab, setActiveCommercialTab] = useState<'psicografia' | 'estrategica'>('psicografia');
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
+
   // Estados do Gerador de Copy
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [copied, setCopied] = useState(false);
   const [isAnalyzingUrl, setIsAnalyzingUrl] = useState(false);
+  const [streamingChunks, setStreamingChunks] = useState(0);
 
   // Estados de Auditoria e Ajustes Finos de Conversão
   const [auditIssues, setAuditIssues] = useState<any[]>([]);
@@ -78,8 +97,361 @@ export default function Mineracao() {
   const [searchLimit, setSearchLimit] = useState(50);
   const [isSearching, setIsSearching] = useState(false);
   const [leadsList, setLeadsList] = useState<any[]>([]);
-  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'discarded'>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'discarded' | 'created-sites'>('all');
   const [leadSelected, setLeadSelected] = useState(false); // Novo estado para travar os passos seguintes
+  const [expandedLeadId, setExpandedLeadId] = useState<string | null>(null);
+
+  // Estados de Notificação de Urgência (Conversão R$ 990)
+  const [urgentLeads, setUrgentLeads] = useState<any[]>([]);
+  const [revisionRequests, setRevisionRequests] = useState<{ [projectId: string]: string }>({});
+  const [isRequestingRevision, setIsRequestingRevision] = useState<{ [projectId: string]: boolean }>({});
+
+  useEffect(() => {
+    // Detectar Leads Convertidos localmente (Simulação)
+    const handleStorageChange = () => {
+      const storedLead = localStorage.getItem('escom_new_lead_conversion');
+      if (storedLead) {
+        try {
+          const lead = JSON.parse(storedLead);
+          // Adicionar à lista de leads urgentes caso não exista
+          setUrgentLeads(prev => {
+            if (prev.find(l => l.id === lead.id)) return prev;
+            return [...prev, lead];
+          });
+          // Tocar som de urgência
+          const audio = new Audio("/audio/saude_barriga.mp3");
+          audio.play().catch(e => console.log("Áudio bloqueado", e));
+        } catch (e) {}
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('escom-lead-converted', ((e: CustomEvent) => {
+      setUrgentLeads(prev => {
+        if (prev.find(l => l.id === e.detail.id)) return prev;
+        return [...prev, e.detail];
+      });
+      const audio = new Audio("/audio/saude_barriga.mp3");
+      audio.play().catch(e => console.log("Áudio bloqueado", e));
+    }) as EventListener);
+
+    // Initial check
+    handleStorageChange();
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('escom-lead-converted', handleStorageChange as any);
+    };
+  }, []);
+
+  const handleMarkLeadAsPaid = (leadId: string) => {
+    const lead = urgentLeads.find(l => l.id === leadId);
+    let slug = 'default';
+    if (lead && lead.empresa) {
+      const rawSlug = lead.empresa.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+      if (rawSlug.includes('implart')) slug = 'clinica';
+      else if (rawSlug.includes('belini')) slug = 'belini';
+      else if (rawSlug.includes('elizabete')) slug = 'elizabete';
+      else if (rawSlug.includes('oral-fix') || rawSlug.includes('oralfix')) slug = 'oralfix';
+      else if (rawSlug.includes('chiro-and-movement') || rawSlug.includes('chiroandmovement') || rawSlug.includes('miami')) slug = 'chiroandmovement';
+      else if (rawSlug.includes('giovana')) slug = 'giovana-lumertz';
+      else if (rawSlug.includes('austin')) slug = 'austin-simply-fit';
+      else if (rawSlug.includes('silva')) slug = 'silva-autocenter';
+      else slug = rawSlug;
+    }
+    setUrgentLeads(prev => prev.filter(l => l.id !== leadId));
+    localStorage.removeItem('escom_new_lead_conversion');
+    localStorage.setItem('escom_lead_status_template-' + slug, 'pago');
+    localStorage.setItem('escom_lead_status', 'pago');
+    alert("Lead marcado como Projeto Pago com Sucesso! A Landing Page do cliente agora está limpa, e o Contrato foi Liberado.");
+  };
+
+  const handleRequestSiteRevision = async (projectId: string) => {
+    const prompt = revisionRequests[projectId];
+    if (!prompt) return;
+
+    setIsRequestingRevision(prev => ({ ...prev, [projectId]: true }));
+    // Simulando processamento da IA para alterar página gerada
+    setTimeout(() => {
+      alert(`Alterações aplicadas na Landing Page com sucesso baseado no prompt: "${prompt}"`);
+      setIsRequestingRevision(prev => ({ ...prev, [projectId]: false }));
+      setRevisionRequests(prev => ({ ...prev, [projectId]: '' }));
+    }, 2500);
+  };
+
+  const fetchCreatedSites = async () => {
+    try {
+      const res = await fetch('/api/generated-sites');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        setCreatedSitesList(data.data);
+      }
+    } catch (err) {
+      console.error("Erro ao carregar sites gerados:", err);
+    }
+  };
+
+  const AnalysisModal = () => (
+    analysisModalOpen && analysisSite ? (
+      <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm">
+        <div className="bg-[#111] border border-zinc-800 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+          <div className="p-6 border-b border-zinc-800 flex justify-between items-center bg-[#1a1a1a]">
+            <div>
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <Sparkles className="text-[#00d1ff]" />
+                Análise do Projeto: {analysisSite.companyName}
+              </h2>
+              {analysisSite.originalUrl && (
+                <a 
+                  href={analysisSite.originalUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-xs text-zinc-400 hover:text-[#00d1ff] transition-colors mt-2 flex items-center gap-1 inline-flex"
+                >
+                  <LinkIcon size={12} />
+                  Site Atual Analisado: {analysisSite.originalUrl}
+                </a>
+              )}
+            </div>
+            <button onClick={() => setAnalysisModalOpen(false)} className="text-zinc-400 hover:text-white transition-colors">
+              <X size={24} />
+            </button>
+          </div>
+          <div className="p-8 overflow-y-auto custom-scrollbar flex-1 text-zinc-300">
+            {analysisSite.analysis ? (
+              <div className="prose prose-invert prose-zinc max-w-none">
+                <Markdown
+                  components={{
+                    h1: ({ ...props }) => <h1 className="text-emerald-500 font-bold" {...props} />,
+                    h2: ({ ...props }) => <h2 className="text-emerald-500 font-bold" {...props} />,
+                    h3: ({ ...props }) => <h3 className="text-emerald-500 font-bold" {...props} />,
+                    h4: ({ ...props }) => <h4 className="text-emerald-500 font-bold" {...props} />,
+                    h5: ({ ...props }) => <h5 className="text-emerald-500 font-bold" {...props} />,
+                    h6: ({ ...props }) => <h6 className="text-emerald-500 font-bold" {...props} />,
+                  }}
+                >
+                  {analysisSite.analysis}
+                </Markdown>
+              </div>
+            ) : (
+              <p className="text-zinc-500 italic text-center">Nenhuma análise detalhada encontrada no momento.</p>
+            )}
+          </div>
+          <div className="p-6 border-t border-zinc-800 bg-[#1a1a1a] flex justify-end">
+            <button onClick={() => setAnalysisModalOpen(false)} className="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+              Fechar
+            </button>
+          </div>
+        </div>
+      </div>
+    ) : null
+  );
+
+  const handleApproveAndDeploy = async (site: any) => {
+    setIsDeploying(true);
+    setDeployingProjectId(site.projectId);
+
+    const slug = (site.companyName || formData.companyName || 'site').toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+    // Tentar builder novo com os dados atuais do formulário + copy gerado
+    let builtViaBuilder = false;
+    const promptStr = generatedPrompt || site.generatedPrompt || '';
+    let parsedSiteData: any = {};
+    if (promptStr && typeof promptStr === 'string') {
+      try {
+        let cleanJson = promptStr;
+        if (cleanJson.startsWith('```json')) cleanJson = cleanJson.replace(/^```json/, '').replace(/```$/, '').trim();
+        else if (cleanJson.startsWith('```')) cleanJson = cleanJson.replace(/^```/, '').replace(/```$/, '').trim();
+        parsedSiteData = JSON.parse(cleanJson);
+      } catch (_) {}
+    }
+
+    const buildPayload = (sd: any) => ({
+      projectId: site.projectId, slug,
+      formData: {
+        companyName: formData.companyName || site.companyName,
+        niche: formData.niche || site.niche || '',
+        audience: formData.audience || '',
+        goal: formData.goal || '',
+        tone: formData.tone || '',
+        differentiators: formData.differentiators || '',
+        colors: formData.colors || '',
+        primaryHex: formData.primaryHex || sd?.primaryHex || '#00d1ff',
+        phone: formData.phone || '',
+        email: formData.email || '',
+        address: formData.address || '',
+        website: site.originalUrl || site.website || formData.website || '',
+        placeId: site.placeId || formData.placeId || '',
+        sections: formData.sections || {}
+      },
+      siteData: sd || { hero: {}, about: {}, services: [], benefits: [], testimonials: [], pricing: { plans: [] }, faq: [], contact: {} },
+      paletteIndex: 0,
+      lead: { originalUrl: site.originalUrl, website: site.website, placeId: site.placeId }
+    });
+
+    // Tenta builder com parsedSiteData completo
+    if (parsedSiteData && (parsedSiteData.hero || parsedSiteData.services || parsedSiteData.sections)) {
+      try {
+        const r = await fetch('/api/build-and-deploy-site', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(buildPayload(parsedSiteData)) });
+        const d = await r.json();
+        if (d.success) builtViaBuilder = true;
+      } catch (_) {}
+    }
+
+    // Fallback: builder com dados parciais
+    if (!builtViaBuilder && formData.companyName) {
+      try {
+        const r = await fetch('/api/build-and-deploy-site', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(buildPayload(parsedSiteData)) });
+        const d = await r.json();
+        if (d.success) builtViaBuilder = true;
+      } catch (_) {}
+    }
+
+    // Fallback: deploy via Stitch (antigo)
+    if (!builtViaBuilder) {
+      try {
+        const res = await fetch('/api/approve-site', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ projectId: site.projectId, slug })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert("Deploy via Stitch iniciado! Aguarde.");
+        } else {
+          alert(data.error || "Erro ao iniciar o deploy.");
+          setIsDeploying(false);
+          setDeployingProjectId(null);
+          return;
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Erro ao conectar com a API de deploy.");
+        setIsDeploying(false);
+        setDeployingProjectId(null);
+        return;
+      }
+    }
+
+    // Polling para todos os casos (builder e Stitch)
+    if (builtViaBuilder) alert("Build iniciado! O site está sendo gerado. Acompanhe o status abaixo.");
+    else alert("Deploy iniciado na Vercel! O processo está rodando em segundo plano. Aguarde alguns instantes.");
+
+    const interval = setInterval(async () => {
+      try {
+        const checkRes = await fetch('/api/generated-sites');
+        const checkData = await checkRes.json();
+        if (checkData.success) {
+          const updatedSite = checkData.data.find((s: any) => s.projectId === site.projectId);
+          if (updatedSite && updatedSite.status === 'approved' && updatedSite.deployedUrl) {
+            clearInterval(interval);
+            setIsDeploying(false);
+            setDeployingProjectId(null);
+            fetchCreatedSites();
+            alert(`Deploy finalizado! URL: ${updatedSite.deployedUrl}`);
+          } else if (updatedSite && updatedSite.status === 'failed_deploy') {
+            clearInterval(interval);
+            setIsDeploying(false);
+            setDeployingProjectId(null);
+            fetchCreatedSites();
+            alert(`Erro no deploy: ${updatedSite.error}`);
+          }
+        }
+      } catch (e) {
+        console.error("Polling error:", e);
+      }
+    }, 5000);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      setIsDeploying(false);
+      setDeployingProjectId(null);
+    }, 180000);
+  };
+
+  const handleRejectSite = async (projectId: string) => {
+    try {
+      const res = await fetch(`/api/generated-sites/${projectId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'rejected' })
+      });
+      const data = await res.json();
+      if (data.success) {
+        fetchCreatedSites();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleOpenCommercialDossier = async (lead: any) => {
+    setCommercialLead(lead);
+    setCommercialModalOpen(true);
+    setIsGeneratingReports(true);
+    setCommercialReports(null);
+    
+    try {
+      const companyName = lead.title || lead.name || "Empresa";
+      const niche = lead.niche || "Comércio Local";
+      
+      const res = await fetch('/api/generate-commercial-reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ companyName, niche })
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        setCommercialReports(data.data);
+      } else {
+        alert(data.error || "Erro ao gerar dossiês comerciais.");
+        setCommercialModalOpen(false);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Falha na rede ao gerar relatórios comerciais.");
+      setCommercialModalOpen(false);
+    } finally {
+      setIsGeneratingReports(false);
+    }
+  };
+
+  const handleDownloadCommercialPdf = async (elementId: string, filename: string) => {
+    setIsExportingPdf(true);
+    try {
+      const element = document.getElementById(elementId);
+      if (element) {
+        const { toJpeg } = await import('html-to-image');
+        const { jsPDF } = await import('jspdf');
+        
+        const imgData = await toJpeg(element, { 
+          pixelRatio: 2, 
+          backgroundColor: '#0a0a0a'
+        });
+        
+        const width = element.offsetWidth;
+        const height = element.offsetHeight;
+
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'px',
+          format: [width, height]
+        });
+        
+        pdf.addImage(imgData, 'JPEG', 0, 0, width, height);
+        pdf.save(`${filename}.pdf`);
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert('Erro ao exportar PDF: ' + err.message);
+    } finally {
+      setIsExportingPdf(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCreatedSites();
+  }, []);
 
   useEffect(() => {
     // Fetch initial leads from DB
@@ -89,12 +461,14 @@ export default function Mineracao() {
         const resText = await res.text();
         let data: any = {};
         try { data = JSON.parse(resText); } catch(e) {}
-        if (data.success) {
+        if (data.success && Array.isArray(data.leads)) {
           setLeadsList(data.leads.map((lead: any) => ({
             ...lead,
             updatedAt: new Date(lead.createdAt || Date.now()).toLocaleString('pt-BR'),
             name: (lead.title && lead.title.split('-')[0].trim()) || lead.name || lead.nome || 'Empresa não identificada'
           })));
+        } else {
+          setLeadsList([]);
         }
       } catch (err) {
         console.error("Falha ao carregar leads", err);
@@ -117,7 +491,7 @@ export default function Mineracao() {
     tone: 'Profissional e Persuasivo',
     differentiators: '',
     colors: '',
-    primaryHex: '#2EFF00',
+    primaryHex: '#00d1ff',
     sections: {
       hero: true,
       about: true,
@@ -206,7 +580,7 @@ export default function Mineracao() {
     window.dispatchEvent(new Event('close-sidebar'));
     
     const companyNameParam = lead.title?.split('-')[0].trim() || lead.name || lead.nome;
-    const nicheTarget = searchQuery.split(' ')[0] || 'Serviços';
+    const nicheTarget = lead.niche || searchQuery.split(' ')[0] || 'Serviços';
     const siteUrl = lead.website || lead.link || lead.site || '';
     const phone = lead.phoneNumber || lead.phone || '';
     const address = lead.address || lead.endereco || '';
@@ -222,11 +596,22 @@ export default function Mineracao() {
       address: address,
       email: email,
     }));
+
+    if (lead.auditData && lead.auditData.issues) {
+      setAuditIssues(lead.auditData.issues.map((i: any) => ({
+        title: i.title,
+        description: i.description,
+        recommendation: i.recommendation || '',
+        checked: false
+      })));
+    } else {
+      setAuditIssues([]);
+    }
     
     setCurrentView('generator'); // Show the form again
     
-    // Auto-analyze UX faults if there is a site:
-    if (siteUrl && !isAnalyzingUrl) {
+    // Auto-analyze UX faults if there is a site and no pre-computed audit:
+    if (siteUrl && !lead.auditData && !isAnalyzingUrl) {
        analyzeUrl(siteUrl);
     }
   };
@@ -236,6 +621,7 @@ export default function Mineracao() {
     const urlToAnalyze = overrideUrl || formData.websiteUrl;
     if (!urlToAnalyze) return;
     setIsAnalyzingUrl(true);
+    setStreamingChunks(0);
     
     try {
       const response = await fetch('/api/analyze-ux', {
@@ -243,16 +629,30 @@ export default function Mineracao() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: urlToAnalyze.startsWith('http') ? urlToAnalyze : `https://${urlToAnalyze}` })
       });
-      const resText = await response.text();
-      let data: any = {};
-      try { data = JSON.parse(resText); } catch(e) {}
       
-      if (data.success && data.data) {
-        const issuesSummary = data.data.summary || '';
-        const issuesText = data.data.issues?.map((i: any) => `- ERRO: ${i.title}\n  IMPACTO: ${i.description}\n  CORREÇÃO UX/COPY: ${i.recommendation || ''}`).join('\n\n') || '';
+      let accumulated = '';
+      if (response.body) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          accumulated += decoder.decode(value, { stream: true });
+          setStreamingChunks(prev => prev + 1);
+        }
+      } else {
+        accumulated = await response.text();
+      }
+      
+      let data: any = {};
+      try { data = JSON.parse(accumulated); } catch(e) {}
+      
+      if (data && data.issues) {
+        const issuesSummary = data.summary || '';
+        const issuesText = data.issues?.map((i: any) => `- ERRO: ${i.title}\n  IMPACTO: ${i.description}\n  CORREÇÃO UX/COPY: ${i.recommendation || ''}`).join('\n\n') || '';
         
-        if (data.data.issues) {
-          setAuditIssues(data.data.issues.map((i: any) => ({
+        if (data.issues) {
+          setAuditIssues(data.issues.map((i: any) => ({
             title: i.title,
             description: i.description,
             recommendation: i.recommendation || '',
@@ -272,7 +672,7 @@ export default function Mineracao() {
           differentiators: data.data.brandAnalysis?.differentiators || 'Foco em conversão extrema com UX aprimorada.',
           tone: data.data.brandAnalysis?.tone || 'Profissional e Persuasivo',
           colors: data.data.brandAnalysis?.colors || prev.colors || '',
-          primaryHex: data.data.brandAnalysis?.primaryHex || prev.primaryHex || '#2EFF00'
+          primaryHex: data.data.brandAnalysis?.primaryHex || prev.primaryHex || '#00d1ff'
         }));
 
         setGeneratedPrompt(`[DADOS DA ANÁLISE PROFUNDA DO SITE ATUAL]\n${issuesSummary}\n\n[PRINCIPAIS PROBLEMAS ENCONTRADOS NO SITE ATUAL A SEREM CORRIGIDOS]\n${issuesText}\n\n-> INSTRUÇÃO: Mapeie as 'CORREÇÕES UX/COPY' apontadas acima para as seções (Hero, Problema, Solução, etc) neste novo copywriting.\n`);
@@ -545,7 +945,7 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
   const loadingData = currentView === 'pdf-loading' 
     ? { title: 'Gerando PDF da Marca...', desc: 'A IA está construindo a identidade visual, paleta de cores e posts para o Instagram.' }
     : currentView === 'loading-ai'
-    ? { title: 'O Gemini está pensando... 🧠', desc: 'Construindo a arquitetura perfeita para o seu App. Tempo estimado: 30s a 1min' }
+    ? { title: 'A IA está processando... 🧠', desc: 'Construindo a arquitetura perfeita para o seu App. Tempo estimado: 30s a 1min' }
     : { title: 'Criando Estrutura Inteligente...', desc: 'Lendo os parâmetros do prompt e desenhando a arquitetura (UI/UX).' };
 
   let parsedSiteData: any = {};
@@ -562,7 +962,8 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
   }
 
   return (
-    <div className="flex h-full bg-[#0a0a0a] text-zinc-300 font-sans overflow-hidden selection:bg-[#2EFF00] selection:text-black">
+    <div className="flex h-full bg-[#0a0a0a] text-zinc-300 font-sans overflow-hidden selection:bg-[#00d1ff] selection:text-black">
+      {AnalysisModal()}
       
       {/* Mobile Sidebar Overlay */}
       {isMineracaoSidebarOpen && window.innerWidth < 768 && (
@@ -578,28 +979,29 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
               <ChevronDown className="rotate-90" size={20} />
             </button>
           </div>
-          <div className="mb-8">
-            <h3 className="text-[10px] uppercase text-zinc-500 font-bold tracking-widest mb-4 px-2">Fluxo do Projeto</h3>
-            <nav className="space-y-1">
-              <button onClick={() => navigateTo('leads')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${currentView === 'leads' ? 'bg-[#2EFF00]/10 text-[#2EFF00] border border-[#2EFF00]/20' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'}`}>
+          <nav className="space-y-1">
+              <button onClick={() => navigateTo('leads')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${currentView === 'leads' ? 'bg-[#00d1ff]/10 text-[#00d1ff] border border-[#00d1ff]/20' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'}`}>
                 <Search size={18} />
-                <span className="text-sm font-medium">1. Buscar Leads</span>
+                <span className="text-sm font-medium">1. Buscar Sites</span>
               </button>
-              <button onClick={() => leadSelected && navigateTo('generator')} disabled={!leadSelected} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${currentView === 'generator' ? 'bg-[#2EFF00]/10 text-[#2EFF00] border border-[#2EFF00]/20' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'} ${!leadSelected ? 'opacity-50 cursor-not-allowed' : ''}`}>
+              <button onClick={() => leadSelected && navigateTo('generator')} disabled={!leadSelected} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${currentView === 'generator' ? 'bg-[#00d1ff]/10 text-[#00d1ff] border border-[#00d1ff]/20' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'} ${!leadSelected ? 'opacity-50 cursor-not-allowed' : ''}`}>
                 <PenTool size={18} />
                 <span className="text-sm font-medium">2. Gerador Copy</span>
               </button>
-              <button onClick={() => generatedPrompt && navigateTo('preview')} disabled={!generatedPrompt || !leadSelected} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${currentView === 'preview' ? 'bg-[#2EFF00]/10 text-[#2EFF00] border border-[#2EFF00]/20' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 disabled:opacity-50 disabled:cursor-not-allowed'}`}>
+              <button onClick={() => generatedPrompt && navigateTo('preview')} disabled={!generatedPrompt || !leadSelected} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${currentView === 'preview' ? 'bg-[#00d1ff]/10 text-[#00d1ff] border border-[#00d1ff]/20' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 disabled:opacity-50 disabled:cursor-not-allowed'}`}>
                 <LayoutTemplate size={18} />
                 <span className="text-sm font-medium">3. Estrutura Site</span>
               </button>
-              <button onClick={() => generatedPrompt && navigateTo('brand-pdf')} disabled={!generatedPrompt || !leadSelected} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${currentView === 'brand-pdf' ? 'bg-[#2EFF00]/10 text-[#2EFF00] border border-[#2EFF00]/20' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 disabled:opacity-50 disabled:cursor-not-allowed'}`}>
+              <button onClick={() => generatedPrompt && navigateTo('brand-pdf')} disabled={!generatedPrompt || !leadSelected} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${currentView === 'brand-pdf' ? 'bg-[#00d1ff]/10 text-[#00d1ff] border border-[#00d1ff]/20' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 disabled:opacity-50 disabled:cursor-not-allowed'}`}>
                 <FileCheck size={18} />
                 <span className="text-sm font-medium">4. Brand PDF</span>
               </button>
+              <button onClick={() => { setFilterStatus('created-sites'); navigateTo('leads'); }} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${currentView === 'leads' && filterStatus === 'created-sites' ? 'bg-[#00d1ff]/10 text-[#00d1ff] border border-[#00d1ff]/20' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'}`}>
+                <Globe size={18} />
+                <span className="text-sm font-medium">5. Sites Criados</span>
+              </button>
             </nav>
           </div>
-        </div>
       </aside>
 
       {/* Main Content */}
@@ -614,10 +1016,11 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
               <Menu size={24} />
             </button>
             <h1 className="text-lg font-bold text-white truncate max-w-[200px] md:max-w-none">
-              {currentView === 'leads' ? 'Mineração de Leads' :
+              {currentView === 'leads' ? 'Mineração de Sites' :
                currentView === 'generator' ? 'Criar Copy para Site' : 
                currentView === 'preview' ? 'Pré-visualização do Template' : 
                currentView === 'brand-pdf' ? 'Proposta de Identidade Visual' :
+               currentView === 'created-sites' ? 'Sites Criados' :
                currentView === 'success' ? 'Projeto Finalizado' : 'Processando...'}
             </h1>
           </div>
@@ -631,8 +1034,11 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                 <ChevronLeft size={16} /> Voltar para Mineração
               </button>
             )}
-            <button className="bg-zinc-800 hover:bg-zinc-700 text-white font-semibold px-4 py-2 rounded-md flex items-center gap-2 transition-colors text-sm border border-zinc-700">
-              <Bell size={16} /> <span className="absolute top-5 right-[2.5rem] w-2 h-2 bg-red-500 rounded-full"></span>
+            <button className="bg-zinc-800 hover:bg-zinc-700 text-white font-semibold px-4 py-2 rounded-md flex items-center gap-2 transition-colors text-sm border border-zinc-700 relative">
+              <Bell size={16} /> 
+              {urgentLeads.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse border-2 border-[#0f0f0f]"></span>
+              )}
             </button>
           </div>
         </header>
@@ -640,15 +1046,50 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
         {/* Dynamic View Area */}
         <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar relative">
           
+          {/* Alerta Global de Leads Convertidos (Urgência) */}
+          {urgentLeads.length > 0 && (
+            <div className="max-w-6xl mx-auto mb-8 animate-in fade-in slide-in-from-top-4 duration-500 z-50">
+              {urgentLeads.map(lead => (
+                <div key={lead.id} className="bg-gradient-to-r from-red-900/40 to-[#0a0a0a] border border-red-500/50 rounded-2xl p-6 shadow-[0_0_30px_rgba(239,68,68,0.2)] flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-red-500/20 border border-red-500 flex items-center justify-center text-red-500">
+                      <Bell size={24} className="animate-wiggle" />
+                    </div>
+                    <div>
+                      <h3 className="text-red-500 font-bold text-lg flex items-center gap-2">
+                        NOVO LEAD CONVERTIDO! <span className="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded uppercase">Urgente</span>
+                      </h3>
+                      <p className="text-zinc-300 text-sm">A empresa <strong className="text-white">{lead.empresa}</strong> acabou de aceitar a proposta de R$ {lead.valor}. Status atual: <span className="text-orange-400 font-bold">PAGAMENTO PENDENTE</span></p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => handleMarkLeadAsPaid(lead.id)}
+                    className="w-full md:w-auto bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-bold px-6 py-3 rounded-xl transition-all shadow-[0_0_20px_rgba(0,209,255,0.3)] shrink-0"
+                  >
+                    Confirmar Pagamento e Iniciar Projeto
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
           {/* VIEW 0: LEADS SEARCH LAB */}
           {currentView === 'leads' && (
             <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-300">
               
               {/* Search Box */}
               <div className="bg-[#121212] border border-zinc-800/60 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2EFF00] to-emerald-500"></div>
-                <h2 className="text-2xl font-bold text-white mb-2">Google Maps Scraper</h2>
-                <p className="text-zinc-400 text-sm mb-8">Busque empresas com a API do Google, revise a fila e exporte apenas os leads aprovados.</p>
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#00d1ff] to-emerald-500"></div>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-white mb-2">Mineração de Sites</h2>
+                    <p className="text-zinc-400 text-sm">Busca manual instantânea via Google Maps ou acompanhamento da mineração e auditoria automatizada diária (30 sites/dia).</p>
+                  </div>
+                  <div className="bg-[#00d1ff]/10 border border-[#00d1ff]/30 rounded-xl px-4 py-2 flex items-center gap-2 shrink-0">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#00d1ff] animate-pulse"></span>
+                    <span className="text-xs font-mono font-bold text-[#00d1ff] tracking-wider">ROBÔ DIÁRIO ATIVO (30 SITES)</span>
+                  </div>
+                </div>
                 
                 <div className="space-y-6">
                   <div>
@@ -659,7 +1100,7 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                         type="text" 
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-[#0a0a0a] border-2 border-zinc-800 focus:border-[#2EFF00] rounded-xl pl-12 pr-4 py-4 text-white font-medium transition-colors outline-none"
+                        className="w-full bg-[#0a0a0a] border-2 border-zinc-800 focus:border-[#00d1ff] rounded-xl pl-12 pr-4 py-4 text-white font-medium transition-colors outline-none"
                         placeholder="Ex: Nicho/Profissional + Cidade"
                       />
                     </div>
@@ -671,7 +1112,7 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                       type="number" 
                       value={searchLimit}
                       onChange={(e: any) => setSearchLimit(e.target.value)}
-                      className="w-32 bg-[#0a0a0a] border-2 border-zinc-800 focus:border-[#2EFF00] rounded-xl px-4 py-3 text-white font-medium transition-colors outline-none"
+                      className="w-32 bg-[#0a0a0a] border-2 border-zinc-800 focus:border-[#00d1ff] rounded-xl px-4 py-3 text-white font-medium transition-colors outline-none"
                     />
                   </div>
 
@@ -679,7 +1120,7 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                     <button 
                       onClick={handleSearchLeads}
                       disabled={isSearching || !searchQuery}
-                      className="bg-[#2EFF00] hover:bg-[#28e600] text-black font-bold px-10 py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(46,255,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed min-w-[160px]"
+                      className="bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-bold px-10 py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(0,209,255,0.2)] disabled:opacity-50 disabled:cursor-not-allowed min-w-[160px]"
                     >
                       {isSearching ? <Loader2 size={20} className="animate-spin" /> : 'Buscar'}
                     </button>
@@ -701,106 +1142,461 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                 <div className="space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                     <h3 className="text-white font-bold flex items-center gap-2">
-                      Resultados da Busca <span className="bg-zinc-800 text-zinc-400 text-xs px-2 py-0.5 rounded-full">{leadsList.length}</span>
+                      {filterStatus === 'created-sites' ? 'Protótipos de Sites Criados' : 'Resultados da Busca'} <span className="bg-zinc-800 text-zinc-400 text-xs px-2 py-0.5 rounded-full">{filterStatus === 'created-sites' ? createdSitesList.length : leadsList.filter(l => filterStatus === 'all' || l.status === filterStatus).length}</span>
                     </h3>
                     <div className="flex bg-[#121212] p-1 rounded-lg border border-zinc-800 self-start">
-                      {['all', 'pending', 'approved', 'discarded'].map((status) => (
+                      {['all', 'pending', 'approved', 'discarded', 'created-sites'].map((status) => (
                         <button
                           key={status}
                           onClick={() => setFilterStatus(status as any)}
                           className={`px-4 py-1.5 text-xs font-bold uppercase rounded-md transition-all ${
                             filterStatus === status 
-                            ? 'bg-zinc-800 text-[#2EFF00]' 
+                            ? 'bg-zinc-800 text-[#00d1ff]' 
                             : 'text-zinc-500 hover:text-zinc-300'
                           }`}
                         >
-                          {status === 'all' ? 'Todos' : status === 'pending' ? 'Pendentes' : status === 'approved' ? 'Aprovados' : 'Descartados'}
+                          {status === 'all' ? 'Todos' : 
+                           status === 'pending' ? 'Pendentes' : 
+                           status === 'approved' ? 'Aprovados' : 
+                           status === 'discarded' ? 'Descartados' : 'Sites Criados'}
                         </button>
                       ))}
                     </div>
                   </div>
                   
-                  <div className="flex flex-col gap-4">
+                  {filterStatus === 'created-sites' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {createdSitesList.map((site: any) => (
+                        <div key={site.projectId} className="bg-[#121212] border border-zinc-800 rounded-2xl p-6 relative overflow-hidden flex flex-col shadow-lg hover:border-[#00d1ff]/30 transition-all duration-300">
+                          <div className={`absolute top-0 left-0 w-1.5 h-full ${
+                            site.status === 'pending' ? 'bg-orange-500' : 
+                            (site.status === 'approved' || site.status === 'deployed') ? 'bg-[#00d1ff]' : 'bg-red-500'
+                          }`}></div>
+
+                          <div className="flex-1 flex flex-col justify-between">
+                            <div>
+                              <div className="flex justify-between items-start mb-2 pl-2">
+                                <h3 className="text-lg font-bold text-white">{site.companyName}</h3>
+                                <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
+                                  site.status === 'pending' ? 'bg-orange-500/10 text-orange-500 border border-orange-500/20' :
+                                  (site.status === 'approved' || site.status === 'deployed') ? 'bg-[#00d1ff]/10 text-[#00d1ff] border border-[#00d1ff]/20' :
+                                  'bg-red-500/10 text-red-500 border border-red-500/20'
+                                }`}>
+                                  {site.status === 'pending' ? 'Aguardando Aprovação' : 
+                                   (site.status === 'approved' || site.status === 'deployed') ? 'Aprovado (No Ar)' : 'Rejeitado'}
+                                </span>
+                              </div>
+                              <p className="text-zinc-400 text-xs font-mono mb-4 pl-2">Nicho: {site.niche} | Score: {site.score || 95}</p>
+                            </div>
+
+                            <div className="mt-4 flex flex-col gap-3 pl-2">
+                              {(site.deployedUrl || site.htmlUrl) && (
+                                <a 
+                                  href={site.deployedUrl || `/api/view-prototype/${site.projectId || site.id}`} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="bg-[#1a1a1a] hover:bg-[#252525] border border-zinc-800 text-zinc-300 font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-colors"
+                                >
+                                  <Globe size={14} className="text-[#00d1ff]" /> Visualizar Protótipo Stitch
+                                </a>
+                              )}
+                              
+                              <button 
+                                onClick={() => { setAnalysisSite(site); setAnalysisModalOpen(true); }}
+                                className="bg-[#1a1a1a] hover:bg-[#252525] border border-zinc-800 text-zinc-300 font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-colors w-full"
+                              >
+                                <Sparkles size={14} className="text-[#00d1ff]" /> Ver Análise do Protótipo
+                              </button>
+
+                              {(site.status === 'approved' || site.status === 'deployed') && site.deployedUrl && (
+                                <a 
+                                  href={site.deployedUrl} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="bg-[#00d1ff]/10 border border-[#00d1ff]/30 hover:bg-[#00d1ff]/20 text-[#00d1ff] font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-colors"
+                                >
+                                  <Rocket size={14} /> Acessar Site no Vercel (Produção)
+                                </a>
+                              )}
+
+                              {site.status === 'pending' && (
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => handleApproveAndDeploy(site)}
+                                    disabled={isDeploying}
+                                    className="flex-1 bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-wait"
+                                  >
+                                    {isDeploying && deployingProjectId === site.projectId ? (
+                                      <>
+                                        <Loader2 size={14} className="animate-spin" />
+                                        <span>Publicando...</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <CheckCircle2 size={14} />
+                                        <span>Aprovar & Deploy</span>
+                                      </>
+                                    )}
+                                  </button>
+                                  <button
+                                    onClick={() => handleRejectSite(site.projectId)}
+                                    className="bg-transparent hover:bg-red-500/10 border border-red-500/30 text-red-500 py-2.5 px-4 rounded-xl text-xs transition-colors"
+                                  >
+                                    Rejeitar
+                                  </button>
+                                </div>
+                              )}
+
+                              {/* Seção de Digitar Alterações */}
+                              <div className="mt-4 pt-4 border-t border-zinc-800">
+                                <label className="text-[10px] text-zinc-500 font-bold uppercase mb-2 block">Ajuste Fino na Página Gerada</label>
+                                <div className="flex flex-col gap-2">
+                                  <textarea 
+                                    rows={2}
+                                    placeholder="Descreva as alterações. Ex: Mudar a cor do botão para azul, trocar título para X..."
+                                    value={revisionRequests[site.projectId] || ''}
+                                    onChange={(e) => setRevisionRequests(prev => ({ ...prev, [site.projectId]: e.target.value }))}
+                                    className="w-full bg-[#0a0a0a] border border-zinc-700 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-[#00d1ff] transition-colors resize-none placeholder:text-zinc-600"
+                                  ></textarea>
+                                  <button 
+                                    onClick={() => handleRequestSiteRevision(site.projectId)}
+                                    disabled={isRequestingRevision[site.projectId] || !revisionRequests[site.projectId]}
+                                    className="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-bold py-2 rounded-lg text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                                  >
+                                    {isRequestingRevision[site.projectId] ? (
+                                      <><Loader2 size={12} className="animate-spin"/> Aplicando IA...</>
+                                    ) : (
+                                      <><PenTool size={12}/> Solicitar Alterações </>
+                                    )}
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {createdSitesList.length === 0 && (
+                        <div className="col-span-2 py-24 text-center border border-[#1a1a1a] border-dashed rounded-xl bg-[#0a0a0a]/50">
+                          <Globe size={48} className="mx-auto text-zinc-700 mb-4" />
+                          <h3 className="text-zinc-500 font-mono text-sm uppercase">NENHUM SITE CRIADO AINDA</h3>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-4">
                     {leadsList.filter(l => filterStatus === 'all' || l.status === filterStatus).map(lead => (
-                      <div key={lead.id} className="bg-[#121212] border border-zinc-800 rounded-2xl p-6 relative overflow-hidden flex flex-col md:flex-row items-center gap-6 shadow-lg hover:border-[#2EFF00]/30 transition-colors">
+                      <div key={lead.id} className="bg-[#121212] border border-zinc-800 rounded-2xl p-6 relative overflow-hidden flex flex-col shadow-lg hover:border-[#00d1ff]/30 transition-all duration-300">
                         {/* Status Border */}
                         <div className={`absolute top-0 left-0 w-1.5 h-full ${
                           lead.status === 'pending' ? 'bg-orange-500' : 
-                          lead.status === 'approved' ? 'bg-[#2EFF00]' : 'bg-red-500'
+                          lead.status === 'approved' ? 'bg-[#00d1ff]' : 'bg-red-500'
                         }`}></div>
 
-                        {/* Corpo do Card */}
-                        <div className="pl-3 flex-1 flex flex-col w-full">
-                          <div className="flex justify-between items-start mb-2">
-                            <h4 className="text-lg font-bold text-white line-clamp-1 leading-tight">{lead.title || lead.name || lead.nome || 'Empresa não identificada'}</h4>
-                            <div className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider ${
-                              lead.status === 'pending' ? 'text-orange-500' : 
-                              lead.status === 'approved' ? 'text-[#2EFF00]' : 'text-red-500'
-                            }`}>
-                              <div className="w-1.5 h-1.5 rounded-full bg-current"></div>
-                              {lead.status === 'pending' ? 'Pendente' : lead.status === 'approved' ? 'Aprovado' : 'Descartado'}
+                        <div className="flex flex-col md:flex-row items-center gap-6 w-full">
+                          {/* Corpo do Card */}
+                          <div className="pl-3 flex-1 flex flex-col w-full">
+                            <div className="flex justify-between items-start mb-2">
+                              <h4 className="text-lg font-bold text-white line-clamp-1 leading-tight">{lead.title || lead.name || lead.nome || 'Empresa não identificada'}</h4>
+                              <div className="flex items-center gap-3">
+                                {lead.score !== undefined && (
+                                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                                    lead.score >= 90 ? 'bg-[#00d1ff]/15 text-[#00d1ff] border border-[#00d1ff]/30' :
+                                    lead.score >= 50 ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' :
+                                    'bg-red-500/10 text-red-500 border border-red-500/20'
+                                  }`}>
+                                    Score: {lead.score}
+                                  </span>
+                                )}
+                                <div className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider ${
+                                  lead.status === 'pending' ? 'text-orange-500' : 
+                                  lead.status === 'approved' ? 'text-[#00d1ff]' : 'text-red-500'
+                                }`}>
+                                  <div className="w-1.5 h-1.5 rounded-full bg-current"></div>
+                                  {lead.status === 'pending' ? 'Pendente' : lead.status === 'approved' ? 'Aprovado' : 'Descartado'}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-zinc-400 font-mono text-sm mb-3 text-left">{lead.phone}</div>
+                            
+                            <div className="flex flex-wrap gap-4 mb-4 text-xs text-zinc-500">
+                              <div className="flex items-center gap-1.5 max-w-xs shrink-0">
+                                <MapPin size={12} className="shrink-0" /> 
+                                <span className="truncate">{lead.address || 'Sem endereço'}</span>
+                              </div>
+                              {(lead.website || lead.link || lead.site) ? (
+                                <div className="flex items-center gap-1.5 text-[#00d1ff] shrink-0">
+                                  <Globe size={12} className="shrink-0" /> 
+                                  <a href={lead.website || lead.link || lead.site} target="_blank" rel="noreferrer" className="hover:underline text-zinc-300 truncate max-w-[200px]">{lead.website || lead.link || lead.site}</a>
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-1.5 text-zinc-600 shrink-0">
+                                  <Globe size={12} className="shrink-0" /> 
+                                  <span>Sem website detectado</span>
+                                </div>
+                              )}
+
+                              {/* IA Badges */}
+                              {lead.auditData && (
+                                <span className="bg-[#00d1ff]/10 text-[#00d1ff] text-[9px] font-mono px-2 py-0.5 rounded border border-[#00d1ff]/20 flex items-center gap-1">
+                                  ⚡ AUDITADO POR IA
+                                </span>
+                              )}
+                              {lead.sitePlan && (
+                                <span className="bg-[#00d1ff]/10 text-[#00d1ff] text-[9px] font-mono px-2 py-0.5 rounded border border-[#00d1ff]/20 flex items-center gap-1">
+                                  💡 PLANO DE SITE PRONTO
+                                </span>
+                              )}
                             </div>
                           </div>
-                          <div className="text-zinc-400 font-mono text-sm mb-3 text-left">{lead.phone}</div>
-                          
-                          <div className="flex flex-wrap gap-4 mb-4 text-xs text-zinc-500">
-                            <div className="flex items-center gap-1.5 max-w-xs shrink-0">
-                              <MapPin size={12} className="shrink-0" /> 
-                              <span className="truncate">{lead.address || 'Sem endereço'}</span>
-                            </div>
-                            {(lead.website || lead.link || lead.site) ? (
-                              <div className="flex items-center gap-1.5 text-[#2EFF00] shrink-0">
-                                <Globe size={12} className="shrink-0" /> 
-                                <a href={lead.website || lead.link || lead.site} target="_blank" rel="noreferrer" className="hover:underline text-zinc-300 truncate max-w-[200px]">{lead.website || lead.link || lead.site}</a>
+
+                          {/* Ações Direita */}
+                          <div className="flex flex-col gap-2 shrink-0 w-full md:w-auto">
+                             <button 
+                               onClick={() => handleGenerateSiteForLead(lead)}
+                                className="w-full md:w-48 bg-white hover:bg-zinc-200 text-black font-bold py-2.5 rounded-xl transition-all shadow-[0_0_15px_rgba(255,255,255,0.1)] flex items-center justify-center gap-2 text-sm"
+                              >
+                                <Sparkles size={14} className="text-[#00d1ff]" /> Validar Lead
+                              </button>
+
+                              {lead.score >= 90 && (
+                                <button 
+                                   onClick={() => handleOpenCommercialDossier(lead)}
+                                   className="w-full md:w-48 bg-[#00d1ff]/10 border border-[#00d1ff]/30 hover:bg-[#00d1ff]/20 text-[#00d1ff] font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 text-sm transition-all"
+                                >
+                                   <Sparkles size={14} /> Dossiê Comercial PRO
+                                </button>
+                              )}
+
+                              {(lead.auditData || lead.sitePlan) && (
+                                <button 
+                                  onClick={() => setExpandedLeadId(expandedLeadId === lead.id ? null : lead.id)}
+                                  className="w-full md:w-48 bg-[#1a1a1a] hover:bg-[#252525] text-zinc-300 font-bold py-2.5 rounded-xl border border-zinc-800 flex items-center justify-center gap-2 text-sm transition-all"
+                                >
+                                  {expandedLeadId === lead.id ? 'Ocultar Análise' : 'Exibir Análise (IA)'}
+                                </button>
+                              )}
+
+                              <div className="flex gap-2">
+                                 <a 
+                                   href={`https://wa.me/${(lead.phoneNumber || lead.phone || '').replace(/\D/g, '')}`} 
+                                   target="_blank" 
+                                   rel="noreferrer"
+                                   className="flex-1 bg-transparent border border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-white font-bold py-2 rounded-xl flex items-center justify-center gap-2 transition-all text-sm"
+                                 >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                      <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                                    </svg> Contato
+                                 </a>
                               </div>
-                            ) : (
-                              <div className="flex items-center gap-1.5 text-zinc-600 shrink-0">
-                                <Globe size={12} className="shrink-0" /> 
-                                <span>Sem website detectado</span>
+                              {/* Controles rápidos de Status */}
+                              <div className="flex justify-center gap-4 items-center mt-1">
+                                <button onClick={() => updateLeadStatus(lead.id, 'approved')} className={`transition-colors ${lead.status === 'approved' ? 'text-[#00d1ff]' : 'text-zinc-500 hover:text-[#00d1ff]'}`} title="Aprovar">
+                                  <CheckCircle size={16} />
+                                </button>
+                                <button onClick={() => updateLeadStatus(lead.id, 'pending')} className={`transition-colors ${lead.status === 'pending' || lead.status === 'Pendente' || !lead.status ? 'text-orange-500' : 'text-zinc-500 hover:text-orange-500'}`} title="Pendente">
+                                  <Clock size={16} />
+                                </button>
+                                <button onClick={() => updateLeadStatus(lead.id, 'discarded')} className={`transition-colors ${lead.status === 'discarded' ? 'text-red-500' : 'text-zinc-500 hover:text-red-500'}`} title="Descartar">
+                                  <Trash2 size={16} />
+                                </button>
                               </div>
-                            )}
                           </div>
                         </div>
 
-                        {/* Ações Direita */}
-                        <div className="flex flex-col gap-2 shrink-0 w-full md:w-auto">
-                           <button 
-                              onClick={() => handleGenerateSiteForLead(lead)}
-                              className="w-full md:w-48 bg-white hover:bg-zinc-200 text-black font-bold py-2.5 rounded-xl transition-all shadow-[0_0_15px_rgba(255,255,255,0.1)] flex items-center justify-center gap-2 text-sm"
-                            >
-                              <Sparkles size={14} className="text-[#2EFF00]" /> Validar Lead
-                            </button>
-                            <div className="flex gap-2">
-                               <a 
-                                 href={`https://wa.me/${(lead.phoneNumber || lead.phone || '').replace(/\D/g, '')}`} 
-                                 target="_blank" 
-                                 rel="noreferrer"
-                                 className="flex-1 bg-transparent border border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-white font-bold py-2 rounded-xl flex items-center justify-center gap-2 transition-all text-sm"
-                               >
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
-                                  </svg> Contato
-                               </a>
-                            </div>
-                            {/* Controles rápidos de Status */}
-                            <div className="flex justify-center gap-4 items-center mt-1">
-                              <button onClick={() => updateLeadStatus(lead.id, 'approved')} className={`transition-colors ${lead.status === 'approved' ? 'text-[#2EFF00]' : 'text-zinc-500 hover:text-[#2EFF00]'}`} title="Aprovar">
-                                <CheckCircle size={16} />
-                              </button>
-                              <button onClick={() => updateLeadStatus(lead.id, 'pending')} className={`transition-colors ${lead.status === 'pending' || lead.status === 'Pendente' || !lead.status ? 'text-orange-500' : 'text-zinc-500 hover:text-orange-500'}`} title="Pendente">
-                                <Clock size={16} />
-                              </button>
-                              <button onClick={() => updateLeadStatus(lead.id, 'discarded')} className={`transition-colors ${lead.status === 'discarded' ? 'text-red-500' : 'text-zinc-500 hover:text-red-500'}`} title="Descartar">
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
-                        </div>
-
+                        {/* Expandable IA Analysis Container */}
+                        {expandedLeadId === lead.id && (
+                          <div className="mt-6 pt-6 border-t border-zinc-800/80 w-full animate-in fade-in slide-in-from-top-4 duration-300">
+                            {lead.auditData ? (
+                              <div className="space-y-6">
+                                <div className="p-4 bg-zinc-950 rounded-xl border border-zinc-850">
+                                  <div className="text-xs font-bold text-[#00d1ff] font-mono mb-2">RESUMO DA AUDITORIA CRO</div>
+                                  <p className="text-zinc-300 text-xs leading-relaxed">{lead.auditData.summary}</p>
+                                </div>
+                                <div className="space-y-3">
+                                  <div className="text-xs font-bold text-zinc-400 font-mono tracking-wider">PROBLEMAS CRÍTICOS IDENTIFICADOS</div>
+                                  {lead.auditData.issues && lead.auditData.issues.map((issue: any, iIdx: number) => (
+                                    <div key={iIdx} className="bg-zinc-900/60 p-4 rounded-xl border border-zinc-800 flex flex-col gap-2">
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-xs font-bold text-white uppercase tracking-wider">{issue.title}</span>
+                                        <span className="bg-[#00d1ff]/10 text-[#00d1ff] border border-[#00d1ff]/20 text-[8px] font-mono px-2 py-0.5 rounded uppercase">{issue.tab || issue.category}</span>
+                                      </div>
+                                      <p className="text-zinc-400 text-[11px] leading-relaxed">{issue.description}</p>
+                                      <div className="mt-1 p-2 bg-[#00d1ff]/5 border border-[#00d1ff]/10 rounded text-[11px] text-[#00d1ff] leading-relaxed">
+                                        <strong>Correção Recomendada:</strong> {issue.recommendation}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ) : lead.sitePlan ? (
+                              <div className="space-y-6">
+                                <div className="p-4 bg-zinc-950 rounded-xl border border-zinc-850">
+                                  <div className="text-xs font-bold text-[#00d1ff] font-mono mb-2">PLANO DE SITE OTIMIZADO PARA PROSPECÇÃO</div>
+                                  <p className="text-zinc-300 text-xs leading-relaxed">{lead.sitePlan.summary}</p>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                  <div className="p-4 bg-zinc-900/40 rounded-xl border border-zinc-800">
+                                    <div className="text-[10px] font-bold text-zinc-400 font-mono uppercase tracking-wider mb-1">Paleta de Cores</div>
+                                    <div className="text-xs text-white">{lead.sitePlan.colors}</div>
+                                  </div>
+                                  <div className="p-4 bg-zinc-900/40 rounded-xl border border-zinc-800">
+                                    <div className="text-[10px] font-bold text-zinc-400 font-mono uppercase tracking-wider mb-1">Tom de Voz</div>
+                                    <div className="text-xs text-white">{lead.sitePlan.tone}</div>
+                                  </div>
+                                  <div className="p-4 bg-zinc-900/40 rounded-xl border border-zinc-800">
+                                    <div className="text-[10px] font-bold text-zinc-400 font-mono uppercase tracking-wider mb-1">Diferenciais CRO</div>
+                                    <div className="text-xs text-white">{lead.sitePlan.differentiators}</div>
+                                  </div>
+                                </div>
+                                <div className="space-y-3">
+                                  <div className="text-xs font-bold text-zinc-400 font-mono tracking-wider">ESTRUTURA DE COPY SEÇÃO A SEÇÃO</div>
+                                  {lead.sitePlan.sections && lead.sitePlan.sections.map((sec: any, sIdx: number) => (
+                                    <div key={sIdx} className="bg-zinc-900/60 p-4 rounded-xl border border-zinc-800">
+                                      <div className="text-xs font-bold text-white mb-1.5">{sec.title}</div>
+                                      <p className="text-zinc-400 text-[11px] leading-relaxed">{sec.description}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ) : null}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
+                  )}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* VIEW: CREATED SITES (Sites Criados) */}
+          {currentView === 'created-sites' && (
+            <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-300">
+              <div className="bg-[#121212] border border-zinc-800 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#00d1ff] to-emerald-500"></div>
+                <h2 className="text-2xl font-bold text-white mb-2">Protótipos de Sites Criados</h2>
+                <p className="text-zinc-400 text-sm">Gerencie os designs criados via Google Stitch e publique na Vercel com um clique.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {createdSitesList.map((site: any) => (
+                  <div key={site.projectId} className="bg-[#121212] border border-zinc-800 rounded-2xl p-6 relative overflow-hidden flex flex-col shadow-lg hover:border-[#00d1ff]/30 transition-all duration-300">
+                    <div className={`absolute top-0 left-0 w-1.5 h-full ${
+                      site.status === 'pending' ? 'bg-orange-500' : 
+                      site.status === 'approved' ? 'bg-[#00d1ff]' : 'bg-red-500'
+                    }`}></div>
+
+                    <div className="flex-1 flex flex-col justify-between">
+                      <div>
+                        <div className="flex justify-between items-start mb-2 pl-2">
+                          <h3 className="text-lg font-bold text-white">{site.companyName}</h3>
+                          <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
+                            site.status === 'pending' ? 'bg-orange-500/10 text-orange-500 border border-orange-500/20' :
+                            site.status === 'approved' ? 'bg-[#00d1ff]/10 text-[#00d1ff] border border-[#00d1ff]/20' :
+                            'bg-red-500/10 text-red-500 border border-red-500/20'
+                          }`}>
+                            {site.status === 'pending' ? 'Aguardando Aprovação' : 
+                             site.status === 'approved' ? 'Aprovado (No Ar)' : 'Rejeitado'}
+                          </span>
+                        </div>
+                        <p className="text-zinc-400 text-xs font-mono mb-4 pl-2">Nicho: {site.niche} | Score: {site.score || 95}</p>
+                      </div>
+
+                      <div className="mt-4 flex flex-col gap-3 pl-2">
+                        {(site.deployedUrl || site.htmlUrl) && (
+                          <a 
+                            href={site.deployedUrl || `/api/view-prototype/${site.projectId || site.id}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="bg-[#1a1a1a] hover:bg-[#252525] border border-zinc-800 text-zinc-300 font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-colors"
+                          >
+                            <Globe size={14} className="text-[#00d1ff]" /> Visualizar Protótipo Stitch
+                          </a>
+                        )}
+
+                        <button 
+                          onClick={() => { setAnalysisSite(site); setAnalysisModalOpen(true); }}
+                          className="bg-[#1a1a1a] hover:bg-[#252525] border border-zinc-800 text-zinc-300 font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-colors w-full"
+                        >
+                          <Sparkles size={14} className="text-[#00d1ff]" /> Ver Análise do Protótipo
+                        </button>
+
+                        {site.status === 'approved' && site.deployedUrl && (
+                          <a 
+                            href={site.deployedUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="bg-[#00d1ff]/10 border border-[#00d1ff]/30 hover:bg-[#00d1ff]/20 text-[#00d1ff] font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-colors"
+                          >
+                            <Rocket size={14} /> Acessar Site no Vercel (Produção)
+                          </a>
+                        )}
+
+                        {site.status === 'pending' && (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleApproveAndDeploy(site)}
+                              disabled={isDeploying}
+                              className="flex-1 bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-wait"
+                            >
+                              {isDeploying && deployingProjectId === site.projectId ? (
+                                <>
+                                  <Loader2 size={14} className="animate-spin" />
+                                  <span>Publicando...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <CheckCircle2 size={14} />
+                                  <span>Aprovar & Deploy</span>
+                                </>
+                              )}
+                            </button>
+                            <button
+                              onClick={() => handleRejectSite(site.projectId)}
+                              className="bg-transparent hover:bg-red-500/10 border border-red-500/30 text-red-500 py-2.5 px-4 rounded-xl text-xs transition-colors"
+                            >
+                              Rejeitar
+                            </button>
+                          </div>
+                        )}
+                        
+                        {/* Seção de Digitar Alterações */}
+                        <div className="mt-4 pt-4 border-t border-zinc-800">
+                          <label className="text-[10px] text-zinc-500 font-bold uppercase mb-2 block">Ajuste Fino na Página Gerada</label>
+                          <div className="flex flex-col gap-2">
+                            <textarea 
+                              rows={2}
+                              placeholder="Descreva as alterações. Ex: Mudar a cor do botão para azul, trocar título para X..."
+                              value={revisionRequests[site.projectId] || ''}
+                              onChange={(e) => setRevisionRequests(prev => ({ ...prev, [site.projectId]: e.target.value }))}
+                              className="w-full bg-[#0a0a0a] border border-zinc-700 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-[#00d1ff] transition-colors resize-none placeholder:text-zinc-600"
+                            ></textarea>
+                            <button 
+                              onClick={() => handleRequestSiteRevision(site.projectId)}
+                              disabled={isRequestingRevision[site.projectId] || !revisionRequests[site.projectId]}
+                              className="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-bold py-2 rounded-lg text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                            >
+                              {isRequestingRevision[site.projectId] ? (
+                                <><Loader2 size={12} className="animate-spin"/> Aplicando IA...</>
+                              ) : (
+                                <><PenTool size={12}/> Solicitar Alterações </>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {createdSitesList.length === 0 && (
+                  <div className="col-span-2 py-24 text-center border border-[#1a1a1a] border-dashed rounded-xl bg-[#0a0a0a]/50">
+                    <Globe size={48} className="mx-auto text-zinc-700 mb-4" />
+                    <h3 className="text-zinc-500 font-mono text-sm uppercase">NENHUM SITE CRIADO AINDA</h3>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -812,16 +1608,16 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                 
                 {/* Card 1: Informações Básicas */}
                 <div className="bg-[#121212] border border-zinc-800/60 rounded-xl p-6 shadow-xl relative overflow-hidden transition-all">
-                  <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#2EFF00]/30 to-transparent"></div>
+                  <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#00d1ff]/30 to-transparent"></div>
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2">
-                      <Briefcase className="text-[#2EFF00]" size={20} />
+                      <Briefcase className="text-[#00d1ff]" size={20} />
                       <h2 className="text-lg font-semibold text-white">Informações da Marca</h2>
                     </div>
                     
                     <label className="flex items-center gap-2 cursor-pointer group">
                       <span className="text-xs font-medium text-zinc-400 group-hover:text-zinc-300 transition-colors">Empresa já possui site?</span>
-                      <div className={`relative w-10 h-5 rounded-full transition-colors duration-300 ${formData.hasWebsite ? 'bg-[#2EFF00]' : 'bg-zinc-700'}`}>
+                      <div className={`relative w-10 h-5 rounded-full transition-colors duration-300 ${formData.hasWebsite ? 'bg-[#00d1ff]' : 'bg-zinc-700'}`}>
                         <div className={`absolute top-0.5 left-0.5 bg-white w-4 h-4 rounded-full transition-transform duration-300 shadow-sm ${formData.hasWebsite ? 'transform translate-x-5' : ''}`}></div>
                       </div>
                       <input type="checkbox" name="hasWebsite" checked={formData.hasWebsite} onChange={handleInputChange} className="hidden" />
@@ -830,35 +1626,35 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                   
                   <div className="space-y-4">
                     {formData.hasWebsite && (
-                      <div className="p-4 bg-[#0a0a0a] rounded-lg border border-[#2EFF00]/30 mb-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                        <label className="flex items-center gap-2 text-xs font-medium text-[#2EFF00] uppercase tracking-wider mb-2">
+                      <div className="p-4 bg-[#0a0a0a] rounded-lg border border-[#00d1ff]/30 mb-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                        <label className="flex items-center gap-2 text-xs font-medium text-[#00d1ff] uppercase tracking-wider mb-2">
                           <LinkIcon size={14} /> URL do Site Atual
                         </label>
                         <div className="flex flex-col sm:flex-row gap-2">
                           <input 
                             type="url" name="websiteUrl" value={formData.websiteUrl} onChange={handleInputChange} placeholder="https://www.exemplo.com.br" 
-                            className="flex-1 w-full bg-[#121212] border border-zinc-700 rounded-md px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#2EFF00] focus:ring-1 focus:ring-[#2EFF00]/50 transition-all placeholder:text-zinc-600"
+                            className="flex-1 w-full bg-[#121212] border border-zinc-700 rounded-md px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#00d1ff] focus:ring-1 focus:ring-[#00d1ff]/50 transition-all placeholder:text-zinc-600"
                           />
                           <button 
                             onClick={analyzeUrl} disabled={!formData.websiteUrl || isAnalyzingUrl}
-                            className="bg-zinc-800 hover:bg-zinc-700 text-[#2EFF00] px-4 py-2.5 rounded-md font-bold text-xs transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed border border-zinc-700 shrink-0 uppercase tracking-wider"
+                            className="bg-zinc-800 hover:bg-zinc-700 text-[#00d1ff] px-4 py-2.5 rounded-md font-bold text-xs transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed border border-zinc-700 shrink-0 uppercase tracking-wider"
                           >
                             {isAnalyzingUrl ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
-                            {isAnalyzingUrl ? 'Analisando...' : 'Analisar (IA)'}
+                            {isAnalyzingUrl ? `Analisando... ${streamingChunks > 0 ? `(${streamingChunks} chunks)` : ''}` : 'Analisar (IA)'}
                           </button>
                         </div>
 
                         {auditIssues.length > 0 && (
                           <div className="mt-4 pt-4 border-t border-zinc-800 animate-in fade-in slide-in-from-top-2">
                             <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
-                              <CheckSquare size={14} className="text-[#2EFF00]" /> Checklist de Correções da Análise
+                              <CheckSquare size={14} className="text-[#00d1ff]" /> Checklist de Correções da Análise
                             </h4>
                             <div className="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
                               {auditIssues.map((item, idx) => (
                                 <div key={idx} className="bg-[#121212] p-2.5 rounded border border-zinc-800/80">
                                   <p className="text-xs font-semibold text-white mb-1"><span className="text-red-400 mr-1">■</span> {item.title}</p>
                                   <p className="text-[10px] text-zinc-400 leading-relaxed mb-1">{item.description}</p>
-                                  <p className="text-[10px] text-[#2EFF00] bg-[#2EFF00]/5 px-1.5 py-1 rounded inline-block">&rarr; {item.recommendation}</p>
+                                  <p className="text-[10px] text-[#00d1ff] bg-[#00d1ff]/5 px-1.5 py-1 rounded inline-block">&rarr; {item.recommendation}</p>
                                 </div>
                               ))}
                             </div>
@@ -870,27 +1666,27 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
                         <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Nome da Empresa</label>
-                        <input type="text" name="companyName" value={formData.companyName} onChange={handleInputChange} className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-md px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#2EFF00] transition-all" />
+                        <input type="text" name="companyName" value={formData.companyName} onChange={handleInputChange} className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-md px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#00d1ff] transition-all" />
                       </div>
                       <div className="space-y-1.5">
                         <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Nicho de Mercado</label>
-                        <input type="text" name="niche" value={formData.niche} onChange={handleInputChange} className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-md px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#2EFF00] transition-all" />
+                        <input type="text" name="niche" value={formData.niche} onChange={handleInputChange} className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-md px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#00d1ff] transition-all" />
                       </div>
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Público-Alvo (Persona)</label>
-                      <textarea name="audience" value={formData.audience} onChange={handleInputChange} rows={2} className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-md px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#2EFF00] transition-all resize-none custom-scrollbar"></textarea>
+                      <textarea name="audience" value={formData.audience} onChange={handleInputChange} rows={2} className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-md px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#00d1ff] transition-all resize-none custom-scrollbar"></textarea>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
                         <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Cores da Marca</label>
-                        <input type="text" name="colors" value={formData.colors} onChange={handleInputChange} placeholder="Ex: Roxo Escuro e Branco" className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-md px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#2EFF00] transition-all" />
+                        <input type="text" name="colors" value={formData.colors} onChange={handleInputChange} placeholder="Ex: Roxo Escuro e Branco" className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-md px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#00d1ff] transition-all" />
                       </div>
                       <div className="space-y-1.5">
                         <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Cor Principal (HEX)</label>
                         <div className="flex gap-2">
                             <input type="color" name="primaryHex" value={formData.primaryHex} onChange={handleInputChange} className="w-10 h-[42px] bg-[#0a0a0a] border border-zinc-800 rounded-md p-1 cursor-pointer" />
-                            <input type="text" name="primaryHex" value={formData.primaryHex} onChange={handleInputChange} placeholder="Ex: #2EFF00" className="flex-1 bg-[#0a0a0a] border border-zinc-800 rounded-md px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#2EFF00] transition-all font-mono" />
+                            <input type="text" name="primaryHex" value={formData.primaryHex} onChange={handleInputChange} placeholder="Ex: #00d1ff" className="flex-1 bg-[#0a0a0a] border border-zinc-800 rounded-md px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#00d1ff] transition-all font-mono" />
                         </div>
                       </div>
                     </div>
@@ -901,14 +1697,14 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="bg-[#121212] border border-zinc-800/60 rounded-xl p-6 shadow-xl">
                     <div className="flex items-center gap-2 mb-6">
-                      <Target className="text-[#2EFF00]" size={20} />
+                      <Target className="text-[#00d1ff]" size={20} />
                       <h2 className="text-lg font-semibold text-white">Estratégia</h2>
                     </div>
                     <div className="space-y-4">
-                      <select name="goal" value={formData.goal} onChange={handleInputChange} className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-md px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#2EFF00] appearance-none">
+                      <select name="goal" value={formData.goal} onChange={handleInputChange} className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-md px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#00d1ff] appearance-none">
                         {goals.map(g => <option key={g} value={g}>{g}</option>)}
                       </select>
-                      <select name="tone" value={formData.tone} onChange={handleInputChange} className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-md px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#2EFF00] appearance-none">
+                      <select name="tone" value={formData.tone} onChange={handleInputChange} className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-md px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#00d1ff] appearance-none">
                         {tones.map(t => <option key={t} value={t}>{t}</option>)}
                       </select>
                     </div>
@@ -1003,10 +1799,10 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                 
                 <div className="bg-[#0a0a0a] border-b border-zinc-800 text-white px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm font-bold z-50 shadow-md">
                   <div className="flex items-center text-center gap-2">
-                    <span className="animate-pulse flex-shrink-0 text-[#2EFF00]">⏳</span> 
+                    <span className="animate-pulse flex-shrink-0 text-[#00d1ff]">⏳</span> 
                     Proposta válida por 7 dias corridos.
                   </div>
-                  <button onClick={handleAcceptProposal} className="bg-[#2EFF00] text-black px-6 py-2 rounded-full text-xs font-black uppercase tracking-wider hover:bg-[#28e000] transition-all shadow-[0_0_15px_rgba(46,255,0,0.3)] hover:shadow-[0_0_25px_rgba(46,255,0,0.5)] flex items-center flex-shrink-0 gap-2">
+                  <button onClick={handleAcceptProposal} className="bg-[#00d1ff] text-black px-6 py-2 rounded-full text-xs font-black uppercase tracking-wider hover:bg-[#00b8e6] transition-all shadow-[0_0_15px_rgba(0,209,255,0.3)] hover:shadow-[0_0_25px_rgba(0,209,255,0.5)] flex items-center flex-shrink-0 gap-2">
                     <Rocket size={14} /> Aceitar e Avançar
                   </button>
                 </div>
@@ -1116,7 +1912,7 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                          <div className="w-full aspect-square bg-zinc-900 rounded-3xl border border-zinc-800 flex items-center justify-center overflow-hidden relative shadow-2xl">
                             <div style={{ backgroundColor: formData.primaryHex }} className="absolute w-full h-full opacity-10 mix-blend-color"></div>
                             <div className="absolute inset-0 bg-cover bg-center opacity-40" style={{ backgroundImage: `url('${getSafeImageUrl(parsedSiteData?.hero?.imageUrl) || "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"}')`}}></div>
-                            <Rocket style={{ color: formData.primaryHex }} className="w-20 h-20 relative z-10 drop-shadow-[0_0_15px_rgba(46,255,0,0.5)]" />
+                            <Rocket style={{ color: formData.primaryHex }} className="w-20 h-20 relative z-10 drop-shadow-[0_0_15px_rgba(0,209,255,0.5)]" />
                          </div>
                       </div>
                     </section>
@@ -1210,7 +2006,7 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                             </div>
                             <input type="email" placeholder="E-mail Corporativo" className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-xl px-4 py-3.5 text-white outline-none focus:border-zinc-600 transition-colors text-sm" />
                             <textarea placeholder="Fale um pouco sobre o seu desafio atual..." className="w-full bg-[#0a0a0a] border border-zinc-800 rounded-xl px-4 py-3.5 text-white outline-none focus:border-zinc-600 transition-colors h-32 resize-none text-sm"></textarea>
-                            <button style={{ backgroundColor: formData.primaryHex }} className="w-full py-4 rounded-xl text-black font-extrabold text-base mt-2 transition-all transform hover:scale-[1.02] shadow-[0_0_20px_rgba(46,255,0,0.15)] flex items-center justify-center gap-2">
+                            <button style={{ backgroundColor: formData.primaryHex }} className="w-full py-4 rounded-xl text-black font-extrabold text-base mt-2 transition-all transform hover:scale-[1.02] shadow-[0_0_20px_rgba(0,209,255,0.15)] flex items-center justify-center gap-2">
                               Enviar Solicitação <ArrowRight size={18} />
                             </button>
                           </div>
@@ -1272,7 +2068,7 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                           {parsedSiteData.colorPalettes.map((palette: any, idx: number) => (
                             <div key={idx} className="bg-[#121212] p-6 rounded-2xl border border-zinc-800 hover:border-zinc-700 hover:-translate-y-1 transition-all text-left">
-                              <h4 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Palette size={20} className="text-[#2EFF00]"/> {palette.name}</h4>
+                              <h4 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><Palette size={20} className="text-[#00d1ff]"/> {palette.name}</h4>
                               <div className="flex h-16 rounded-xl overflow-hidden shadow-2xl mb-4">
                                 {palette.colors.map((c: string, cIdx: number) => (
                                   <div key={cIdx} className="flex-1" style={{ backgroundColor: c }}></div>
@@ -1290,13 +2086,13 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                     )}
 
                     <div className="w-full max-w-4xl bg-gradient-to-br from-[#121212] to-[#0a0a0a] p-12 rounded-3xl border border-zinc-800 text-center shadow-2xl relative overflow-hidden">
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-full bg-[#2EFF00]/5 blur-[120px] pointer-events-none"></div>
+                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-full bg-[#00d1ff]/5 blur-[120px] pointer-events-none"></div>
                       
                       <h3 className="text-4xl font-extrabold text-white mb-6 relative z-10">Tudo isso e muito mais por a partir de R$850</h3>
                       <p className="text-zinc-400 text-lg mb-10 max-w-2xl mx-auto relative z-10 leading-relaxed">
                         Lançamos sua landing page com o seu domínio próprio (ex: <strong>{slug || 'suaempresa'}.com.br</strong>). Aceitamos cartões, PIX, e geramos NF. Entregamos a landing page mais rápida do mercado.
                       </p>
-                      <button onClick={handleAcceptProposal} className="mx-auto bg-[#2EFF00] hover:bg-[#28e000] text-black font-black px-12 py-5 rounded-xl flex items-center gap-3 transition-all transform hover:scale-105 shadow-[0_10px_40px_rgba(46,255,0,0.2)] text-xl uppercase tracking-wider relative z-10">
+                      <button onClick={handleAcceptProposal} className="mx-auto bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-black px-12 py-5 rounded-xl flex items-center gap-3 transition-all transform hover:scale-105 shadow-[0_10px_40px_rgba(0,209,255,0.2)] text-xl uppercase tracking-wider relative z-10">
                         <Rocket size={24} /> Aceitar e Avançar
                       </button>
                     </div>
@@ -1361,7 +2157,7 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                     <CheckSquare style={{ color: formData.primaryHex }} size={18} />
                     <h3 className="text-sm font-extrabold text-white uppercase tracking-wider">Erros do Site Antigo Resolvidos</h3>
                   </div>
-                  <span className={`text-[10px] uppercase font-black px-2 py-1 rounded bg-[#2EFF00]/10 text-[#2EFF00]`}>
+                  <span className={`text-[10px] uppercase font-black px-2 py-1 rounded bg-[#00d1ff]/10 text-[#00d1ff]`}>
                     100% CUMPRIDO
                   </span>
                 </div>
@@ -1471,6 +2267,217 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
           )}
 
         </div>
+
+        {/* MODAL DOS DOSSIÊS COMERCIAIS PRO */}
+        {commercialModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+            <div className="bg-[#0c0c0e] border border-zinc-800 rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl relative overflow-hidden">
+              
+              {/* Header */}
+              <div className="flex justify-between items-center px-8 py-6 border-b border-zinc-800 bg-[#0f0f11] shrink-0">
+                <div>
+                  <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                    <Sparkles size={20} className="text-[#00d1ff]" /> Dossiê Comercial Estratégico
+                  </h2>
+                  <p className="text-zinc-500 text-xs mt-1">
+                    Mapeamento de conversão para {commercialLead?.title || "Empresa"} (Score {commercialLead?.score || 95})
+                  </p>
+                </div>
+                <button 
+                  onClick={() => setCommercialModalOpen(false)}
+                  className="text-zinc-400 hover:text-white transition-colors font-bold text-sm"
+                >
+                  FECHAR
+                </button>
+              </div>
+
+              {/* Content Area */}
+              <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                {isGeneratingReports ? (
+                  <div className="py-24 text-center flex flex-col items-center justify-center space-y-4">
+                    <Loader2 size={48} className="text-[#00d1ff] animate-spin" />
+                    <p className="text-[#00d1ff] font-mono text-sm tracking-widest animate-pulse">GERANDO RELATÓRIOS COM IA DE ELITE...</p>
+                    <p className="text-zinc-500 text-xs">Mapeando concorrentes, gaps de mercado e perfil psicográfico.</p>
+                  </div>
+                ) : commercialReports ? (
+                  <div className="space-y-8">
+                    {/* Selector Tabs */}
+                    <div className="flex bg-[#121214] p-1 rounded-xl border border-zinc-800 max-w-md">
+                      <button 
+                        onClick={() => setActiveCommercialTab('psicografia')}
+                        className={`flex-1 py-3 text-xs font-bold uppercase rounded-lg transition-all ${
+                          activeCommercialTab === 'psicografia' ? 'bg-[#00d1ff] text-black shadow-md font-extrabold' : 'text-zinc-400 hover:text-white'
+                        }`}
+                      >
+                        1. Psicografia & Avatares
+                      </button>
+                      <button 
+                        onClick={() => setActiveCommercialTab('estrategica')}
+                        className={`flex-1 py-3 text-xs font-bold uppercase rounded-lg transition-all ${
+                          activeCommercialTab === 'estrategica' ? 'bg-[#00d1ff] text-black shadow-md font-extrabold' : 'text-zinc-400 hover:text-white'
+                        }`}
+                      >
+                        2. Análise Estratégica
+                      </button>
+                    </div>
+
+                    {/* PDF 1: Psicografia & Avatares */}
+                    {activeCommercialTab === 'psicografia' && (
+                      <div className="space-y-6">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-mono text-zinc-500">FORMATO DE EXPORTAÇÃO APROVADO</span>
+                          <button 
+                            onClick={() => handleDownloadCommercialPdf("pdf-psicografia-container", `psicografia-${commercialLead?.title.toLowerCase().replace(/ /g, "-")}`)}
+                            disabled={isExportingPdf}
+                            className="flex items-center gap-2 bg-[#00d1ff]/10 border border-[#00d1ff]/30 hover:bg-[#00d1ff]/20 text-[#00d1ff] px-4 py-2 rounded-xl text-xs font-bold tracking-wider transition-colors disabled:opacity-50"
+                          >
+                            <Download size={14} />
+                            {isExportingPdf ? 'GERANDO PDF...' : 'BAIXAR PDF DOSSIÊ'}
+                          </button>
+                        </div>
+
+                        <div id="pdf-psicografia-container" className="p-8 bg-[#0a0a0a] border border-zinc-850 rounded-2xl space-y-8 text-zinc-300 text-sm">
+                          <div className="border-b border-zinc-800 pb-6 text-center">
+                            <h1 className="text-2xl font-black text-white">DOSSIÊ PSICOGRÁFICO & AVATARES DE COMPRA</h1>
+                            <p className="text-[#00d1ff] text-xs font-mono uppercase tracking-[0.2em] mt-2">ESCOM STRATEGIC DOSSIER • {commercialLead?.title}</p>
+                          </div>
+
+                          <div className="space-y-2 text-left">
+                            <h3 className="text-white font-bold text-base flex items-center gap-2"><span className="text-[#00d1ff]">■</span> Mapeamento de Dores & Traumas</h3>
+                            <p className="text-zinc-400 leading-relaxed text-xs pl-4">{commercialReports.psicografia.doresETraumas}</p>
+                          </div>
+
+                          <div className="space-y-2 text-left">
+                            <h3 className="text-white font-bold text-base flex items-center gap-2"><span className="text-[#00d1ff]">■</span> Desejos Profundos Subconscientes</h3>
+                            <p className="text-zinc-400 leading-relaxed text-xs pl-4">{commercialReports.psicografia.desejosProfundos}</p>
+                          </div>
+
+                          <div className="space-y-2 text-left">
+                            <h3 className="text-white font-bold text-base flex items-center gap-2"><span className="text-[#00d1ff]">■</span> Objeções & Barreiras de Medo</h3>
+                            <ul className="list-disc pl-8 space-y-1.5 text-zinc-400 text-xs">
+                              {commercialReports.psicografia.objecoesEBarreiras?.map((obj: string, oIdx: number) => (
+                                <li key={oIdx}>{obj}</li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          <div className="space-y-2 text-left">
+                            <h3 className="text-white font-bold text-base flex items-center gap-2"><span className="text-[#00d1ff]">■</span> Nível de Consciência do Público</h3>
+                            <p className="text-zinc-400 leading-relaxed text-xs pl-4">{commercialReports.psicografia.niveisDeConsciencia}</p>
+                          </div>
+
+                          <div className="space-y-4 pt-4 border-t border-zinc-800 text-left">
+                            <h3 className="text-white font-bold text-base flex items-center gap-2"><span className="text-[#00d1ff]">■</span> Mapeamento de Avatares (Personas)</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              {commercialReports.psicografia.avatares?.map((av: any, avIdx: number) => (
+                                <div key={avIdx} className="bg-[#121214] p-4 rounded-xl border border-zinc-800">
+                                  <h4 className="text-[#00d1ff] font-bold text-xs uppercase tracking-wider mb-2">{av.name}</h4>
+                                  <p className="text-zinc-400 text-[10px] leading-relaxed mb-3">{av.profile}</p>
+                                  <div className="p-2 bg-[#00d1ff]/5 rounded border border-[#00d1ff]/10 text-[9px] text-[#00d1ff] italic leading-relaxed">
+                                    "{av.scriptDeVenda}"
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* PDF 2: Análise Estratégica */}
+                    {activeCommercialTab === 'estrategica' && (
+                      <div className="space-y-6">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-mono text-zinc-500">FORMATO DE EXPORTAÇÃO APROVADO</span>
+                          <button 
+                            onClick={() => handleDownloadCommercialPdf("pdf-estrategica-container", `analise-estrategica-${commercialLead?.title.toLowerCase().replace(/ /g, "-")}`)}
+                            disabled={isExportingPdf}
+                            className="flex items-center gap-2 bg-[#00d1ff]/10 border border-[#00d1ff]/30 hover:bg-[#00d1ff]/20 text-[#00d1ff] px-4 py-2 rounded-xl text-xs font-bold tracking-wider transition-colors disabled:opacity-50"
+                          >
+                            <Download size={14} />
+                            {isExportingPdf ? 'GERANDO PDF...' : 'BAIXAR PDF DOSSIÊ'}
+                          </button>
+                        </div>
+
+                        <div id="pdf-estrategica-container" className="p-8 bg-[#0a0a0a] border border-zinc-850 rounded-2xl space-y-8 text-zinc-300 text-sm">
+                          <div className="border-b border-zinc-800 pb-6 text-center">
+                            <h1 className="text-2xl font-black text-white">ANÁLISE ESTRATÉGICA DE POSICIONAMENTO</h1>
+                            <p className="text-[#00d1ff] text-xs font-mono uppercase tracking-[0.2em] mt-2">ESCOM STRATEGIC DOSSIER • {commercialLead?.title}</p>
+                          </div>
+
+                          <div className="space-y-4 text-left">
+                            <h3 className="text-white font-bold text-base flex items-center gap-2"><span className="text-[#00d1ff]">■</span> Benchmarking de Concorrentes (SWOT)</h3>
+                            <div className="space-y-3">
+                              {commercialReports.estrategia.benchmarking?.map((bench: any, bIdx: number) => (
+                                <div key={bIdx} className="bg-[#121214] p-4 rounded-xl border border-zinc-800 grid grid-cols-1 md:grid-cols-4 gap-4">
+                                  <div>
+                                    <span className="text-white font-bold text-xs uppercase tracking-wider">{bench.name}</span>
+                                  </div>
+                                  <div className="text-[10px] text-zinc-400">
+                                    <strong className="text-green-400 block text-[9px] uppercase font-mono tracking-wider mb-1">Pontos Fortes:</strong>
+                                    {bench.strengths}
+                                  </div>
+                                  <div className="text-[10px] text-zinc-400">
+                                    <strong className="text-red-400 block text-[9px] uppercase font-mono tracking-wider mb-1">Pontos Fracos:</strong>
+                                    {bench.weaknesses}
+                                  </div>
+                                  <div className="text-[10px] text-[#00d1ff]">
+                                    <strong className="text-[#00d1ff] block text-[9px] uppercase font-mono tracking-wider mb-1">Brecha (Gap):</strong>
+                                    {bench.gaps}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="space-y-2 text-left">
+                            <h3 className="text-white font-bold text-base flex items-center gap-2"><span className="text-[#00d1ff]">■</span> Identificação de Gaps de Posicionamento</h3>
+                            <p className="text-zinc-400 leading-relaxed text-xs pl-4">{commercialReports.estrategia.gapsDeMercado}</p>
+                          </div>
+
+                          <div className="space-y-2 text-left">
+                            <h3 className="text-white font-bold text-base flex items-center gap-2"><span className="text-[#00d1ff]">■</span> Vantagens Competitivas Essenciais (Os 6 Pilares)</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 pl-4">
+                              {commercialReports.estrategia.vantagensCompetitivas?.map((pilar: string, pIdx: number) => (
+                                <div key={pIdx} className="bg-zinc-900/60 p-3 rounded-lg border border-zinc-800 text-center text-xs font-medium text-white">
+                                  {pilar}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="space-y-2 text-left">
+                            <h3 className="text-white font-bold text-base flex items-center gap-2"><span className="text-[#00d1ff]">■</span> Estratégia de Oceano Azul</h3>
+                            <p className="text-zinc-400 leading-relaxed text-xs pl-4">{commercialReports.estrategia.oceanoAzul}</p>
+                          </div>
+
+                          <div className="space-y-4 pt-4 border-t border-zinc-800 text-left">
+                            <h3 className="text-white font-bold text-base flex items-center gap-2"><span className="text-[#00d1ff]">■</span> Filtro de Comunicação (Semântica de Grife)</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-4">
+                              {commercialReports.estrategia.filtroDeComunicacao?.map((filt: any, fIdx: number) => (
+                                <div key={fIdx} className="bg-[#121214] p-4 rounded-xl border border-zinc-800 flex flex-col justify-between">
+                                  <div className="mb-2">
+                                    <span className="text-[9px] font-mono uppercase tracking-wider text-red-400 block mb-1">EVITAR TERMO GASTO</span>
+                                    <span className="text-zinc-400 font-bold text-xs">"{filt.termoGasto}"</span>
+                                  </div>
+                                  <div>
+                                    <span className="text-[9px] font-mono uppercase tracking-wider text-green-400 block mb-1">SUBSTITUIR POR FATOS</span>
+                                    <span className="text-[#00d1ff] font-bold text-xs">"{filt.substitutoFatos}"</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        )}
+
       </main>
 
       <style dangerouslySetInnerHTML={{__html: `

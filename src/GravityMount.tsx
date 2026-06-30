@@ -103,7 +103,7 @@ const ProjectModal = ({ project, onClose }: { project: PortfolioProject | null; 
                   </h3>
                   
                   <div className="flex items-center gap-3 mb-6">
-                    <p className="text-[#2EFF00] font-mono text-[10px] tracking-widest uppercase border border-[#2EFF00]/30 px-2 py-0.5 rounded">
+                    <p className="text-[#00d1ff] font-mono text-[10px] tracking-widest uppercase border border-[#00d1ff]/30 px-2 py-0.5 rounded">
                       {project.category}
                     </p>
                     <span className="text-white/20 text-[10px] font-mono">/</span>
@@ -121,13 +121,13 @@ const ProjectModal = ({ project, onClose }: { project: PortfolioProject | null; 
                     </div>
                     <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex flex-col gap-1">
                         <span className="text-gray-500 text-[9px] uppercase font-mono tracking-widest">Status</span>
-                        <span className="text-[#2EFF00] text-[10px] font-mono uppercase tracking-widest">Live</span>
+                        <span className="text-[#00d1ff] text-[10px] font-mono uppercase tracking-widest">Live</span>
                     </div>
                   </div>
 
                   <a 
                     href={`/portfolio-projetos/${project.id}`}
-                    className="mt-auto group relative overflow-hidden bg-white text-black font-bold py-4 px-6 rounded-xl text-center transition-all duration-300 tracking-tighter hover:bg-[#2EFF00] active:scale-95 text-sm"
+                    className="mt-auto group relative overflow-hidden bg-white text-black font-bold py-4 px-6 rounded-xl text-center transition-all duration-300 tracking-tighter hover:bg-[#00d1ff] active:scale-95 text-sm"
                   >
                     <span className="relative z-10">VER ESTUDO DE CASO</span>
                   </a>
@@ -405,7 +405,7 @@ function GravityDemo() {
       <div className="w-full relative mt-4 h-[400px] sm:h-[450px] overflow-hidden">
         <Gravity ref={gravityRef} autoStart={false} gravity={{ x: 0, y: 1 }} className="w-full h-full">
           <MatterBody matterBodyOptions={{ friction: 0.5, restitution: 0.2 }} x="10%" y="10%" angle={5}>
-            <div className="text-xl sm:text-2xl md:text-3xl bg-[#080808] text-[#2EFF00] border border-[#2EFF00] rounded-full hover:cursor-grab px-12 py-6 font-mono">
+            <div className="text-xl sm:text-2xl md:text-3xl bg-[#080808] text-[#00d1ff] border border-[#00d1ff] rounded-full hover:cursor-grab px-12 py-6 font-mono">
               react
             </div>
           </MatterBody>
@@ -425,7 +425,7 @@ function GravityDemo() {
             </div>
           </MatterBody>
           <MatterBody matterBodyOptions={{ friction: 0.5, restitution: 0.2 }} x="75%" y="5%" angle={5}>
-            <div className="text-xl sm:text-2xl md:text-3xl bg-[#080808] text-[#2EFF00] border border-[#2EFF00] rounded-full hover:cursor-grab px-12 py-6 font-mono">
+            <div className="text-xl sm:text-2xl md:text-3xl bg-[#080808] text-[#00d1ff] border border-[#00d1ff] rounded-full hover:cursor-grab px-12 py-6 font-mono">
               infrastructure
             </div>
           </MatterBody>
@@ -440,7 +440,7 @@ function GravityDemo() {
             </div>
           </MatterBody>
           <MatterBody matterBodyOptions={{ friction: 0.5, restitution: 0.2 }} x="80%" y="15%" angle={-4}>
-            <div className="text-xl sm:text-2xl md:text-3xl bg-[#080808] text-[#2EFF00] border border-[#2EFF00] rounded-full hover:cursor-grab px-12 py-6 font-mono">
+            <div className="text-xl sm:text-2xl md:text-3xl bg-[#080808] text-[#00d1ff] border border-[#00d1ff] rounded-full hover:cursor-grab px-12 py-6 font-mono">
               data analytics
             </div>
           </MatterBody>
@@ -450,7 +450,7 @@ function GravityDemo() {
             </div>
           </MatterBody>
           <MatterBody matterBodyOptions={{ friction: 0.5, restitution: 0.2 }} x="65%" y="10%" angle={-8}>
-            <div className="text-xl sm:text-2xl md:text-3xl bg-[#080808] text-[#2EFF00] border border-[#2EFF00] rounded-full hover:cursor-grab px-12 py-6 font-mono">
+            <div className="text-xl sm:text-2xl md:text-3xl bg-[#080808] text-[#00d1ff] border border-[#00d1ff] rounded-full hover:cursor-grab px-12 py-6 font-mono">
               conversion api
             </div>
           </MatterBody>
@@ -470,7 +470,7 @@ function GravityDemo() {
             </div>
           </MatterBody>
           <MatterBody matterBodyOptions={{ friction: 0.5, restitution: 0.2 }} x="60%" y="20%" angle={-3}>
-            <div className="text-xl sm:text-2xl md:text-3xl bg-[#080808] text-[#2EFF00] border border-[#2EFF00] rounded-full hover:cursor-grab px-12 py-6 font-mono">
+            <div className="text-xl sm:text-2xl md:text-3xl bg-[#080808] text-[#00d1ff] border border-[#00d1ff] rounded-full hover:cursor-grab px-12 py-6 font-mono">
               firebase
             </div>
           </MatterBody>
@@ -485,7 +485,7 @@ function GravityDemo() {
             </div>
           </MatterBody>
           <MatterBody matterBodyOptions={{ friction: 0.5, restitution: 0.2 }} x="90%" y="10%" angle={3}>
-            <div className="text-xl sm:text-2xl md:text-3xl bg-[#080808] text-[#2EFF00] border border-[#2EFF00] rounded-full hover:cursor-grab px-12 py-6 font-mono">
+            <div className="text-xl sm:text-2xl md:text-3xl bg-[#080808] text-[#00d1ff] border border-[#00d1ff] rounded-full hover:cursor-grab px-12 py-6 font-mono">
               copywriting
             </div>
           </MatterBody>
@@ -495,7 +495,7 @@ function GravityDemo() {
             </div>
           </MatterBody>
           <MatterBody matterBodyOptions={{ friction: 0.5, restitution: 0.2 }} x="45%" y="25%" angle={6}>
-            <div className="text-xl sm:text-2xl md:text-3xl bg-[#080808] text-[#2EFF00] border border-[#2EFF00] rounded-full hover:cursor-grab px-12 py-6 font-mono">
+            <div className="text-xl sm:text-2xl md:text-3xl bg-[#080808] text-[#00d1ff] border border-[#00d1ff] rounded-full hover:cursor-grab px-12 py-6 font-mono">
               supabase
             </div>
           </MatterBody>

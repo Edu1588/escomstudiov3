@@ -47,7 +47,7 @@ export function Header({ title }: HeaderProps) {
       </div>
       <div className="flex items-center gap-3 md:gap-6">
         <div className="hidden md:flex items-center gap-2 bg-[#1a1a1a] border border-[#333] px-3 py-1.5 rounded-lg text-xs text-gray-400 font-mono">
-          <Calendar size={14} className="text-[#2EFF00]" />
+          <Calendar size={14} className="text-[#00d1ff]" />
           <span className="capitalize">{dateStr}</span>
           <span className="text-gray-600 ml-1">v</span>
         </div>
@@ -58,7 +58,7 @@ export function Header({ title }: HeaderProps) {
             className="text-gray-400 hover:text-white relative outline-none"
           >
             <Bell size={20} />
-            <span className="absolute top-0 right-0 w-2 h-2 bg-[#2EFF00] rounded-full border border-black"></span>
+            <span className="absolute top-0 right-0 w-2 h-2 bg-[#00d1ff] rounded-full border border-black"></span>
           </button>
           
           {showNotifications && (
@@ -71,7 +71,7 @@ export function Header({ title }: HeaderProps) {
           )}
         </div>
 
-        <button onClick={handleNovaProposta} className="bg-[#2EFF00] hover:bg-[#28e600] text-black font-bold text-sm px-3 md:px-4 py-2 rounded-lg flex items-center gap-2 transition-colors whitespace-nowrap">
+        <button onClick={handleNovaProposta} className="bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-bold text-sm px-3 md:px-4 py-2 rounded-lg flex items-center gap-2 transition-colors whitespace-nowrap">
           <Plus size={16} />
           <span className="hidden md:inline">Nova Proposta</span>
         </button>

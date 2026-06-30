@@ -7,9 +7,7 @@ export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
     plugins: [react(), tailwindcss()],
-    define: {
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-    },
+
     build: {
       rollupOptions: {
         input: {
@@ -19,6 +17,7 @@ export default defineConfig(({mode}) => {
           admin: path.resolve(__dirname, 'admin/index.html'),
           sobre: path.resolve(__dirname, 'sobre/index.html'),
           baseproposta: path.resolve(__dirname, 'baseproposta/index.html'),
+          piassa: path.resolve(__dirname, 'piassa/index.html'),
         },
       },
     },

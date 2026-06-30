@@ -41,7 +41,7 @@ export const Radar = ({ className }: { className?: string }) => {
         style={{ transformOrigin: "right center" }}
         className="animate-radar-spin absolute right-1/2 top-1/2 z-40 flex h-[5px] w-[400px] items-end justify-center overflow-hidden bg-transparent"
       >
-        <div className="relative z-40 h-[1px] w-full bg-gradient-to-r from-transparent via-[#2EFF00] to-transparent shadow-[0_0_15px_rgba(46,255,0,0.5)]" />
+        <div className="relative z-40 h-[1px] w-full bg-gradient-to-r from-transparent via-[#00d1ff] to-transparent shadow-[0_0_15px_rgba(0,209,255,0.5)]" />
       </div>
       {/* Concentric circles */}
       {circles.map((_, idx) => (
@@ -77,13 +77,13 @@ export const IconContainer = ({
     >
       <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-900/80 shadow-inner backdrop-blur-sm">
         {icon || (
-          <svg className="h-8 w-8 text-[#2EFF00]" fill="currentColor" viewBox="0 0 20 20">
+          <svg className="h-8 w-8 text-[#00d1ff]" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
           </svg>
         )}
       </div>
       <div className="hidden rounded-md px-2 py-1 md:block">
-        <div className="text-center text-xs font-bold text-[#2EFF00] opacity-90">
+        <div className="text-center text-xs font-bold text-[#00d1ff] opacity-90">
           {text || "Web Development"}
         </div>
       </div>

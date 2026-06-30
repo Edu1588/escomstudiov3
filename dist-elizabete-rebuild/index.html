@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dra. Elizabete De Marchi — Biomedicina Estética Avançada | Curitiba</title>
+<meta name="description" content="Clínica de Biomedicina Estética Avançada da Dra. Elizabete De Marchi. Harmonização facial, preenchimento, toxina botulínica e tratamentos corporais em Curitiba.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*,::after,::before{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:110px}
+body{font-family:Inter,Arial,Helvetica,sans-serif;background:#fdfbf9;color:#2a241e;line-height:1.6}
+img{max-width:100%;height:auto;display:block}
+a{text-decoration:none;color:inherit}
+.container{max-width:1100px;margin:0 auto;padding:0 5%}
+h1,h2,h3,h4{font-family:'Playfair Display',Georgia,serif}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.85}}
+@keyframes shimmer-btn{0%{left:-60%}25%{left:140%}100%{left:140%}}
+@keyframes pulse-glow{0%{box-shadow:0 0 5px rgba(2,197,186,.2)}100%{box-shadow:0 0 25px rgba(2,197,186,.8)}}
+.btn-shimmer{position:relative;overflow:hidden;transition:all .3s;animation:pulse-glow 2s infinite alternate}
+.btn-shimmer:active{transform:scale(.95)}
+.btn-shimmer::after{content:'';position:absolute;top:-50%;left:-60%;width:30%;height:200%;background:linear-gradient(to right,rgba(255,255,255,0) 0%,rgba(255,255,255,.35) 30%,rgba(255,255,255,.45) 50%,rgba(255,255,255,.35) 70%,rgba(255,255,255,0) 100%);transform:rotate(30deg);animation:shimmer-btn 4.5s infinite ease-in-out}
+
+/* banner urgencia */
+#banner-urgencia{position:sticky;top:0;left:0;width:100%;padding:.5rem 1rem;background:#dc2626;color:#fff;text-align:center;font-size:.75rem;font-weight:700;z-index:500;box-shadow:0 2px 10px rgba(0,0,0,.2);animation:pulse 2s infinite}
+
+/* nav */
+nav{position:fixed;top:40px;left:0;width:100%;z-index:400;background:#fdfbf9dd;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid #c5a27e33;padding:.75rem 5%;display:flex;align-items:center;justify-content:space-between;transition:all .3s}
+nav.scrolled{top:0!important;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.logo-img{height:36px;width:auto}
+.nav-links{display:flex;gap:1.5rem;list-style:none;font-size:.8125rem;font-weight:600;color:#2a241e}
+.nav-links a{transition:color .2s}
+.nav-links a:hover{color:#02c5ba}
+.cta-btn{background:#02c5ba;color:#111827;padding:.5rem 1.25rem;border-radius:2rem;font-weight:700;font-size:.75rem;border:none;cursor:pointer;transition:all .2s;display:inline-block;font-family:Inter,sans-serif}
+.cta-btn:hover{box-shadow:0 0 0 2px #02c5ba;background:transparent;color:#02c5ba}
+.cta-btn-outline{background:transparent;border:2px solid #02c5ba;color:#fff}
+.cta-btn-outline:hover{background:#02c5ba;color:#111827}
+
+/* hero */
+.hero{position:relative;min-height:90vh;display:flex;align-items:center;padding:8rem 5% 4rem;overflow:hidden;background:#fdfbf9}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#fdfbf9 0%,#f0ebe3 100%)}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;position:relative;z-index:2;max-width:1100px;margin:0 auto;width:100%}
+.hero-text h1{font-size:clamp(2rem,4vw,3.5rem);font-weight:700;color:#2a241e;letter-spacing:-.02em;line-height:1.15}
+.hero-text h1 span{color:#02c5ba}
+.hero-text .subtitle{font-size:clamp(1rem,2vw,1.25rem);color:#c5a27e;margin:.75rem 0 1.5rem;line-height:1.5;font-family:Inter,sans-serif}
+.hero-text .tags{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.hero-text .tags span{background:#02c5ba11;border:1px solid #02c5ba33;color:#02c5ba;font-size:.6875rem;font-weight:700;padding:.35rem .75rem;border-radius:2rem;text-transform:uppercase;letter-spacing:.05em}
+.hero-ctas{display:flex;gap:1rem;flex-wrap:wrap}
+.hero-ctas .cta-btn{font-size:.8125rem;padding:.75rem 2rem}
+.hero-image{position:relative;display:flex;justify-content:center;align-items:center}
+.hero-image img{width:100%;max-width:480px;border-radius:2rem;box-shadow:0 20px 60px rgba(0,0,0,.1);object-fit:cover}
+.hero-image .accent-circle{position:absolute;width:110%;height:110%;border:2px solid #02c5ba33;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);z-index:-1}
+
+/* sections */
+section{padding:5rem 5%}
+.section-title{text-align:center;margin-bottom:3rem}
+.section-title .label{font-size:.75rem;font-weight:700;color:#02c5ba;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem;display:block}
+.section-title h2{font-size:clamp(1.5rem,3vw,2.5rem);font-weight:700;color:#2a241e;letter-spacing:-.02em}
+.section-title p{color:#c5a27e;margin-top:.5rem;font-size:.9375rem;max-width:600px;margin-left:auto;margin-right:auto;font-family:Inter,sans-serif}
+
+/* services */
+.services-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;max-width:1100px;margin:0 auto}
+.service-card{background:#fff;border-radius:1.5rem;padding:1.5rem;border:1px solid #c5a27e22;transition:all .3s}
+.service-card:hover{border-color:#02c5ba44;box-shadow:0 8px 30px #02c5ba11;transform:translateY(-2px)}
+.service-card img{width:100%;height:180px;object-fit:cover;border-radius:1rem;margin-bottom:1rem}
+.service-card h3{font-size:1.125rem;font-weight:700;margin-bottom:.5rem}
+.service-card p{font-size:.8125rem;color:#666;line-height:1.6;font-family:Inter,sans-serif}
+
+/* about */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;max-width:1100px;margin:0 auto}
+.about-grid img{border-radius:1.5rem;width:100%;object-fit:cover;box-shadow:0 10px 40px rgba(0,0,0,.08)}
+.about-text h3{font-size:1.75rem;font-weight:700;margin-bottom:.5rem}
+.about-text .role{color:#02c5ba;font-size:.875rem;font-weight:600;margin-bottom:1rem;font-family:Inter,sans-serif}
+.about-text p{color:#555;font-size:.9375rem;margin-bottom:1rem;line-height:1.7;font-family:Inter,sans-serif}
+.about-text blockquote{border-left:3px solid #02c5ba;padding:.75rem 1.25rem;margin:1.25rem 0;background:#faf8f5;border-radius:0 .75rem .75rem 0;font-style:italic;color:#444;font-size:.9rem}
+.about-awards{display:flex;gap:.5rem;margin-top:1.5rem;flex-wrap:wrap}
+.award-badge{background:#02c5ba0d;border:1px solid #02c5ba22;border-radius:.75rem;padding:.4rem .85rem;font-size:.6875rem;font-weight:700;color:#02c5ba;font-family:Inter,sans-serif}
+
+/* differencials */
+.diffs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem;max-width:1100px;margin:0 auto}
+.diff-card{background:#fff;border-radius:1rem;padding:1.5rem;text-align:center;border:1px solid #c5a27e22}
+.diff-card .icon{font-size:2rem;margin-bottom:.75rem;display:block}
+.diff-card h4{font-size:.9375rem;font-weight:700;margin-bottom:.5rem}
+.diff-card p{font-size:.75rem;color:#666;font-family:Inter,sans-serif}
+
+/* clinic info */
+.clinic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;max-width:1100px;margin:2rem auto 0}
+.clinic-card{background:#fff;border-radius:1rem;padding:1.25rem;border:1px solid #c5a27e22;text-align:center}
+.clinic-card strong{display:block;font-size:.875rem;margin-bottom:.25rem;font-family:Inter,sans-serif}
+.clinic-card span{font-size:.8125rem;color:#666;font-family:Inter,sans-serif}
+
+/* testimonials carousel */
+.testimonials-section{background:#faf8f5;border-top:4px solid #02c5ba22}
+.testimonial-carousel{max-width:800px;margin:0 auto;position:relative;overflow:hidden}
+.testimonial-track{display:flex;transition:transform .5s ease}
+.testimonial-card{min-width:100%;padding:0 1rem}
+.testimonial-card-inner{background:#fff;border-radius:1.5rem;padding:2.5rem;border:1px solid #c5a27e22;text-align:center}
+.testimonial-card .stars{color:#f59e0b;font-size:1.25rem;margin-bottom:1rem}
+.testimonial-card blockquote{font-size:1rem;color:#444;line-height:1.7;margin-bottom:1.5rem;font-style:italic;font-family:Inter,sans-serif}
+.testimonial-card .author{font-weight:700;color:#2a241e;font-size:.875rem}
+.testimonial-card .date{font-size:.75rem;color:#999;font-family:Inter,sans-serif}
+.carousel-dots{display:flex;justify-content:center;gap:.5rem;margin-top:1.5rem}
+.carousel-dots button{width:10px;height:10px;border-radius:50%;border:none;background:#c5a27e44;cursor:pointer;transition:all .3s}
+.carousel-dots button.active{background:#02c5ba;width:28px;border-radius:5px}
+.carousel-arrows{display:flex;justify-content:center;gap:1rem;margin-top:1rem}
+.carousel-arrows button{background:#fff;border:1px solid #c5a27e44;border-radius:50%;width:44px;height:44px;font-size:1.25rem;cursor:pointer;transition:all .2s;color:#2a241e;font-family:Inter,sans-serif}
+.carousel-arrows button:hover{background:#02c5ba;color:#fff;border-color:#02c5ba}
+
+/* faq */
+.faq-list{max-width:720px;margin:0 auto}
+.faq-item{border-bottom:1px solid #c5a27e33;padding:1.25rem 0}
+.faq-item h4{font-size:1rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:#2a241e;user-select:none;font-family:Inter,sans-serif}
+.faq-item h4::after{content:'+';font-size:1.25rem;color:#02c5ba;transition:transform .2s;font-family:Inter,sans-serif}
+.faq-item.open h4::after{content:'−'}
+.faq-item p{font-size:.875rem;color:#666;margin-top:.75rem;line-height:1.6;display:none;font-family:Inter,sans-serif}
+.faq-item.open p{display:block}
+
+/* contact banner */
+.contact-section{background:#2a241e;color:#fff;border-top:4px solid #02c5ba}
+.contact-section .section-title h2{color:#fff}
+.contact-section .section-title p{color:#c5a27e}
+
+/* proposta comercial */
+#proposta-comercial{background:#0a0a0a;color:#fff;border-top:8px solid #02c5ba;padding:5rem 5%}
+#proposta-comercial .section-title h2{color:#fff}
+#proposta-comercial .section-title p{color:#999}
+.upsell-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.5rem;max-width:1100px;margin:2rem auto}
+.upsell-card{background:#18181a;border-radius:1.25rem;padding:1.5rem;border:1px solid #27272a;transition:all .3s;text-align:center}
+.upsell-card:hover{border-color:#02c5ba44;transform:translateY(-2px)}
+.upsell-card .icon{font-size:2rem;margin-bottom:.75rem;display:block}
+.upsell-card h4{font-size:1rem;font-weight:700;margin-bottom:.5rem}
+.upsell-card p{font-size:.75rem;color:#999;font-family:Inter,sans-serif}
+
+/* footer */
+footer{background:#1a1a1a;color:#9ca3af;padding:4rem 5% 2rem;border-top:4px solid #02c5ba22}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;max-width:1100px;margin:0 auto 3rem}
+footer h4{font-size:.875rem;font-weight:700;color:#fff;margin-bottom:1.25rem;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:.08em}
+footer p,footer a{font-size:.8125rem;color:#9ca3af;transition:color .2s;font-family:Inter,sans-serif;line-height:1.8}
+footer a:hover{color:#02c5ba}
+footer .social{display:flex;gap:.75rem;margin-top:1rem}
+footer .social a{width:40px;height:40px;border-radius:50%;background:#27272a;display:flex;align-items:center;justify-content:center;font-size:1.125rem;transition:all .2s}
+footer .social a:hover{background:#02c5ba;color:#111827}
+.footer-bottom{border-top:1px solid #27272a;padding-top:2rem;text-align:center;max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem}
+.footer-bottom p{font-size:.75rem;color:#666}
+
+/* responsive */
+@media(max-width:768px){
+  .hero-grid{grid-template-columns:1fr;text-align:center}
+  .hero-text .tags{justify-content:center}
+  .hero-ctas{justify-content:center}
+  .hero-image img{max-width:320px}
+  .hero-image .accent-circle{display:none}
+  .about-grid{grid-template-columns:1fr}
+  nav{padding:.5rem 5%}
+  .nav-links{display:none}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .testimonial-card-inner{padding:1.5rem}
+  .hero{min-height:auto;padding:7rem 5% 3rem}
+  .about-image{order:-1}
+}
+@media(max-width:480px){
+  .footer-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="banner-urgencia">⚡ PROPOSTA COMERCIAL VÁLIDA POR 3 DIAS — ACIONE O BOTÃO "ACEITAR PROPOSTA" AO FINAL DA PÁGINA</div>
+
+<nav>
+  <img src="https://elizabetedemarchi.com.br/wp-content/uploads/2023/02/Logo_Elizabete-de-Marchi-01.png" alt="Dra. Elizabete De Marchi" class="logo-img">
+  <ul class="nav-links">
+    <li><a href="#servicos">Serviços</a></li>
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#depoimentos">Depoimentos</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="https://wa.me/5541996655769?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es." target="_blank">Contato</a></li>
+  </ul>
+  <a href="https://wa.me/5541996655769?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20consulta." target="_blank" class="cta-btn">Agende sua Consulta</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid">
+    <div class="hero-text">
+      <div class="tags">
+        <span>Biomedicina</span>
+        <span>Estética Avançada</span>
+        <span>Harmonização Facial</span>
+      </div>
+      <h1>Dra. <span>Elizabete De Marchi</span></h1>
+      <p class="subtitle">Biomedicina Estética Avançada, Facial e Corporal — excelência e atendimento humanizado em Curitiba.</p>
+      <div class="hero-ctas">
+        <a href="https://wa.me/5541996655769?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20consulta." target="_blank" class="cta-btn" style="font-size:.875rem;padding:.85rem 2.25rem">Agende sua Consulta</a>
+        <a href="#servicos" class="cta-btn cta-btn-outline" style="font-size:.875rem;padding:.85rem 2.25rem">Conheça os Tratamentos</a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <div class="accent-circle"></div>
+      <img src="https://elizabetedemarchi.com.br/wp-content/uploads/2026/03/Dra-Elizabete-2026.png" alt="Dra. Elizabete De Marchi">
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="servicos" style="border-top:4px solid #02c5ba22">
+  <div class="section-title">
+    <span class="label">Tratamentos</span>
+    <h2>Procedimentos Faciais e Corporais</h2>
+    <p>Protocolos não invasivos e minimamente invasivos com produtos de altíssima qualidade e registro Anvisa.</p>
+  </div>
+  <div class="services-grid">
+    <div class="service-card">
+      <img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400&q=80" alt="Preenchimento Facial" loading="lazy">
+      <h3>Preenchimento Facial</h3>
+      <p>Ácido hialurônico para restaurar ou adicionar volume ao rosto, suavizando rugas e contornos.</p>
+    </div>
+    <div class="service-card">
+      <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&q=80" alt="Toxina Botulínica" loading="lazy">
+      <h3>Toxina Botulínica (Botox)</h3>
+      <p>Aplicada em pontos estratégicos para reduzir rugas e linhas de expressão de forma segura e natural.</p>
+    </div>
+    <div class="service-card">
+      <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80" alt="Bioestimuladores de Colágeno" loading="lazy">
+      <h3>Bioestimuladores de Colágeno</h3>
+      <p>Estimulam a produção natural de colágeno, melhorando firmeza, elasticidade e sustentação da pele.</p>
+    </div>
+    <div class="service-card">
+      <img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400&q=80" alt="Fios de PDO" loading="lazy">
+      <h3>Fios de PDO</h3>
+      <p>Efeito lifting imediato com estímulo prolongado de colágeno para sustentação e rejuvenescimento.</p>
+    </div>
+    <div class="service-card">
+      <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&q=80" alt="Skinboosters" loading="lazy">
+      <h3>Skinboosters</h3>
+      <p>Hidratação profunda com ácido hialurônico de baixa densidade para luminosidade, viço e elasticidade.</p>
+    </div>
+    <div class="service-card">
+      <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80" alt="Microagulhamento" loading="lazy">
+      <h3>Microagulhamento</h3>
+      <p>Microperfurações que estimulam colágeno, melhorando textura da pele, cicatrizes de acne e manchas.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DIFFERENTIALS -->
+<section style="background:#faf8f5;border-top:4px solid #02c5ba22">
+  <div class="section-title">
+    <span class="label">Diferenciais</span>
+    <h2>Por que escolher a Dra. Elizabete?</h2>
+    <p>Protocolos rigorosos de segurança, atendimento humanizado e excelência em biomedicina estética.</p>
+  </div>
+  <div class="diffs-grid">
+    <div class="diff-card">
+      <span class="icon">🏆</span>
+      <h4>Profissional do Ano</h4>
+      <p>Reconhecida pelo Jornal A Folha do Batel em 2021, 2022 e 2023 pela excelência no atendimento.</p>
+    </div>
+    <div class="diff-card">
+      <span class="icon">🛡️</span>
+      <h4>Produtos com Registro Anvisa</h4>
+      <p>Todos os produtos utilizados possuem registro na Anvisa e são de laboratórios renomados.</p>
+    </div>
+    <div class="diff-card">
+      <span class="icon">🔬</span>
+      <h4>Equipamentos Inmetro</h4>
+      <p>Equipamentos de primeira qualidade, registrados e calibrados conforme a legislação vigente.</p>
+    </div>
+    <div class="diff-card">
+      <span class="icon">❤️</span>
+      <h4>Atendimento Humanizado</h4>
+      <p>Consultas exclusivamente com hora marcada. Cada paciente é única, sem protocolos em massa.</p>
+    </div>
+    <div class="diff-card">
+      <span class="icon">📋</span>
+      <h4>Comissão de Ética CRBM6</h4>
+      <p>Dra. Elizabete integra a Comissão de Ética da Biomedicina Estética do Paraná desde 2024.</p>
+    </div>
+    <div class="diff-card">
+      <span class="icon">🌍</span>
+      <h4>Pacientes do Brasil e Exterior</h4>
+      <p>Atendemos pacientes de Curitiba, SC, SP, DF, Canadá, Áustria, Espanha e França.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="sobre" style="border-top:4px solid #02c5ba22">
+  <div class="about-grid">
+    <div class="about-image">
+      <img src="https://elizabetedemarchi.com.br/wp-content/uploads/2023/03/Dra.-Elizabete-910x1024.jpg" alt="Dra. Elizabete De Marchi" loading="lazy">
+    </div>
+    <div class="about-text">
+      <span class="label" style="display:inline-block;margin-bottom:.5rem">Sobre</span>
+      <h3>Dra. Elizabete De Marchi</h3>
+      <p class="role">Biomédica esteta | Especialista em Harmonização Facial</p>
+      <p>Minha história na saúde começou em 2005 em um banco de sangue. Em 2008, iniciei a graduação em Biomedicina em um dos maiores hospitais de Curitiba, onde atuei como técnica em enfermagem, hemoterapia e biomédica, chegando à supervisão.</p>
+      <p>Após duas pós-graduações e diversos cursos de extensão, encontrei na biomedicina estética minha verdadeira paixão. Em abril de 2022, inaugurei minha clínica no bairro Bacacheri, em Curitiba.</p>
+      <blockquote>"Percebi que transformo sonhos em realidade. É libertador saber que minhas pacientes, ao se olharem no espelho, sorriem com as mudanças alcançadas."</blockquote>
+      <div class="about-awards">
+        <span class="award-badge">🏆 Profissional do Ano 2021</span>
+        <span class="award-badge">🏆 Profissional do Ano 2022</span>
+        <span class="award-badge">🏆 Profissional do Ano 2023</span>
+        <span class="award-badge">📜 Comissão de Ética CRBM6 2024</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLINIC -->
+<section style="background:#faf8f5;border-top:4px solid #02c5ba22">
+  <div class="section-title">
+    <span class="label">A Clínica</span>
+    <h2>Um Ambiente Acolhedor para Você</h2>
+    <p>Inaugurada em 14 de abril de 2022 — higienizada, climatizada e preparada para seu bem-estar.</p>
+  </div>
+  <img src="https://elizabetedemarchi.com.br/wp-content/uploads/2023/03/A-clinica.png" alt="Clínica Dra. Elizabete De Marchi" style="border-radius:1.5rem;margin:0 auto 2rem;max-width:900px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.08)" loading="lazy">
+  <div class="clinic-grid">
+    <div class="clinic-card">
+      <strong>📍 Localização</strong>
+      <span>R. Nicarágua, 847 — Sala 203<br>Bacacheri, Curitiba</span>
+    </div>
+    <div class="clinic-card">
+      <strong>🕐 Atendimento</strong>
+      <span>Com hora marcada<br>Atendimento personalizado</span>
+    </div>
+    <div class="clinic-card">
+      <strong>♿ Acessibilidade</strong>
+      <span>Elevador e acesso PCD<br>Ambiente climatizado</span>
+    </div>
+    <div class="clinic-card">
+      <strong>🔒 LGPD</strong>
+      <span>Seus dados protegidos<br>Conforme a legislação</span>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS CAROUSEL -->
+<section id="depoimentos" class="testimonials-section">
+  <div class="section-title">
+    <span class="label">Depoimentos</span>
+    <h2>O que minhas pacientes dizem</h2>
+    <p>Feedbacks reais de quem já transformou sua autoestima com nossos tratamentos.</p>
+  </div>
+  <div class="testimonial-carousel">
+    <div class="testimonial-track" id="testimonialTrack">
+      <div class="testimonial-card">
+        <div class="testimonial-card-inner">
+          <div class="stars">★★★★★</div>
+          <blockquote>"A Dra. Elizabete é uma ótima profissional. Procurei ela no período pós-parto em razão de fissuras que estavam dificultando a amamentação. Fiz 2 sessões de laser e na primeira já tive melhora significativa. Super atenciosa, fez encaixe por urgência. Super indico!"</blockquote>
+          <div class="author">Suellen Sarote</div>
+          <div class="date">Google — Fevereiro 2025</div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-card-inner">
+          <div class="stars">★★★★★</div>
+          <blockquote>"Fui muito bem recebida desde as orientações por WhatsApp quanto nas consultas. Profissional dedicada, super atualizada, sincera na indicação dos procedimentos. Confio de olhos fechados em seu trabalho, já recomendei a familiares e amigos!"</blockquote>
+          <div class="author">Franciele Cardoso Iaschitzki</div>
+          <div class="date">Google — Maio 2024</div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-card-inner">
+          <div class="stars">★★★★★</div>
+          <blockquote>"A Dra Elizabete é maravilhosa, divina. Atendimento sensacional, simplesmente diferenciado. Tratamento sem palavras para expressar de tão maravilhoso que ela exerce."</blockquote>
+          <div class="author">Andreza Monteiro</div>
+          <div class="date">Google — Maio 2024</div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-card-inner">
+          <div class="stars">★★★★★</div>
+          <blockquote>"O tratamento com a Dra Elizabete TRANSFORMOU a minha auto-estima em níveis que eu nem sabia que existiam. Atendimento impecável, experiência incrível. Consultas sem pressa, com atenção e cuidado. Não troco você por nada!"</blockquote>
+          <div class="author">Giovana</div>
+          <div class="date">Google — Maio 2024</div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-card-inner">
+          <div class="stars">★★★★★</div>
+          <blockquote>"A Doutora Elizabete de Marchi é uma excelente profissional. Desde minha primeira consulta fiquei encantada com o espaço e principalmente com o atendimento. Minha auto estima melhorou muito. Super indico!"</blockquote>
+          <div class="author">Jéssica Del Grecco Santana</div>
+          <div class="date">Google — Maio 2024</div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-card-inner">
+          <div class="stars">★★★★★</div>
+          <blockquote>"A dra. Elizabete é simplesmente extraordinária, maravilhosa e muito atenciosa. Excelente profissional."</blockquote>
+          <div class="author">Silvana Simon</div>
+          <div class="date">Google — Novembro 2023</div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-card-inner">
+          <div class="stars">★★★★★</div>
+          <blockquote>"Gratidão pelo cuidado, pelo carinho e atenção. Parabéns pelo seu trabalho impecável. Estou me amando como a muito tempo não me sentia."</blockquote>
+          <div class="author">Luciane Aparecida Dos Santos Teider</div>
+          <div class="date">Google — Setembro 2023</div>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-dots" id="carouselDots"></div>
+    <div class="carousel-arrows">
+      <button id="prevTestimonial">‹</button>
+      <button id="nextTestimonial">›</button>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="border-top:4px solid #02c5ba22">
+  <div class="section-title">
+    <span class="label">FAQ</span>
+    <h2>Perguntas Frequentes</h2>
+    <p>Tire suas dúvidas sobre os procedimentos e a clínica.</p>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item open">
+      <h4>Quais as qualificações das biomédicas que atendem na clínica?</h4>
+      <p>Contamos com duas biomédicas especialistas: Dra. Heloisa Longo (Análises Clínicas, Lean Healthcare pela PUC PR) responsável pelo pré-atendimento, e Dra. Elizabete De Marchi, especialista em harmonização facial, responsável pelos atendimentos e acompanhamento pós-procedimento.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Por que vocês não postam fotos "Antes e Depois"?</h4>
+      <p>Por respeito à saúde mental das pacientes e à LGPD. Cada pessoa é única e os resultados variam. Durante a consulta, mediante solicitação, apresentamos fotos de pacientes que autorizaram a divulgação, em ambiente seguro e protegido.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Como funcionam os convênios institucionais?</h4>
+      <p>A clínica possui convênios com ASSEMPPR, ASSERJUSPAR, ACP, AMAI e ICS Mais Vantagens, oferecendo benefícios em procedimentos estéticos. Consulte-nos para verificar se sua instituição é conveniada.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Quais os cuidados com segurança e higiene?</h4>
+      <p>Seguimos todas as determinações da Anvisa e do Conselho Regional de Biomedicina do Paraná. A clínica é liberada pela Vigilância Sanitária, possui certificado do Corpo de Bombeiros e emite nota fiscal.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Como agendar uma consulta?</h4>
+      <p>O atendimento é exclusivamente com hora marcada. Entre em contato pelo WhatsApp (41) 99665-5769 ou e-mail contato@elizabetedemarchi.com.br.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT BANNER -->
+<section class="contact-section">
+  <div class="section-title">
+    <span class="label">Contato</span>
+    <h2>Vamos transformar seu sorriso?</h2>
+    <p>Agende uma consulta e descubra como a biomedicina estética pode elevar sua autoestima.</p>
+  </div>
+  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+    <a href="https://wa.me/5541996655769?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20consulta." target="_blank" class="cta-btn" style="font-size:1rem;padding:1rem 2.5rem;display:inline-flex;align-items:center;gap:.5rem">
+      📱 (41) 99665-5769
+    </a>
+    <a href="mailto:contato@elizabetedemarchi.com.br" class="cta-btn" style="font-size:1rem;padding:1rem 2.5rem;display:inline-flex;align-items:center;gap:.5rem;background:transparent;border:2px solid #02c5ba;color:#02c5ba">
+      ✉️ E-mail
+    </a>
+  </div>
+</section>
+
+<!-- PROPOSTA COMERCIAL (ESCOM STUDIO) -->
+<section id="proposta-comercial">
+  <div class="section-title">
+    <span class="label" style="color:#02c5ba">Proposta Exclusiva ESCOM Studio</span>
+    <h2>Investimento do Projeto</h2>
+    <p>Este é o escopo financeiro exato para a implementação do site da sua empresa, com design de alta performance e engenharia de conversão voltada para captação.</p>
+  </div>
+
+  <div style="max-width:540px;margin:0 auto;background:linear-gradient(180deg,#18181a,#0d0d0d);border-radius:1.5rem;padding:2.5rem;border:1px solid #27272a;box-shadow:0 0 50px rgba(0,0,0,.5);position:relative">
+    <div style="position:absolute;top:0;right:0;background:#02c5ba;color:#111827;font-size:.6875rem;font-weight:900;padding:.35rem 1rem;border-radius:0 1.5rem 0 1rem">OFERTA DE PROSPECÇÃO</div>
+    <h3 style="font-size:1.25rem;font-weight:700;margin-bottom:.5rem;color:#fff">Website de Conversão Ativa</h3>
+    <p style="font-size:.8125rem;color:#999;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid #27272a;font-family:Inter,sans-serif">Design UI/UX sob medida, SEO, mobile-first, integração WhatsApp, copywriting persuasivo.</p>
+    <div style="background:#000000cc;border:1px solid #27272a;border-radius:1rem;padding:1.5rem;text-align:center;margin-bottom:1.5rem">
+      <div style="display:flex;align-items:center;justify-content:center;gap:.5rem;margin-bottom:.75rem">
+        <span style="color:#02c5ba;font-size:.75rem">⚡</span>
+        <span style="font-size:.75rem;color:#02c5ba;font-weight:700;text-transform:uppercase;letter-spacing:.15em">Investimento Único</span>
+      </div>
+      <div style="font-size:3.5rem;font-weight:900;color:#02c5ba;text-shadow:0 0 20px rgba(2,197,186,.3)">R$ 990 <span style="font-size:1rem;color:#666;font-weight:400">/taxa única</span></div>
+      <p style="font-size:.625rem;color:#555;margin-top:.5rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em">Pagamento à vista via PIX ou transferência</p>
+    </div>
+    <ul style="list-style:none;margin-bottom:1.5rem;font-family:Inter,sans-serif">
+      <li style="padding:.4rem 0;font-size:.8125rem;color:#bbb;display:flex;align-items:center;gap:.5rem">✓ Configuração completa de domínio e hospedagem</li>
+      <li style="padding:.4rem 0;font-size:.8125rem;color:#bbb;display:flex;align-items:center;gap:.5rem">✓ SEO integrado para posicionamento local</li>
+      <li style="padding:.4rem 0;font-size:.8125rem;color:#bbb;display:flex;align-items:center;gap:.5rem">✓ Certificado SSL de conexão segura</li>
+      <li style="padding:.4rem 0;font-size:.8125rem;color:#bbb;display:flex;align-items:center;gap:.5rem">✓ Suporte técnico prioritário de 30 dias</li>
+      <li style="padding:.4rem 0;font-size:.8125rem;color:#02c5ba;display:flex;align-items:center;gap:.5rem;font-weight:700">✓ Investimento único, sem mensalidades ou taxas ocultas</li>
+    </ul>
+    <button id="btn-aceitar-proposta" class="btn-shimmer" style="width:100%;background:#02c5ba;color:#111827;border:none;border-radius:1rem;padding:1.25rem;font-size:1.125rem;font-weight:900;cursor:pointer;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;gap:.5rem">ACEITAR PROPOSTA AGORA →</button>
+    <p style="text-align:center;font-size:.6875rem;color:#555;margin-top:.75rem;font-family:Inter,sans-serif">🔒 Contrato e Nota Fiscal emitidos após a aprovação.</p>
+  </div>
+
+  <!-- UPSELLS -->
+  <div style="margin-top:4rem;max-width:1100px;margin-left:auto;margin-right:auto;background:linear-gradient(180deg,#1c1917 0%,#0c0a09 100%);border-radius:1.5rem;padding:2.5rem;border:1px solid #02c5ba22;position:relative">
+    <div style="position:absolute;top:-.75rem;left:2rem;background:#02c5ba;color:#111827;font-size:.6875rem;font-weight:900;padding:.35rem 1rem;border-radius:2rem;display:inline-block">Expansões Tecnológicas</div>
+    <h3 style="font-size:1.5rem;font-weight:700;color:#fff;margin-top:.5rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem">➕ Módulos Avançados sob Demanda</h3>
+    <p style="color:#999;font-size:.8125rem;margin-bottom:2rem;font-family:Inter,sans-serif">Leve sua captação, operação e análise para o próximo nível. Integre novos recursos tecnológicos desenvolvidos sob medida pela ESCOM Studio:</p>
+    <div class="upsell-grid">
+      <div class="upsell-card" style="text-align:left;display:flex;gap:1rem;padding:1.25rem">
+        <div style="width:80px;height:80px;border-radius:.75rem;background:#02c5ba;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0">👥</div>
+        <div><h4 style="font-size:.9375rem">CRM e Controle de Clientes</h4><p style="font-size:.75rem">Funil de agendamentos automatizado, envio de lembretes automáticos e acompanhamento via WhatsApp.</p></div>
+      </div>
+      <div class="upsell-card" style="text-align:left;display:flex;gap:1rem;padding:1.25rem">
+        <div style="width:80px;height:80px;border-radius:.75rem;background:#02c5ba;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0">📊</div>
+        <div><h4 style="font-size:.9375rem">Dashboard Financeiro</h4><p style="font-size:.75rem">Visualização do fluxo de caixa e conversão de novos clientes em tempo real com gráficos intuitivos.</p></div>
+      </div>
+      <div class="upsell-card" style="text-align:left;display:flex;gap:1rem;padding:1.25rem">
+        <div style="width:80px;height:80px;border-radius:.75rem;background:#02c5ba;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0">🤖</div>
+        <div><h4 style="font-size:.9375rem">Agente de Atendimento IA</h4><p style="font-size:.75rem">Robô inteligente integrado ao WhatsApp Business 24h para agendamentos e dúvidas.</p></div>
+      </div>
+      <div class="upsell-card" style="text-align:left;display:flex;gap:1rem;padding:1.25rem">
+        <div style="width:80px;height:80px;border-radius:.75rem;background:#02c5ba;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0">📦</div>
+        <div><h4 style="font-size:.9375rem">Estoque Digital Inteligente</h4><p style="font-size:.75rem">Controle digital de entrada e saída de insumos com alerta de estoque mínimo integrado.</p></div>
+      </div>
+      <div class="upsell-card" style="text-align:left;display:flex;gap:1rem;padding:1.25rem">
+        <div style="width:80px;height:80px;border-radius:.75rem;background:#02c5ba;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0">🔄</div>
+        <div><h4 style="font-size:.9375rem">Otimização de Processos</h4><p style="font-size:.75rem">Mapeamento e automação de fluxos operacionais para remover gargalos e acelerar a produtividade.</p></div>
+      </div>
+      <div class="upsell-card" style="text-align:left;display:flex;gap:1rem;padding:1.25rem">
+        <div style="width:80px;height:80px;border-radius:.75rem;background:#02c5ba;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0">🛒</div>
+        <div><h4 style="font-size:.9375rem">Loja de Peças & Acessórios</h4><p style="font-size:.75rem">Loja virtual integrada para venda online de produtos ou serviços adicionais com pagamento online.</p></div>
+      </div>
+    </div>
+
+    <!-- Formulário Upsell -->
+    <div style="background:#000000cc;border:1px solid #27272a;border-radius:1rem;padding:2rem;margin-top:2rem">
+      <h4 style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem">✉️ Solicitar Orçamento das Expansões</h4>
+      <p style="color:#999;font-size:.75rem;margin-bottom:1.5rem;font-family:Inter,sans-serif">Selecione o módulo de seu interesse. Nossa equipe de arquitetura técnica analisará e enviará o orçamento detalhado.</p>
+      <form id="form-upsell" style="display:flex;flex-direction:column;gap:1rem">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <input type="text" id="upsell-nome" placeholder="Seu Nome / Responsável" style="background:#0d0d0d;border:1px solid #27272a;border-radius:.75rem;padding:.75rem 1rem;color:#fff;font-size:.8125rem;font-family:Inter,sans-serif;outline:none">
+          <input type="email" id="upsell-email" placeholder="E-mail Corporativo" style="background:#0d0d0d;border:1px solid #27272a;border-radius:.75rem;padding:.75rem 1rem;color:#fff;font-size:.8125rem;font-family:Inter,sans-serif;outline:none">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <select id="upsell-servico" style="background:#0d0d0d;border:1px solid #27272a;border-radius:.75rem;padding:.75rem 1rem;color:#999;font-size:.8125rem;font-family:Inter,sans-serif;outline:none">
+            <option value="" disabled selected>Selecione o Módulo</option>
+            <option value="crm">CRM e Controle de Clientes</option>
+            <option value="dashboard">Dashboard Financeiro</option>
+            <option value="bot">Agente de Atendimento IA</option>
+            <option value="estoque">Estoque Digital Inteligente</option>
+            <option value="processos">Otimização de Processos</option>
+            <option value="ecommerce">Loja de Peças & Acessórios</option>
+          </select>
+          <input type="tel" id="upsell-whatsapp" placeholder="WhatsApp para Contato" style="background:#0d0d0d;border:1px solid #27272a;border-radius:.75rem;padding:.75rem 1rem;color:#fff;font-size:.8125rem;font-family:Inter,sans-serif;outline:none">
+        </div>
+        <button type="submit" style="width:100%;background:#02c5ba;color:#111827;border:none;border-radius:.75rem;padding:1rem;font-size:.8125rem;font-weight:900;cursor:pointer;font-family:Inter,sans-serif;text-transform:uppercase;letter-spacing:.05em">Enviar Solicitação de Adicionais</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- RODAPÉ COMERCIAL ESCOM STUDIO -->
+<footer style="background:#060606;border-top:1px solid #18181a;text-align:center;padding:3rem 5%;color:#555;font-size:.75rem;font-family:Inter,sans-serif">
+  <p style="font-weight:700;letter-spacing:.1em;color:#999;margin-bottom:.5rem">ESCOM STUDIO · CONVERSÃO DIGITAL PREMIUM</p>
+  <p style="font-size:.6875rem;max-width:600px;margin:0 auto .5rem">Esta proposta técnica de implementação e seu conteúdo são confidenciais e de propriedade exclusiva do destinatário e da ESCOM Studio.</p>
+  <p style="font-size:.625rem;color:#444">© 2026 ESCOM Studio. Todos os direitos reservados.</p>
+</footer>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <img src="https://elizabetedemarchi.com.br/wp-content/uploads/2023/02/Logo_Elizabete-de-Marchi-01.png" alt="Dra. Elizabete De Marchi" style="height:32px;margin-bottom:1rem">
+      <p style="font-size:.8125rem;color:#9ca3af;line-height:1.7">Biomedicina Estética Avançada — Harmonização facial com excelência e atendimento humanizado em Curitiba.</p>
+      <div class="social">
+        <a href="https://www.facebook.com/profile.php?id=100093118593836" target="_blank" aria-label="Facebook">f</a>
+        <a href="https://www.instagram.com/draelizabetedemarchi/" target="_blank" aria-label="Instagram">ig</a>
+        <a href="https://www.linkedin.com/in/elizabete-de-marchi-346999154/" target="_blank" aria-label="LinkedIn">in</a>
+        <a href="https://www.youtube.com/@draelizabetedemarchi" target="_blank" aria-label="YouTube">yt</a>
+      </div>
+    </div>
+    <div>
+      <h4>Navegação</h4>
+      <a href="#servicos">Serviços</a><br>
+      <a href="#sobre">Sobre</a><br>
+      <a href="#depoimentos">Depoimentos</a><br>
+      <a href="#faq">FAQ</a><br>
+    </div>
+    <div>
+      <h4>Tratamentos</h4>
+      <a href="https://elizabetedemarchi.com.br/preenchimento-facial/" target="_blank">Preenchimento Facial</a><br>
+      <a href="https://elizabetedemarchi.com.br/toxina-botulinica/" target="_blank">Toxina Botulínica</a><br>
+      <a href="https://elizabetedemarchi.com.br/bioestimuladores-de-colageno/" target="_blank">Bioestimuladores</a><br>
+      <a href="https://elizabetedemarchi.com.br/fios-de-pdo/" target="_blank">Fios de PDO</a><br>
+    </div>
+    <div>
+      <h4>Contato</h4>
+      <a href="https://wa.me/5541996655769" target="_blank">(41) 99665-5769</a><br>
+      <a href="mailto:contato@elizabetedemarchi.com.br">contato@elizabetedemarchi.com.br</a><br>
+      <a href="https://goo.gl/maps/8aSRoED7PnsvSEUX6" target="_blank">R. Nicarágua, 847 — Sala 203<br>Bacacheri, Curitiba</a><br>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Elizabete de Marchi Biomedicina Estética Avançada · CRBM - PR 542</p>
+    <p>Design & Engenharia de Conversão por <a href="https://www.escomstudio.com.br" style="color:#02c5ba;font-weight:700">ESCOM STUDIO</a></p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // Nav scroll
+  var nav=document.querySelector('nav');
+  window.addEventListener('scroll',function(){
+    nav.classList.toggle('scrolled',window.scrollY>50);
+  });
+
+  // FAQ toggle
+  document.querySelectorAll('.faq-item h4').forEach(function(h4){
+    h4.addEventListener('click',function(){this.parentNode.classList.toggle('open')});
+  });
+
+  // Testimonial carousel
+  var track=document.getElementById('testimonialTrack');
+  var dots=document.getElementById('carouselDots');
+  var cards=track.querySelectorAll('.testimonial-card');
+  var current=0;
+  cards.forEach(function(_,i){var d=document.createElement('button');d.addEventListener('click',function(){goTo(i)});dots.appendChild(d)});
+  function goTo(i){current=i;track.style.transform='translateX(-'+(current*100)+'%)';dots.querySelectorAll('button').forEach(function(b,j){b.classList.toggle('active',j===current)})}
+  document.getElementById('prevTestimonial').addEventListener('click',function(){goTo(current>0?current-1:cards.length-1)});
+  document.getElementById('nextTestimonial').addEventListener('click',function(){goTo(current<cards.length-1?current+1:0)});
+  goTo(0);
+  setInterval(function(){goTo(current<cards.length-1?current+1:0)},5000);
+
+  // Upsell form
+  var formUpsell=document.getElementById('form-upsell');
+  if(formUpsell) formUpsell.addEventListener('submit',function(e){
+    e.preventDefault();
+    var btn=this.querySelector('button[type="submit"]');
+    btn.innerHTML='Enviando...';
+    btn.style.opacity='0.8';btn.style.cursor='wait';
+    setTimeout(function(){
+      alert('Solicitação enviada! Nossa equipe técnica entrará em contato.');
+      btn.innerHTML='Enviado ✓';
+      btn.style.background='#27272a';btn.style.color='#02c5ba';btn.style.border='1px solid #02c5ba';btn.style.cursor='not-allowed';btn.style.opacity='1';
+      document.getElementById('form-upsell').reset();
+    },1000);
+  });
+
+  // Proposta aceite
+  function getTemplateId(){return window.location.pathname.split('/').find(function(e){return e.indexOf('template-')===0})||'default'}
+  function checkStatus(){
+    var t=getTemplateId();
+    var e=localStorage.getItem('escom_lead_status_'+t)||localStorage.getItem('escom_lead_status');
+    if(e==='pago'){
+      var b=document.getElementById('banner-urgencia'),p=document.getElementById('proposta-comercial');
+      if(b)b.style.display='none';if(p)p.style.display='none';
+      var f=document.querySelector('footer[style*="060606"]');
+      if(f)f.style.display='none';
+    }
+  }
+  checkStatus();
+  window.addEventListener('storage',function(e){
+    if((e.key==='escom_lead_status'||e.key==='escom_lead_status_'+getTemplateId())&&e.newValue==='pago')checkStatus();
+  });
+
+  var btn=document.getElementById('btn-aceitar-proposta');
+  if(btn){
+    btn.addEventListener('click',function(e){
+      e.preventDefault();
+      btn.innerHTML='Processando...';btn.style.opacity='0.8';btn.style.cursor='wait';
+      setTimeout(function(){
+        var o={id:'lead_'+Date.now(),empresa:'Dra. Elizabete De Marchi',status:'pagamento_pendente',valor:990,data:new Date().toISOString()};
+        localStorage.setItem('escom_new_lead_conversion',JSON.stringify(o));
+        window.dispatchEvent(new CustomEvent('escom-lead-converted',{detail:o}));
+        btn.innerHTML='✅ PROPOSTA ACEITA!';btn.style.background='#27272a';btn.style.color='#02c5ba';btn.style.border='2px solid #02c5ba';btn.style.cursor='not-allowed';btn.style.opacity='1';
+        alert('Obrigado! Seu aceite foi registrado. A equipe da ESCOM Studio entrará em contato.');
+      },1500);
+    });
+  }
+
+  // Anti-copia
+  document.addEventListener('contextmenu',function(e){e.preventDefault()});
+  document.addEventListener('keydown',function(e){
+    if((e.ctrlKey||e.metaKey)&&(e.key==='c'||e.key==='C'||e.key==='s'||e.key==='S'||e.key==='p'||e.key==='P')||e.key==='PrintScreen')e.preventDefault();
+  });
+  document.addEventListener('copy',function(e){e.clipboardData.setData('text/plain','');e.preventDefault()});
+})();
+</script>
+</body>
+</html>

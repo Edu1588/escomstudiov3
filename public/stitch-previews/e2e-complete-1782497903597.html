@@ -1,0 +1,354 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Clinica</title></head><body><section id="hero"></section>
+<section id="about"><!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>About Us | MedTrust Clinic</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#006a64",
+                    "on-tertiary-fixed": "#131b2e",
+                    "on-secondary-fixed": "#191c1e",
+                    "background": "#f8f9ff",
+                    "surface-container-low": "#eff4ff",
+                    "on-primary-fixed-variant": "#00504b",
+                    "on-tertiary-container": "#3b4358",
+                    "on-secondary-container": "#626567",
+                    "secondary-container": "#e0e3e5",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed": "#00201e",
+                    "tertiary": "#565e74",
+                    "on-error": "#ffffff",
+                    "on-surface-variant": "#3c4948",
+                    "primary-fixed": "#63f9ed",
+                    "surface-dim": "#cbdbf5",
+                    "surface-variant": "#d3e4fe",
+                    "on-surface": "#0b1c30",
+                    "surface-container-highest": "#d3e4fe",
+                    "outline": "#6b7a78",
+                    "tertiary-fixed-dim": "#bec6e0",
+                    "tertiary-container": "#a8b0c9",
+                    "surface-container-lowest": "#ffffff",
+                    "outline-variant": "#bacac7",
+                    "tertiary-fixed": "#dae2fd",
+                    "surface": "#f8f9ff",
+                    "on-primary-container": "#004c47",
+                    "error": "#ba1a1a",
+                    "inverse-primary": "#3cdcd0",
+                    "secondary-fixed-dim": "#c4c7c9",
+                    "on-background": "#0b1c30",
+                    "on-secondary-fixed-variant": "#444749",
+                    "error-container": "#ffdad6",
+                    "surface-tint": "#006a64",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed": "#e0e3e5",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-high": "#dce9ff",
+                    "surface-container": "#e5eeff",
+                    "primary-fixed-dim": "#3cdcd0",
+                    "on-primary": "#ffffff",
+                    "surface-bright": "#f8f9ff",
+                    "on-tertiary-fixed-variant": "#3f465c",
+                    "primary-container": "#02c5ba",
+                    "inverse-surface": "#213145",
+                    "inverse-on-surface": "#eaf1ff",
+                    "secondary": "#5c5f61"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "xl": "32px",
+                    "base": "8px",
+                    "container-margin": "24px",
+                    "lg": "24px",
+                    "md": "16px",
+                    "sm": "12px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "caption": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9ff; }
+        .hero-gradient {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(239,244,255,0.8) 100%);
+        }
+        .bento-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .bento-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -10px rgba(0, 106, 100, 0.15);
+        }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- TopNavBar -->
+<header class="fixed top-0 z-50 w-full bg-surface/80 backdrop-blur-md border-b border-outline-variant">
+<nav class="flex justify-between items-center w-full px-6 md:px-12 max-w-7xl mx-auto h-16">
+<div class="font-headline-md text-headline-md font-bold text-primary">MedTrust Clinic</div>
+<div class="hidden md:flex items-center space-x-8">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 transition-colors cursor-pointer duration-200" href="#">About</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer duration-200 font-body-md text-body-md" href="#">Services</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer duration-200 font-body-md text-body-md" href="#">Team</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer duration-200 font-body-md text-body-md" href="#">Contact</a>
+</div>
+<button class="bg-primary-container hover:bg-primary-container/90 text-on-primary-container px-6 py-2 rounded-lg font-label-md text-label-md transition-all duration-300">
+                Book Appointment
+            </button>
+</nav>
+</header>
+<main class="pt-16">
+<!-- Hero Section -->
+<section class="relative h-[716px] flex items-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<div class="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent z-10"></div>
+<div class="w-full h-full bg-cover bg-center" data-alt="A bright, expansive hospital lobby with high glass ceilings and natural light streaming in. The environment is impeccably clean, featuring modern architectural lines, comfortable seating areas, and lush indoor greenery that evokes a sense of calm and professional care. The color palette is dominated by soft whites and teals, creating a serene light-mode aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAMMucberh91GgZlzTD5HBmsK7r_JIz-ZXeaxwThAVXKVtyckNd4oSKoGSDFseUcvBh9CMIWsgtLQhWaaUpbR8lw7kIry5IyDwUs5XJewJO0f-Q0Yafo2Ubirr5GHta2bK9tCWOEIeHegCNbahnnrrrfRD0ohpgP2qiWg9gqi1lDhK3PGNoHk9v59c72cWM8B-KOhN85qec_3CqCaJsxvDVhAVhBRBOrtTxC8eB0RaTPkyklifrke8COVQcYXID6CGghTn5BXjL3w')"></div>
+</div>
+<div class="relative z-20 max-w-7xl mx-auto px-6 md:px-12 w-full">
+<div class="max-w-2xl">
+<span class="text-primary font-bold tracking-widest uppercase text-caption mb-4 block">Medical Excellence</span>
+<h1 class="font-display-lg text-display-lg text-on-surface mb-6 leading-tight">Our Commitment to <br/><span class="text-primary">Your Health</span></h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-8 max-w-lg">
+                        Providing world-class healthcare with a human touch. At MedTrust, we combine advanced technology with a deep sense of empathy to ensure every patient receives the attention they deserve.
+                    </p>
+<div class="flex gap-4">
+<button class="bg-primary text-white px-8 py-3 rounded-lg font-label-md hover:shadow-lg transition-all duration-300">Learn More</button>
+<button class="border-2 border-primary text-primary px-8 py-3 rounded-lg font-label-md hover:bg-primary/5 transition-all duration-300">Our Services</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Our Mission Section -->
+<section class="py-24 bg-white">
+<div class="max-w-7xl mx-auto px-6 md:px-12">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+<div class="relative">
+<div class="absolute -top-4 -left-4 w-24 h-24 bg-primary-container/20 rounded-full blur-2xl"></div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-8">Our Mission</h2>
+<div class="space-y-6 text-on-surface-variant font-body-md text-body-md leading-relaxed">
+<p>
+                                At MedTrust Clinic, our mission is to redefine the standard of community healthcare through unwavering dedication to patient well-being, clinical excellence, and compassionate service. We believe that true healing begins with listening and understanding.
+                            </p>
+<p>
+                                We strive to bridge the gap between technical medical expertise and personalized patient care. Our team is committed to providing a safe, inclusive, and transparent environment where every individual feels heard, respected, and empowered in their health journey.
+                            </p>
+<p>
+                                By integrating state-of-the-art diagnostic tools with evidence-based practices, we ensure that our patients receive the most effective treatments tailored specifically to their unique biological and lifestyle needs.
+                            </p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="rounded-xl overflow-hidden h-64 shadow-sm">
+<div class="w-full h-full bg-cover bg-center" data-alt="A close-up of a healthcare professional’s hands gently holding the hands of an elderly patient in a supportive, reassuring gesture. The lighting is warm and soft, emphasizing the human connection and empathetic care. The surrounding environment is a clean, modern medical office with clinical teal accents." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAvvOA5gABtZpoXr8Gw01Ov0VwPhC91MOHIfVDh6jQ2iswiNy2fArcHp1Sk3rHYwiS-O_UYMNzmCbTxeNCAXMA0zGtxvRTc6x4Vo5Mo4ei8SjSS0tHsUHK1WeBkVryi3zTc4br0ISSF2y5IhxeBvXyS2r_uxiWwocQ4LzSONRHsjnlnDo0M4g-Zl8aEYnxg9BhW7GsTKB68XKFr2fsJI6dwYOR0IN3BiWT9cWDh1O6bXO8wLNKZIbjADfzAjauLYNCgwJ2I1KW1_g')"></div>
+</div>
+<div class="rounded-xl overflow-hidden h-64 mt-8 shadow-sm">
+<div class="w-full h-full bg-cover bg-center" data-alt="A modern, high-tech clinical laboratory scene with researchers using precision equipment and microscopes. The environment is sterile and bright, with teal lighting accents highlighting the advanced technology. The focus is on precision and medical innovation in a professional setting." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDU_ek-oDQerNhTgbfQ8GKijswgp0UaK5zPQNbBkrJk1thnQCBGk0Xzs2wA4u5WViw--aJPYTMWpMFOEjmnhrbxkSsF4u3PAntenbDMm_pCO81L0iAaxT71sP_vm1Inchrl1wSlbx5-I7gzcrAuYVRPPHQ2m98xBbLafhjM2dg1BJOjGOCRVVBl-YasHRZlZxgxjr7TiU3129vJidnHjzl4EsxxO7TskdgI0CjU0_8iHgA8Rt4_O_cSRFjEkpPFEWcZo7910mK-yw')"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Why Choose Us - Bento Grid Style -->
+<section class="py-24 bg-surface-container-low">
+<div class="max-w-7xl mx-auto px-6 md:px-12">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-4">Why Choose Us</h2>
+<p class="text-on-surface-variant font-body-md max-w-2xl mx-auto">Discover the pillars of excellence that make MedTrust Clinic the preferred choice for thousands of patients.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Card 1 -->
+<div class="bento-card bg-white p-8 rounded-2xl border border-outline-variant flex flex-col items-center text-center">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6 text-primary">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-4">Expert Care</h3>
+<p class="text-on-surface-variant font-body-md">Our board-certified specialists bring decades of experience and specialized training to every consultation.</p>
+</div>
+<!-- Card 2 -->
+<div class="bento-card bg-white p-8 rounded-2xl border border-outline-variant flex flex-col items-center text-center">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6 text-primary">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">biotech</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-4">Modern Facilities</h3>
+<p class="text-on-surface-variant font-body-md">Equipped with the latest diagnostic imaging and surgical technology for precise results and recovery.</p>
+</div>
+<!-- Card 3 -->
+<div class="bento-card bg-white p-8 rounded-2xl border border-outline-variant flex flex-col items-center text-center">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6 text-primary">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">patient_list</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-4">Patient Centric</h3>
+<p class="text-on-surface-variant font-body-md">Your comfort and convenience are prioritized with flexible scheduling and personalized treatment plans.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Professional Biography Section -->
+<section class="py-24 bg-white overflow-hidden">
+<div class="max-w-7xl mx-auto px-6 md:px-12">
+<div class="flex flex-col md:flex-row items-center gap-16">
+<div class="w-full md:w-1/3 relative">
+<div class="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] border-2 border-dashed border-primary/20 rounded-full animate-[spin_60s_linear_infinite]"></div>
+<div class="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl relative">
+<img class="w-full h-full object-cover" data-alt="A professional portrait of a senior male doctor with grey-flecked hair, wearing a crisp white lab coat over a professional blue shirt. He has a warm, approachable smile and a stethoscope around his neck. The background is a softly blurred modern clinic environment with teal accents, exuding trust and medical expertise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcy6E1WjE_Nq43BeQ-HYEMKOSpRNPeLOr0I7ku1Zl79sWBcSzEMhKC-ebHQGQkp3DPfmI2AGhnu3gdWUR5SaVHleuAlkIgIveCmJMQvzSilNo501xLVEOPPDTkOEIu-j-ZbHlDqBEhUKmlfOtsGBenEmQcHZu3cUlb3PXxx-EueZ77RJOKxrBt6H00UYgvolvrhZ5S3ZBJr5scNbCUR-Awm8q8mdhhdR3YXTjX8i3DcgKq__gszbXH4NRrT7bASLpgSf04hPqOXQ"/>
+<div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary/80 to-transparent p-6 text-white">
+<p class="font-bold text-headline-md">Dr. Julian Sterling</p>
+<p class="text-caption">Chief Medical Officer, MD, PhD</p>
+</div>
+</div>
+</div>
+<div class="w-full md:w-2/3">
+<span class="text-primary font-bold uppercase tracking-widest text-caption block mb-4">Leadership &amp; Vision</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-8">Meet Our Lead Specialist</h2>
+<div class="font-body-md text-on-surface-variant space-y-6 leading-relaxed">
+<p>
+                                Dr. Julian Sterling serves as the Chief Medical Officer at MedTrust Clinic, bringing over 25 years of distinguished experience in internal medicine and clinical research. A graduate of Johns Hopkins University School of Medicine, Dr. Sterling has dedicated his career to the pursuit of medical excellence and the refinement of patient-centered care models.
+                            </p>
+<p>
+                                Throughout his tenure, he has pioneered several integrative health initiatives that focus on preventative wellness rather than reactive treatment. His philosophy is rooted in the belief that every patient deserves a dedicated advocate in their health journey—someone who treats the whole person, not just the symptoms.
+                            </p>
+<p>
+                                Under his leadership, MedTrust Clinic has grown into a regional leader in specialized diagnostics and community wellness. Dr. Sterling continues to mentor the next generation of physicians, emphasizing that while technology is a tool, compassion is the foundation of the healing arts.
+                            </p>
+</div>
+<div class="mt-10 flex items-center gap-6">
+<div class="flex flex-col">
+<span class="font-bold text-primary text-headline-md">500+</span>
+<span class="text-caption uppercase">Successful Cases</span>
+</div>
+<div class="w-px h-10 bg-outline-variant"></div>
+<div class="flex flex-col">
+<span class="font-bold text-primary text-headline-md">15+</span>
+<span class="text-caption uppercase">Medical Awards</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-20">
+<div class="max-w-5xl mx-auto px-6 md:px-12">
+<div class="bg-primary rounded-3xl p-12 text-center text-white relative overflow-hidden shadow-xl">
+<div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-primary-container/20 rounded-full blur-3xl"></div>
+<h2 class="font-headline-lg text-headline-lg mb-6 relative z-10">Ready to Prioritize Your Well-being?</h2>
+<p class="font-body-lg text-body-lg mb-10 opacity-90 relative z-10">Schedule a consultation today and take the first step toward a healthier future with experts who care.</p>
+<button class="bg-white text-primary px-10 py-4 rounded-full font-label-md hover:shadow-2xl transition-all duration-300 transform hover:scale-105 relative z-10">
+                        Book Your Appointment
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low border-t border-outline-variant">
+<div class="w-full py-12 px-6 md:px-12 grid grid-cols-1 md:grid-cols-3 gap-12 max-w-7xl mx-auto">
+<div class="space-y-6">
+<div class="font-headline-md text-headline-md font-bold text-primary">MedTrust Clinic</div>
+<p class="text-on-surface-variant font-body-md">Dedicated to providing world-class medical services with compassion and precision. Your health is our highest priority.</p>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer hover:opacity-70 transition-opacity">face_nod</span>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:opacity-70 transition-opacity">share</span>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:opacity-70 transition-opacity">contact_support</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-8">
+<div>
+<h4 class="font-bold text-on-surface mb-6 font-label-md uppercase tracking-wider">Quick Links</h4>
+<ul class="space-y-4 font-caption text-caption text-on-surface-variant">
+<li><a class="hover:underline hover:text-primary transition-all duration-300" href="#">About Us</a></li>
+<li><a class="hover:underline hover:text-primary transition-all duration-300" href="#">Our Services</a></li>
+<li><a class="hover:underline hover:text-primary transition-all duration-300" href="#">Patient Portal</a></li>
+<li><a class="hover:underline hover:text-primary transition-all duration-300" href="#">Careers</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-on-surface mb-6 font-label-md uppercase tracking-wider">Legal</h4>
+<ul class="space-y-4 font-caption text-caption text-on-surface-variant">
+<li><a class="hover:underline hover:text-primary transition-all duration-300" href="#">Privacy Policy</a></li>
+<li><a class="hover:underline hover:text-primary transition-all duration-300" href="#">Terms of Service</a></li>
+<li><a class="hover:underline hover:text-primary transition-all duration-300" href="#">HIPAA Compliance</a></li>
+</ul>
+</div>
+</div>
+<div class="space-y-6">
+<h4 class="font-bold text-on-surface mb-6 font-label-md uppercase tracking-wider">Contact Info</h4>
+<div class="flex items-start gap-3 text-on-surface-variant font-caption">
+<span class="material-symbols-outlined text-primary">location_on</span>
+<span>123 Medical Plaza, Health District<br/>Chicago, IL 60601</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant font-caption">
+<span class="material-symbols-outlined text-primary">phone</span>
+<span>+1 (800) 555-0199</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant font-caption">
+<span class="material-symbols-outlined text-primary">mail</span>
+<span>care@medtrustclinic.com</span>
+</div>
+</div>
+</div>
+<div class="border-t border-outline-variant/30 py-6 text-center">
+<p class="font-caption text-caption text-on-surface-variant opacity-70">© 2024 MedTrust Clinic. Dedicated to Your Well-being.</p>
+</div>
+</footer>
+<script>
+        // Simple intersection observer for reveal animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    entry.target.classList.remove('opacity-0', 'translate-y-10');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.add('transition-all', 'duration-1000', 'opacity-0', 'translate-y-10');
+            observer.observe(section);
+        });
+
+        // Initialize hero immediately
+        const hero = document.querySelector('section');
+        hero.classList.remove('opacity-0', 'translate-y-10');
+        hero.classList.add('opacity-100', 'translate-y-0');
+    </script>
+</body></html></section></body></html>

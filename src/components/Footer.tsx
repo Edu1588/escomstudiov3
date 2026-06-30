@@ -27,8 +27,15 @@ export default function Footer() {
           <div>
             <h4 className="font-mono text-[10px] tracking-[0.3em] text-white/20 mb-8 uppercase">NAVEGAÇÃO</h4>
             <ul className="space-y-4 font-mono text-[11px] tracking-widest text-white/50">
-              {["Início", "Sobre nós", "Serviços", "Projetos"].map(link => (
-                <li key={link} className="hover:text-primary transition-colors cursor-pointer">{link}</li>
+              {[
+                { label: "Início", href: "/" },
+                { label: "Sobre nós", href: "/#processo" },
+                { label: "Serviços", href: "/#servicos" },
+                { label: "Projetos", href: "/portfolio-projetos" }
+              ].map(item => (
+                <li key={item.label} className="hover:text-primary transition-colors cursor-pointer">
+                  <a href={item.href} className="block w-full h-full">{item.label}</a>
+                </li>
               ))}
             </ul>
           </div>
@@ -36,8 +43,12 @@ export default function Footer() {
           <div>
             <h4 className="font-mono text-[10px] tracking-[0.3em] text-white/20 mb-8 uppercase">CONTATO</h4>
             <ul className="space-y-4 font-mono text-[11px] tracking-widest text-white/50">
-              <li className="hover:text-primary transition-colors cursor-pointer flex items-center gap-3 underline decoration-primary/30">es.comunicacao@outlook.com</li>
-              <li className="hover:text-primary transition-colors cursor-pointer">+55 (11) 99999-9999</li>
+              <li className="hover:text-primary transition-colors cursor-pointer flex items-center gap-3 underline decoration-primary/30">
+                <a href="mailto:es.comunicacao@outlook.com">es.comunicacao@outlook.com</a>
+              </li>
+              <li className="hover:text-primary transition-colors cursor-pointer">
+                <a href="tel:+5511999999999">+55 (11) 99999-9999</a>
+              </li>
               <li className="hover:text-primary transition-colors cursor-pointer">São Paulo, SP - Brasil</li>
             </ul>
           </div>
@@ -48,8 +59,8 @@ export default function Footer() {
              © 2026 ESCOM STUDIO // TODOS OS DIREITOS RESERVADOS.
            </span>
            <div className="flex gap-8 font-mono text-[10px] text-white/20 tracking-widest uppercase">
-              <span className="hover:text-white cursor-pointer">POLÍTICA DE PRIVACIDADE</span>
-              <span className="hover:text-white cursor-pointer">TERMOS DE SERVIÇO</span>
+              <a href="#privacidade" className="hover:text-white cursor-pointer transition-colors">POLÍTICA DE PRIVACIDADE</a>
+              <a href="#termos" className="hover:text-white cursor-pointer transition-colors">TERMOS DE SERVIÇO</a>
            </div>
         </div>
       </div>

@@ -1,79 +1,70 @@
-import { motion, AnimatePresence } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-export default function LoadingScreen({ onComplete }: { onComplete: () => void }) {
-  const [progress, setProgress] = useState(0);
-  const [text, setText] = useState("INITIALIZING_CORE");
+const INTRO_VIDEO_URL =
+  "https://res.cloudinary.com/djw0tqmiw/video/upload/v1781727174/kaued2arj9spvxx0h7yi.mp4";
+
+export default function LoadingScreen({
+  audioRef,
+  onComplete,
+}: {
+  audioRef: React.RefObject<HTMLVideoElement | null>;
+  onComplete: () => void;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [exiting, setExiting] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(onComplete, 1000);
-          return 100;
-        }
-        return prev + Math.floor(Math.random() * 10) + 2;
+    const video = videoRef.current;
+    const audio = audioRef.current;
+    if (video) {
+      video.play().catch(() => {
+        onComplete();
       });
-    }, 100);
+    }
+    if (audio) {
+      audio.muted = false;
+      audio.volume = 0;
+    }
+  }, [onComplete, audioRef]);
 
-    const texts = [
-      "INITIALIZING_CORE",
-      "LOADING_SYSTEM_RESOURCES",
-      "SYNCING_DATABASE",
-      "BOOTING_UI_ENGINE",
-      "CONNECTION_ESTABLISHED",
-    ];
-    
-    let textIdx = 0;
-    const textInterval = setInterval(() => {
-      setText(texts[textIdx % texts.length]);
-      textIdx++;
-    }, 800);
-
-    return () => {
-      clearInterval(interval);
-      clearInterval(textInterval);
-    };
-  }, [onComplete]);
+  const handleVideoEnd = () => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.volume = 0.65;
+    }
+    setExiting(true);
+    setTimeout(onComplete, 1000);
+  };
 
   return (
-    <motion.div
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black"
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 50,
+        background: "#000",
+        overflow: "hidden",
+        transition: exiting
+          ? "filter 1s ease, opacity 1s ease"
+          : "none",
+        filter: exiting ? "blur(20px)" : "blur(0px)",
+        opacity: exiting ? 0 : 1,
+      }}
     >
-      <div className="w-full max-w-sm px-6">
-        <div className="flex flex-col items-center mb-8">
-          <motion.h1 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl font-bold tracking-[0.3em] font-display text-white mb-2"
-          >
-            ESCOM
-          </motion.h1>
-          <motion.h2 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.5 }}
-            className="text-2xl font-bold tracking-[0.2em] font-display text-white/50"
-          >
-            STUDIO
-          </motion.h2>
-        </div>
-
-        <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden mb-4">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
-            className="h-full bg-primary glow-green"
-          />
-        </div>
-
-        <div className="flex justify-between items-center font-mono text-[10px] tracking-widest uppercase">
-          <span className="text-primary">{text}</span>
-          <span className="text-white/40">{Math.min(progress, 100)}%</span>
-        </div>
-      </div>
-    </motion.div>
+      <video
+        ref={videoRef}
+        src={INTRO_VIDEO_URL}
+        autoPlay
+        muted
+        playsInline
+        onEnded={handleVideoEnd}
+        style={{
+          width: "100vw",
+          height: "100vh",
+          objectFit: "cover",
+          display: "block",
+        }}
+      />
+    </div>
   );
 }

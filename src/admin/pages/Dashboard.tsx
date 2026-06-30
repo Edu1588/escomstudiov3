@@ -57,16 +57,16 @@ export default function Dashboard() {
       <div className="p-4 md:p-8 max-w-[1400px] mx-auto space-y-4 md:space-y-6">
         
         {/* Top Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 justify-center">
           <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-6">
             <div className="flex justify-between items-start mb-4">
               <span className="text-sm text-gray-400">Receita Estimada</span>
-              <div className="w-8 h-8 rounded-lg bg-[#2EFF00]/10 flex items-center justify-center text-[#2EFF00]">
+              <div className="w-8 h-8 rounded-lg bg-[#00d1ff]/10 flex items-center justify-center text-[#00d1ff]">
                 <DollarSign size={16} />
               </div>
             </div>
             <div className="text-3xl font-bold text-white mb-2">R$ 0</div>
-            <div className="text-[11px] font-mono text-[#2EFF00] flex items-center gap-1">
+            <div className="text-[11px] font-mono text-[#00d1ff] flex items-center gap-1">
               <span>~</span> Baseado em propostas aceitas
             </div>
           </div>
@@ -74,26 +74,26 @@ export default function Dashboard() {
           <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-6">
             <div className="flex justify-between items-start mb-4">
               <span className="text-sm text-gray-400">Acessos nas Páginas</span>
-              <div className="w-8 h-8 rounded-lg bg-[#2EFF00]/10 flex items-center justify-center text-[#2EFF00]">
+              <div className="w-8 h-8 rounded-lg bg-[#00d1ff]/10 flex items-center justify-center text-[#00d1ff]">
                 <MousePointerClick size={16} />
               </div>
             </div>
             <div className="text-3xl font-bold text-white mb-2">{totalViews}</div>
-            <div className="text-[11px] font-mono text-[#2EFF00] flex items-center gap-1">
+            <div className="text-[11px] font-mono text-[#00d1ff] flex items-center gap-1">
               <span>{loading ? <Loader2 size={12} className="animate-spin" /> : "↗"}</span> Tempo real
             </div>
           </div>
 
           <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-6 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#2EFF00] to-transparent"></div>
+            <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#00d1ff] to-transparent"></div>
             <div className="flex justify-between items-start mb-4">
               <span className="text-sm text-gray-400">Novos Leads</span>
-              <div className="w-8 h-8 rounded-lg bg-[#2EFF00]/10 flex items-center justify-center text-[#2EFF00]">
+              <div className="w-8 h-8 rounded-lg bg-[#00d1ff]/10 flex items-center justify-center text-[#00d1ff]">
                 <Users size={16} />
               </div>
             </div>
             <div className="text-3xl font-bold text-white mb-2">{totalLeads}</div>
-            <div className="text-[11px] font-mono text-[#2EFF00] flex items-center gap-1">
+            <div className="text-[11px] font-mono text-[#00d1ff] flex items-center gap-1">
               <span>{loading ? <Loader2 size={12} className="animate-spin" /> : "↗"}</span> Monitoramento ao vivo
             </div>
           </div>
@@ -101,19 +101,19 @@ export default function Dashboard() {
           <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-6">
             <div className="flex justify-between items-start mb-4">
               <span className="text-sm text-gray-400">Contratos Ativos</span>
-              <div className="w-8 h-8 rounded-lg bg-[#2EFF00]/10 flex items-center justify-center text-[#2EFF00]">
+              <div className="w-8 h-8 rounded-lg bg-[#00d1ff]/10 flex items-center justify-center text-[#00d1ff]">
                 <FileSignature size={16} />
               </div>
             </div>
             <div className="text-3xl font-bold text-white mb-2">0</div>
-            <div className="text-[11px] font-mono text-[#2EFF00] flex items-center gap-1">
+            <div className="text-[11px] font-mono text-[#00d1ff] flex items-center gap-1">
               <span>✓</span> 0 contratos total
             </div>
           </div>
         </div>
 
         {/* Charts Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 justify-center">
           <div className="lg:col-span-2 bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-bold">Dinâmica de Acessos & Leads</h3>
@@ -127,16 +127,16 @@ export default function Dashboard() {
                   <XAxis dataKey="name" stroke="#333" fontSize={10} tickMargin={10} />
                   <YAxis stroke="#333" fontSize={10} tickFormatter={(value) => `${value}`} />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#000', borderColor: '#2EFF00', borderRadius: '8px' }}
-                    itemStyle={{ color: '#2EFF00' }}
+                    contentStyle={{ backgroundColor: '#000', borderColor: '#00d1ff', borderRadius: '8px' }}
+                    itemStyle={{ color: '#00d1ff' }}
                   />
                   <Line 
                     type="monotone" 
                     dataKey="value" 
-                    stroke="#2EFF00" 
+                    stroke="#00d1ff" 
                     strokeWidth={3}
                     dot={false}
-                    activeDot={{ r: 6, fill: '#000', stroke: '#2EFF00', strokeWidth: 2 }}
+                    activeDot={{ r: 6, fill: '#000', stroke: '#00d1ff', strokeWidth: 2 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -146,7 +146,7 @@ export default function Dashboard() {
           <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-6 flex flex-col">
             <h3 className="text-lg font-bold mb-6">Origem dos Leads</h3>
             <div className="flex-1 flex flex-col items-center justify-center relative">
-              <div className="w-48 h-48 rounded-full border-[16px] border-[#1a1a1a] border-t-[#2EFF00] border-r-[#2EFF00] transform rotate-45 mb-8 flex items-center justify-center">
+              <div className="w-48 h-48 rounded-full border-[16px] border-[#1a1a1a] border-t-[#00d1ff] border-r-[#00d1ff] transform rotate-45 mb-8 flex items-center justify-center">
                  <div className="transform -rotate-45 text-center mt-[-30px] ml-[-30px]">
                     <div className="text-4xl font-bold">{totalLeads}</div>
                     <div className="text-[10px] text-gray-500 font-mono">TOTAL</div>
@@ -169,7 +169,7 @@ export default function Dashboard() {
                 </div>
                 <div className="text-center">
                   <div className="text-lg font-bold flex flex-col items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-[#2EFF00]"></span>
+                    <span className="w-2 h-2 rounded-full bg-[#00d1ff]"></span>
                     100%
                   </div>
                   <div className="text-[10px] text-gray-500 font-mono mt-1">DIRETO</div>
@@ -180,11 +180,11 @@ export default function Dashboard() {
         </div>
 
         {/* Bottom Multi-Lists */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 justify-center">
           <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-bold">Páginas em Monitoramento</h3>
-              <button onClick={() => navigate('/paginas')} className="text-[#2EFF00] text-sm font-medium hover:underline cursor-pointer">Ver todas</button>
+              <button onClick={() => navigate('/paginas')} className="text-[#00d1ff] text-sm font-medium hover:underline cursor-pointer">Ver todas</button>
             </div>
             
             <table className="w-full text-sm">
@@ -201,8 +201,8 @@ export default function Dashboard() {
                   <tr key={idx} className="border-b border-[#1a1a1a]/50">
                     <td className="py-4 text-gray-300">{page.id || 'Página Desconhecida'}</td>
                     <td className="py-4 text-right font-mono">{page.viewCount || 0}</td>
-                    <td className="py-4 text-right font-mono text-[#2EFF00]">--</td>
-                    <td className="py-4 text-right"><span className="bg-[#2EFF00]/10 text-[#2EFF00] px-2 py-1 inline-flex rounded text-[10px] font-bold">Ativo</span></td>
+                    <td className="py-4 text-right font-mono text-[#00d1ff]">--</td>
+                    <td className="py-4 text-right"><span className="bg-[#00d1ff]/10 text-[#00d1ff] px-2 py-1 inline-flex rounded text-[10px] font-bold">Ativo</span></td>
                   </tr>
                 )) : (
                   <tr><td colSpan={4} className="py-4 text-center text-gray-500 font-mono">Nenhum acesso registrado</td></tr>
@@ -214,7 +214,7 @@ export default function Dashboard() {
           <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-bold">Leads Recentes</h3>
-              <button onClick={() => navigate('/leads')} className="text-[#2EFF00] text-sm font-medium hover:underline cursor-pointer">Ir para CRM</button>
+              <button onClick={() => navigate('/leads')} className="text-[#00d1ff] text-sm font-medium hover:underline cursor-pointer">Ir para CRM</button>
             </div>
             
             <table className="w-full text-sm">

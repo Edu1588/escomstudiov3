@@ -16,7 +16,7 @@ export default function FAQV2() {
     <section className="py-32 px-6 bg-black relative">
       <div className="container mx-auto max-w-4xl">
         <div className="flex flex-col items-center mb-16 text-center">
-           <p className="text-[#00e300] font-mono text-[10px] tracking-widest uppercase mb-4">FAQ</p>
+           <p className="text-[#00d1ff] font-mono text-[10px] tracking-widest uppercase mb-4">FAQ</p>
            <h2 className="text-4xl md:text-6xl font-black font-tech text-white mb-6">Dúvidas Frequentes</h2>
            <p className="text-white/40 text-sm">Tire suas dúvidas sobre nossos serviços.</p>
         </div>
@@ -25,13 +25,13 @@ export default function FAQV2() {
           {faqs.map((faq, i) => {
             const isOpen = openIdx === i;
             return (
-              <div key={i} className={`border ${isOpen ? 'border-[#00e300]/20 bg-white/[0.02]' : 'border-white/5'} rounded-2xl overflow-hidden transition-all duration-300`}>
+              <div key={i} className={`border ${isOpen ? 'border-[#00d1ff]/20 bg-white/[0.02]' : 'border-white/5'} rounded-2xl overflow-hidden transition-all duration-300`}>
                  <button 
                    onClick={() => setOpenIdx(isOpen ? null : i)}
                    className="w-full flex items-center justify-between p-8 text-left hover:bg-white/5 transition-colors group"
                  >
-                   <span className={`font-tech text-xl ${isOpen ? 'text-[#00e300]' : 'text-white'} transition-colors`}>{faq.q}</span>
-                   <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${isOpen ? 'bg-[#00e300]' : 'bg-transparent border border-white/10 group-hover:border-white/30'}`}>
+                   <span className={`font-tech text-xl ${isOpen ? 'text-[#00d1ff]' : 'text-white'} transition-colors`}>{faq.q}</span>
+                   <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${isOpen ? 'bg-[#00d1ff]' : 'bg-transparent border border-white/10 group-hover:border-white/30'}`}>
                      {isOpen ? <Minus size={16} className="text-black" /> : <Plus size={16} className="text-white" />}
                    </div>
                  </button>

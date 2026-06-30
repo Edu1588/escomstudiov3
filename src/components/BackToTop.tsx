@@ -7,8 +7,8 @@ export default function BackToTop() {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Show button after the first section (which is 600vh due to video sequence)
-      setIsVisible(window.scrollY > window.innerHeight * 5.8);
+      // Show button after the first section (which is 1vh of hero height)
+      setIsVisible(window.scrollY > window.innerHeight * 0.8);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -33,8 +33,10 @@ export default function BackToTop() {
            className="fixed bottom-8 right-8 flex flex-col gap-4 z-[98]"
         >
           <a
-            href="#contato"
-            className="w-[50px] h-[50px] rounded-full flex items-center justify-center transition-all duration-300 bg-[#2EFF00] text-black border border-[#2EFF00] hover:bg-white hover:text-black hover:shadow-[0_0_20px_rgba(46,255,0,0.5)] cursor-pointer"
+            href="https://wa.me/5513981062787?text=Ol%C3%A1%20vim%20atrav%C3%A9s%20do%20Site%20Escom%20Studio"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-[50px] h-[50px] rounded-full flex items-center justify-center transition-all duration-300 bg-[#00d1ff] text-black border border-[#00d1ff] hover:bg-white hover:text-black hover:shadow-[0_0_20px_rgba(0,209,255,0.5)] cursor-pointer"
             title="WhatsApp"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none">
@@ -43,7 +45,7 @@ export default function BackToTop() {
           </a>
           <button
             onClick={scrollToTop}
-            className="w-[50px] h-[50px] rounded-full flex items-center justify-center transition-all duration-300 border border-white/10 bg-[#0d0d0d] text-[#999] hover:border-[#2EFF00] hover:text-[#2EFF00] hover:shadow-[0_0_15px_rgba(46,255,0,0.15)] cursor-pointer"
+            className="w-[50px] h-[50px] rounded-full flex items-center justify-center transition-all duration-300 border border-white/10 bg-[#0d0d0d] text-[#999] hover:border-[#00d1ff] hover:text-[#00d1ff] hover:shadow-[0_0_15px_rgba(0,209,255,0.15)] cursor-pointer"
             title="Voltar ao topo"
           >
             <ChevronUp size={24} />

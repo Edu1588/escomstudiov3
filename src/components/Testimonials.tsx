@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { TextEffect } from '@/components/ui/text-effect';
 import { TestimonialsColumn } from "./ui/testimonials-columns-1";
 
 const testimonials = [
@@ -68,8 +69,8 @@ export default function Testimonials() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] -z-10" />
       <div className="container mx-auto z-10 relative">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 20, filter: 'blur(20px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           viewport={{ once: true }}
           className="flex flex-col items-center justify-center max-w-[540px] mx-auto mb-24"
@@ -81,9 +82,9 @@ export default function Testimonials() {
           <h2 className="text-5xl md:text-7xl font-black font-tech uppercase leading-tight mb-5">
             O QUE DIZEM NOSSOS PARCEIROS
           </h2>
-          <p className="text-center font-mono text-[11px] text-white/50 tracking-widest uppercase">
+          <TextEffect preset="blur" per="word" as="p" className="text-center font-mono text-[11px] text-white/50 tracking-widest uppercase">
             Veja o impacto de integrar design estratégico e engenharia de conversão.
-          </p>
+          </TextEffect>
         </motion.div>
 
         <div className="flex justify-center gap-6 mt-10 [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] max-h-[740px] overflow-hidden">

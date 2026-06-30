@@ -44,7 +44,7 @@ export default function AnimatedZap({ size = 48 }: { size?: number }) {
 
         // Main icon animation
         mainZap.style.transform = `translateY(${y}px) scale(${baseScale * flash})`;
-        // mainZap.style.filter = `drop-shadow(0 0 ${12 * flash}px rgba(46,255,0,0.9))`;
+        // mainZap.style.filter = `drop-shadow(0 0 ${12 * flash}px rgba(0,209,255,0.9))`;
         
         // Cyan glitch echo
         glow1.style.transform = `translateY(${y + Math.cos(t * 5) * 2}px) translateX(${Math.sin(t * 6) * 2}px) scale(${baseScale})`;
@@ -78,7 +78,7 @@ export default function AnimatedZap({ size = 48 }: { size?: number }) {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative flex items-center justify-center text-[#2EFF00] no-global-anim" style={{ width: size, height: size }}>
+    <div ref={containerRef} className="relative flex items-center justify-center text-[#00d1ff] no-global-anim" style={{ width: size, height: size }}>
        <Zap size={size} strokeWidth={2} className="absolute transition-colors duration-75" />
        <Zap size={size} strokeWidth={2} className="absolute transition-colors duration-75" />
        <Zap size={size} strokeWidth={2} className="absolute z-10 transition-transform duration-75" />

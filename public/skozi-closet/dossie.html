@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dossiê Estratégico | Skoziê Closet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            primary: '#E91E63',
+                            primaryDark: '#b80049',
+                            accent: '#D4AF37',
+                            light: '#faf9f9',
+                            text: '#3f3f46',
+                            darkText: '#18181b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @page { size: A4; margin: 0; }
+        body {
+            background-color: #f4f4f5;
+            color: #3f3f46;
+            user-select: none;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            font-family: 'Inter', sans-serif;
+        }
+        .pdf-page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 18mm;
+            margin: 30px auto;
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            position: relative;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            page-break-after: always;
+            page-break-inside: avoid;
+            border: 1px solid #e4e4e7;
+        }
+        .decor-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #E91E63 0%, #D4AF37 100%);
+            z-index: 20;
+        }
+        @media print {
+            html, body {
+                background-color: #ffffff !important;
+                margin: 0 !important; padding: 0 !important;
+                height: 100% !important; width: 210mm !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .pdf-page {
+                margin: 0 !important;
+                box-shadow: none !important; border: none !important;
+                background: #ffffff !important; color: #3f3f46 !important;
+                width: 210mm !important; min-height: 297mm !important;
+                page-break-after: always !important;
+                page-break-inside: avoid !important;
+            }
+            .print\:hidden { display: none !important; }
+        }
+        .watermark {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 8rem;
+            color: rgba(0,0,0,0.012);
+            font-weight: 800;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            flex: 1;
+        }
+        .page-number {
+            margin-top: auto;
+            display: flex;
+            justify-content: flex-end;
+            font-size: 12px;
+            color: #a1a1aa;
+            font-family: 'Inter', monospace;
+            border-top: 1px solid #f4f4f5;
+            padding-top: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="max-w-[210mm] mx-auto mb-2 mt-4 px-4 flex justify-between items-center text-xs text-zinc-500 print:hidden">
+    <div>
+        <a href="index.html" class="text-zinc-600 hover:text-brand-primary font-bold transition flex items-center gap-1">
+            <i class="fa-solid fa-arrow-left"></i> Voltar para o Site
+        </a>
+    </div>
+    <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>MODO DE IMPRESSÃO (A4 CLEAN)</span>
+    </div>
+</div>
+
+<!-- PÁGINA 1: CAPA -->
+<div class="pdf-page">
+    <div class="decor-line"></div>
+    <div class="content-layer justify-between h-full py-6">
+        <div class="space-y-2">
+            <p class="text-zinc-400 font-mono text-sm tracking-[0.2em] uppercase">ESCOM Studio &bull; Business Intelligence</p>
+            <h1 class="text-zinc-900 font-display font-black text-5xl leading-tight">
+                Análise Estratégica<br>
+                <span class="text-brand-primary">Skoziê Closet</span>
+            </h1>
+            <div class="w-16 h-1.5 bg-brand-accent mt-4"></div>
+        </div>
+        <div class="my-4 relative overflow-hidden rounded-2xl border border-zinc-200 shadow-md h-[115mm]">
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop');"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/20 via-transparent to-transparent"></div>
+        </div>
+        <div class="flex justify-between items-end border-t border-zinc-100 pt-6 mt-2">
+            <div>
+            <p class="text-xs text-zinc-400 uppercase tracking-wider">Documento Preparado para</p>
+                    <p class="text-zinc-900 font-bold text-lg">Skoziê Closet de Moda Feminina</p>
+                    <p class="text-xs text-zinc-400">Av. T-6, n 201 - Setor Bueno, Goiânia-GO | WhatsApp: (62) 98323-2480</p>
+            </div>
+            <div class="text-right">
+                <p class="text-xs text-zinc-400 uppercase tracking-wider">Status</p>
+                <p class="text-emerald-600 font-mono font-bold text-sm uppercase tracking-wider flex items-center gap-1.5 justify-end">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Confidencial
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PÁGINA 2: SOBRE NÓS -->
+<div class="pdf-page">
+    <div class="decor-line"></div>
+    <div class="content-layer">
+        <h2 class="text-3xl font-display font-black text-zinc-900 mb-8 pb-3 border-b-2 border-zinc-100 flex items-center gap-3">
+            Sobre Nós <span class="text-brand-primary text-sm font-mono font-normal">/ ESCOM Studio</span>
+        </h2>
+        <div class="flex-1">
+            <p class="text-sm text-zinc-700 leading-relaxed mb-6 font-medium">
+                Olá! Somos a <strong>ESCOM Studio</strong>, uma empresa especializada em Web Design de luxo, Arquitetura de Conversão e Engenharia de Experiência do Usuário (UX).
+            </p>
+            <div class="bg-zinc-50 border border-zinc-200 rounded-xl p-6 mb-6">
+                <p class="text-xs text-zinc-650 leading-relaxed">
+                    Nós não apenas desenhamos sites bonitos; nós desenvolvemos ecossistemas digitais baseados no comportamento humano, neurociência aplicada e posicionamento premium de mercado.
+                    Fizemos uma análise detalhada sobre o seu negócio e identificamos oportunidades valiosas para elevar a percepção de valor da sua marca, 
+                    aumentar o contraste e a usabilidade de acordo com as diretrizes internacionais (WCAG), e criar um design system irresistível aos olhos de clientes de alto ticket.
+                </p>
+            </div>
+            <p class="text-xs text-zinc-650 leading-relaxed">
+                Nas páginas a seguir, você encontrará um <strong>dossiê estratégico e visual</strong> cuidadosamente preparado, mostrando como sua presença digital atual pode ser aprimorada 
+                e as soluções exatas que implementamos no seu novo projeto de landing page premium.
+            </p>
+        </div>
+        <div class="page-number">Página 2</div>
+    </div>
+</div>
+
+<!-- PÁGINA 3: ÍNDICE -->
+<div class="pdf-page">
+    <div class="decor-line"></div>
+    <div class="watermark">CONFIDENCIAL</div>
+    <div class="content-layer">
+        <h2 class="text-3xl font-display font-black text-zinc-900 mb-8 pb-3 border-b-2 border-zinc-100 flex items-center gap-3">
+            Conteúdo <span class="text-brand-primary text-sm font-mono font-normal">/ Índice Executivo</span>
+        </h2>
+        <div class="grid grid-cols-2 gap-y-6 gap-x-12 text-base flex-1 py-4">
+            <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                <span class="font-black text-brand-primary text-lg font-mono">04</span>
+                <span class="text-zinc-900 font-semibold">Análise de Mercado & Comportamento</span>
+            </div>
+            <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                <span class="font-black text-brand-primary text-lg font-mono">09</span>
+                <span class="text-zinc-900 font-semibold">Voz da Marca & Copywriting</span>
+            </div>
+            <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                <span class="font-black text-brand-primary text-lg font-mono">05</span>
+                <span class="text-zinc-900 font-semibold">Diagnóstico do Negócio</span>
+            </div>
+            <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                <span class="font-black text-brand-primary text-lg font-mono">10</span>
+                <span class="text-zinc-900 font-semibold">Lacunas Digitais & Oportunidades</span>
+            </div>
+            <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                <span class="font-black text-brand-primary text-lg font-mono">06</span>
+                <span class="text-zinc-900 font-semibold">Psicografia & Avatares de Compra</span>
+            </div>
+            <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                <span class="font-black text-brand-primary text-lg font-mono">11</span>
+                <span class="text-zinc-900 font-semibold">Os 6 Pilares de Vantagem</span>
+            </div>
+            <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                <span class="font-black text-brand-primary text-lg font-mono">07</span>
+                <span class="text-zinc-900 font-semibold">O Campo de Batalha</span>
+            </div>
+            <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                <span class="font-black text-brand-primary text-lg font-mono">12</span>
+                <span class="text-zinc-900 font-semibold">Anatomia do Site Premium</span>
+            </div>
+            <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                <span class="font-black text-brand-primary text-lg font-mono">08</span>
+                <span class="text-zinc-900 font-semibold">Identidade Visual & Cores + Tipografia</span>
+            </div>
+            <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                <span class="font-black text-brand-primary text-lg font-mono">13</span>
+                <span class="text-zinc-900 font-semibold">ROI & Projeção Financeira</span>
+            </div>
+            <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2 col-span-2">
+                <span class="font-black text-brand-primary text-lg font-mono">14</span>
+                <span class="text-zinc-900 font-semibold">Oceano Azul & Estratégia de Expansão</span>
+            </div>
+        </div>
+        <div class="bg-zinc-50 p-6 rounded-xl border-l-4 border-brand-primary mt-auto">
+            <p class="text-sm text-zinc-650 leading-relaxed">
+                Este documento apresenta um raio-x estratégico para o mercado de moda feminina premium em Goiânia. O foco está em atrair clientes qualificadas interessadas em elegância, exclusividade e curadoria de moda de alto padrão.
+            </p>
+        </div>
+        <div class="mt-4 flex justify-between items-center text-xs text-zinc-400 font-mono">
+            <span>Dossiê Skoziê Closet - Inteligência Comercial</span>
+            <span>Página 3</span>
+        </div>
+    </div>
+</div>
+
+<!-- PÁGINA 4: ANÁLISE DE MERCADO -->
+<div class="pdf-page">
+    <div class="decor-line"></div>
+    <div class="watermark">CONFIDENCIAL</div>
+    <div class="content-layer">
+        <h2 class="text-3xl font-display font-black text-zinc-900 mb-4">
+            Análise de Mercado:<br>
+            <span class="text-brand-primary">Moda Feminina em Goiânia</span>
+        </h2>
+        
+        <div class="relative overflow-hidden rounded-xl border border-zinc-200 mb-5 h-[70mm]">
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2070&auto=format&fit=crop');"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent"></div>
+            <div class="absolute bottom-4 left-4 text-white">
+                <p class="text-xs uppercase tracking-wider opacity-80">Mercado-alvo</p>
+                <p class="text-lg font-bold">Mulheres 18-45 anos | Goiânia | Classes A/B</p>
+            </div>
+        </div>
+
+        <div class="space-y-4 flex-1 text-sm">
+            <div class="p-5 border border-zinc-200 bg-zinc-50/40 rounded-xl">
+                <h3 class="text-brand-primary font-bold text-sm mb-1.5 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-line"></i> Cenário do Setor
+                </h3>
+                <p class="text-xs text-zinc-650 leading-relaxed">
+                    Goiânia possui um mercado de moda feminina aquecido e em expansão. O setor de fast fashion domina as vendas em volume, mas há uma crescente demanda insatisfeita por marcas com <strong>identidade própria, curadoria diferenciada e atendimento personalizado</strong>. A consumidora goianiense valoriza exclusividade e qualidade acima do preço baixo.
+                </p>
+            </div>
+
+            <div class="p-5 border border-zinc-200 bg-zinc-50/40 rounded-xl">
+                <h3 class="text-zinc-900 font-bold text-sm mb-1.5 flex items-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i> Comportamento do Consumidor
+                </h3>
+                <p class="text-xs text-zinc-650 leading-relaxed">
+                    78% das mulheres entre 18-45 anos usam Instagram e TikTok para descobrir novas marcas de moda. 65% pesquisam online antes de comprar na loja física. A ausência de site representa perda significativa de oportunidades de conversão, especialmente para o público que busca marcas premium.
+                </p>
+            </div>
+
+            <div class="bg-emerald-50/40 p-5 border border-emerald-100 rounded-xl">
+                <h3 class="text-emerald-800 font-bold text-xs uppercase tracking-wider mb-1">Oportunidade Identificada</h3>
+                <p class="text-xs text-zinc-650 leading-relaxed">
+                    A Skoziê Closet tem a chance de ocupar o espaço de <strong>moda feminina premium com curadoria</strong> em Goiânia, um nicho pouco explorado digitalmente. Enquanto grandes marcas focam em escala, a Skoziê pode se posicionar como o destino exclusivo para a mulher que busca elegância, qualidade e personalização.
+                </p>
+            </div>
+        </div>
+        <div class="page-number">Página 4</div>
+    </div>
+</div>
+
+<!-- PÁGINA 5: DIAGNÓSTICO DO NEGÓCIO -->
+<div class="pdf-page">
+    <div class="decor-line"></div>
+    <div class="watermark">CONFIDENCIAL</div>
+    <div class="content-layer">
+        <h2 class="text-3xl font-display font-black text-zinc-900 mb-6 leading-tight">
+            Diagnóstico do Negócio:<br>
+            <span class="text-brand-primary">Skoziê Closet Frente ao Mercado Digital</span>
+        </h2>
+        
+        <p class="text-xs text-zinc-650 leading-relaxed mb-5">
+            A Skoziê Closet de Moda Feminina nasceu no coração de Goiânia com o propósito de redefinir a experiência de moda para a mulher contemporânea. A marca oferece vestidos de gala, moda casual premium, alfaiataria moderna, beachwear luxury, acessórios e sapatos — tudo com curadoria de tecidos nobres como linho puro, seda italiana e algodão premium.
+        </p>
+
+        <div class="space-y-4 flex-1 text-sm">
+            <div class="p-5 border border-zinc-200 bg-zinc-50/40 rounded-xl">
+                <h3 class="text-brand-primary font-bold text-sm mb-1.5 flex items-center gap-2">
+                    <i class="fa-solid fa-medal"></i> A Força da Marca
+                </h3>
+                <p class="text-xs text-zinc-650 leading-relaxed">
+                    A Skoziê destaca-se pela curadoria rigorosa de peças que equilibram o clássico e o moderno. A marca prioriza materiais de alta durabilidade e acabamentos manuais, posicionando-se como referência local em sofisticação. O atendimento personalizado e a proximidade com as clientes são diferenciais competitivos importantes.
+                </p>
+            </div>
+
+            <div class="p-5 border border-zinc-200 bg-zinc-50/40 rounded-xl">
+                <h3 class="text-red-650 font-bold text-sm mb-1.5 flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation"></i> O Gargalo Digital
+                </h3>
+                <p class="text-xs text-zinc-650 leading-relaxed">
+                    A marca não possui presença digital estruturada — <strong>não tem site próprio</strong>. Isso significa que 100% das buscas orgânicas por "moda feminina em Goiânia", "boutique premium Goiânia" ou "Skoziê Closet" simplesmente não encontram a marca. A ausência de site profissional limita severamente a capacidade de atrair novas clientes e construir autoridade no segmento premium.
+                </p>
+            </div>
+
+            <div class="bg-emerald-50/40 p-5 border border-emerald-100 rounded-xl">
+                <h3 class="text-emerald-800 font-bold text-xs uppercase tracking-wider mb-1">A Solução Proposta</h3>
+                <p class="text-xs text-zinc-650 leading-relaxed">
+                    Criar um site moderno com vitrine de produtos, integração com WhatsApp e redes sociais, blog de moda e estratégia de SEO para capturar tráfego qualificado em Goiânia. O site será posicionado como a extensão digital da experiência boutique que a Skoziê já oferece presencialmente, convertendo visitantes em clientes via WhatsApp.
+                </p>
+            </div>
+        </div>
+        <div class="page-number">Página 5</div>
+    </div>
+</div>
+
+<!-- PÁGINA 6: PSICOGRAFIA & AVATARES -->
+<div class="pdf-page">
+    <div class="decor-line"></div>
+    <div class="content-layer">
+        <h2 class="text-3xl font-display font-black text-zinc-900 mb-2">Psicografia & Avatares de Compra</h2>
+        <p class="text-xs text-zinc-600 mb-3">
+            Decodificação das dores subconscientes e segmentação do público-alvo de alto ticket:
+        </p>
+
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="bg-rose-50/40 p-3.5 rounded-xl border border-rose-100 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <i class="fa-solid fa-briefcase text-rose-500 text-sm"></i>
+                        <h3 class="text-zinc-900 font-bold text-xs">Avatar A: A Executiva / Empresária</h3>
+                    </div>
+                    <p class="text-[10px] text-zinc-650 leading-relaxed mb-2">
+                        <strong>Dores:</strong> Falta de tempo para ir a shoppings. Não quer se vestir igual a todo mundo. Busca peças versáteis que transitam do escritório para eventos sociais.
+                    </p>
+                </div>
+                <div class="bg-white p-2 rounded-lg border border-rose-100 text-[10px]">
+                    <span class="text-rose-700 font-bold">Foco:</span> Alfaiataria Moderna e Vestidos de Gala.
+                </div>
+            </div>
+
+            <div class="bg-purple-50/40 p-3.5 rounded-xl border border-purple-100 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <i class="fa-solid fa-crown text-purple-500 text-sm"></i>
+                        <h3 class="text-zinc-900 font-bold text-xs">Avatar B: A Influenciadora / Socialite</h3>
+                    </div>
+                    <p class="text-[10px] text-zinc-650 leading-relaxed mb-2">
+                        <strong>Dores:</strong> Precisa de looks exclusivos para eventos e conteúdo digital. Exige peças que gerem engajamento e destaque nas redes sociais.
+                    </p>
+                </div>
+                <div class="bg-white p-2 rounded-lg border border-purple-100 text-[10px]">
+                    <span class="text-purple-700 font-bold">Foco:</span> Pieces de grife e lançamentos exclusivos.
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="bg-blue-50/40 p-3.5 rounded-xl border border-blue-100 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <i class="fa-solid fa-user text-blue-500 text-sm"></i>
+                        <h3 class="text-zinc-900 font-bold text-xs">Avatar C: A Jovem Profissional (25-35)</h3>
+                    </div>
+                    <p class="text-[10px] text-zinc-650 leading-relaxed mb-2">
+                        <strong>Dores:</strong> Quer construir um guarda-roupa atemporal com peças de qualidade. Está cansada de fast fashion que desfaz rápido.
+                    </p>
+                </div>
+                <div class="bg-white p-2 rounded-lg border border-blue-100 text-[10px]">
+                    <span class="text-blue-700 font-bold">Foco:</span> Moda Casual Premium e Acessórios.
+                </div>
+            </div>
+
+            <div class="bg-emerald-50/40 p-3.5 rounded-xl border border-emerald-100 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <i class="fa-solid fa-plane text-emerald-500 text-sm"></i>
+                        <h3 class="text-zinc-900 font-bold text-xs">Avatar D: A Cliente de Alto Padrão (40+)</h3>
+                    </div>
+                    <p class="text-[10px] text-zinc-650 leading-relaxed mb-2">
+                        <strong>Dores:</strong> Busca elegância madura e peças que transmitam status. Valoriza atendimento VIP e consultoria de estilo personalizada.
+                    </p>
+                </div>
+                <div class="bg-white p-2 rounded-lg border border-emerald-100 text-[10px]">
+                    <span class="text-emerald-700 font-bold">Foco:</span> Beachwear e Moda Gala Premium.
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-zinc-50 p-4 rounded-xl border border-zinc-200 text-xs mt-auto">
+            <h3 class="text-zinc-900 font-bold text-xs mb-1.5"><i class="fa-solid fa-shield-halved text-brand-primary"></i> Matriz de Neutralização de Objeções</h3>
+            <ul class="grid grid-cols-3 gap-3 text-[10px] text-zinc-600">
+                <li class="bg-white p-2.5 rounded-lg border border-zinc-150">
+                    <strong class="text-zinc-800 block mb-0.5">Preço alto:</strong> Ancoragem no valor da curadoria, tecidos nobres e durabilidade das peças.
+                </li>
+                <li class="bg-white p-2.5 rounded-lg border border-zinc-150">
+                    <strong class="text-zinc-800 block mb-0.5">Dúvida de tamanho:</strong> Consultoria de estilo via WhatsApp com guia de medidas.
+                </li>
+                <li class="bg-white p-2.5 rounded-lg border border-zinc-150">
+                    <strong class="text-zinc-800 block mb-0.5">Entrega:</strong> Frete expresso 48h para capitais e Skoziê Concierge com entrega agendada.
+                </li>
+            </ul>
+        </div>
+        <div class="page-number">Página 6</div>
+    </div>
+</div>
+
+<!-- PÁGINA 7: CAMPO DE BATALHA -->
+<div class="pdf-page">
+    <div class="decor-line"></div>
+    <div class="content-layer">
+        <h2 class="text-3xl font-display font-black text-zinc-900 mb-3">O Campo de Batalha</h2>
+        <p class="text-xs text-zinc-600 mb-4">
+            Mapeamento das forças e fraquezas dos concorrentes locais para guiar o diferencial competitivo da Skoziê Closet:
+        </p>
+
+        <div class="grid grid-cols-2 gap-3 flex-1 text-xs mb-3">
+            <div class="bg-zinc-50/50 p-3 rounded-xl border border-zinc-200 flex flex-col justify-between">
+                <div>
+                    <h3 class="font-bold text-zinc-900 text-xs mb-1">1. Lojas de Departamento (Renner, Riachuelo)</h3>
+                    <p class="text-[10px] text-zinc-600 leading-relaxed"><strong class="text-emerald-700">Força:</strong> Escala, preços baixos, presença nacional.</p>
+                    <p class="text-[10px] text-zinc-600 leading-relaxed"><strong class="text-red-600">Fraqueza:</strong> Moda massificada, sem exclusividade. Público busca diferenciação.</p>
+                </div>
+            </div>
+            
+            <div class="bg-zinc-50/50 p-3 rounded-xl border border-zinc-200 flex flex-col justify-between">
+                <div>
+                    <h3 class="font-bold text-zinc-900 text-xs mb-1">2. Boutiques Premium (Estilo Oscar Freire)</h3>
+                    <p class="text-[10px] text-zinc-600 leading-relaxed"><strong class="text-emerald-700">Força:</strong> Exclusividade, marcas de grife, atendimento VIP.</p>
+                    <p class="text-[10px] text-zinc-600 leading-relaxed"><strong class="text-red-600">Fraqueza:</strong> Preços proibitivos, ambiente intimidador para novas clientes.</p>
+                </div>
+            </div>
+
+            <div class="bg-zinc-50/50 p-3 rounded-xl border border-zinc-200 flex flex-col justify-between">
+                <div>
+                    <h3 class="font-bold text-zinc-900 text-xs mb-1">3. E-commerces Nacionais (Dafiti, Amaro)</h3>
+                    <p class="text-[10px] text-zinc-650 leading-relaxed"><strong class="text-emerald-700">Força:</strong> Variedade infinita, entrega rápida, preços competitivos.</p>
+                    <p class="text-[10px] text-zinc-650 leading-relaxed"><strong class="text-red-600">Fraqueza:</strong> Sem curadoria, sem atendimento personalizado, experiência de compra fria.</p>
+                </div>
+            </div>
+
+            <div class="bg-zinc-50/50 p-3 rounded-xl border border-zinc-200 flex flex-col justify-between">
+                <div>
+                    <h3 class="font-bold text-zinc-900 text-xs mb-1">4. Brechós de Luxo e Repasse</h3>
+                    <p class="text-[10px] text-zinc-650 leading-relaxed"><strong class="text-emerald-700">Força:</strong> Sustentabilidade, peças únicas, preço acessível para marcas de luxo.</p>
+                    <p class="text-[10px] text-zinc-650 leading-relaxed"><strong class="text-red-600">Fraqueza:</strong> Estoque imprevisível, sem garantia de qualidade, sem provador físico.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-zinc-50 p-3.5 rounded-xl border border-zinc-200 text-xs mb-2">
+            <h3 class="font-bold text-zinc-900 text-xs mb-1">5. Vendas por Instagram / Afiliadas</h3>
+            <p class="text-[10px] text-zinc-600 leading-relaxed"><strong class="text-emerald-700">Força:</strong> Baixo custo operacional, alcance orgânico, proximidade com o público.</p>
+            <p class="text-[10px] text-zinc-600 leading-relaxed"><strong class="text-red-600">Fraqueza:</strong> Sem site profissional, processo de venda manual, limitação de escala e credibilidade.</p>
+        </div>
+
+        <div class="bg-brand-primary/5 p-3.5 rounded-xl border border-brand-primary/20 text-xs mt-auto">
+            <h3 class="font-bold text-brand-primary text-xs mb-1"><i class="fa-solid fa-bullseye"></i> Posicionamento Estratégico da Skoziê</h3>
+            <p class="text-[10px] text-zinc-600 leading-relaxed">
+                A Skoziê deve ocupar o nicho de <strong>moda feminina premium com curadoria personalizada</strong> — combinando o atendimento boutique com presença digital profissional. O site será a ponte entre o desejo de exclusividade e a conversão via WhatsApp.
+            </p>
+        </div>
+        <div class="page-number">Página 7</div>
+    </div>
+</div>
+
+<!-- PÁGINA 8: IDENTIDADE VISUAL & CORES + TIPOGRAFIA -->
+<div class="pdf-page">
+    <div class="decor-line"></div>
+    <div class="content-layer">
+        <h2 class="text-3xl font-display font-black text-zinc-900 mb-4">Identidade Visual & Cores</h2>
+        <p class="text-xs text-zinc-600 mb-4">
+            A psicologia das cores foi ajustada especificamente para o posicionamento do seu negócio:
+        </p>
+
+        <div class="bg-zinc-50/50 p-6 rounded-xl border border-zinc-200 mb-5">
+            <h3 class="text-brand-primary font-bold text-lg mb-3">Racional Psicocromático</h3>
+            <p class="text-sm text-zinc-700 leading-relaxed mb-6">
+                O Pink Vibrante (#E91E63) transmite paixão, modernidade e ousadia feminina, enquanto o Gold Champagne (#D4AF37) adiciona requinte e exclusividade. O fundo neutro creme (#FAF9F9) traz a sofisticação minimalista que permite às peças de moda serem as protagonistas.
+            </p>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="text-center">
+                    <div class="w-16 h-16 rounded-full border border-zinc-300 shadow-sm mx-auto" style="background-color: #E91E63"></div>
+                    <p class="font-bold text-zinc-900 text-sm mt-2">Pink Vibrante</p>
+                    <p class="text-[10px] text-zinc-500 font-mono">#E91E63</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 rounded-full border border-zinc-300 shadow-sm mx-auto" style="background-color: #D4AF37"></div>
+                    <p class="font-bold text-zinc-900 text-sm mt-2">Gold Champagne</p>
+                    <p class="text-[10px] text-zinc-500 font-mono">#D4AF37</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 rounded-full border border-zinc-300 shadow-sm mx-auto" style="background-color: #b80049"></div>
+                    <p class="font-bold text-zinc-900 text-sm mt-2">Raspberry</p>
+                    <p class="text-[10px] text-zinc-500 font-mono">#b80049</p>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="text-3xl font-display font-black text-zinc-900 mb-4">Tipografia Premium</h2>
+        <p class="text-xs text-zinc-600 mb-4">
+            A seleção de fontes para compor a estética premium e sofisticada do projeto:
+        </p>
+
+        <div class="bg-zinc-50/50 p-6 rounded-xl border border-zinc-200">
+            <div class="space-y-4">
+                <div class="p-4 bg-white border border-zinc-150 rounded-lg">
+                    <p class="text-xs text-zinc-500 uppercase tracking-wider mb-2">Títulos e Chamadas Principais</p>
+                    <p class="font-display text-3xl text-zinc-900" style="font-family: 'Playfair Display', serif">
+                        Playfair Display
+                    </p>
+                </div>
+                <div class="p-4 bg-white border border-zinc-150 rounded-lg">
+                    <p class="text-xs text-zinc-500 uppercase tracking-wider mb-2">Textos e Parágrafos</p>
+                    <p class="text-xl text-zinc-800" style="font-family: 'Inter', sans-serif">
+                        Inter / Plus Jakarta Sans
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="page-number">Página 8</div>
+    </div>
+</div>
+
+<!-- PÁGINA 9: VOZ DA MARCA & COPYWRITING -->
+<div class="pdf-page">
+    <div class="decor-line"></div>
+    <div class="content-layer">
+        <h2 class="text-3xl font-display font-black text-zinc-900 mb-4">Voz da Marca & Copywriting</h2>
+        
+        <div class="bg-purple-50/40 border border-purple-100 p-4 rounded-xl mb-4 text-xs">
+            <h3 class="text-zinc-900 font-bold text-sm mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-star text-purple-600"></i> O Tom de Voz da Skoziê
+            </h3>
+            <p class="text-zinc-650 leading-relaxed">
+                Sofisticado mas acolhedor. Editorial mas próximo. A Skoziê fala com a mulher moderna que sabe o que quer: elegância sem esforço, qualidade sem ostentação. O tom é aspiracional mas acessível, usando linguagem que empodera sem ser pretensiosa.
+            </p>
+        </div>
+
+        <div class="flex-1">
+            <h3 class="text-zinc-900 font-bold text-base mb-2"><i class="fa-solid fa-filter text-brand-primary"></i> Filtro de Comunicação (Copywriting)</h3>
+            <p class="text-xs text-zinc-600 mb-3">Para manter o ticket alto, o site deve eliminar termos genéricos e focar em argumentos sólidos:</p>
+            
+            <div class="grid grid-cols-2 gap-4 text-xs">
+                <div class="bg-red-50/50 p-4 rounded-xl border border-red-200">
+                    <p class="font-bold text-red-700 mb-2 uppercase tracking-wider text-[10px]">Evitar Termos Gastos</p>
+                    <ul class="space-y-1.5 text-zinc-600">
+                        <li class="line-through">"Melhor preço da cidade"</li>
+                        <li class="line-through">"Moda para todas"</li>
+                        <li class="line-through">"Qualidade superior"</li>
+                        <li class="line-through">"Sempre em promoção"</li>
+                        <li class="line-through">"Tendências da moda"</li>
+                    </ul>
+                </div>
+                <div class="bg-emerald-50/50 p-4 rounded-xl border border-emerald-200">
+                    <p class="font-bold text-emerald-800 mb-2 uppercase tracking-wider text-[10px]">Substituir por Fatos Reais</p>
+                    <ul class="space-y-1.5 text-zinc-700 font-medium">
+                        <li>&bull; "Tecidos importados: seda italiana e linho puro"</li>
+                        <li>&bull; "Curadoria exclusiva com peças limitadas"</li>
+                        <li>&bull; "Consultoria de estilo personalizada via WhatsApp"</li>
+                        <li>&bull; "Atendimento VIP com provador privativo"</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-zinc-50 p-4 rounded-xl border border-zinc-200 text-xs mt-4">
+            <h3 class="text-zinc-900 font-bold text-xs mb-1"><i class="fa-solid fa-quote-right text-brand-primary"></i> Exemplos de Copy para o Site</h3>
+            <div class="grid grid-cols-2 gap-3 text-[10px] text-zinc-600">
+                <div class="bg-white p-2.5 rounded-lg border border-zinc-150 italic">
+                    "A essência da moda feminina em cada costura."
+                </div>
+                <div class="bg-white p-2.5 rounded-lg border border-zinc-150 italic">
+                    "Mais do que vestir, celebramos sua individualidade."
+                </div>
+            </div>
+        </div>
+        <div class="page-number">Página 9</div>
+    </div>
+</div>
+
+<!-- PÁGINA 10: LACUNAS DIGITAIS & OPORTUNIDADES -->
+<div class="pdf-page">
+    <div class="decor-line"></div>
+    <div class="content-layer">
+        <h2 class="text-3xl font-display font-black text-zinc-900 mb-4">Lacunas Digitais & Oportunidades</h2>
+        
+        <div class="bg-amber-50/40 border border-amber-100 p-4 rounded-xl mb-4 text-xs">
+            <h3 class="text-zinc-900 font-bold text-sm mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-lightbulb text-amber-600"></i> O Espaço Vazio de Mercado
+            </h3>
+            <p class="text-zinc-650 leading-relaxed">
+                A grande oportunidade reside em atender a mulher que busca <strong>moda feminina premium com curadoria personalizada</strong> em Goiânia — um nicho carente de presença digital profissional. Enquanto o mercado local está saturado de fast fashion e lojas de departamento genéricas, a Skoziê pode ocupar o espaço de <strong>destino digital exclusivo para a mulher elegante</strong>.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 flex-1 text-xs mb-4">
+            <div class="bg-red-50/40 p-4 rounded-xl border border-red-100">
+                <h3 class="font-bold text-red-700 text-sm mb-2 flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-xmark"></i> Lacunas Identificadas
+                </h3>
+                <ul class="space-y-2 text-zinc-600">
+                    <li class="flex items-start gap-1.5 bg-white p-2 rounded-lg border border-red-50">
+                        <span class="text-red-500 mt-0.5">&#x2716;</span>
+                        <span>Sem site próprio — invisível no Google</span>
+                    </li>
+                    <li class="flex items-start gap-1.5 bg-white p-2 rounded-lg border border-red-50">
+                        <span class="text-red-500 mt-0.5">&#x2716;</span>
+                        <span>Sem catálogo digital de produtos</span>
+                    </li>
+                    <li class="flex items-start gap-1.5 bg-white p-2 rounded-lg border border-red-50">
+                        <span class="text-red-500 mt-0.5">&#x2716;</span>
+                        <span>Sem mecanismo de conversão (WhatsApp integrado)</span>
+                    </li>
+                    <li class="flex items-start gap-1.5 bg-white p-2 rounded-lg border border-red-50">
+                        <span class="text-red-500 mt-0.5">&#x2716;</span>
+                        <span>Sem blog de moda para SEO e autoridade</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="bg-emerald-50/40 p-4 rounded-xl border border-emerald-100">
+                <h3 class="font-bold text-emerald-700 text-sm mb-2 flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-check"></i> Oportunidades
+                </h3>
+                <ul class="space-y-2 text-zinc-600">
+                    <li class="flex items-start gap-1.5 bg-white p-2 rounded-lg border border-emerald-50">
+                        <span class="text-emerald-500 mt-0.5">&#x2714;</span>
+                        <span>SEO local: "moda feminina Goiânia" (2.400 buscas/mês)</span>
+                    </li>
+                    <li class="flex items-start gap-1.5 bg-white p-2 rounded-lg border border-emerald-50">
+                        <span class="text-emerald-500 mt-0.5">&#x2714;</span>
+                        <span>Vitrine 24h com fotos profissionais + preços</span>
+                    </li>
+                    <li class="flex items-start gap-1.5 bg-white p-2 rounded-lg border border-emerald-50">
+                        <span class="text-emerald-500 mt-0.5">&#x2714;</span>
+                        <span>WhatsApp CTA: conversão direta com consultoria</span>
+                    </li>
+                    <li class="flex items-start gap-1.5 bg-white p-2 rounded-lg border border-emerald-50">
+                        <span class="text-emerald-500 mt-0.5">&#x2714;</span>
+                        <span>Blog + Instagram: conteúdo que atrai e vende</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="bg-zinc-50 p-4 rounded-xl border border-zinc-200 text-xs">
+            <h3 class="text-zinc-900 font-bold text-xs mb-1.5"><i class="fa-solid fa-chart-simple text-brand-primary"></i> Dados de Mercado</h3>
+            <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="bg-white p-2.5 rounded-lg border border-zinc-150">
+                    <p class="font-black text-brand-primary text-lg">2.400</p>
+                    <p class="text-[9px] text-zinc-500">Buscas/mês "moda feminina Goiânia"</p>
+                </div>
+                <div class="bg-white p-2.5 rounded-lg border border-zinc-150">
+                    <p class="font-black text-brand-primary text-lg">78%</p>
+                    <p class="text-[9px] text-zinc-500">Descobrem marcas por Instagram/TikTok</p>
+                </div>
+                <div class="bg-white p-2.5 rounded-lg border border-zinc-150">
+                    <p class="font-black text-brand-primary text-lg">65%</p>
+                    <p class="text-[9px] text-zinc-500">Pesquisam online antes de comprar</p>
+                </div>
+            </div>
+        </div>
+        <div class="page-number">Página 10</div>
+    </div>
+</div>
+
+<!-- PÁGINA 11: OS 6 PILARES DE VANTAGEM -->
+<div class="pdf-page">
+    <div class="decor-line"></div>
+    <div class="content-layer">
+        <h2 class="text-3xl font-display font-black text-zinc-900 mb-4">Os 6 Pilares de Vantagem da Skoziê Closet</h2>
+        <p class="text-xs text-zinc-600 mb-4">
+            Como traduzimos a infraestrutura e os investimentos da boutique em argumentos simples e atraentes:
+        </p>
+
+        <div class="grid grid-cols-2 gap-4 flex-1 text-xs">
+            <div class="bg-zinc-50/50 p-4 rounded-xl border border-zinc-200">
+                <div class="text-brand-primary text-lg mb-1"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <h3 class="text-zinc-900 font-bold text-sm mb-1">1. Curadoria Exclusiva</h3>
+                <p class="text-zinc-600 leading-relaxed text-[11px]">Seleção rigorosa de peças que equilibram o clássico e o moderno. Cada produto é escolhido para garantir versatilidade e elegância atemporal.</p>
+            </div>
+            
+            <div class="bg-zinc-50/50 p-4 rounded-xl border border-zinc-200">
+                <div class="text-brand-primary text-lg mb-1"><i class="fa-solid fa-gem"></i></div>
+                <h3 class="text-zinc-900 font-bold text-sm mb-1">2. Tecidos Premium</h3>
+                <p class="text-zinc-600 leading-relaxed text-[11px]">Linho puro, seda italiana, algodão premium e acabamentos manuais que transformam cada peça em uma experiência tátil e visual única.</p>
+            </div>
+
+            <div class="bg-zinc-50/50 p-4 rounded-xl border border-zinc-200">
+                <div class="text-brand-primary text-lg mb-1"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                <h3 class="text-zinc-900 font-bold text-sm mb-1">3. Consultoria Personalizada</h3>
+                <p class="text-zinc-600 leading-relaxed text-[11px]">Atendimento VIP com stylist dedicado via WhatsApp. A cliente recebe sugestões baseadas no seu estilo, ocasião e tipo físico.</p>
+            </div>
+
+            <div class="bg-zinc-50/50 p-4 rounded-xl border border-zinc-200">
+                <div class="text-brand-primary text-lg mb-1"><i class="fa-solid fa-truck-fast"></i></div>
+                <h3 class="text-zinc-900 font-bold text-sm mb-1">4. Skoziê Concierge</h3>
+                <p class="text-zinc-600 leading-relaxed text-[11px]">Entrega agendada no mesmo dia para áreas selecionadas. Frete expresso 48h para capitais. A experiência de compra sem sair de casa.</p>
+            </div>
+
+            <div class="bg-zinc-50/50 p-4 rounded-xl border border-zinc-200">
+                <div class="text-brand-primary text-lg mb-1"><i class="fa-solid fa-location-dot"></i></div>
+                <h3 class="text-zinc-900 font-bold text-sm mb-1">5. Boutique Física em Goiânia</h3>
+                <p class="text-zinc-600 leading-relaxed text-[11px]">Espaço físico para experimentação e atendimento presencial. A segurança de comprar de uma marca com loja real e história na cidade.</p>
+            </div>
+
+            <div class="bg-zinc-50/50 p-4 rounded-xl border border-zinc-200">
+                <div class="text-brand-primary text-lg mb-1"><i class="fa-solid fa-arrow-rotate-left"></i></div>
+                <h3 class="text-zinc-900 font-bold text-sm mb-1">6. Política de Trocas Flexível</h3>
+                <p class="text-zinc-600 leading-relaxed text-[11px]">Troca gratuita em até 30 dias. A confiança de comprar sabendo que a Skoziê garante sua satisfação com o produto.</p>
+            </div>
+        </div>
+        <div class="page-number">Página 11</div>
+    </div>
+</div>
+
+<!-- PÁGINA 12: ANATOMIA DO SITE PREMIUM -->
+<div class="pdf-page">
+    <div class="decor-line"></div>
+    <div class="content-layer">
+        <h2 class="text-3xl font-display font-black text-zinc-900 mb-3">Anatomia do Site Premium</h2>
+        <p class="text-xs text-zinc-600 mb-4">
+            Estrutura de blocos desenhada sob medida para converter visitantes em clientes de alto ticket:
+        </p>
+        
+        <div class="space-y-4 flex-1 text-xs">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 border border-zinc-200 bg-zinc-50/40 rounded-xl">
+                    <h3 class="text-brand-primary font-bold text-xs uppercase tracking-wider mb-2">1. Hero Section</h3>
+                    <p class="text-[11px] text-zinc-600 leading-relaxed">Imagem editorial de alto impacto + headline "A essência da moda feminina em cada costura". CTA para WhatsApp. Resolve a objeção de "onde encontro moda premium em Goiânia?"</p>
+                </div>
+                <div class="p-4 border border-zinc-200 bg-zinc-50/40 rounded-xl">
+                    <h3 class="text-brand-primary font-bold text-xs uppercase tracking-wider mb-2">2. Curadoria em Destaque</h3>
+                    <p class="text-[11px] text-zinc-600 leading-relaxed">Grid com categorias de produto: Vestidos de Gala, Casual Premium, Alfaiataria, Beachwear. Cada uma com imagem e preço a partir de.</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 border border-zinc-200 bg-zinc-50/40 rounded-xl">
+                    <h3 class="text-brand-primary font-bold text-xs uppercase tracking-wider mb-2">3. Sobre Nós & Valores</h3>
+                    <p class="text-[11px] text-zinc-600 leading-relaxed">História da marca + pilares (Curadoria, Qualidade, Conexão). Cria identificação emocional com a cliente.</p>
+                </div>
+                <div class="p-4 border border-zinc-200 bg-zinc-50/40 rounded-xl">
+                    <h3 class="text-brand-primary font-bold text-xs uppercase tracking-wider mb-2">4. Diferenciais</h3>
+                    <p class="text-[11px] text-zinc-600 leading-relaxed">Consultoria personalizada, Skoziê Concierge, tecidos premium, política de trocas. Neutraliza objeções de compra.</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 border border-zinc-200 bg-zinc-50/40 rounded-xl">
+                    <h3 class="text-brand-primary font-bold text-xs uppercase tracking-wider mb-2">5. FAQ Inteligente</h3>
+                    <p class="text-[11px] text-zinc-600 leading-relaxed">Perguntas frequentes sobre tamanhos, fretes, trocas, pagamentos. Reduz atrito e dúvidas que impedem a compra.</p>
+                </div>
+                <div class="p-4 border border-zinc-200 bg-zinc-50/40 rounded-xl">
+                    <h3 class="text-brand-primary font-bold text-xs uppercase tracking-wider mb-2">6. WhatsApp + Mapa</h3>
+                    <p class="text-[11px] text-zinc-600 leading-relaxed">CTA final com WhatsApp + localização da boutique. Zero fricção para agendar uma visita ou consultoria.</p>
+                </div>
+            </div>
+            
+            <div class="bg-emerald-50/40 p-4 border border-emerald-100 rounded-xl">
+                <h3 class="text-emerald-800 font-bold text-xs uppercase tracking-wider mb-1">Camada Premium de Experiência</h3>
+                <p class="text-[11px] text-zinc-650 leading-relaxed">
+                    Animações GSAP com ScrollTrigger para entradas suaves, efeito glassmorphism, parallax, botões shimmer, barra de progresso de leitura, wireframe 3D com Three.js ao fundo — tudo para criar uma experiência de navegação premium que reflete a qualidade da marca.
+                </p>
+            </div>
+        </div>
+        <div class="page-number">Página 12</div>
+    </div>
+</div>
+
+<!-- PÁGINA 13: ROI & PROJEÇÃO FINANCEIRA -->
+<div class="pdf-page">
+    <div class="decor-line"></div>
+    <div class="content-layer">
+        <h2 class="text-3xl font-display font-black text-zinc-900 mb-3">ROI & Projeção Financeira</h2>
+        <p class="text-xs text-zinc-600 mb-4">
+            Diferente do tráfego comum de moda popular focado em volume, as campanhas premium focam na atração de clientes de alto ticket com margens expressivas:
+        </p>
+        
+        <div class="grid grid-cols-2 gap-4 mb-4 text-xs">
+            <div class="bg-zinc-50/40 p-4 rounded-xl border border-zinc-200 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-brand-primary font-bold text-xs mb-1.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-calculator"></i> Custo por Cliente (CAC)
+                    </h3>
+                    <p class="text-[11px] text-zinc-600 leading-relaxed">Estimativa de investimento em tráfego focado de alta intenção variando de R$ 80 a R$ 180 por cliente de moda premium convertida.</p>
+                </div>
+            </div>
+            
+            <div class="bg-zinc-50/40 p-4 rounded-xl border border-zinc-200 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-emerald-700 font-bold text-xs mb-1.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-chart-line"></i> Ticket Médio
+                    </h3>
+                    <p class="text-[11px] text-zinc-600 leading-relaxed">Peças de moda premium possuem tickets médios de R$ 240 (casual) a R$ 890+ (vestidos de gala), estabelecendo margens de 50-70%.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-purple-50/30 p-4 border border-purple-150 rounded-xl flex-1 flex flex-col justify-center">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-brand-primary mb-3 text-center">Simulação Prática Mensal Estimada</h3>
+            
+            <div class="grid grid-cols-3 gap-3 text-center text-xs">
+                <div class="p-3 bg-white rounded-lg border border-purple-100 shadow-sm">
+                    <p class="text-zinc-500 text-[10px] uppercase">Investimento Ads</p>
+                    <p class="text-sm font-black text-zinc-900 mt-1">R$ 1.500</p>
+                </div>
+                <div class="p-3 bg-white rounded-lg border border-purple-100 shadow-sm">
+                    <p class="text-zinc-500 text-[10px] uppercase">Vendas Estimadas</p>
+                    <p class="text-sm font-black text-brand-primary mt-1">20 a 35 pedidos</p>
+                </div>
+                <div class="p-3 bg-white rounded-lg border border-purple-100 shadow-sm">
+                    <p class="text-zinc-500 text-[10px] uppercase">Receita Estimada</p>
+                    <p class="text-sm font-black text-emerald-700 mt-1">R$ 18k - R$ 42k</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3 mt-4 text-center text-xs">
+                <div class="p-3 bg-white rounded-lg border border-purple-100 shadow-sm">
+                    <p class="text-zinc-500 text-[10px] uppercase">ROI (Retorno)</p>
+                    <p class="text-sm font-black text-emerald-700 mt-1">12x a 28x</p>
+                </div>
+                <div class="p-3 bg-white rounded-lg border border-purple-100 shadow-sm">
+                    <p class="text-zinc-500 text-[10px] uppercase">Break-even</p>
+                    <p class="text-sm font-black text-brand-primary mt-1">&lt; 30 dias</p>
+                </div>
+            </div>
+            
+            <p class="text-[10px] text-zinc-500 mt-3 text-center leading-relaxed">
+                *Projeção estruturada em taxa de conversão de 3% a 5% sobre tráfego qualificado gerado pela Landing Page com campanhas de Instagram Ads e Google Ads segmentadas para Goiânia.
+            </p>
+        </div>
+        <div class="page-number">Página 13</div>
+    </div>
+</div>
+
+<!-- PÁGINA 14: OCEANO AZUL & EXPANSÃO -->
+<div class="pdf-page">
+    <div class="decor-line"></div>
+    <div class="content-layer">
+        <h2 class="text-3xl font-display font-black text-zinc-900 mb-4">Oceano Azul & Expansão</h2>
+        <p class="text-xs text-zinc-600 mb-4">
+            Como posicionar a Skoziê em categorias únicas de mercado onde a comparação direta de preços não existe:
+        </p>
+
+        <div class="space-y-4 flex-1 text-xs">
+            <div class="bg-rose-50/30 p-4 rounded-xl border border-rose-100 flex items-start gap-3">
+                <div class="text-rose-600 text-lg"><i class="fa-solid fa-crown"></i></div>
+                <div>
+                    <h3 class="text-zinc-900 font-bold text-sm mb-1">Clube de Assinatura Skoziê (Recorrência)</h3>
+                    <p class="text-[11px] text-zinc-650 leading-relaxed">
+                        Implementar um programa de assinatura de curadoria de moda — a cliente recebe mensalmente uma seleção personalizada de peças para experimentar em casa. Isso gera receita previsível e recorrente, fidelizando a cliente ao longo de todo o ano.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-purple-50/30 p-4 rounded-xl border border-purple-100 flex items-start gap-3">
+                <div class="text-purple-600 text-lg"><i class="fa-solid fa-arrows-spin"></i></div>
+                <div>
+                    <h3 class="text-zinc-900 font-bold text-sm mb-1">Provedor de Looks para Eventos (Upsell)</h3>
+                    <p class="text-[11px] text-zinc-650 leading-relaxed">
+                        Posicionar a Skoziê como fornecedora de looks completos para eventos sociais (casamentos, formaturas, coquetéis) em Goiânia. Pacotes que incluem vestido + acessórios + sapatos + consultoria de styling.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-blue-50/30 p-4 rounded-xl border border-blue-100 flex items-start gap-3">
+                <div class="text-blue-600 text-lg"><i class="fa-solid fa-globe"></i></div>
+                <div>
+                    <h3 class="text-zinc-900 font-bold text-sm mb-1">E-commerce Nacional com Prova Virtual</h3>
+                    <p class="text-[11px] text-zinc-650 leading-relaxed">
+                        Expandir para todo o Brasil através de e-commerce com tecnologia de prova virtual (AR) e devolução grátis. A Skoziê pode se tornar a referência nacional em moda feminina premium com curadoria.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-emerald-50/30 p-4 rounded-xl border border-emerald-100 flex items-start gap-3">
+                <div class="text-emerald-600 text-lg"><i class="fa-solid fa-users"></i></div>
+                <div>
+                    <h3 class="text-zinc-900 font-bold text-sm mb-1">Programa de Indicação com Cashback</h3>
+                    <p class="text-[11px] text-zinc-650 leading-relaxed">
+                        Estruturar um programa de indicação onde clientes fiéis ganham cashback em compras futuras por cada nova cliente trazida. Transforma a base de clientes em um canal de aquisição escalável.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="page-number">Página 14</div>
+    </div>
+</div>
+
+<!-- PÁGINA 15: RESUMO E CONCLUSÃO -->
+<div class="pdf-page">
+    <div class="decor-line"></div>
+    <div class="content-layer justify-center items-center text-center h-full">
+        <div class="bg-zinc-50/80 p-8 rounded-2xl border border-zinc-200 shadow-sm max-w-xl">
+            <i class="fa-solid fa-rocket text-brand-primary text-5xl mb-6"></i>
+            <h2 class="text-zinc-900 font-display font-bold text-3xl mb-4">A Síntese Final</h2>
+            
+            <p class="text-sm text-zinc-600 leading-relaxed mb-6">
+                Sua presença digital não deve ser apenas um catálogo online. Ela deve ser seu principal ativo de prospecção. Com a arquitetura de conversão aplicada, traduzimos a curadoria exclusiva, tecidos premium e consultoria personalizada em <strong>desejo imediato de compra</strong> na mente da cliente de alto ticket.
+            </p>
+
+            <div class="grid grid-cols-3 gap-3 mb-6 text-xs">
+                <div class="bg-white p-3 rounded-lg border border-zinc-200">
+                    <p class="font-black text-brand-primary text-lg">Zero</p>
+                    <p class="text-[10px] text-zinc-500">Investimento até o site ficar pronto</p>
+                </div>
+                <div class="bg-white p-3 rounded-lg border border-zinc-200">
+                    <p class="font-black text-brand-primary text-lg">72h</p>
+                    <p class="text-[10px] text-zinc-500">Para o site estar no ar</p>
+                </div>
+                <div class="bg-white p-3 rounded-lg border border-zinc-200">
+                    <p class="font-black text-brand-primary text-lg">30+</p>
+                    <p class="text-[10px] text-zinc-500">Dias de suporte incluso</p>
+                </div>
+            </div>
+
+            <p class="text-xs text-zinc-700 font-medium leading-relaxed italic border-t border-zinc-200 pt-4 mb-6">
+                Agora que você já deu o primeiro passo para alavancar sua marca com este novo site que preparamos, vamos bater um papo para conversar sobre o que mais podemos fazer com base nesta análise estratégica?<br>
+                <span class="block mt-2 text-[10px] text-zinc-500 font-sans not-italic font-semibold">Contato: es.comunicacao@outlook.com | WhatsApp: (13) 98106-2787</span>
+            </p>
+
+            <div class="flex items-center justify-center gap-3 text-xs text-zinc-400 border-t border-zinc-150 pt-4">
+                <span class="font-bold text-zinc-800 tracking-wider uppercase">ESCOM Studio &bull; Business Intelligence</span>
+            </div>
+        </div>
+        <div class="page-number w-full flex justify-between mt-auto">
+            <span>Dossiê Skoziê Closet - Confidencial</span>
+            <span>Página 15</span>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -82,7 +82,7 @@ const INJECTED_STYLES = `
 
   .card-sheen {
       position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 50;
-      background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(46,255,0,0.15) 0%, transparent 40%);
+      background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0,209,255,0.15) 0%, transparent 40%);
       mix-blend-mode: screen; transition: opacity 0.3s ease;
   }
 
@@ -305,7 +305,7 @@ export function CinematicHero({
         <h1 className="text-track gsap-reveal text-3d-matte text-[2rem] md:text-5xl lg:text-7xl font-jakarta font-medium tracking-tight mb-2">
           {tagline1}
         </h1>
-        <h1 className="text-days gsap-reveal text-silver-matte text-[2.5rem] md:text-6xl lg:text-8xl font-jakarta font-bold tracking-tighter text-[#2EFF00]">
+        <h1 className="text-days gsap-reveal text-silver-matte text-[2.5rem] md:text-6xl lg:text-8xl font-jakarta font-bold tracking-tighter text-[#00d1ff]">
           {tagline2}
         </h1>
       </div>
@@ -351,7 +351,7 @@ export function CinematicHero({
 
                     {/* Dynamic Island Notch */}
                     <div className="absolute top-[5px] left-1/2 -translate-x-1/2 w-[100px] h-[28px] bg-black rounded-full z-50 flex items-center justify-end px-3 shadow-[inset_0_-1px_2px_rgba(255,255,255,0.1)]">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#2EFF00] shadow-[0_0_8px_rgba(46,255,0,0.8)] animate-pulse" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#00d1ff] shadow-[0_0_8px_rgba(0,209,255,0.8)] animate-pulse" />
                     </div>
 
                     {/* App Interface */}
@@ -361,24 +361,24 @@ export function CinematicHero({
                           <span className="text-[10px] text-neutral-400 font-geist uppercase tracking-widest font-bold mb-1">Performance</span>
                           <span className="text-xl font-jakarta font-bold tracking-tight text-white drop-shadow-md">Lighthouse</span>
                         </div>
-                        <div className="w-9 h-9 rounded-full bg-white/5 text-[#2EFF00] flex items-center justify-center font-bold text-sm border border-white/10 shadow-lg shadow-black/50">100</div>
+                        <div className="w-9 h-9 rounded-full bg-white/5 text-[#00d1ff] flex items-center justify-center font-bold text-sm border border-white/10 shadow-lg shadow-black/50">100</div>
                       </div>
 
                       <div className="phone-widget relative w-44 h-44 mx-auto flex items-center justify-center mb-8 drop-shadow-[0_15px_25px_rgba(0,0,0,0.8)]">
                         <svg className="absolute inset-0 w-full h-full" aria-hidden="true">
                           <circle cx="88" cy="88" r="64" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="12" />
-                          <circle className="progress-ring" cx="88" cy="88" r="64" fill="none" stroke="#2EFF00" strokeWidth="12" />
+                          <circle className="progress-ring" cx="88" cy="88" r="64" fill="none" stroke="#00d1ff" strokeWidth="12" />
                         </svg>
                         <div className="text-center z-10 flex flex-col items-center">
                           <span className="counter-val text-4xl font-extrabold tracking-tighter text-white font-jakarta">0</span>
-                          <span className="text-[8px] text-[#2EFF00]/70 uppercase tracking-[0.1em] font-bold mt-0.5">{metricLabel}</span>
+                          <span className="text-[8px] text-[#00d1ff]/70 uppercase tracking-[0.1em] font-bold mt-0.5">{metricLabel}</span>
                         </div>
                       </div>
 
                       <div className="space-y-3">
                         <div className="phone-widget widget-depth rounded-2xl p-3 flex items-center">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#2EFF00]/20 to-[#2EFF00]/5 flex items-center justify-center mr-3 border border-[#2EFF00]/20 shadow-inner">
-                            <svg className="w-5 h-5 text-[#2EFF00]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00d1ff]/20 to-[#00d1ff]/5 flex items-center justify-center mr-3 border border-[#00d1ff]/20 shadow-inner">
+                            <svg className="w-5 h-5 text-[#00d1ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                           </div>
                           <div className="flex-1">
                             <div className="h-2 w-20 bg-neutral-300 rounded-full mb-2 shadow-inner" />
@@ -403,12 +403,12 @@ export function CinematicHero({
 
                 {/* Floating Glass Badges */}
                 <div className="floating-badge absolute flex top-6 lg:top-12 left-[-15px] lg:left-[-80px] floating-ui-badge rounded-xl lg:rounded-2xl p-3 lg:p-4 items-center gap-3 lg:gap-4 z-30">
-                  <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-gradient-to-b from-[#2EFF00]/20 to-[#2EFF00]/10 flex items-center justify-center border border-[#2EFF00]/30 shadow-inner">
+                  <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-gradient-to-b from-[#00d1ff]/20 to-[#00d1ff]/10 flex items-center justify-center border border-[#00d1ff]/30 shadow-inner">
                     <span className="text-base lg:text-xl drop-shadow-lg" aria-hidden="true">⚡</span>
                   </div>
                   <div>
                     <p className="text-white text-xs lg:text-sm font-jakarta font-bold tracking-tight">Carga Ultrarrápida</p>
-                    <p className="text-[#2EFF00]/70 text-[10px] lg:text-xs font-geist font-medium">Core Web Vitals</p>
+                    <p className="text-[#00d1ff]/70 text-[10px] lg:text-xs font-geist font-medium">Core Web Vitals</p>
                   </div>
                 </div>
 

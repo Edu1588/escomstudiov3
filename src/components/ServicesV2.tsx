@@ -72,8 +72,8 @@ export default function ServicesV2() {
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-16">
           <div className="flex flex-col">
-            <div className="px-3 py-1 border border-[#00e300]/20 rounded-none mb-8 inline-block self-start">
-              <span className="font-rajdhani text-[10px] tracking-widest text-[#00e300] uppercase font-bold">[ NOSSOS_SERVIÇOS ]</span>
+            <div className="px-3 py-1 border border-[#00d1ff]/20 rounded-none mb-8 inline-block self-start">
+              <span className="font-rajdhani text-[10px] tracking-widest text-[#00d1ff] uppercase font-bold">[ NOSSOS_SERVIÇOS ]</span>
             </div>
             
             <h2 className="text-4xl md:text-6xl lg:text-8xl font-black tracking-tighter text-white uppercase leading-[0.9] font-rajdhani m-0">

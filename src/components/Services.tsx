@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { TextEffect } from '@/components/ui/text-effect';
 
 export default function Services() {
   const services = [
@@ -23,12 +24,18 @@ export default function Services() {
               <span className="font-mono text-[10px] tracking-widest text-primary">[ NOSSOS_SERVIÇOS ]</span>
             </motion.div>
             
-            <h2 className="text-6xl md:text-[10rem] font-black font-tech uppercase leading-none m-0">O QUE<br/>FAZEMOS</h2>
+            <motion.h2
+              initial={{ opacity: 0, filter: 'blur(20px)' }}
+              whileInView={{ opacity: 1, filter: 'blur(0px)' }}
+              transition={{ duration: 1.2, ease: 'easeOut' }}
+              viewport={{ once: true }}
+              className="text-6xl md:text-[10rem] font-black font-tech uppercase leading-none m-0"
+            >O QUE<br/>FAZEMOS</motion.h2>
           </div>
           <div className="md:max-w-sm pb-4">
-            <p className="text-white/80 font-mono text-sm tracking-[0.1em] uppercase font-bold border-l-2 border-primary pl-4 leading-relaxed">
-              DESIGN COM PROPÓSITO COMERCIAL E INFRAESTRUTURA INTEGRADA PARA MÁXIMA PERFORMANCE.
-            </p>
+            <TextEffect preset="blur" per="word" as="p" className="text-white/80 font-mono text-sm tracking-[0.1em] uppercase font-bold border-l-2 border-primary pl-4 leading-relaxed">
+               DESIGN COM PROPÓSITO COMERCIAL E INFRAESTRUTURA INTEGRADA PARA MÁXIMA PERFORMANCE.
+             </TextEffect>
           </div>
         </div>
 

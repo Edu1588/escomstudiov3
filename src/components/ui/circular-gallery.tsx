@@ -115,7 +115,7 @@ const CircularGallery = React.forwardRef<HTMLDivElement, CircularGalleryProps>(
                   transition: 'opacity 0.3s linear'
                 }}
               >
-                <div className="relative w-full h-full rounded-2xl shadow-[0_0_50px_rgba(46,255,0,0.1)] overflow-hidden group border border-zinc-800 bg-zinc-950/70 backdrop-blur-lg">
+                <div className="relative w-full h-full rounded-2xl shadow-[0_0_50px_rgba(0,209,255,0.1)] overflow-hidden group border border-zinc-800 bg-zinc-950/70 backdrop-blur-lg">
                   <img
                     src={item.photo.url}
                     alt={item.photo.text}
@@ -125,9 +125,9 @@ const CircularGallery = React.forwardRef<HTMLDivElement, CircularGalleryProps>(
                   <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/20 to-transparent"></div>
                   
                   <div className="absolute bottom-0 left-0 w-full p-6 text-white transition-transform duration-500 transform translate-y-4 group-hover:translate-y-0">
-                    <h2 className="text-xl md:text-2xl font-jakarta font-bold mb-1 group-hover:text-[#2EFF00] transition-colors">{item.common}</h2>
+                    <h2 className="text-xl md:text-2xl font-jakarta font-bold mb-1 group-hover:text-[#00d1ff] transition-colors">{item.common}</h2>
                     <p className="text-sm font-geist font-light opacity-70 mb-2">{item.binomial}</p>
-                    <div className="h-0.5 w-8 bg-[#2EFF00] opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100"></div>
+                    <div className="h-0.5 w-8 bg-[#00d1ff] opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100"></div>
                   </div>
                 </div>
               </div>

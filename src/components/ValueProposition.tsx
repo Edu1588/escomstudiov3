@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { TextEffect } from '@/components/ui/text-effect';
 import { ContainerScroll, CardSticky } from "./ui/cards-stack";
 
 export default function ValueProposition() {
@@ -23,14 +24,20 @@ export default function ValueProposition() {
               <span className="font-mono text-[10px] tracking-widest text-primary uppercase">[ EXPERIÊNCIA ]</span>
             </motion.div>
             
-            <h2 className="text-5xl md:text-7xl font-black font-tech mb-12 leading-[0.9] uppercase">
+            <motion.h2
+              initial={{ opacity: 0, filter: 'blur(20px)' }}
+              whileInView={{ opacity: 1, filter: 'blur(0px)' }}
+              transition={{ duration: 1.2, ease: 'easeOut' }}
+              viewport={{ once: true }}
+              className="text-5xl md:text-7xl font-black font-tech mb-12 leading-[0.9] uppercase"
+            >
               O QUE VOCÊ SENTE <br/> É RESULTADO.
-            </h2>
+            </motion.h2>
             
             <div className="space-y-6 text-white/40 font-mono text-sm tracking-widest uppercase mb-12">
-              <p>Cada interação foi projetada para criar fluência, autoridade e, acima de tudo,</p>
-              <p className="text-white font-bold">conversão real para o seu negócio.</p>
-              <p>Não basta ser bonito. Tem que vender.</p>
+              <TextEffect preset="blur" per="word" as="p" className="">Cada interação foi projetada para criar fluência, autoridade e, acima de tudo,</TextEffect>
+              <TextEffect preset="blur" per="word" as="p" className="text-white font-bold">conversão real para o seu negócio.</TextEffect>
+              <TextEffect preset="blur" per="word" as="p" className="">Não basta ser bonito. Tem que vender.</TextEffect>
             </div>
 
             <div className="hidden lg:block w-32 h-32 rounded-full border border-white/5 p-1">

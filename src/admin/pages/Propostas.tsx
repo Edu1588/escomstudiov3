@@ -6,7 +6,7 @@ export default function Propostas() {
   const [services, setServices] = useState<any[]>([]);
 
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
-  const [formData, setFormData] = useState({ clientName: "", phone: "", company: "", observations: "" });
+  const [formData, setFormData] = useState({ clientName: "", email: "", phone: "", company: "", observations: "" });
   const [loading, setLoading] = useState(false);
   const [propostas, setPropostas] = useState<any[]>([]);
   const [copiedLink, setCopiedLink] = useState<string | null>(null);
@@ -26,7 +26,6 @@ export default function Propostas() {
       const contentType = res.headers.get("content-type");
       if (res.ok && contentType && contentType.includes("application/json")) {
         const data = await res.json();
-        // optionally filter for only active services
         setServices(data.services.filter((s:any) => s.active));
       }
     } catch (e) {
@@ -127,7 +126,7 @@ export default function Propostas() {
         if (res.ok && contentType && contentType.includes("application/json")) {
             const data = await res.json();
             alert(`Proposta gerada! Link: /${data.slug}`);
-            setFormData({ clientName: "", phone: "", company: "", observations: "" });
+            setFormData({ clientName: "", email: "", phone: "", company: "", observations: "" });
             setSelectedServices([]);
             setExtraPages(0);
             setAdditionalPercentage(0);
@@ -187,7 +186,7 @@ export default function Propostas() {
         
         <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-4 md:p-8">
           <div className="flex items-center justify-center flex-col text-center mb-10">
-            <div className="w-12 h-12 rounded-xl bg-[#2EFF00]/10 text-[#2EFF00] flex items-center justify-center mb-4">
+            <div className="w-12 h-12 rounded-xl bg-[#00d1ff]/10 text-[#00d1ff] flex items-center justify-center mb-4">
                <FileText size={24} />
             </div>
             <h2 className="text-2xl font-bold mb-2">Gerador de Propostas</h2>
@@ -197,21 +196,25 @@ export default function Propostas() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div>
               <label className="block text-[10px] text-gray-500 font-mono tracking-widest mb-2">NOME DO CLIENTE</label>
-              <input type="text" value={formData.clientName} onChange={e => setFormData({...formData, clientName: e.target.value})} placeholder="Ex: João Silva" className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#2EFF00] transition-colors" />
+              <input type="text" value={formData.clientName} onChange={e => setFormData({...formData, clientName: e.target.value})} placeholder="Ex: João Silva" className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#00d1ff] transition-colors" />
+            </div>
+            <div>
+              <label className="block text-[10px] text-gray-500 font-mono tracking-widest mb-2">E-MAIL DO CLIENTE</label>
+              <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="Ex: joao@empresa.com" className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#00d1ff] transition-colors" />
             </div>
             <div>
               <label className="block text-[10px] text-gray-500 font-mono tracking-widest mb-2">WHATSAPP DO CLIENTE</label>
               <input type="text" value={formData.phone} onChange={e => {
                 const val = e.target.value.replace(/[^0-9+\-()\s]/g, '');
                 setFormData({...formData, phone: val});
-              }} placeholder="Ex: 5548988626785" className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#2EFF00] transition-colors" />
+              }} placeholder="Ex: 5548988626785" className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#00d1ff] transition-colors" />
             </div>
             <div>
               <label className="block text-[10px] text-gray-500 font-mono tracking-widest mb-2">EMPRESA *</label>
-              <input type="text" value={formData.company} onChange={e => { setFormData({...formData, company: e.target.value}); if (error) setError(null); }} placeholder="Ex: TechCorp Ltda" className={`w-full bg-[#111] border ${error ? 'border-red-500 focus:border-red-500' : 'border-[#333] focus:border-[#2EFF00]'} rounded-lg px-4 py-3 text-white focus:outline-none transition-colors`} />
+              <input type="text" value={formData.company} onChange={e => { setFormData({...formData, company: e.target.value}); if (error) setError(null); }} placeholder="Ex: TechCorp Ltda" className={`w-full bg-[#111] border ${error ? 'border-red-500 focus:border-red-500' : 'border-[#333] focus:border-[#00d1ff]'} rounded-lg px-4 py-3 text-white focus:outline-none transition-colors`} />
               {error && <span className="text-red-500 text-xs mt-1 block">{error}</span>}
             </div>
-            <div>
+            <div className="md:col-span-2">
               <label className="block text-[10px] text-gray-500 font-mono tracking-widest mb-2">PORCENTAGEM ADICIONAL (%)</label>
               <div className="relative">
                 <input 
@@ -223,7 +226,7 @@ export default function Propostas() {
                     setAdditionalPercentage(Number(val));
                   }} 
                   placeholder="0" 
-                  className="w-full bg-[#111] border border-[#333] rounded-lg pl-4 pr-12 py-3 text-white focus:outline-none focus:border-[#2EFF00] transition-colors font-mono" 
+                  className="w-full bg-[#111] border border-[#333] rounded-lg pl-4 pr-12 py-3 text-white focus:outline-none focus:border-[#00d1ff] transition-colors font-mono" 
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-mono font-bold">%</span>
               </div>
@@ -238,22 +241,22 @@ export default function Propostas() {
                   <div 
                     onClick={() => toggleService(service.id)}
                     className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-colors ${
-                      selectedServices.includes(service.id) ? 'bg-[#2EFF00]/5 border-[#2EFF00]/30' : 'bg-[#111] border-[#333] hover:border-gray-600'
+                      selectedServices.includes(service.id) ? 'bg-[#00d1ff]/5 border-[#00d1ff]/30' : 'bg-[#111] border-[#333] hover:border-gray-600'
                     }`}
                   >
                     <div className={`w-5 h-5 rounded border flex flex-shrink-0 items-center justify-center transition-colors ${
-                      selectedServices.includes(service.id) ? 'bg-[#2EFF00] border-[#2EFF00]' : 'bg-transparent border-gray-500'
+                      selectedServices.includes(service.id) ? 'bg-[#00d1ff] border-[#00d1ff]' : 'bg-transparent border-gray-500'
                     }`}>
                       {selectedServices.includes(service.id) && <span className="text-black text-xs font-bold">✓</span>}
                     </div>
                     <div>
                       <div className="font-bold text-sm text-white">{service.name}</div>
                       {service.description && <div className="text-[10px] text-gray-400 mt-1 line-clamp-2">{service.description}</div>}
-                      <div className="text-[11px] text-gray-500 mt-0.5">Preço base: <span className="text-[#2EFF00] font-mono">R$ {service.price.toLocaleString('pt-BR')}</span></div>
+                      <div className="text-[11px] text-gray-500 mt-0.5">Preço base: <span className="text-[#00d1ff] font-mono">R$ {service.price.toLocaleString('pt-BR')}</span></div>
                     </div>
                   </div>
                   {service.id === 2 && selectedServices.includes(2) && (
-                     <div className="pl-4 border-l-2 border-[#2EFF00]/30 ml-4 mb-2 flex items-center justify-between">
+                     <div className="pl-4 border-l-2 border-[#00d1ff]/30 ml-4 mb-2 flex items-center justify-between">
                         <label className="text-xs text-gray-400">Páginas extras (+ R$ 300 cada):</label>
                         <div className="flex items-center bg-[#1a1a1a] border border-[#333] rounded-lg overflow-hidden">
                            <button onClick={(e) => { e.stopPropagation(); setExtraPages(Math.max(0, extraPages - 1))}} className="px-3 py-1 hover:bg-[#333] transition-colors text-gray-400 text-lg leading-none">-</button>
@@ -269,18 +272,18 @@ export default function Propostas() {
           
           <div className="mb-8 bg-[#111] border border-[#333] rounded-lg p-6 flex flex-col items-center justify-center">
             <label className="block text-[10px] text-gray-500 font-mono tracking-widest mb-1 text-center">ORÇAMENTO TOTAL ESTIMADO</label>
-            <div className="text-4xl font-black text-[#2EFF00] mt-2 mb-2">R$ {calculateFinalTotal()}</div>
+            <div className="text-4xl font-black text-[#00d1ff] mt-2 mb-2">R$ {calculateFinalTotal()}</div>
             <div className="text-xs text-gray-500 text-center">Valor auto-calculado com base aos serviços e +{additionalPercentage}% repasse</div>
           </div>
 
           <div className="mb-8">
             <label className="block text-[10px] text-gray-500 font-mono tracking-widest mb-2">OBSERVAÇÕES ADICIONAIS</label>
-            <textarea value={formData.observations} onChange={e => setFormData({...formData, observations: e.target.value})} placeholder="Detalhes específicos do projeto..." className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-white min-h-[120px] resize-y focus:outline-none focus:border-[#2EFF00] transition-colors"></textarea>
+            <textarea value={formData.observations} onChange={e => setFormData({...formData, observations: e.target.value})} placeholder="Detalhes específicos do projeto..." className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-white min-h-[120px] resize-y focus:outline-none focus:border-[#00d1ff] transition-colors"></textarea>
           </div>
 
           <div className="flex justify-end items-center gap-4 pt-4 border-t border-[#1a1a1a]">
-            <button onClick={() => {setFormData({ clientName: "", phone: "", company: "", observations: "" }); setSelectedServices([]); setExtraPages(0); setAdditionalPercentage(0);}} className="text-gray-400 hover:text-white px-4 py-2 font-medium transition-colors text-sm">Limpar</button>
-            <button onClick={handleGenerate} disabled={loading} className="flex items-center gap-2 bg-[#2EFF00] hover:bg-[#28e600] disabled:opacity-50 text-black px-6 py-3 rounded-lg font-bold transition-colors">
+            <button onClick={() => {setFormData({ clientName: "", email: "", phone: "", company: "", observations: "" }); setSelectedServices([]); setExtraPages(0); setAdditionalPercentage(0);}} className="text-gray-400 hover:text-white px-4 py-2 font-medium transition-colors text-sm">Limpar</button>
+            <button onClick={handleGenerate} disabled={loading} className="flex items-center gap-2 bg-[#00d1ff] hover:bg-[#00b8e6] disabled:opacity-50 text-black px-6 py-3 rounded-lg font-bold transition-colors">
               <ArrowRight size={18} />
               {loading ? "Gerando..." : "Gerar Link da Proposta"}
             </button>
@@ -314,16 +317,24 @@ export default function Propostas() {
                     <div className="font-bold">{p.company}</div>
                     <div className="text-xs text-gray-500">{p.clientName}</div>
                   </td>
-                  <td className="py-4 text-[#2EFF00] font-mono">{calculateTotalStr(p.selectedServices, p.budget)}</td>
+                  <td className="py-4 text-[#00d1ff] font-mono">{calculateTotalStr(p.selectedServices, p.budget)}</td>
                   <td className="py-4 text-center text-gray-400">{formatDate(p.createdAt)}</td>
                   <td className="py-4 text-center">
-                    <span className="bg-green-500/10 text-green-500 px-2 py-1 rounded text-[10px] font-bold">ATIVA</span>
+                    {(() => {
+                      if (p.status === "aceito") {
+                        return <span className="bg-green-500/10 text-green-500 px-2 py-1 rounded text-[10px] font-bold uppercase">ACEITA</span>;
+                      }
+                      if (p.status === "expirado" || (p.expiresAt && new Date(p.expiresAt) < new Date())) {
+                        return <span className="bg-red-500/10 text-red-500 px-2 py-1 rounded text-[10px] font-bold uppercase">EXPIRADA</span>;
+                      }
+                      return <span className="bg-yellow-500/10 text-yellow-500 px-2 py-1 rounded text-[10px] font-bold uppercase">PENDENTE</span>;
+                    })()}
                   </td>
                   <td className="py-4 text-right flex justify-end gap-2">
                     <button onClick={() => copyToClipboard(p.id)} className="p-2 bg-[#111] border border-[#333] hover:border-gray-500 flex items-center justify-center rounded transition-colors text-white" title="Copiar Link">
-                      {copiedLink === p.id ? <CheckCircle2 size={16} className="text-[#2EFF00]" /> : <Copy size={16} />}
+                      {copiedLink === p.id ? <CheckCircle2 size={16} className="text-[#00d1ff]" /> : <Copy size={16} />}
                     </button>
-                    <a href={`/${p.id}`} target="_blank" rel="noreferrer" className="p-2 bg-[#111] border border-[#333] hover:border-[#2EFF00] hover:text-[#2EFF00] flex items-center justify-center rounded transition-colors text-white" title="Abrir Proposta">
+                    <a href={`/${p.id}`} target="_blank" rel="noreferrer" className="p-2 bg-[#111] border border-[#333] hover:border-[#00d1ff] hover:text-[#00d1ff] flex items-center justify-center rounded transition-colors text-white" title="Abrir Proposta">
                       <ArrowRight size={16} />
                     </a>
                     <button onClick={() => handleDelete(p.id)} className="p-2 bg-[#111] border border-[#333] hover:border-red-500 hover:text-red-500 flex items-center justify-center rounded transition-colors text-white" title="Apagar Proposta">

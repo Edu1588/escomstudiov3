@@ -4,6 +4,7 @@ import { TextEffect } from '@/components/ui/text-effect';
 import CornerFrameScrambleText from '@/components/ui/corner-frame-scramble-text';
 import { TextMorph } from '@/components/ui/text-morph';
 import { GLSLHills } from '@/components/ui/glsl-hills';
+import TubesBackground from '@/components/ui/neon-flow';
 
 export default function HeroV2() {
   const bgColor = '#111111';
@@ -126,17 +127,23 @@ export default function HeroV2() {
                   />
                 </div>
 
+                {/* Black Overlay for Smooth Fade to Black on Scroll */}
+                <div 
+                  className="absolute inset-0 bg-black z-[190] pointer-events-none" 
+                  style={{ opacity: Math.min(1, (scrollProgress || 0) * 2.5) }} 
+                />
+
                 {/* Content Layer */}
                 <div className="relative z-[150] flex flex-col h-full justify-between">
                   <div className="flex justify-between items-start w-full relative">
                     <div className="flex flex-col gap-12 relative">
                       <div className="space-y-1">
                         <p className="text-white/40 text-[10px] uppercase tracking-[0.3em] font-medium font-rajdhani">Digital Studio</p>
-                        <p className="text-[#00e300] text-[16px] uppercase tracking-widest font-bold leading-none font-rajdhani">HIGH-END WEB ENGINEERING</p>
+                        <p className="text-[#00d1ff] text-[16px] uppercase tracking-widest font-bold leading-none font-rajdhani">HIGH-END WEB ENGINEERING</p>
                       </div>
                       <div className="space-y-1">
                         <p className="text-white/40 text-[10px] uppercase tracking-[0.3em] font-medium font-rajdhani">Performance & Data</p>
-                        <p className="text-[#00e300] text-[20px] uppercase tracking-widest font-black max-w-[240px] leading-tight font-rajdhani">
+                        <p className="text-[#00d1ff] text-[20px] uppercase tracking-widest font-black max-w-[240px] leading-tight font-rajdhani">
                           SISTEMAS QUE <br/> TRABALHAM <br/> POR VOCÊ
                         </p>
                       </div>
@@ -167,18 +174,18 @@ export default function HeroV2() {
                     <div className="absolute inset-8 rounded-full border-[1.5px] border-white/5 animate-scale-inner" />
                     
                     <div className="absolute top-[10%] right-12 text-right font-rajdhani">
-                      <p className="text-[#00e300] text-[20px] font-bold uppercase tracking-[0.1em] leading-[0.9] opacity-80">
+                      <p className="text-[#00d1ff] text-[20px] font-bold uppercase tracking-[0.1em] leading-[0.9] opacity-80">
                         ESTRATÉGIA <br/> DIGITAL {'{'}CORE{'}'}
                       </p>
-                      <p className="text-[#00e300]/30 font-rajdhani text-[9px] uppercase tracking-widest mt-2">DEPLOY_VERSION_2.0</p>
+                      <p className="text-[#00d1ff]/30 font-rajdhani text-[9px] uppercase tracking-widest mt-2">DEPLOY_VERSION_2.0</p>
                     </div>
                     
                     <div className="absolute bottom-[20%] left-10 font-rajdhani">
                       <CornerFrameScrambleText 
                         value="CORE_TRANSMISSION" 
                         as="p"
-                        className="text-[#00e300] text-[10px] uppercase tracking-[0.4em] font-bold"
-                        style={{ '--foreground': '#00e300' } as any}
+                        className="text-[#00d1ff] text-[10px] uppercase tracking-[0.4em] font-bold"
+                        style={{ '--foreground': '#00d1ff' } as any}
                         trigger={scrambleTrigger}
                       />
                     </div>
@@ -186,10 +193,10 @@ export default function HeroV2() {
 
                   <div className="w-full relative pr-24">
                     <div className="mb-2 flex items-center h-10">
-                      <span className="text-xs md:text-sm font-medium text-[#00e300] uppercase tracking-[0.2em] mr-2">SUA MARCA MAIS</span>
+                      <span className="text-xs md:text-sm font-medium text-[#00d1ff] uppercase tracking-[0.2em] mr-2">SUA MARCA MAIS</span>
                       <TextMorph 
                         words={['VISTA', 'REQUISITADA', 'VELOZ', 'PRESTIGIADA', 'IMPORTANTE', 'RESPEITADA']} 
-                        color="#00e300" 
+                        color="#00d1ff" 
                         className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] font-rajdhani"
                       />
                     </div>
@@ -197,7 +204,7 @@ export default function HeroV2() {
                       <p className="text-white/30 text-[11px] uppercase tracking-[0.3em] font-bold font-rajdhani">
                         ESCALE SEM LIMITES_
                       </p>
-                      <button className="text-[#00e300] font-black uppercase tracking-[0.2em] text-xl hover:text-white transition-colors cursor-pointer mr-4 font-rajdhani underline decoration-[#00e300]/20 underline-offset-8">
+                      <button className="text-[#00d1ff] font-black uppercase tracking-[0.2em] text-xl hover:text-white transition-colors cursor-pointer mr-4 font-rajdhani underline decoration-[#00d1ff]/20 underline-offset-8">
                         EXPLORE_
                       </button>
                     </div>
@@ -208,7 +215,7 @@ export default function HeroV2() {
             {/* Sidebar v2 */}
             <div className="w-24 bg-white hidden md:flex flex-col items-center py-12 relative z-[200]">
               <div className="absolute -left-[1.75rem] top-12 w-[3.5rem] h-[3.5rem] group cursor-pointer z-[210]">
-                <div className="absolute inset-0 border-[2px] border-[#00e300] rounded-none bg-white transition-all group-hover:bg-[#00e300]"></div>
+                <div className="absolute inset-0 border-[2px] border-[#00d1ff] rounded-none bg-white transition-all group-hover:bg-[#00d1ff]"></div>
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 ">
                   <div className="w-6 h-[2px] bg-black group-hover:bg-white transition-colors"></div>
                   <div className="w-6 h-[2px] bg-black group-hover:bg-white transition-colors"></div>
@@ -223,7 +230,7 @@ export default function HeroV2() {
               <nav className="flex flex-col gap-10 items-center w-full font-rajdhani shrink-0">
                 {['INÍCIO', 'SOBRE', 'SERVIÇOS', 'CONTATO'].map((item, index) => (
                   <a key={index} href={item === 'SOBRE' ? '/sobre' : `#${item.toLowerCase()}`} className="group flex items-center justify-center  transition-all">
-                    <span className="text-black/40 group-hover:text-[#00e300] text-[10px] uppercase tracking-[0.4em] font-black transition-colors" style={{ writingMode: 'vertical-rl' }}>{item}</span>
+                    <span className="text-black/40 group-hover:text-[#00d1ff] text-[10px] uppercase tracking-[0.4em] font-black transition-colors" style={{ writingMode: 'vertical-rl' }}>{item}</span>
                   </a>
                 ))}
               </nav>
@@ -249,13 +256,13 @@ export default function HeroV2() {
             }}
           >
             {/* BACKGROUND ANIMATION */}
-            <div className="absolute inset-0 z-0 pointer-events-none opacity-40 mix-blend-screen">
-              <GLSLHills width="100%" height="100%" color="#00e300" />
+            <div className="absolute inset-0 z-0 opacity-40 mix-blend-screen">
+              <TubesBackground />
             </div>
 
             <div className="max-w-6xl mx-auto px-10 text-center relative z-10 space-y-12">
               <div className="space-y-4">
-                <p className={`font-rajdhani text-[10px] uppercase tracking-[0.8em] text-[#00e300]/40 transition-all duration-1000 delay-100 ${isTextVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                <p className={`font-rajdhani text-[10px] uppercase tracking-[0.8em] text-[#00d1ff]/40 transition-all duration-1000 delay-100 ${isTextVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                   MANIFESTO_DIGITAL
                 </p>
                 <div 
@@ -263,12 +270,24 @@ export default function HeroV2() {
                     isTextVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-20 scale-95'
                   }`}
                 >
-                  <div className="text-4xl md:text-5xl lg:text-7xl font-light tracking-tight text-white mb-4 leading-[1.1]">
-                    <TextEffect preset="blur" trigger={isTextVisible}>
-                      Websites de alta performance,
-                    </TextEffect>
+                  <div
+                    className="text-4xl md:text-5xl lg:text-7xl font-light tracking-tight text-white mb-4 leading-[1.1]"
+                    style={{
+                      filter: isTextVisible ? 'blur(0px)' : 'blur(20px)',
+                      opacity: isTextVisible ? 1 : 0,
+                      transition: 'filter 1.2s ease-out, opacity 1s ease-out',
+                    }}
+                  >
+                    Websites de alta performance,
                   </div>
-                  <span className="block text-4xl md:text-6xl lg:text-8xl font-black tracking-tighter text-white uppercase opacity-90 leading-[0.9]">
+                  <span
+                    className="block text-4xl md:text-6xl lg:text-8xl font-black tracking-tighter text-white uppercase opacity-90 leading-[0.9]"
+                    style={{
+                      filter: isTextVisible ? 'blur(0px)' : 'blur(20px)',
+                      opacity: isTextVisible ? 1 : 0,
+                      transition: 'filter 1.2s ease-out, opacity 1s ease-out',
+                    }}
+                  >
                     otimizados para atrair <br/>
                     <span className="text-gradient-custom">clientes</span>
                   </span>
@@ -277,11 +296,12 @@ export default function HeroV2() {
 
               <div className={`mt-10 max-w-3xl mx-auto transition-all duration-1000 delay-300 ease-out transform ${isTextVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                 <p className="font-rajdhani text-2xl md:text-3xl font-light text-white/70 tracking-wide leading-relaxed">
-                  e acelerar os seus <br/>
-                  <span className="font-bold text-white">resultados.</span>
+                  <TextEffect preset="blur" per="word" trigger={isTextVisible}>
+                    e acelerar os seus resultados.
+                  </TextEffect>
                 </p>
                 <div className="pt-12">
-                  <button className="font-rajdhani font-bold text-[#00e300] text-xs tracking-[0.4em] uppercase hover:text-white transition-colors">
+                  <button className="font-rajdhani font-bold text-[#00d1ff] text-xs tracking-[0.4em] uppercase hover:text-white transition-colors">
                     DESCUBRA A ENGENHARIA_ [+]
                   </button>
                 </div>

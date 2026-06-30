@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { TextEffect } from '@/components/ui/text-effect';
 
 export default function Stats() {
   const stats = [
@@ -16,9 +17,15 @@ export default function Stats() {
       
       <div className="container mx-auto relative z-10">
         <div className="flex flex-col items-center mb-20">
-           <h2 className="text-7xl md:text-9xl font-black font-display text-zinc-100 uppercase tracking-tighter text-center">
-             NÓS SOMOS
-           </h2>
+           <motion.h2
+              initial={{ opacity: 0, filter: 'blur(20px)' }}
+              whileInView={{ opacity: 1, filter: 'blur(0px)' }}
+              transition={{ duration: 1.2, ease: 'easeOut' }}
+              viewport={{ once: true }}
+              className="text-7xl md:text-9xl font-black font-display text-zinc-100 uppercase tracking-tighter text-center"
+            >
+              NÓS SOMOS
+            </motion.h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -51,13 +58,13 @@ export default function Stats() {
       
       <div className="mt-32 border-t border-zinc-100 pt-16 grid grid-cols-1 md:grid-cols-2 gap-12 text-black">
         <div className="max-w-md">
-           <p className="text-2xl text-zinc-400 font-display">Um site não deve ser apenas uma vitrine.</p>
-           <p className="text-2xl font-bold font-display mt-2 capitalize">Deve funcionar como uma ferramenta.</p>
+           <TextEffect preset="blur" per="word" as="p" className="text-2xl text-zinc-400 font-display">Um site não deve ser apenas uma vitrine.</TextEffect>
+           <TextEffect preset="blur" per="word" as="p" className="text-2xl font-bold font-display mt-2 capitalize">Deve funcionar como uma ferramenta.</TextEffect>
         </div>
         <div className="flex justify-end items-end gap-12">
-            <p className="text-sm text-zinc-500 font-mono tracking-tight max-w-[300px] text-right">
+            <TextEffect preset="blur" per="word" as="p" className="text-sm text-zinc-500 font-mono tracking-tight max-w-[300px] text-right">
               Cada projeto é estruturado para operar como parte do negócio — combinando experiência, automação e inteligência de dados em um único sistema.
-            </p>
+            </TextEffect>
             <div className="w-[1px] h-24 bg-primary" />
         </div>
       </div>

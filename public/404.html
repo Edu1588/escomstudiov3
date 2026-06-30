@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Não Encontrada — ESCOM STUDIO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #050505;
+            --neon: #2EFF00;
+            --neon-glow: rgba(46, 255, 0, 0.4);
+            --neon-dim: rgba(46, 255, 0, 0.1);
+            --white: #f5f5f5;
+            --gray: #666;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --font-sans: 'Space Grotesk', system-ui, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--black);
+            color: var(--white);
+            font-family: var(--font-sans);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Fundo Animado Brutal */
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: center;
+            z-index: 1;
+        }
+
+        .bg-radial {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(20, 20, 20, 0.5) 0%, var(--black) 80%);
+            z-index: 2;
+        }
+
+        /* Efeito de Noise (Overlays) */
+        .noise {
+            position: absolute;
+            inset: 0;
+            background-image: url('https://futurecraft.agency/wp-content/uploads/2024/08/noise.gif');
+            opacity: 0.03;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* Conteúdo Principal */
+        .container {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            max-width: 600px;
+            padding: 2rem;
+        }
+
+        .error-tag {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--neon);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .error-tag::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: var(--neon);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-glow);
+        }
+
+        /* 404 Estilo Glitch Monumental */
+        .glitch-wrapper {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .error-code {
+            font-size: clamp(6rem, 15vw, 10rem);
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -5px;
+            color: var(--white);
+            position: relative;
+            display: inline-block;
+        }
+
+        .error-code::after {
+            content: '404';
+            position: absolute;
+            left: 2px;
+            text-shadow: -1px 0 #ff00c1;
+            top: 0;
+            color: var(--white);
+            background: var(--black);
+            overflow: hidden;
+            clip: rect(0, 900px, 0, 0); 
+            animation: noise-anim 2s infinite linear alternate-reverse;
+        }
+
+        .error-code::before {
+            content: '404';
+            position: absolute;
+            left: -2px;
+            text-shadow: -1px 0 #00e6ff;
+            top: 0;
+            color: var(--white);
+            background: var(--black);
+            overflow: hidden;
+            clip: rect(0, 900px, 0, 0); 
+            animation: noise-anim-2 3s infinite linear alternate-reverse;
+        }
+
+        @keyframes noise-anim {
+            0% { clip: rect(51px, 9999px, 28px, 0); }
+            5% { clip: rect(70px, 9999px, 105px, 0); }
+            10% { clip: rect(59px, 9999px, 85px, 0); }
+            15% { clip: rect(9px, 9999px, 60px, 0); }
+            20% { clip: rect(98px, 9999px, 26px, 0); }
+            25% { clip: rect(83px, 9999px, 40px, 0); }
+            30% { clip: rect(91px, 9999px, 79px, 0); }
+            35% { clip: rect(4px, 9999px, 11px, 0); }
+            40% { clip: rect(110px, 9999px, 57px, 0); }
+            45% { clip: rect(27px, 9999px, 32px, 0); }
+            50% { clip: rect(45px, 9999px, 114px, 0); }
+            55% { clip: rect(80px, 9999px, 98px, 0); }
+            60% { clip: rect(104px, 9999px, 15px, 0); }
+            65% { clip: rect(13px, 9999px, 63px, 0); }
+            70% { clip: rect(77px, 9999px, 95px, 0); }
+            75% { clip: rect(21px, 9999px, 88px, 0); }
+            80% { clip: rect(54px, 9999px, 111px, 0); }
+            85% { clip: rect(99px, 9999px, 7px, 0); }
+            90% { clip: rect(108px, 9999px, 34px, 0); }
+            95% { clip: rect(3px, 9999px, 49px, 0); }
+            100% { clip: rect(66px, 9999px, 83px, 0); }
+        }
+
+        @keyframes noise-anim-2 {
+            0% { clip: rect(76px, 9999px, 116px, 0); }
+            11% { clip: rect(2px, 9999px, 55px, 0); }
+            22% { clip: rect(88px, 9999px, 92px, 0); }
+            33% { clip: rect(14px, 9999px, 45px, 0); }
+            44% { clip: rect(61px, 9999px, 108px, 0); }
+            55% { clip: rect(32px, 9999px, 73px, 0); }
+            66% { clip: rect(99px, 9999px, 13px, 0); }
+            77% { clip: rect(4px, 9999px, 81px, 0); }
+            88% { clip: rect(110px, 9999px, 6px, 0); }
+            100% { clip: rect(48px, 9999px, 98px, 0); }
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .desc {
+            color: var(--gray);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Botão Premium Brutalista */
+        .btn-home {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--neon);
+            color: var(--black);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 1.2rem 2.5rem;
+            border-radius: 3px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px var(--neon-dim);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-home::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--white);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+            z-index: -1;
+        }
+
+        .btn-home:hover {
+            box-shadow: 0 0 30px var(--neon-glow);
+            transform: scale(1.02);
+            color: var(--black);
+        }
+
+        .btn-home:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* Rodapé de Terminal */
+        .footer-terminal {
+            position: absolute;
+            bottom: 2rem;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: #333;
+            letter-spacing: 1px;
+            z-index: 5;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-radial"></div>
+    <div class="noise"></div>
+
+    <div class="container">
+        <div class="error-tag">SISTEMA_ERROR_404</div>
+        <div class="glitch-wrapper">
+            <h1 class="error-code">404</h1>
+        </div>
+        <h2 class="title">Destino Inexistente</h2>
+        <p class="desc">A arquitetura que você está tentando acessar não existe ou foi movida para uma nova localização segura.</p>
+        <a href="/" class="btn-home">Retornar à Base</a>
+    </div>
+
+    <div class="footer-terminal">
+        ESCOM STUDIO // CORE_SYSTEM_ONLINE
+    </div>
+</body>
+</html>

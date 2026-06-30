@@ -62,7 +62,7 @@ export default function Contratos() {
             <h2 className="text-2xl font-bold uppercase tracking-tight">Gestão de Contratos</h2>
             <p className="text-gray-400 text-sm mt-1">Visualize e gerencie todos os compromissos ativos do estúdio.</p>
           </div>
-          <button className="flex items-center gap-2 bg-[#2EFF00] hover:bg-[#28e600] text-black px-4 py-2 rounded-lg text-sm font-bold transition-colors">
+          <button className="flex items-center gap-2 bg-[#00d1ff] hover:bg-[#00b8e6] text-black px-4 py-2 rounded-lg text-sm font-bold transition-colors">
             <Plus size={16} />
             NOVO CONTRATO
           </button>
@@ -75,7 +75,7 @@ export default function Contratos() {
               <input 
                 type="text" 
                 placeholder="Buscar por cliente ou empresa..." 
-                className="w-full bg-[#111] border border-[#333] rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#2EFF00] transition-colors"
+                className="w-full bg-[#111] border border-[#333] rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00d1ff] transition-colors"
               />
             </div>
             
@@ -111,7 +111,7 @@ export default function Contratos() {
                     <div className="font-bold">{c.company}</div>
                     <div className="text-xs text-gray-500">{c.clientName}</div>
                   </td>
-                  <td className="px-6 py-4 font-mono text-[#2EFF00]">
+                  <td className="px-6 py-4 font-mono text-[#00d1ff]">
                     {c.budget?.includes('R$') ? c.budget : `R$ ${c.budget}`}
                   </td>
                   <td className="px-6 py-4 text-gray-400">
@@ -119,7 +119,7 @@ export default function Contratos() {
                   </td>
                   <td className="px-6 py-4 text-center">
                     <span className={`px-2 py-1 rounded text-[10px] font-bold ${
-                      c.status === 'ATIVO' ? 'bg-[#2EFF00]/10 text-[#2EFF00]' :
+                      c.status === 'ATIVO' ? 'bg-[#00d1ff]/10 text-[#00d1ff]' :
                       c.status === 'FINALIZADO' ? 'bg-blue-500/10 text-blue-500' :
                       'bg-red-500/10 text-red-500'
                     }`}>
@@ -134,7 +134,7 @@ export default function Contratos() {
                          </button>
                        )}
                        {c.status !== 'FINALIZADO' && (
-                         <button onClick={() => updateStatus(c.id, 'FINALIZADO')} title="Marcar como Finalizado" className="p-1.5 hover:bg-[#333] rounded text-gray-400 hover:text-[#2EFF00] transition-colors">
+                         <button onClick={() => updateStatus(c.id, 'FINALIZADO')} title="Marcar como Finalizado" className="p-1.5 hover:bg-[#333] rounded text-gray-400 hover:text-[#00d1ff] transition-colors">
                            <CheckCircle size={16} />
                          </button>
                        )}

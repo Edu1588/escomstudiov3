@@ -129,7 +129,7 @@ export default function Servicos() {
                 <RotateCcw size={16} />
                 Restaurar Padrões
               </button>
-              <button onClick={() => { setEditingService({ id: 0, name: "", price: "", active: true, description: "" }); handleNewService(); }} className="flex items-center gap-2 bg-[#2EFF00] hover:bg-[#28e600] text-black px-4 py-2 rounded-lg text-sm font-bold transition-colors">
+              <button onClick={() => { setEditingService({ id: 0, name: "", price: "", active: true, description: "" }); handleNewService(); }} className="flex items-center gap-2 bg-[#00d1ff] hover:bg-[#00b8e6] text-black px-4 py-2 rounded-lg text-sm font-bold transition-colors">
                 <Plus size={16} />
                 Novo Serviço
               </button>
@@ -145,7 +145,7 @@ export default function Servicos() {
                 <div className="flex items-center gap-4">
                   <div 
                     onClick={() => toggleStatus(service.id)}
-                    className={`w-12 h-6 rounded-full cursor-pointer relative transition-colors ${service.active ? 'bg-[#2EFF00]' : 'bg-[#333]'}`}
+                    className={`w-12 h-6 rounded-full cursor-pointer relative transition-colors ${service.active ? 'bg-[#00d1ff]' : 'bg-[#333]'}`}
                   >
                     <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${service.active ? 'translate-x-6' : 'translate-x-0'}`}></div>
                   </div>
@@ -201,7 +201,7 @@ export default function Servicos() {
                   type="text" 
                   value={editingService.name}
                   onChange={(e) => setEditingService({...editingService, name: e.target.value})}
-                  className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white outline-none focus:border-[#2EFF00] transition-colors"
+                  className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white outline-none focus:border-[#00d1ff] transition-colors"
                   placeholder="Ex: Landing Page"
                 />
               </div>
@@ -211,7 +211,7 @@ export default function Servicos() {
                 <textarea 
                   value={editingService.description || ""}
                   onChange={(e) => setEditingService({...editingService, description: e.target.value})}
-                  className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white outline-none focus:border-[#2EFF00] transition-colors min-h-[80px]"
+                  className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white outline-none focus:border-[#00d1ff] transition-colors min-h-[80px]"
                   placeholder="Ex: Página com foco em conversão"
                 />
               </div>
@@ -222,7 +222,7 @@ export default function Servicos() {
                   type="text" 
                   value={editingService.price}
                   onChange={(e) => setEditingService({...editingService, price: e.target.value})}
-                  className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white outline-none focus:border-[#2EFF00] transition-colors"
+                  className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white outline-none focus:border-[#00d1ff] transition-colors"
                   placeholder="Ex: 2.500"
                 />
               </div>
@@ -231,7 +231,7 @@ export default function Servicos() {
                 <span className="text-sm">Status Ativo</span>
                 <div 
                   onClick={() => setEditingService({...editingService, active: !editingService.active})}
-                  className={`w-12 h-6 rounded-full cursor-pointer relative transition-colors ${editingService.active ? 'bg-[#2EFF00]' : 'bg-[#333]'}`}
+                  className={`w-12 h-6 rounded-full cursor-pointer relative transition-colors ${editingService.active ? 'bg-[#00d1ff]' : 'bg-[#333]'}`}
                 >
                   <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${editingService.active ? 'translate-x-6' : 'translate-x-0'}`}></div>
                 </div>
@@ -248,7 +248,7 @@ export default function Servicos() {
               <button 
                 onClick={handleSaveService}
                 disabled={!editingService.name || !editingService.price}
-                className="px-4 py-2 text-sm font-bold bg-[#2EFF00] text-black rounded-lg hover:bg-[#28e600] disabled:opacity-50 transition-colors"
+                className="px-4 py-2 text-sm font-bold bg-[#00d1ff] text-black rounded-lg hover:bg-[#00b8e6] disabled:opacity-50 transition-colors"
               >
                 Salvar
               </button>

@@ -1,0 +1,27 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/:slug(proposta-escom-[a-zA-Z0-9-]+)", "destination": "/baseproposta" },
+    { "source": "/template-silva-autocenter/silva-autocenter.pdf", "destination": "/template-silva-autocenter/dossie" },
+    { "source": "/api/:path*", "destination": "/api" },
+    { "source": "/admin/(.*)", "destination": "/admin" },
+    { "source": "/sobre", "destination": "/sobre/index.html" },
+    { "source": "/portfolioedu", "destination": "/portfolioedu/index.html" },
+    { "source": "/portfolio-projetos", "destination": "/portfolio-projetos/index.html" },
+    { "source": "/piassa(.*)", "destination": "/piassa/index.html" }
+  ],
+  "crons": [
+    {
+      "path": "/api/trigger-minera",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/piassa-cron",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/trigger-cron",
+      "schedule": "0 8 * * *"
+    }
+  ]
+}

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clínica Odontológica Restauração | Excelência e Tecnologia</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "on-background": "#151c27",
+                        "tertiary-fixed": "#dee4e1",
+                        "secondary": "#5c5f60",
+                        "inverse-on-surface": "#ebf1ff",
+                        "surface-variant": "#dce2f3",
+                        "background": "#f9f9ff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-container": "#e1e3e4",
+                        "primary-container": "#2bb673",
+                        "secondary-fixed": "#e1e3e4",
+                        "on-secondary-fixed": "#191c1d",
+                        "surface-container": "#e7eefe",
+                        "on-tertiary-fixed": "#171d1b",
+                        "tertiary": "#5a605d",
+                        "surface-container-high": "#e2e8f8",
+                        "on-tertiary-container": "#323836",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#5cde97",
+                        "error": "#ba1a1a",
+                        "outline": "#6d7a6f",
+                        "surface-tint": "#006d40",
+                        "surface-container-lowest": "#ffffff",
+                        "primary": "#006d40",
+                        "on-primary-fixed-variant": "#00522f",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#dce2f3",
+                        "surface": "#f9f9ff",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#004024",
+                        "inverse-surface": "#2a313d",
+                        "on-secondary-fixed-variant": "#444748",
+                        "tertiary-container": "#9ca19f",
+                        "surface-dim": "#d3daea",
+                        "surface-bright": "#f9f9ff",
+                        "inverse-primary": "#5cde97",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#151c27",
+                        "primary-fixed": "#7afbb1",
+                        "secondary-fixed-dim": "#c5c7c8",
+                        "on-primary-fixed": "#002110",
+                        "tertiary-fixed-dim": "#c2c8c5",
+                        "on-tertiary-fixed-variant": "#424846",
+                        "on-surface-variant": "#3d4a40",
+                        "surface-container-low": "#f0f3ff",
+                        "on-secondary-container": "#626566",
+                        "outline-variant": "#bccabd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "container-max": "1280px",
+                        "margin-desktop": "48px",
+                        "section-gap": "120px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Playfair Display"],
+                        "headline-lg-mobile": ["Playfair Display"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "display-lg": ["Playfair Display"],
+                        "headline-lg": ["Playfair Display"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "display-lg": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["48px", {"lineHeight": "56px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .luxury-shadow {
+            box-shadow: 0px 20px 40px rgba(0,0,0,0.04);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #006d40 0%, #2bb673 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #2bb673;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- Header / TopNavBar -->
+<header class="w-full top-0 sticky z-50 bg-surface/80 backdrop-blur-md shadow-sm">
+<nav class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto py-6">
+<div class="flex items-center gap-3">
+<img alt="Logo Restauracao" class="h-10 w-auto" src="BASE64_IMAGE_REMOVED"/>
+<span class="font-headline-md text-headline-md font-semibold text-on-background">Restauração</span>
+</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="font-label-md text-label-md text-primary border-b-2 border-primary pb-1 transition-colors duration-300" href="#">Especialidades</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Clínica</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Resultados</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Contato</a>
+</div>
+<button class="bg-primary-container text-on-primary-container font-label-md text-label-md px-6 py-3 rounded-sm hover:opacity-80 transition-all duration-200">
+                Agendar Consulta
+            </button>
+</nav>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative min-h-[85vh] flex items-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<div class="absolute inset-0 bg-gradient-to-r from-surface via-surface/80 to-transparent z-10"></div>
+<img class="w-full h-full object-cover" data-alt="A wide-angle, high-end interior of a contemporary dental clinic featuring soft mint green cabinetry and minimalist white medical equipment. Bright daylight streams through floor-to-ceiling windows, illuminating the pristine marble flooring and architectural wood accents. The atmosphere is serene and ultra-modern, embodying professional luxury and clinical precision with a light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAclWJMcfwIQ6abGw0yiD4gWWDc2sHfJJQlkawVyaYG7sxou9PGwmoB4-jVERykuBgIIKPAbII8Tq8NISHLqqP6jV3ZfqFR4JWEK6y7f9hWhRux9wnqz9pyw6p9HuNSHoiARn2A8RhWWg952Vq516ihwaX7E2Pwl9Ok6JLloDkaIl7Vr1WIGC7IsV8WfNy5RuiR3BXqimySaNuIANFNS_lkNuBF-A8-nn6SvBygipdnyglSOKYCWy0g34Y0R7IWDdQ_OtrTF0kaQj-4"/>
+</div>
+<div class="relative z-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full">
+<div class="max-w-2xl">
+<span class="font-label-md text-label-md text-primary tracking-widest uppercase mb-4 block">Bem-vindo à Nova Era da Odontologia</span>
+<h1 class="font-display-lg text-display-lg mb-6 leading-tight">
+                        Transforme seu Sorriso com <span class="text-gradient">Excelência</span> e Tecnologia
+                    </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-lg">
+                        Especialistas em implantes e estética dental em um ambiente de luxo projetado para o seu conforto absoluto e resultados extraordinários.
+                    </p>
+<div class="flex flex-col sm:flex-row gap-4">
+<button class="bg-primary-container text-on-primary-container font-label-md text-label-md px-10 py-5 rounded-sm hover:opacity-90 transition-all shadow-lg hover:shadow-primary/20">
+                            Agendar Consulta
+                        </button>
+<button class="border border-outline text-on-background font-label-md text-label-md px-10 py-5 rounded-sm hover:bg-surface-container transition-all">
+                            Nossos Procedimentos
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Services Section (Bento Grid) -->
+<section class="py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg mb-4">Nossas Especialidades</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto">
+                    Combinamos arte e ciência para proporcionar o cuidado odontológico mais sofisticado do mercado.
+                </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 h-auto md:h-[600px]">
+<!-- Service 1: Implantes (Large) -->
+<div class="md:col-span-7 bg-surface-container-lowest border border-outline-variant p-10 flex flex-col justify-between group hover:border-primary transition-colors cursor-pointer luxury-shadow">
+<div>
+<span class="material-symbols-outlined text-primary text-5xl mb-6">precision_manufacturing</span>
+<h3 class="font-headline-md text-headline-md mb-4">Implantes Dentários</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">Tecnologia guiada por computador para reposição de dentes com naturalidade e segurança incomparáveis.</p>
+</div>
+<div class="flex items-center gap-2 text-primary font-label-md mt-6 group-hover:gap-4 transition-all">
+                        SAIBA MAIS <span class="material-symbols-outlined">arrow_forward</span>
+</div>
+</div>
+<!-- Service 2: Estética -->
+<div class="md:col-span-5 bg-tertiary-container/10 border border-outline-variant p-10 flex flex-col justify-between hover:border-primary transition-colors cursor-pointer luxury-shadow">
+<div>
+<span class="material-symbols-outlined text-primary text-5xl mb-6">face</span>
+<h3 class="font-headline-md text-headline-md mb-4">Estética Dental</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Lentes de contato e clareamento a laser para o sorriso perfeito.</p>
+</div>
+<div class="flex items-center gap-2 text-primary font-label-md mt-6">
+                        DETALHES <span class="material-symbols-outlined">arrow_forward</span>
+</div>
+</div>
+<!-- Service 3: Ortodontia -->
+<div class="md:col-span-5 bg-surface-container p-10 border border-outline-variant flex flex-col justify-between hover:border-primary transition-colors cursor-pointer luxury-shadow">
+<div>
+<span class="material-symbols-outlined text-primary text-5xl mb-6">align_horizontal_center</span>
+<h3 class="font-headline-md text-headline-md mb-4">Ortodontia</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Alinhadores invisíveis e ortodontia de alta performance para todas as idades.</p>
+</div>
+<div class="flex items-center gap-2 text-primary font-label-md mt-6">
+                        VER MAIS <span class="material-symbols-outlined">arrow_forward</span>
+</div>
+</div>
+<!-- Service 4: Prevenção -->
+<div class="md:col-span-7 bg-white p-10 border border-outline-variant flex flex-col justify-between hover:border-primary transition-colors cursor-pointer luxury-shadow">
+<div class="flex flex-col md:flex-row md:items-center gap-10">
+<div class="flex-1">
+<span class="material-symbols-outlined text-primary text-5xl mb-6">verified_user</span>
+<h3 class="font-headline-md text-headline-md mb-4">Prevenção</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Check-up digital e limpeza profunda para manter sua saúde bucal em dia.</p>
+</div>
+<div class="w-full md:w-48 h-32 bg-primary/5 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-6xl opacity-20">spa</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- About Us Section -->
+<section class="bg-surface-container-low py-section-gap">
+<div class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto flex flex-col md:flex-row gap-16 items-center">
+<div class="w-full md:w-1/2 relative">
+<div class="absolute -top-6 -left-6 w-32 h-32 bg-primary-fixed-dim/20 -z-10 rounded-sm"></div>
+<img class="w-full h-[600px] object-cover luxury-shadow rounded-sm" data-alt="A professional portrait of a confident male dentist in a crisp white clinical coat, smiling warmly. He is standing in a luxurious, wood-paneled dental office with high-end marble surfaces and modern medical equipment blurred in the background. The lighting is bright and natural, coming from large windows, creating an atmosphere of trust, competence, and premium patient care." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0GpeDSrQpCeF673pgD9txJl-_lIrNSdNYQdErNQ5K9N-f5G68vQnTS5fwGRYdQW5IHWNvnEeB7-FhHQkD9KV8FbHkmlqLmvm_1lXLH27OTkkSX94Rll4-7LzKxczT7IysVFZsdhsh7GmR4RA-M1TeJ1pQYZ1YP7A-GxfYq2KVTNisMy2AVS7G9ErhQQh4fW74DmwEyzYFvhmSsjGr1pz4B-YnJY1Bx1YyBpCMqhye_zBaCCSsBrXvh4Z3yrJS0RtsZTDpcNN_qKTs"/>
+<div class="absolute -bottom-10 -right-10 bg-white p-8 luxury-shadow hidden lg:block">
+<p class="font-headline-md text-primary mb-1">15+</p>
+<p class="font-label-md text-on-surface-variant">Anos de Experiência</p>
+</div>
+</div>
+<div class="w-full md:w-1/2">
+<span class="font-label-md text-label-md text-primary tracking-widest uppercase mb-4 block">Sobre a Clínica</span>
+<h2 class="font-headline-lg text-headline-lg mb-8">Nossa Missão é Restaurar sua Confiança</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-6">
+                        Na Clínica Restauração, acreditamos que um sorriso saudável é a base para uma vida plena. Nossa abordagem une tecnologia de ponta com um atendimento humanizado e exclusivo.
+                    </p>
+<p class="font-body-md text-body-md text-on-surface-variant mb-10">
+                        Cada detalhe de nossa infraestrutura foi projetado para oferecer uma experiência de hospitalidade, fugindo do ambiente clínico tradicional para um espaço de bem-estar e relaxamento.
+                    </p>
+<ul class="space-y-4 mb-12">
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">check_circle</span>
+<span class="font-body-md">Equipe de especialistas renomados</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">check_circle</span>
+<span class="font-body-md">Tecnologia 3D de diagnóstico por imagem</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">check_circle</span>
+<span class="font-body-md">Protocolos de biossegurança internacionais</span>
+</li>
+</ul>
+<button class="text-primary font-bold flex items-center gap-2 hover:underline">
+                        CONHEÇA NOSSA EQUIPE <span class="material-symbols-outlined">trending_flat</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Testimonials Section -->
+<section class="py-section-gap overflow-hidden">
+<div class="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="flex justify-between items-end mb-16">
+<div>
+<h2 class="font-headline-lg text-headline-lg mb-4">Experiência dos Pacientes</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">Histórias reais de transformação e cuidado excepcional.</p>
+</div>
+<div class="hidden md:flex gap-4">
+<button class="p-4 border border-outline rounded-full hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="p-4 border border-outline rounded-full hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="flex gap-8 overflow-x-auto pb-12 custom-scrollbar snap-x">
+<!-- Testimonial 1 -->
+<div class="min-w-[320px] md:min-w-[400px] bg-white p-10 luxury-shadow border border-outline-variant snap-start">
+<div class="flex gap-1 text-primary-container mb-6">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body-lg italic mb-10">"A experiência na Restauração superou todas as minhas expectativas. O atendimento é impecável e o resultado do meu clareamento ficou incrível e natural."</p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-variant"></div>
+<div>
+<p class="font-label-md">Mariana Silva</p>
+<p class="text-xs text-on-surface-variant uppercase tracking-wider">Paciente de Estética</p>
+</div>
+</div>
+</div>
+<!-- Testimonial 2 -->
+<div class="min-w-[320px] md:min-w-[400px] bg-primary/5 p-10 luxury-shadow border border-primary/20 snap-start">
+<div class="flex gap-1 text-primary-container mb-6">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body-lg italic mb-10">"Nunca imaginei que ir ao dentista pudesse ser tão relaxante. Fiz um implante completo e não senti nenhuma dor durante o processo. Recomendo muito!"</p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-variant"></div>
+<div>
+<p class="font-label-md">Ricardo Almeida</p>
+<p class="text-xs text-on-surface-variant uppercase tracking-wider">Paciente de Implantes</p>
+</div>
+</div>
+</div>
+<!-- Testimonial 3 -->
+<div class="min-w-[320px] md:min-w-[400px] bg-white p-10 luxury-shadow border border-outline-variant snap-start">
+<div class="flex gap-1 text-primary-container mb-6">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body-lg italic mb-10">"O cuidado com o paciente é o diferencial. Todo o planejamento digital me deixou muito segura sobre o resultado da minha ortodontia."</p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-variant"></div>
+<div>
+<p class="font-label-md">Juliana Ferreira</p>
+<p class="text-xs text-on-surface-variant uppercase tracking-wider">Paciente de Invisalign</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Contact Section -->
+<section class="py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto" id="contato">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+<div>
+<h2 class="font-headline-lg text-headline-lg mb-8">Agende sua Avaliação</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-12">Deixe seus dados e entraremos em contato para encontrar o melhor horário para você.</p>
+<form class="space-y-6">
+<div>
+<label class="font-label-md text-label-md block mb-2">Nome Completo</label>
+<input class="w-full bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary transition-all py-3" placeholder="Seu nome" type="text"/>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<label class="font-label-md text-label-md block mb-2">Telefone</label>
+<input class="w-full bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary transition-all py-3" placeholder="(11) 99999-9999" type="tel"/>
+</div>
+<div>
+<label class="font-label-md text-label-md block mb-2">Serviço de Interesse</label>
+<select class="w-full bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary transition-all py-3">
+<option>Implantes</option>
+<option>Estética</option>
+<option>Ortodontia</option>
+<option>Prevenção</option>
+</select>
+</div>
+</div>
+<button class="w-full bg-primary text-white font-label-md py-5 rounded-sm hover:opacity-90 transition-all mt-4">
+                            SOLICITAR CONTATO
+                        </button>
+</form>
+</div>
+<div class="flex flex-col gap-10">
+<div class="h-[400px] bg-surface-container rounded-sm overflow-hidden relative">
+<img class="w-full h-full object-cover" data-alt="A stylized, minimalist overhead map of a high-end metropolitan neighborhood, rendered in a sophisticated palette of soft grays, whites, and highlights of mint green. The map features clean lines, elegant typography for street names, and a prominent marker indicating the location of the dental clinic. The overall aesthetic is editorial and luxury-focused, matching the brand identity of Clinica Restauracao." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmiq6Mn9ZpASL5MgFG2KppXqU0pqj8JCltVSs5VESTuf2SzaULXygr36dLguCEAy1GBbDQmu0lo6Bv2noOrDQ0VKav76utA3jIVN6a3j5Qtle6MSMqYZgym1HAvc0q00UnDRo5zN6yUjo43pCEd6mLmg5_GOicTpCUiwoebrKemMFnKDVAyhuWg0z0c4cCB2a3qM9WsKKOZWYod5GSNCoMjqBYzWuXC-TkG22VYFGToMJoRrqVB8h7ETj0wv4RSEoFpLV1Jhf11xMQ"/>
+<div class="absolute bottom-6 left-6 bg-white p-6 luxury-shadow">
+<p class="font-label-md text-primary mb-2">Localização</p>
+<p class="font-body-md">Av. Faria Lima, 4500</p>
+<p class="font-body-md text-on-surface-variant">São Paulo, SP</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div>
+<p class="font-label-md text-primary mb-2">Telefone</p>
+<p class="font-body-md">+55 (11) 3456-7890</p>
+</div>
+<div>
+<p class="font-label-md text-primary mb-2">E-mail</p>
+<p class="font-body-md">contato@restauracao.com</p>
+</div>
+<div>
+<p class="font-label-md text-primary mb-2">Horário</p>
+<p class="font-body-md">Seg - Sex: 08h às 20h</p>
+<p class="font-body-md">Sáb: 09h às 14h</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low border-t border-outline-variant">
+<div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto py-12">
+<div class="flex flex-col items-center md:items-start gap-4 mb-8 md:mb-0">
+<div class="flex items-center gap-3">
+<img alt="Logo Restauracao" class="h-8 w-auto" src="BASE64_IMAGE_REMOVED"/>
+<span class="font-headline-md text-headline-md font-semibold text-primary">Restauração</span>
+</div>
+<p class="font-body-md text-on-surface-variant max-w-xs text-center md:text-left">Excelência em odontologia moderna e estética para pacientes exigentes.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8 md:gap-12 mb-8 md:mb-0">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-all" href="#">Polética de Privacidade</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-all" href="#">Termos de Uso</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-all" href="#">Blog</a>
+</div>
+<div class="flex gap-4">
+<a class="w-10 h-10 flex items-center justify-center rounded-full border border-outline hover:bg-primary hover:border-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</a>
+<a class="w-10 h-10 flex items-center justify-center rounded-full border border-outline hover:bg-primary hover:border-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+</a>
+</div>
+</div>
+<div class="w-full py-6 border-t border-outline-variant/30 text-center">
+<p class="font-label-md text-[12px] text-on-surface-variant/60">© 2024 Clínica Odontológica Restauração. Todos os direitos reservados.</p>
+</div>
+</footer>
+<!-- FAB for quick contact (Suppressed based on prompt context, but common in high-conv landing pages - keeping for conversion logic as per task but following suppression rules if it were a sub-page) -->
+<div class="fixed bottom-8 right-8 z-50">
+<button class="bg-primary-container text-on-primary-container w-16 h-16 rounded-full luxury-shadow flex items-center justify-center hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">chat_bubble</span>
+</button>
+</div>
+</body></html>

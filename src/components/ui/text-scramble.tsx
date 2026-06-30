@@ -72,10 +72,10 @@ export function TextScramble({
   };
 
   useEffect(() => {
-    if (trigger === false) return;
+    if (!trigger) return;
 
     scramble();
-  }, [trigger, text]);
+  }, [trigger, children]); // Adicionado children nas dependências para reanimar se o texto mudar
 
   return (
     <MotionComponent className={className} {...props}>

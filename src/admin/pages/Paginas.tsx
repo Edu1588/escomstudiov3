@@ -20,7 +20,7 @@ export default function Paginas() {
         <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-6">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-xl font-bold">Gestão de Páginas</h2>
-            <button className="flex items-center gap-2 bg-[#2EFF00] hover:bg-[#28e600] text-black px-4 py-2 rounded-lg text-sm font-bold transition-colors">
+            <button className="flex items-center gap-2 bg-[#00d1ff] hover:bg-[#00b8e6] text-black px-4 py-2 rounded-lg text-sm font-bold transition-colors">
               <Plus size={16} />
               Criar Nova Página
             </button>
@@ -34,7 +34,7 @@ export default function Paginas() {
                     <LayoutTemplate size={18} />
                   </div>
                   {pagina.status === "ATIVO" && (
-                     <span className="bg-[#2EFF00]/10 text-[#2EFF00] text-[10px] font-bold px-2 py-1 rounded">ATIVO</span>
+                     <span className="bg-[#00d1ff]/10 text-[#00d1ff] text-[10px] font-bold px-2 py-1 rounded">ATIVO</span>
                   )}
                 </div>
                 
@@ -47,8 +47,8 @@ export default function Paginas() {
                     <div className="text-xl font-bold">{pagina.acessos}</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[10px] text-[#2EFF00] font-mono mb-1">LEADS</div>
-                    <div className="text-xl font-bold text-[#2EFF00]">{pagina.leads}</div>
+                    <div className="text-[10px] text-[#00d1ff] font-mono mb-1">LEADS</div>
+                    <div className="text-xl font-bold text-[#00d1ff]">{pagina.leads}</div>
                   </div>
                 </div>
 

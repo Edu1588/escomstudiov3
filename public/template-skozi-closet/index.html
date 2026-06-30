@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Skoziê Closet de Moda Feminina - Moda Premium em Goiânia</title>
+
+<!-- Google Fonts: Playfair Display e Plus Jakarta Sans -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        brand: { primary: '#E91E63', dark: '#b80049', accent: '#D4AF37', surface: '#faf9f9' },
+        on: { surface: '#1b1c1c', secondary: '#5e5e5c' }
+      },
+      fontFamily: { 
+        title: ['Playfair Display', 'serif'], 
+        sans: ['Plus Jakarta Sans', 'sans-serif'] 
+      }
+    }
+  }
+}
+</script>
+<style>
+:root { --primary: #E91E63; --primary-rgb: 233,30,99; --accent: #D4AF37; }
+html { scroll-behavior: smooth; }
+* { font-family: 'Plus Jakarta Sans', sans-serif; }
+h1,h2,h3,h4,h5,h6, .font-title { font-family: 'Playfair Display', serif !important; }
+body { background: #faf9f9; color: #1b1c1c; overflow-x: hidden; margin: 0; }
+
+/* Ajuste da Navbar do ESCOM Studio */
+#navbar { 
+  height: 80px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+}
+#navbar.scrolled { 
+  background: rgba(250, 249, 249, 0.95); 
+  box-shadow: 0 4px 30px rgba(0,0,0,0.03); 
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.hero-wrap { padding-top: 120px; }
+
+#three-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+#scroll-progress { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: linear-gradient(90deg,#E91E63,#D4AF37); z-index: 99999; transition: width .1s linear; }
+.reveal { opacity: 0; transform: translateY(40px); transition: all .8s cubic-bezier(.16,1,.3,1); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* Botão Shimmer Metálico */
+.btn-shimmer { position: relative; overflow: hidden; background: linear-gradient(135deg,#E91E63,#b80049); border: none; color: #fff; font-weight: 700; padding: 14px 32px; border-radius: 12px; cursor: pointer; transition: transform .3s, box-shadow .3s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+.btn-shimmer::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg,transparent 40%,rgba(255,255,255,.25) 50%,transparent 60%); animation: shimmer 3s ease-in-out infinite; }
+@keyframes shimmer { 0% { transform: translateX(-100%) rotate(25deg); } 100% { transform: translateX(100%) rotate(25deg); } }
+.btn-shimmer:hover { transform: scale(1.05); box-shadow: 0 12px 40px rgba(233,30,99,.3); }
+
+/* WhatsApp Flutuante com Efeito Pulse */
+.whatsapp-float { position: fixed; bottom: 24px; right: 24px; z-index: 9998; width: 60px; height: 60px; border-radius: 50%; background: #25D366; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 32px; box-shadow: 0 8px 30px rgba(37,211,102,.4); transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; text-decoration: none; animation: pulse-wpp 2s infinite; }
+.whatsapp-float:hover { transform: scale(1.1) rotate(5deg); background: #22c55e; }
+@keyframes pulse-wpp {
+  0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+  70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+
+/* Botão Voltar ao Topo Flutuante */
+.back-to-top { position: fixed; bottom: 96px; right: 29px; z-index: 9998; width: 50px; height: 50px; border-radius: 50%; background: #1b1c1c; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 4px 20px rgba(0,0,0,.15); border: 1px solid rgba(0,0,0,.05); transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; text-decoration: none; opacity: 0; pointer-events: none; transform: scale(0.8); }
+.back-to-top.visible { opacity: 1; pointer-events: auto; transform: scale(1); }
+.back-to-top:hover { transform: scale(1.1) translateY(-3px); background: #E91E63; box-shadow: 0 8px 25px rgba(233,30,99,.3); color: #fff; }
+
+/* Cards Flutuantes de Categoria e Depoimentos */
+.product-card { position: relative; overflow: hidden; border-radius: 16px; cursor: pointer; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+.product-card:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+.product-card img { transition: transform .6s cubic-bezier(.16,1,.3,1); width: 100%; height: 100%; object-fit: cover; }
+.product-card:hover img { transform: scale(1.05); }
+.product-overlay { position: absolute; inset: 0; background: linear-gradient(to top,rgba(0,0,0,.5) 0%,transparent 60%); display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; color: #fff; }
+
+.testimonial-card-hover { transition: transform 0.4s ease, box-shadow 0.4s ease; }
+.testimonial-card-hover:hover { transform: translateY(-6px); box-shadow: 0 15px 35px rgba(0,0,0,0.08); }
+
+        /* PDF Shimmer Button Animation */
+        .btn-pdf-shimmer {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: pulse-glow-green 2s infinite alternate;
+        }
+        .btn-pdf-shimmer:active {
+            animation: click-effect-green 0.2s forwards;
+            transform: scale(0.95);
+        }
+        .btn-pdf-shimmer::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 30%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.35) 30%,
+                rgba(255, 255, 255, 0.45) 50%,
+                rgba(255, 255, 255, 0.35) 70%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shimmer-btn 4.5s infinite ease-in-out;
+        }
+        @keyframes shimmer-btn {
+            0% { left: -60%; }
+            25% { left: 140%; }
+            100% { left: 140%; }
+        }
+        @keyframes pulse-glow-green {
+            0% { box-shadow: 0 0 5px rgba(2, 197, 186, 0.2); border-color: rgba(63, 63, 70, 0.5); }
+            100% { box-shadow: 0 0 25px rgba(2, 197, 186, 0.8); border-color: rgba(2, 197, 186, 0.9); }
+        }
+        @keyframes click-effect-green {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.92); box-shadow: inset 0 0 25px rgba(2, 197, 186, 0.9); }
+            100% { transform: scale(0.95); box-shadow: inset 0 0 10px rgba(2, 197, 186, 0.5); }
+        }
+</style>
+<script>
+let threeScene, threeCamera, threeRenderer, threeMesh;
+function initThree() {
+  try {
+    threeScene = new THREE.Scene();
+    threeCamera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    threeRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    threeRenderer.setSize(window.innerWidth, window.innerHeight);
+    threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    document.getElementById('three-bg').appendChild(threeRenderer.domElement);
+    const geometry = new THREE.IcosahedronGeometry(1.2, 0);
+    const material = new THREE.MeshBasicMaterial({ color: 0xE91E63, wireframe: true, transparent: true, opacity: 0.05 });
+    threeMesh = new THREE.Mesh(geometry, material);
+    threeScene.add(threeMesh);
+    threeCamera.position.z = 3.5;
+    animateThree();
+  } catch(e) { console.log('[3D] Skipped:', e.message); }
+}
+function animateThree() {
+  requestAnimationFrame(animateThree);
+  if (threeMesh) { threeMesh.rotation.x += 0.002; threeMesh.rotation.y += 0.004; }
+  if (threeRenderer) threeRenderer.render(threeScene, threeCamera);
+}
+function initGSAP() {
+  if (typeof gsap === 'undefined') { useObserver(); return; }
+  gsap.registerPlugin(ScrollTrigger);
+  document.querySelectorAll('.reveal').forEach(el => {
+    gsap.fromTo(el, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: .8, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' } });
+  });
+}
+function useObserver() {
+  const obs = new IntersectionObserver((entries) => { entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(s => obs.observe(s));
+}
+function initScrollProgress() {
+  const bar = document.getElementById('scroll-progress');
+  if (!bar) return;
+  window.addEventListener('scroll', () => { const h = document.documentElement.scrollHeight - window.innerHeight; bar.style.width = (window.scrollY / h * 100) + '%'; });
+}
+document.addEventListener('click', (e) => { const a = e.target.closest('a[href^="#"]'); if (a) { e.preventDefault(); const t = document.querySelector(a.getAttribute('href')); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
+document.addEventListener('DOMContentLoaded', () => { initThree(); initGSAP(); initScrollProgress(); });
+window.addEventListener('scroll', () => { const nav = document.getElementById('navbar'); if (nav) { window.scrollY > 50 ? nav.classList.add('scrolled') : nav.classList.remove('scrolled'); } });
+</script>
+</head>
+<body class="bg-[#faf9f9] text-[#1b1c1c] font-sans antialiased">
+
+<!-- BANNER DE URGÊNCIA (PROPOSTA COMERCIAL) -->
+<div id="banner-urgencia" class="fixed top-0 left-0 w-full min-h-[40px] py-2 bg-[#E91E63] text-white text-center flex items-center justify-center px-4 text-[10px] sm:text-xs md:text-sm font-bold shadow-md z-[100] animate-pulse transition-all">
+    Proposta de implementação técnica disponível para aprovação de Skoziê Closet de Moda Feminina. Válida por 3 dias.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="three-bg"></div>
+<div id="scroll-progress"></div>
+
+<!-- Navbar Flutuante Ajustada com Fundo e Contraste Permanente -->
+<nav id="navbar" class="fixed w-full z-50 transition-all duration-300  bg-[#faf9f9f2] backdrop-blur-xl border-b border-[#000]/5 shadow-sm top-10">
+  <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between w-full">
+    <a href="#" class="text-2xl md:text-3xl font-title font-bold text-[#E91E63] no-underline">Skoziê</a>
+    <div class="hidden md:flex items-center gap-8 text-sm font-medium">
+      <a href="#categorias" class="text-[#5e5e5c] hover:text-[#E91E63] transition-colors no-underline">Categorias</a>
+      <a href="#sobre" class="text-[#5e5e5c] hover:text-[#E91E63] transition-colors no-underline">Sobre</a>
+      <a href="#faq" class="text-[#5e5e5c] hover:text-[#E91E63] transition-colors no-underline">FAQ</a>
+      <a href="#proposta-comercial" class="text-[#5e5e5c] hover:text-[#E91E63] transition-colors no-underline">Proposta</a>
+    </div>
+    <a href="https://wa.me/5562983232480" target="_blank" class="bg-emerald-500 hover:bg-emerald-600 text-white font-sans font-semibold text-sm px-6 py-2.5 rounded-full transition-all duration-300 hover:shadow-lg inline-flex items-center gap-2 no-underline">
+      <i class="fab fa-whatsapp text-lg"></i>
+      <span>(62) 98323-2480</span>
+    </a>
+  </div>
+</nav>
+
+<!-- Hero Section Centralizado com Overlay Escuro Imersivo para Máximo Contraste -->
+<section class="relative w-full hero-wrap flex items-center justify-center text-center overflow-hidden" style="min-height: 100vh;">
+  <div class="absolute inset-0 z-0">
+    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop" alt="Hero Background" class="w-full h-full object-cover">
+    <!-- Overlay escuro uniforme para contraste premium sem neblina -->
+    <div class="absolute inset-0 bg-black/70"></div>
+  </div>
+  <div class="relative z-10 px-6 md:px-16 max-w-4xl mx-auto flex flex-col items-center justify-center" style="padding-top: 60px; padding-bottom: 80px;">
+    <p class="text-xs uppercase tracking-[0.3em] font-semibold mb-4 text-[#D4AF37] reveal">Skoziê Closet de Moda Feminina</p>
+    <h1 class="text-4xl md:text-7xl font-title font-bold text-white mb-6 leading-tight reveal">A Essência da<br><span class="text-[#D4AF37]">Moda Feminina</span></h1>
+    <p class="text-lg md:text-xl text-white/85 max-w-2xl mb-10 leading-relaxed reveal mx-auto font-light">Curadoria exclusiva de moda premium em Goiânia. Vestidos de gala, alfaiataria moderna, casual luxury e beachwear — tecidos nobres e consultoria personalizada.</p>
+    <div class="flex flex-wrap gap-4 justify-center reveal">
+      <a href="https://wa.me/5562983232480?text=Ol%C3%A1%20Skozi%C3%AA!%20Vi%20o%20site%20e%20quero%20saber%20mais" target="_blank" class="btn-shimmer">
+        <i class="fab fa-whatsapp text-lg"></i>
+        <span>Falar com Consultoria</span>
+      </a>
+      <a href="#categorias" class="inline-flex items-center px-8 py-3 no-underline text-white font-semibold rounded-xl border-2 border-white/30 hover:bg-white/10 transition-all">Ver Coleções</a>
+    </div>
+  </div>
+</section>
+
+<section id="categorias" class="py-20 md:py-28 px-6 md:px-16 max-w-7xl mx-auto">
+  <div class="text-center mb-14 reveal">
+    <p class="text-xs uppercase tracking-[0.3em] font-semibold mb-3" style="color: var(--primary);">Coleções</p>
+    <h2 class="text-3xl md:text-5xl font-title font-bold mb-4" style="color: #18181b;">Nossas Categorias</h2>
+    <p class="max-w-xl mx-auto" style="color: #5e5e5c;">Uma curadoria exclusiva pensada para a mulher contemporânea que não abre mão da elegância.</p>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="product-card aspect-[3/4] reveal"><img src="https://images.unsplash.com/photo-1566174053879-31528523f8ae?q=80&w=800&auto=format&fit=crop" alt="Vestidos de Gala"><div class="product-overlay"><h3 class="text-xl font-title font-bold mb-1">Vestidos de Gala</h3><p class="text-sm text-white/80 mb-3">A partir de R$ 890</p><a href="https://wa.me/5562983232480" target="_blank" class="inline-block px-5 py-2 border border-white/40 text-white text-xs font-bold uppercase tracking-widest rounded-lg no-underline hover:bg-[var(--primary)] hover:border-[var(--primary)] transition-all">Consultar</a></div></div>
+    <div class="product-card aspect-[3/4] reveal"><img src="https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=800&auto=format&fit=crop" alt="Moda Casual Premium"><div class="product-overlay"><h3 class="text-xl font-title font-bold mb-1">Moda Casual Premium</h3><p class="text-sm text-white/80 mb-3">A partir de R$ 240</p><a href="https://wa.me/5562983232480" target="_blank" class="inline-block px-5 py-2 border border-white/40 text-white text-xs font-bold uppercase tracking-widest rounded-lg no-underline hover:bg-[var(--primary)] hover:border-[var(--primary)] transition-all">Consultar</a></div></div>
+    <div class="product-card aspect-[3/4] reveal"><img src="https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?q=80&w=800&auto=format&fit=crop" alt="Alfaiataria Moderna"><div class="product-overlay"><h3 class="text-xl font-title font-bold mb-1">Alfaiataria Moderna</h3><p class="text-sm text-white/80 mb-3">A partir de R$ 450</p><a href="https://wa.me/5562983232480" target="_blank" class="inline-block px-5 py-2 border border-white/40 text-white text-xs font-bold uppercase tracking-widest rounded-lg no-underline hover:bg-[var(--primary)] hover:border-[var(--primary)] transition-all">Consultar</a></div></div>
+    <div class="product-card aspect-[3/4] reveal"><img src="https://images.unsplash.com/photo-1506152983158-b4a74a01c721?q=80&w=800&auto=format&fit=crop" alt="Beachwear Luxury"><div class="product-overlay"><h3 class="text-xl font-title font-bold mb-1">Beachwear Luxury</h3><p class="text-sm text-white/80 mb-3">A partir de R$ 320</p><a href="https://wa.me/5562983232480" target="_blank" class="inline-block px-5 py-2 border border-white/40 text-white text-xs font-bold uppercase tracking-widest rounded-lg no-underline hover:bg-[var(--primary)] hover:border-[var(--primary)] transition-all">Consultar</a></div></div>
+    <div class="product-card aspect-[3/4] reveal"><img src="https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?q=80&w=800&auto=format&fit=crop" alt="Acessórios"><div class="product-overlay"><h3 class="text-xl font-title font-bold mb-1">Acessórios</h3><p class="text-sm text-white/80 mb-3">A partir de R$ 120</p><a href="https://wa.me/5562983232480" target="_blank" class="inline-block px-5 py-2 border border-white/40 text-white text-xs font-bold uppercase tracking-widest rounded-lg no-underline hover:bg-[var(--primary)] hover:border-[var(--primary)] transition-all">Consultar</a></div></div>
+    <div class="product-card aspect-[3/4] reveal"><img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?q=80&w=800&auto=format&fit=crop" alt="Sapatos"><div class="product-overlay"><h3 class="text-xl font-title font-bold mb-1">Sapatos</h3><p class="text-sm text-white/80 mb-3">A partir de R$ 380</p><a href="https://wa.me/5562983232480" target="_blank" class="inline-block px-5 py-2 border border-white/40 text-white text-xs font-bold uppercase tracking-widest rounded-lg no-underline hover:bg-[var(--primary)] hover:border-[var(--primary)] transition-all">Consultar</a></div></div>
+  </div>
+</section>
+
+<section id="sobre" class="py-20 md:py-28 px-6 md:px-16" style="background: #f5f3f3;">
+  <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+    <div class="reveal">
+      <p class="text-xs uppercase tracking-[0.3em] font-semibold mb-3" style="color: var(--primary);">Nossa História</p>
+      <h2 class="text-3xl md:text-5xl font-title font-bold mb-6" style="color: #18181b;">Um Sonho de Closet</h2>
+      <p class="mb-4 leading-relaxed" style="color: #5e5e5c;">Fundada no coração de Goiânia, a Skoziê surgiu com o propósito de redefinir a experiência de moda para a mulher contemporânea. O que começou como uma boutique curada, transformou-se em um refúgio de estilo — um verdadeiro Closet de Moda Feminina.</p>
+      <p class="mb-4 leading-relaxed" style="color: #5e5e5c;">Nossa jornada é marcada pela busca incessante por tecidos nobres, modelagens impecáveis e um olhar atento ao detalhe. Entendemos que a roupa é uma forma de expressão e confiança.</p>
+      <p class="leading-relaxed" style="color: #5e5e5c;">Hoje, somos referência local em sofisticação, mantendo o atendimento personalizado e a proximidade que nos trouxe até aqui.</p>
+    </div>
+    <div class="reveal relative">
+      <div class="aspect-[3/4] rounded-2xl overflow-hidden shadow-xl"><img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=800&auto=format&fit=crop" alt="Boutique" class="w-full h-full object-cover"></div>
+      <div class="absolute -bottom-4 -left-4 bg-white p-5 rounded-2xl shadow-lg hidden md:flex items-center gap-3">
+        <i class="fas fa-location-dot text-[#E91E63] text-lg"></i>
+        <div><p class="text-xs" style="color: #5e5e5c;">Visite nossa boutique</p><p class="text-sm font-semibold">Av. T-6, n 201 - Setor Bueno</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-20 md:py-28 px-6 md:px-16">
+  <div class="max-w-6xl mx-auto text-center">
+    <div class="mb-16 reveal">
+      <h2 class="text-3xl md:text-5xl font-title font-bold mb-4" style="color: #18181b;">Nossos Valores</h2>
+      <p class="max-w-xl mx-auto" style="color: #5e5e5c;">Os pilares que sustentam cada escolha que fazemos na Skoziê.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="reveal">
+        <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 bg-pink-100">
+          <i class="fas fa-wand-magic-sparkles text-[#E91E63] text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-3">Curadoria de Estilo</h3>
+        <p style="color: #5e5e5c;">Seleção rigorosa de peças que equilibram o clássico e o moderno, garantindo versatilidade e elegância.</p>
+      </div>
+      <div class="reveal">
+        <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 bg-pink-100">
+          <i class="fas fa-circle-check text-[#E91E63] text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-3">Qualidade Impecável</h3>
+        <p style="color: #5e5e5c;">Priorizamos materiais de alta durabilidade e acabamentos manuais que elevam cada produto ao status de arte.</p>
+      </div>
+      <div class="reveal">
+        <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 bg-pink-100">
+          <i class="fas fa-heart text-[#E91E63] text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-3">Conexão com a Mulher</h3>
+        <p style="color: #5e5e5c;">Cada cliente é única. Nosso compromisso é ouvir, entender e vestir as conquistas de cada mulher.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-20 md:py-28 px-6 md:px-16" style="background: linear-gradient(135deg,#fdf2f8,#fce7f3);">
+  <div class="max-w-4xl mx-auto text-center reveal">
+    <i class="fas fa-quote-left text-[#E91E63]/30 text-5xl mb-6"></i>
+    <h2 class="text-3xl md:text-5xl font-title font-bold mb-12" style="color: #18181b;">O Que Nossas Clientes Dizem</h2>
+    <div class="grid md:grid-cols-3 gap-6 text-left">
+      <div class="bg-white p-6 rounded-2xl shadow-sm reveal testimonial-card-hover">
+        <div class="flex mb-3 text-amber-500 gap-1">
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+        </div>
+        <p class="text-sm mb-4 leading-relaxed" style="color: #5e5e5c;">"Simplesmente amei o vestido de gala! A consultoria de estilo foi essencial para encontrar o modelo perfeito. Entrega super rápida."</p>
+        <p class="font-semibold text-sm">Ana Clara M.</p>
+      </div>
+      <div class="bg-white p-6 rounded-2xl shadow-sm reveal testimonial-card-hover">
+        <div class="flex mb-3 text-amber-500 gap-1">
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+        </div>
+        <p class="text-sm mb-4 leading-relaxed" style="color: #5e5e5c;">"A Skoziê tem um cuidado único com cada peça. O linho que comprei é de altíssima qualidade, muito superior ao que encontro em lojas comuns."</p>
+        <p class="font-semibold text-sm">Juliana P. Rocha</p>
+      </div>
+      <div class="bg-white p-6 rounded-2xl shadow-sm reveal testimonial-card-hover">
+        <div class="flex mb-3 text-amber-500 gap-1">
+          <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+        </div>
+        <p class="text-sm mb-4 leading-relaxed" style="color: #5e5e5c;">"Atendimento personalizado nota 10! A equipe me ajudou a montar um look completo para um evento corporativo. Virei cliente fiel!"</p>
+        <p class="font-semibold text-sm">Mariana S. Carvalho</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- FAQ Section -->
+<section class="py-24 bg-[#faf9f9] border-t border-[#D4AF37]/20" id="faq">
+    <div class="max-w-4xl mx-auto px-6">
+        <h2 class="text-center text-3xl font-display font-extrabold text-[#1b1c1c] mb-12">Dúvidas Frequentes (FAQ)</h2>
+        <div class="space-y-4">
+            
+            <div class="bg-white border border-[#000]/5 p-6 rounded-xl cursor-pointer group transition-all duration-300 hover:border-[#E91E63]/40 faq-item">
+                <details class="w-full">
+                    <summary class="font-bold text-[#1b1c1c] list-none flex justify-between items-center group-open:text-[#E91E63] select-none">
+                        <span>Como funciona a curadoria de peças da Skoziê?</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-300"></i>
+                    </summary>
+                    <p class="text-sm text-[#5e5e5c] mt-4 pl-1 leading-relaxed text-[#5e5e5c] border-t border-[#000]/5 pt-4">
+                        Nossa curadoria é focada em peças premium de tecidos nobres, modelagens impecáveis e acabamento de alta costura. Selecionamos vestidos de festa, alfaiataria moderna e casual de luxo para vestir a mulher contemporânea com exclusividade e elegância.
+                    </p>
+                </details>
+            </div>
+    
+            <div class="bg-white border border-[#000]/5 p-6 rounded-xl cursor-pointer group transition-all duration-300 hover:border-[#E91E63]/40 faq-item">
+                <details class="w-full">
+                    <summary class="font-bold text-[#1b1c1c] list-none flex justify-between items-center group-open:text-[#E91E63] select-none">
+                        <span>Como encontro o tamanho ideal para o meu corpo?</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-300"></i>
+                    </summary>
+                    <p class="text-sm text-[#5e5e5c] mt-4 pl-1 leading-relaxed text-[#5e5e5c] border-t border-[#000]/5 pt-4">
+                        Oferecemos uma tabela de medidas detalhada em nossa boutique e, além disso, nossa equipe de consultoria de estilo está disponível em tempo integral no WhatsApp para lhe ajudar a escolher a modelagem e caimento perfeitos para suas curvas.
+                    </p>
+                </details>
+            </div>
+    
+            <div class="bg-white border border-[#000]/5 p-6 rounded-xl cursor-pointer group transition-all duration-300 hover:border-[#E91E63]/40 faq-item">
+                <details class="w-full">
+                    <summary class="font-bold text-[#1b1c1c] list-none flex justify-between items-center group-open:text-[#E91E63] select-none">
+                        <span>Qual o prazo de entrega das coleções em Goiânia?</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-300"></i>
+                    </summary>
+                    <p class="text-sm text-[#5e5e5c] mt-4 pl-1 leading-relaxed text-[#5e5e5c] border-t border-[#000]/5 pt-4">
+                        Oferecemos o serviço de entrega expressa via motoboy no mesmo dia para toda a região de Goiânia e Aparecida de Goiânia. Para outras cidades do Brasil, enviamos no mesmo dia útil com prazos que variam de 2 a 7 dias.
+                    </p>
+                </details>
+            </div>
+    
+            <div class="bg-white border border-[#000]/5 p-6 rounded-xl cursor-pointer group transition-all duration-300 hover:border-[#E91E63]/40 faq-item">
+                <details class="w-full">
+                    <summary class="font-bold text-[#1b1c1c] list-none flex justify-between items-center group-open:text-[#E91E63] select-none">
+                        <span>A Skoziê possui loja física em Goiânia?</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-300"></i>
+                    </summary>
+                    <p class="text-sm text-[#5e5e5c] mt-4 pl-1 leading-relaxed text-[#5e5e5c] border-t border-[#000]/5 pt-4">
+                        Sim! Nosso Closet físico fica localizado na Av. T-6, nº 201, no Setor Bueno, um dos corações da moda de Goiânia. Oferecemos atendimento sob agendamento prévio pelo WhatsApp para uma experiência de consultoria 100% personalizada e reservada.
+                    </p>
+                </details>
+            </div>
+    
+            <div class="bg-white border border-[#000]/5 p-6 rounded-xl cursor-pointer group transition-all duration-300 hover:border-[#E91E63]/40 faq-item">
+                <details class="w-full">
+                    <summary class="font-bold text-[#1b1c1c] list-none flex justify-between items-center group-open:text-[#E91E63] select-none">
+                        <span>Como funcionam as trocas e devoluções de peças?</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-300"></i>
+                    </summary>
+                    <p class="text-sm text-[#5e5e5c] mt-4 pl-1 leading-relaxed text-[#5e5e5c] border-t border-[#000]/5 pt-4">
+                        Você tem até 7 dias corridos após o recebimento para solicitar a troca ou devolução do produto. A peça deve estar com a etiqueta original fixada, sem sinais de uso ou lavagem.
+                    </p>
+                </details>
+            </div>
+    
+            <div class="bg-white border border-[#000]/5 p-6 rounded-xl cursor-pointer group transition-all duration-300 hover:border-[#E91E63]/40 faq-item">
+                <details class="w-full">
+                    <summary class="font-bold text-[#1b1c1c] list-none flex justify-between items-center group-open:text-[#E91E63] select-none">
+                        <span>Quais são as formas de pagamento na boutique?</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-300"></i>
+                    </summary>
+                    <p class="text-sm text-[#5e5e5c] mt-4 pl-1 leading-relaxed text-[#5e5e5c] border-t border-[#000]/5 pt-4">
+                        Aceitamos Pix com desconto exclusivo nas coleções vigentes e parcelamentos no cartão de crédito em até 6x sem juros para garantir conforto em suas compras premium.
+                    </p>
+                </details>
+            </div>
+    
+        </div>
+    </div>
+</section>
+  
+<!-- Contact Section -->
+<section class="py-24 bg-[#faf9f9]" id="contato">
+    <div class="max-w-4xl mx-auto bg-white border border-[#000]/5 shadow-sm p-8 md:p-12 rounded-3xl">
+        <h4 class="text-2xl font-bold text-[#1b1c1c] mb-6 text-center">Fale Conosco</h4>
+        <form class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="text" placeholder="Seu Nome" class="w-full bg-[#faf9f9] border border-[#000]/10 focus:border-[#E91E63] text-[#1b1c1c] placeholder-[#5e5e5c]/50 px-4 py-3 rounded-xl focus:outline-none transition">
+                <input type="tel" placeholder="Seu WhatsApp" class="w-full bg-[#faf9f9] border border-[#000]/10 focus:border-[#E91E63] text-[#1b1c1c] placeholder-[#5e5e5c]/50 px-4 py-3 rounded-xl focus:outline-none transition">
+            </div>
+            <textarea rows="4" placeholder="Descreva sua solicitação ou dúvidas..." class="w-full bg-[#faf9f9] border border-[#000]/10 focus:border-[#E91E63] text-[#1b1c1c] placeholder-[#5e5e5c]/50 px-4 py-3 rounded-xl focus:outline-none transition"></textarea>
+            <button type="submit" class="w-full bg-gradient-to-r from-[#E91E63] to-[#b80049] hover:opacity-90 text-white font-bold transition-all duration-300 hover:scale-[1.02] font-bold py-4 rounded-xl transition shadow-lg hover:shadow-xl">Enviar Mensagem</button>
+        </form>
+    </div>
+</section>
+  <!-- Footer Base do Cliente (Mantido para ser a âncora do script comercial) -->
+<footer style="background: #0f0f1a; color: #fff; padding: 60px 24px 40px;">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid md:grid-cols-4 gap-10 mb-10">
+      <div>
+        <h4 class="text-xl font-title font-bold mb-4 text-[#D4AF37]">Skoziê Closet</h4>
+        <p class="text-sm text-white/50">Curadoria de moda feminina de luxo no Setor Bueno, Goiânia-GO. Elegância e estilo para a mulher moderna.</p>
+      </div>
+      <div>
+        <h5 class="font-bold text-sm uppercase tracking-wider mb-4 text-white/70">Navegação</h5>
+        <ul class="space-y-2 text-sm text-white/50 list-none p-0">
+          <li><a href="#categorias" class="no-underline hover:underline text-inherit">Categorias</a></li>
+          <li><a href="#sobre" class="no-underline hover:underline text-inherit">Sobre</a></li>
+          <li><a href="#faq" class="no-underline hover:underline text-inherit">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5 class="font-bold text-sm uppercase tracking-wider mb-4 text-white/70">Contato</h5>
+        <ul class="space-y-2 text-sm text-white/50 list-none p-0">
+          <li>
+            <a href="https://wa.me/5562983232480" class="no-underline text-inherit inline-flex items-center gap-1.5">
+              <i class="fab fa-whatsapp"></i> (62) 98323-2480
+            </a>
+          </li>
+          <li>Av. T-6, n 201 - Setor Bueno</li>
+          <li>Goiânia - GO</li>
+        </ul>
+      </div>
+      <div>
+        <h5 class="font-bold text-sm uppercase tracking-wider mb-4 text-white/70">Redes Sociais</h5>
+        <div class="flex gap-3">
+          <a href="#" class="w-10 h-10 rounded-full flex items-center justify-center no-underline bg-white/10 hover:bg-white/20 transition-all">
+            <i class="fab fa-instagram text-white text-lg"></i>
+          </a>
+          <a href="https://wa.me/5562983232480" class="w-10 h-10 rounded-full flex items-center justify-center no-underline bg-white/10 hover:bg-white/20 transition-all">
+            <i class="fab fa-whatsapp text-white text-lg"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm border-t border-white/10 text-white/30">
+      <p>&copy; 2026 Skoziê Closet. Todos os direitos reservados.</p>
+      <p class="text-xs">Site em prospecção comercial - ESCOM Studio</p>
+    </div>
+  </div>
+</footer>
+<!-- SEÇÃO DO DOSSIÊ COMERCIAL (PDF/ESTRATÉGIA) -->
+<section id="dossie-comercial" class="py-16 bg-[#111] text-center border-t-2 border-zinc-800">
+    <div class="max-w-3xl mx-auto px-6">
+        <h3 class="text-[#07dc40] font-mono text-xs font-bold uppercase tracking-widest mb-4"><i class="fa-solid fa-lock mr-2"></i> Documento Confidencial</h3>
+        <h2 class="text-3xl font-bold text-white mb-6">Análise Estratégica & Dossiê de Mercado</h2>
+        <p class="text-zinc-400 mb-8 text-sm">Acesso restrito ao estudo de arquitetura de conversão, dados reais de faturamento local e projeção financeira para Skoziê Closet de Moda Feminina.</p>
+        <a href="/skozi-closet/dossie.pdf" target="_blank" class="btn-pdf-shimmer active:scale-95 active:translate-y-[1px] bg-transparent hover:bg-stone-850 border-2 border-[#07dc40]/30 text-white font-bold py-4 px-8 rounded-xl transition-all flex items-center justify-center gap-3 mx-auto group inline-flex hover:border-[#07dc40]">
+            <i class="fa-solid fa-file-pdf text-[#07dc40] text-xl group-hover:scale-110 transition-transform"></i> Acessar Dossiê Estratégico (Acessar PDF da Análise)
+        </a>
+    </div>
+</section>
+  
+<!-- SEÇÃO COMERCIAL ESCOM STUDIO (PROPOSTA) -->
+<section id="proposta-comercial" class="py-24 bg-[#0a0a0a] relative overflow-hidden text-white border-t-8 border-[#07dc40]">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-stone-900/20 via-[#0a0a0a] to-[#0a0a0a] pointer-events-none"></div>
+    
+    <div class="container mx-auto px-6 max-w-6xl relative z-10">
+        <div class="text-center mb-16">
+            <span class="bg-[#07dc40]/10 text-[#07dc40] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border border-[#07dc40]/20 mb-6 inline-block">Proposta Exclusiva ESCOM Studio</span>
+            <h2 class="text-4xl md:text-5xl font-display font-extrabold text-white mb-6">Investimento do Projeto</h2>
+            <p class="text-zinc-400 max-w-2xl mx-auto text-lg">Este é o escopo financeiro exato para a implementação do site da sua empresa, com design de alta performance e engenharia de conversão voltada para captação.</p>
+        </div>
+
+        <!-- Card Principal de Preço -->
+        <div class="max-w-2xl mx-auto bg-gradient-to-b from-stone-900/60 to-zinc-900/60 p-10 rounded-3xl border border-stone-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] mb-16 relative backdrop-blur-sm transform transition hover:scale-[1.01]">
+            <div class="absolute top-0 right-0 bg-[#07dc40] text-black text-xs font-bold px-4 py-1 rounded-tr-3xl rounded-bl-xl z-20">OFERTA DE PROSPECÇÃO</div>
+            
+            <h3 class="text-2xl font-bold mb-2">Website de Conversão Ativa</h3>
+            <p class="text-zinc-400 text-sm mb-6 pb-6 border-b border-white/10">Design UI/UX Sob Medida, Otimização de SEO, Responsividade Mobile-First, Integração WhatsApp, Copywriting Persuasivo.</p>
+            
+            <!-- Investimento Único (Sem parcelamento) -->
+            <div class="bg-stone-950/85 border border-stone-800 rounded-2xl p-8 mb-8 relative shadow-[0_10px_30px_rgba(0,0,0,0.4)] mt-8 text-center">
+                <div class="flex items-center justify-center gap-2 mb-4">
+                    <i class="fa-solid fa-bolt text-[#07dc40] text-lg"></i>
+                    <span class="text-[#07dc40] text-xs font-bold uppercase tracking-widest">Investimento Único</span>
+                </div>
+                <div class="flex items-baseline justify-center gap-x-2">
+                    <span class="text-2xl font-bold text-stone-400">R$</span>
+                    <span class="text-5xl sm:text-6xl font-black text-[#07dc40] tracking-tighter drop-shadow-[0_0_15px_rgba(7, 220, 64,0.35)]">990</span>
+                    <span class="text-lg font-medium text-stone-500">/taxa única</span>
+                </div>
+                <p class="text-center text-stone-500 text-[10px] mt-4 font-semibold tracking-wider uppercase">PAGAMENTO À VISTA VIA PIX OU TRANSFERÊNCIA</p>
+            </div>
+
+            <ul class="space-y-4 mb-10 text-sm text-zinc-300">
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#07dc40] text-lg"></i> Configuração completa de domínio e hospedagem</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#07dc40] text-lg"></i> SEO integrado para posicionamento local</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#07dc40] text-lg"></i> Certificado SSL de Conexão Segura</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#07dc40] text-lg"></i> Suporte técnico prioritário de 30 dias</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-circle-info text-[#07dc40] text-lg"></i> <strong class="text-white">Investimento único, sem mensalidades ou taxas ocultas</strong></li>
+            </ul>
+
+            <button id="btn-aceitar-proposta" class="btn-pdf-shimmer w-full bg-[#07dc40] hover:bg-[#00b5ab] text-black text-lg font-black py-5 rounded-2xl transition-all shadow-lg shadow-[#07dc40]/30 flex items-center justify-center gap-3 group relative overflow-hidden">
+                ACEITAR PROPOSTA AGORA <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+            </button>
+            <p class="text-center text-xs text-zinc-500 mt-4"><i class="fa-solid fa-lock text-zinc-600 mr-1"></i> Contrato e Nota Fiscal emitidos logo após a aprovação.</p>
+        </div>
+
+        <!-- Seção de Serviços Adicionais (Upsells) - 2 COLUNAS -->
+        <div class="max-w-5xl mx-auto mt-24 bg-gradient-to-b from-[#1c1917]/40 to-[#0c0a09]/80 p-8 md:p-12 rounded-3xl border border-[#07dc40]/20 shadow-[0_0_50px_rgba(7, 220, 64,0.05)] relative backdrop-blur-md">
+            <div class="absolute -top-4 left-8 bg-[#07dc40] text-black text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">
+                Expansões Tecnológicas
+            </div>
+            
+            <h3 class="text-2xl md:text-3xl font-display font-extrabold text-white mb-4 flex items-center gap-3">
+                <i class="fa-solid fa-square-plus text-[#07dc40]"></i> Módulos Avançados sob Demanda
+            </h3>
+            <p class="text-stone-400 mb-10 text-sm max-w-3xl leading-relaxed">
+                Leve a sua captação, operação e análise para o próximo nível. Integre novos recursos tecnológicos desenvolvidos sob medida pela ESCOM Studio:
+            </p>
+            
+            <div class="grid md:grid-cols-2 gap-6 mb-12">
+                <!-- CRM -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_crm.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="CRM">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">CRM e Controle de Clientes</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Funil de agendamentos automatizado, envio de lembretes automáticos e acompanhamento via WhatsApp. Histórico de relacionamento com cliente.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Retenção & Recorrência</span>
+                    </div>
+                </div>
+
+                <!-- Dashboard -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_dashboard.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Dashboard">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Dashboard Financeiro</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Visualização do fluxo de caixa e conversão de novos clientes em tempo real, controle de faturamento diário com gráficos intuitivos.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Gestão & Lucro</span>
+                    </div>
+                </div>
+
+                <!-- Agente IA -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_robot.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="AI Agent">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Agente de Atendimento IA</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Robô inteligente integrado ao WhatsApp Business, operando 24 horas por dia para realizar agendamentos e tirar dúvidas.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Atendimento 24/7</span>
+                    </div>
+                </div>
+
+                <!-- Estoque -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_estoque.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Inventory">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Estoque Digital Inteligente</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Controle digital de entrada e saída de insumos com alerta de estoque mínimo e integração.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Organização & Agilidade</span>
+                    </div>
+                </div>
+
+                <!-- Processos -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_processos.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Process">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Otimização de Processos</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Mapeamento e automação de fluxos operacionais para remover gargalos e acelerar a produtividade.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Produtividade Técnica</span>
+                    </div>
+                </div>
+
+                <!-- E-commerce -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_ecommerce.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="E-commerce">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Loja de Peças & Acessórios</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Loja virtual integrada para venda online de produtos ou serviços adicionais com pagamento online.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Canal de Vendas Extra</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulário Upsell -->
+            <div class="bg-stone-950/90 p-8 rounded-2xl border border-stone-800 shadow-inner">
+                <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane text-[#07dc40]"></i> Solicitar Orçamento das Expansões
+                </h4>
+                <p class="text-stone-400 text-xs mb-6">Selecione o módulo de seu interesse. Nossa equipe de arquitetura técnica analisará a infraestrutura necessária e enviará o orçamento detalhado.</p>
+                
+                <form id="form-upsell" class="space-y-4 text-xs">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="upsell-nome" placeholder="Seu Nome / Responsável" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#07dc40] text-white placeholder-stone-600 text-xs transition" required>
+                        <input type="email" id="upsell-email" placeholder="E-mail Corporativo" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#07dc40] text-white placeholder-stone-600 text-xs transition" required>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <select id="upsell-servico" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#07dc40] text-stone-400 text-xs transition" required>
+                            <option value="" disabled selected>Selecione o Módulo Tecnológico</option>
+                            <option value="crm">CRM</option>
+                            <option value="dashboard">Dashboard</option>
+                            <option value="bot">WhatsApp Bot</option>
+                            <option value="estoque">Estoque Digital</option>
+                            <option value="otimizacao">Otimização de Processos</option>
+                            <option value="ecommerce">E-commerce</option>
+                        </select>
+                        <input type="tel" id="upsell-whatsapp" placeholder="WhatsApp para Contato" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#07dc40] text-white placeholder-stone-600 text-xs transition" required>
+                    </div>
+                    <button type="submit" class="w-full bg-[#07dc40] hover:bg-[#00b5ab] text-black font-bold py-4 rounded-xl transition shadow-lg shadow-[#07dc40]/20 border border-[#07dc40]/10 text-xs uppercase tracking-wider">Enviar Solicitação de Adicionais</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- RODAPÉ COMERCIAL FINAL DA PROPOSTA (ESCOM STUDIO) -->
+<footer class="py-12 bg-[#060606] border-t border-zinc-900 text-center text-xs text-zinc-500 relative z-10 font-sans">
+    <div class="max-w-3xl mx-auto px-6 space-y-3">
+        <p class="font-bold tracking-wider text-zinc-400">ESCOM STUDIO · CONVERSÃO DIGITAL PREMIUM</p>
+        <p class="opacity-80">Esta proposta técnica de implementação e seu conteúdo são confidenciais e de propriedade exclusiva do destinatário e da ESCOM Studio.</p>
+        <p class="text-[10px] opacity-50">&copy; 2026 ESCOM Studio. Todos os direitos reservados.</p>
+    </div>
+</footer>
+  
+
+<!-- Estilos dinâmicos injetados para elementos flutuantes -->
+<style>
+    /* WhatsApp Flutuante com Efeito Pulse */
+    .whatsapp-float { 
+        position: fixed; 
+        bottom: 24px; 
+        right: 24px; 
+        z-index: 9998; 
+        width: 60px; 
+        height: 60px; 
+        border-radius: 50%; 
+        background: #25D366; 
+        color: #fff; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: 32px; 
+        box-shadow: 0 8px 30px rgba(37,211,102,.4); 
+        transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        cursor: pointer; 
+        text-decoration: none; 
+        animation: pulse-wpp 2s infinite; 
+    }
+    .whatsapp-float:hover { 
+        transform: scale(1.1) rotate(5deg); 
+        background: #22c55e; 
+        color: #fff;
+    }
+    @keyframes pulse-wpp {
+      0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+      70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+    }
+
+    /* Botão Voltar ao Topo Flutuante */
+    .back-to-top { 
+        position: fixed; 
+        bottom: 96px; 
+        right: 29px; 
+        z-index: 9998; 
+        width: 50px; 
+        height: 50px; 
+        border-radius: 50%; 
+        background: #1b1c1c; 
+        color: #fff; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: 20px; 
+        box-shadow: 0 4px 20px rgba(0,0,0,.15); 
+        border: 1px solid rgba(255,255,255,.1); 
+        transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        cursor: pointer; 
+        text-decoration: none; 
+        opacity: 0; 
+        pointer-events: none; 
+        transform: scale(0.8); 
+    }
+    .back-to-top.visible { 
+        opacity: 1; 
+        pointer-events: auto; 
+        transform: scale(1); 
+    }
+    .back-to-top:hover { 
+        transform: scale(1.1) translateY(-3px); 
+        background: #E91E63; 
+        box-shadow: 0 8px 25px rgba(233,30,99,.3); 
+        color: #fff; 
+    }
+
+    /* Cards Flutuantes de Categoria e Depoimentos */
+    .product-card { 
+        transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+    }
+    .product-card:hover { 
+        transform: translateY(-8px) scale(1.01); 
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15); 
+    }
+    .product-card img { 
+        transition: transform .6s cubic-bezier(.16,1,.3,1); 
+    }
+    .product-card:hover img { 
+        transform: scale(1.05); 
+    }
+
+    .testimonial-card-hover { 
+        transition: transform 0.4s ease, box-shadow 0.4s ease; 
+    }
+    .testimonial-card-hover:hover { 
+        transform: translateY(-6px); 
+        box-shadow: 0 15px 35px rgba(0,0,0,0.08); 
+    }
+</style>
+
+<!-- Botão WhatsApp Flutuante Fixo -->
+<a href="#" id="globalWhatsAppBtn" target="_blank" class="whatsapp-float" aria-label="Fale conosco no WhatsApp">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" style="width: 30px; height: 30px; display: block;">
+        <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+    </svg>
+</a>
+
+<!-- Botão Voltar ao Topo Flutuante Fixo -->
+<a href="#" id="backToTop" class="back-to-top" aria-label="Voltar ao topo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="currentColor" style="width: 20px; height: 20px; display: block;">
+        <path d="M352 352c-8.188 0-16.38-3.125-22.62-9.375L192 205.3 54.6 342.6c-12.5 12.5-32.75 12.5-45.25 0s-12.5-32.75 0-45.25l160-160c12.5-12.5 32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25C368.4 348.9 360.2 352 352 352z"/>
+    </svg>
+</a>
+
+<!-- Bibliotecas de Animação e Interatividade Premium -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.36/dist/lenis.min.js"></script>
+<script src="https://unpkg.com/split-type"></script>
+
+<script>
+    // Configurar o link de WhatsApp dinamicamente
+    (function() {
+        const wppBtn = document.getElementById('globalWhatsAppBtn');
+        if (wppBtn) {
+            const firstWppLink = Array.from(document.querySelectorAll('a')).find(a => {
+                return a.href.includes('wa.me') && !a.classList.contains('whatsapp-float') && !a.id.includes('globalWhatsAppBtn');
+            });
+            if (firstWppLink) {
+                wppBtn.href = firstWppLink.href;
+            } else {
+                wppBtn.href = "https://wa.me/5562983232480?text=Ol%C3%A1%20Skozi%C3%AA!%20Vi%20o%20site%20e%20quero%20saber%20mais";
+            }
+        }
+    })();
+
+    // FAQ Accordion
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+        const details = item.querySelector('details');
+        const summary = item.querySelector('summary');
+        if (details && summary) {
+            summary.addEventListener('click', (e) => {
+                // Fechar outros accordions abertos se desejado, ou deixar nativo
+            });
+        }
+    });
+    
+    // Scroll Navbar Effect
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('navbar');
+        if (nav) {
+            if (window.scrollY > 50) {
+                nav.classList.remove('top-10');
+                nav.classList.add('top-0', 'shadow-md');
+            } else {
+                const statusCache = localStorage.getItem('escom_lead_status');
+                if (statusCache !== 'pago') {
+                    nav.classList.remove('top-0');
+                    nav.classList.add('top-10');
+                }
+            }
+        }
+    });
+
+    // Accept Proposal Event Handler
+    const btnAceitar = document.getElementById('btn-aceitar-proposta');
+    if (btnAceitar) {
+        btnAceitar.addEventListener('click', function(e) {
+            e.preventDefault();
+            btnAceitar.innerHTML = 'Processando...';
+            btnAceitar.classList.add('opacity-80', 'cursor-wait');
+
+            setTimeout(() => {
+                const leadData = {
+                    id: 'lead_' + Date.now(),
+                    empresa: 'Skoziê Closet de Moda Feminina',
+                    status: 'pagamento_pendente',
+                    valor: 990,
+                    data: new Date().toISOString()
+                };
+                
+                localStorage.setItem('escom_new_lead_conversion', JSON.stringify(leadData));
+                window.dispatchEvent(new CustomEvent('escom-lead-converted', { detail: leadData }));
+
+                btnAceitar.innerHTML = 'PROPOSTA ACEITA!';
+                btnAceitar.classList.remove('bg-[#07dc40]', 'hover:bg-[#00b5ab]', 'text-black', 'cursor-wait');
+                btnAceitar.classList.add('bg-zinc-800', 'text-[#07dc40]', 'border', 'border-[#07dc40]', 'cursor-not-allowed');
+                
+                alert("Obrigado! Seu aceite foi registrado. A equipe da ESCOM Studio entrará em contato para os detalhes de faturamento.");
+            }, 1500);
+        });
+    }
+
+    // Upsell Form Event Handler
+    const formUpsell = document.getElementById('form-upsell');
+    if (formUpsell) {
+        formUpsell.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btnSubmit = formUpsell.querySelector('button[type="submit"]');
+            const originalText = btnSubmit.innerHTML;
+            
+            btnSubmit.innerHTML = 'Enviando Solicitação...';
+            btnSubmit.classList.add('opacity-80', 'cursor-wait');
+            
+            setTimeout(() => {
+                alert("Mensagem enviada com sucesso! Nossa equipe técnica entrará em contato.");
+                btnSubmit.innerHTML = 'Enviado com sucesso';
+                btnSubmit.classList.remove('opacity-80', 'cursor-wait', 'bg-[#07dc40]', 'hover:bg-[#00b5ab]');
+                btnSubmit.classList.add('bg-zinc-800', 'text-[#07dc40]', 'cursor-not-allowed', 'border', 'border-[#07dc40]');
+                formUpsell.reset();
+            }, 1000);
+        });
+    }
+
+    // Client Mode Check
+    function verificarStatusDoLead() {
+        const pathParts = window.location.pathname.split('/');
+        const templateSlug = pathParts.find(p => p.startsWith('template-')) || 'default';
+        const statusCache = localStorage.getItem('escom_lead_status_' + templateSlug) || localStorage.getItem('escom_lead_status');
+        if (statusCache === 'pago') {
+            const banner = document.getElementById('banner-urgencia');
+            const dossie = document.getElementById('dossie-comercial');
+            const proposta = document.getElementById('proposta-comercial');
+            const navbar = document.getElementById('navbar');
+            
+            if (banner) banner.style.display = 'none';
+            if (navbar) {
+                navbar.classList.remove('top-10');
+                navbar.classList.add('top-0');
+            }
+            if (dossie) dossie.style.display = 'none';
+            if (proposta) proposta.style.display = 'none';
+        }
+    }
+    verificarStatusDoLead();
+    window.addEventListener('storage', (e) => {
+        const pathParts = window.location.pathname.split('/');
+        const templateSlug = pathParts.find(p => p.startsWith('template-')) || 'default';
+        if ((e.key === 'escom_lead_status' || e.key === ('escom_lead_status_' + templateSlug)) && e.newValue === 'pago') {
+            verificarStatusDoLead();
+        }
+    });
+
+    // Blindagem Anti-Cópia Silenciosa
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.addEventListener('keydown', (e) => {
+        const isCopying = (e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C');
+        const isSaving = (e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S');
+        const isPrinting = (e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P');
+        const isPrintScreen = e.key === 'PrintScreen';
+        const isMacSnippet = e.metaKey && e.shiftKey;
+
+        if (isCopying || isSaving || isPrinting || isPrintScreen || isMacSnippet) {
+            e.preventDefault();
+        }
+    });
+    document.addEventListener('copy', (e) => {
+        e.clipboardData.setData('text/plain', '');
+        e.preventDefault();
+    });
+
+    // Controle do Botão Voltar ao Topo
+    const backToTopBtn = document.getElementById('backToTop');
+    if (backToTopBtn) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        backToTopBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+
+    // Inicialização do Lenis Smooth Scroll Global
+    (function() {
+        if (typeof Lenis !== 'undefined') {
+            const lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                smoothWheel: true
+            });
+            function raf(time) {
+                lenis.raf(time);
+                requestAnimationFrame(raf);
+            }
+            requestAnimationFrame(raf);
+            
+            // Sincronizar Lenis com GSAP ScrollTrigger
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                lenis.on('scroll', ScrollTrigger.update);
+                gsap.ticker.add((time) => {
+                    lenis.raf(time * 1000);
+                });
+                gsap.ticker.lagSmoothing(0);
+            }
+        }
+    })();
+
+    // GSAP ScrollTrigger para Efeito de Reveal Premium nos Elementos
+    (function() {
+        if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Animar elementos com classe reveal
+            gsap.utils.toArray('.reveal').forEach((el) => {
+                gsap.fromTo(el, 
+                    { opacity: 0, y: 30 },
+                    { 
+                        opacity: 1, 
+                        y: 0, 
+                        duration: 0.8, 
+                        ease: "power2.out",
+                        scrollTrigger: {
+                            trigger: el,
+                            start: "top 88%",
+                            toggleActions: "play none none none"
+                        }
+                    }
+                );
+            });
+
+            // Animação de hover 3D em cards flutuantes (depoimentos, serviços e produtos)
+            const floatCards = document.querySelectorAll('.product-card, .testimonial-card-hover, .service-card');
+            floatCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    gsap.to(card, { y: -8, scale: 1.01, boxShadow: "0 20px 40px rgba(0,0,0,0.12)", duration: 0.4, ease: "power2.out" });
+                });
+                card.addEventListener('mouseleave', () => {
+                    gsap.to(card, { y: 0, scale: 1, boxShadow: "0 4px 15px rgba(0,0,0,0.05)", duration: 0.4, ease: "power2.out" });
+                });
+            });
+        } else {
+            // Fallback clássico caso as CDNs falhem por algum bloqueio
+            const revealElements = document.querySelectorAll('.reveal');
+            if (revealElements.length > 0) {
+                const checkReveal = () => {
+                    const triggerBottom = window.innerHeight * 0.85;
+                    revealElements.forEach(el => {
+                        const elTop = el.getBoundingClientRect().top;
+                        if (elTop < triggerBottom) {
+                            el.classList.add('active');
+                        }
+                    });
+                };
+                window.addEventListener('scroll', checkReveal);
+                window.addEventListener('resize', checkReveal);
+                checkReveal();
+                setTimeout(checkReveal, 300);
+            }
+        }
+    })();
+</script>
+  </body>
+</html>

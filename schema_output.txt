@@ -1,0 +1,41 @@
+=== Coleção: proposals ===
+  (Vazia)
+-----------------------------------------
+=== Coleção: generated_sites ===
+  Chaves do Documento (16362500771644110426):
+["score","companyName","originalUrl","status","analysis","deployedUrl","createdAt","screenId","niche","htmlUrl","projectId"]
+  Valores de amostra:
+{
+  "score": 95,
+  "companyName": "Clínica ImplArt",
+  "originalUrl": "https://www.implart.com.br",
+  "status": "pending",
+  "analysis": "### Auditoria do Site Original (implart.com.br)\nDurante a fase de mineração do negócio **Clínica ImplArt**, localizada em São Paulo, identificamos um site que, embora rico em conteúdo tecnológico, possui gargalos de conversão devido ao excesso de informação e um design levemente defasado para o público ultra-premium.\n\n1. **Excesso Cognitivo:** O site original apresenta menus massivos e muito texto longo logo na primeira tela, o que desvia a atenção da conversão rápida para implantes.\n2. **Fricção no Contato:** O usuário precisa pesquisar na página para encontrar um direcionamento claro de agendamento.\n3. **Estética:** O visual atual é puramente clínico (paleta em branco e violeta), com um layout engessado.\n\n---\n\n### Análise Estratégica do Novo Protótipo (Score 95)\nRedesenhamos a experiência digital da **ImplArt** para dominar o topo do funil (Odontologia Premium e Alta Tecnologia):\n\n**1. Above-the-Fold de Alto Impacto (Hero Section)**\nO paciente que acessa o link é recebido por um vídeo cinemático imersivo com carregamento hiper-rápido via CDN Cloudinary, seguido de um *fade-in* suave com a Headline de vendas de conversão direta.\n\n**2. Psicologia de Cores & Design**\nRompemos a poluição do site original. A paleta utiliza uma abordagem minimalista de altíssimo padrão (*Clean Design* com espaços de respiro) e tipografia moderna (Inter/Outfit), evocando **higiene impecável, clareza e tecnologia de ponta** sem cansar os olhos do paciente.\n\n**3. Otimização de Conversão e Contato**\nO ícone genérico foi substituído pelo **WhatsApp Oficial em SVG**. Não há fricção: o agendamento está a apenas 1 clique de distância, com *Call-to-Action* agressivo para 'Agendar Avaliação com Tomografia'.\n\n> *Análise gerada cruzando os dados da presença digital da 'Clínica ImplArt' com as métricas de conversão exigidas pela ESCOM Studio.*\n",
+  "deployedUrl": "https://escom-studio.vercel.app/template-clinica/index.html",
+  "createdAt": 1780440988352,
+  "screenId": "d0aefb2fabe24fd5819ec7029356002c",
+  "niche": "Clínica Odontológica",
+  "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzg4MmJmYjA1Nzk5ZDQ1ODdhOTJkMzAyMWQzZDM4YjUxEgsSBxCCh-eE8AMYAZIBJAoKcHJvamVjdF9pZBIWQhQxNjM2MjUwMDc3MTY0NDExMDQyNg&filename=&opi=96797242",
+  "projectId": "16362500771644110426"
+}
+-----------------------------------------
+=== Coleção: leads ===
+  Chaves do Documento (10108177358869523393):
+["title","status","placeId","phone","address","website","rating","createdAt","ratingCount","niche"]
+  Valores de amostra:
+{
+  "title": "Arthur Calliari Arquitetos",
+  "status": "pending",
+  "placeId": "10108177358869523393",
+  "phone": "(41) 98831-3236",
+  "address": "R. Cel. Dulcídio, 349 - Batel, Curitiba - PR, 80420-170",
+  "website": "http://arthurcalliari.com/",
+  "rating": 5,
+  "createdAt": 1779801301507,
+  "ratingCount": 23,
+  "niche": "Escritórios de Arquitetura em Curitiba"
+}
+-----------------------------------------
+=== Coleção: contracts ===
+  (Vazia)
+-----------------------------------------

@@ -1,4 +1,5 @@
 import { motion, useMotionValue, useTransform, animate } from "motion/react";
+import { TextEffect } from '@/components/ui/text-effect';
 import { useEffect } from "react";
 
 function StatBar({ label, value }: { label: string; value: number }) {
@@ -7,7 +8,7 @@ function StatBar({ label, value }: { label: string; value: number }) {
       <div className="text-white/70 font-mono text-xs tracking-widest uppercase mb-3">{label}</div>
       <div className="h-1 bg-white/10 rounded overflow-hidden">
          <motion.div 
-           className="h-full bg-[#00e300]"
+           className="h-full bg-[#00d1ff]"
            initial={{ width: 0 }}
            whileInView={{ width: `${value * 100}%` }}
            viewport={{ once: true }}
@@ -49,7 +50,7 @@ function AnimatedGauge() {
        <svg viewBox="0 0 240 140" className="w-full h-full overflow-visible">
          <defs>
             <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-               <stop offset="0%" stopColor="#00e300" />
+               <stop offset="0%" stopColor="#00d1ff" />
                <stop offset="100%" stopColor="#00ff88" />
             </linearGradient>
          </defs>
@@ -97,9 +98,9 @@ export default function AbsoluteControl() {
          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <pattern id="node-grid" width="100" height="100" patternUnits="userSpaceOnUse">
-                <circle cx="2" cy="2" r="1.5" fill="#00e300" />
-                <path d="M 2 2 L 100 100" stroke="#00e300" strokeWidth="0.5" strokeOpacity="0.3" />
-                <path d="M 100 2 L 2 100" stroke="#00e300" strokeWidth="0.5" strokeOpacity="0.3" />
+                <circle cx="2" cy="2" r="1.5" fill="#00d1ff" />
+                <path d="M 2 2 L 100 100" stroke="#00d1ff" strokeWidth="0.5" strokeOpacity="0.3" />
+                <path d="M 100 2 L 2 100" stroke="#00d1ff" strokeWidth="0.5" strokeOpacity="0.3" />
               </pattern>
             </defs>
             <rect width="100%" height="100%" fill="url(#node-grid)" />
@@ -111,16 +112,22 @@ export default function AbsoluteControl() {
           
           {/* LEFT COLUMN - Text */}
           <div className="flex-1 text-left">
-             <div className="inline-flex bg-black border border-[#00e300]/30 rounded-full px-4 py-1.5 mb-10 items-center gap-3">
-                <div className="w-2 h-2 rounded-full border-2 border-[#00e300] bg-black ring-2 ring-[#00e300]/20"></div>
+             <div className="inline-flex bg-black border border-[#00d1ff]/30 rounded-full px-4 py-1.5 mb-10 items-center gap-3">
+                <div className="w-2 h-2 rounded-full border-2 border-[#00d1ff] bg-black ring-2 ring-[#00d1ff]/20"></div>
                 <span className="text-white/70 font-mono text-xs tracking-widest">SISTEMA INTEGRADO</span>
              </div>
-             <h2 className="text-5xl md:text-7xl lg:text-8xl font-black font-tech text-white mb-8 leading-[1.1] tracking-tight">
-               O controle absoluto do seu <br/><span className="text-[#00e300]">negócio em um só</span> lugar.
-             </h2>
-             <p className="text-white/50 max-w-xl font-rajdhani text-xl leading-relaxed">
-               Esqueça dezenas de abas abertas. Integramos as principais métricas e ferramentas de gestão diretamente no seu sistema ESCOM.
-             </p>
+             <motion.h2
+                initial={{ opacity: 0, filter: 'blur(20px)' }}
+                whileInView={{ opacity: 1, filter: 'blur(0px)' }}
+                transition={{ duration: 1.2, ease: 'easeOut' }}
+                viewport={{ once: true }}
+                className="text-5xl md:text-7xl lg:text-8xl font-black font-tech text-white mb-8 leading-[1.1] tracking-tight"
+              >
+                O controle absoluto do seu <br/><span className="text-[#00d1ff]">negócio em um só</span> lugar.
+              </motion.h2>
+             <TextEffect preset="blur" per="word" as="p" className="text-white/50 max-w-xl font-rajdhani text-xl leading-relaxed">
+                Esqueça dezenas de abas abertas. Integramos as principais métricas e ferramentas de gestão diretamente no seu sistema ESCOM.
+              </TextEffect>
           </div>
 
           {/* RIGHT COLUMN - Stats & Gauge */}

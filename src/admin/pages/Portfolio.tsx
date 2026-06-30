@@ -12,6 +12,7 @@ export default function Portfolio() {
   const [formData, setFormData] = useState({
     name: "",
     category: "",
+    tag: "",
     desc: "",
     image: "",
     score: "",
@@ -31,7 +32,7 @@ export default function Portfolio() {
 
   const handleOpenNew = () => {
     setEditingProject(null);
-    setFormData({ name: "", category: "", desc: "", image: "", score: "90%", destaque: false });
+    setFormData({ name: "", category: "", tag: "", desc: "", image: "", score: "90%", destaque: false });
     setIsModalOpen(true);
   };
 
@@ -40,6 +41,7 @@ export default function Portfolio() {
     setFormData({
       name: projeto.name || "",
       category: projeto.category || "",
+      tag: projeto.tag || "",
       desc: projeto.desc || "",
       image: projeto.image || "",
       score: projeto.score || "90%",
@@ -101,7 +103,7 @@ export default function Portfolio() {
             <h2 className="text-2xl font-bold uppercase tracking-tight">Portfólio de Projetos</h2>
             <p className="text-gray-400 text-sm mt-1">Gerencie os projetos que aparecem no seu portfólio público.</p>
           </div>
-          <button onClick={handleOpenNew} className="flex items-center gap-2 bg-[#2EFF00] hover:bg-[#28e600] text-black px-4 py-2 rounded-lg text-sm font-bold transition-colors">
+          <button onClick={handleOpenNew} className="flex items-center gap-2 bg-[#00d1ff] hover:bg-[#00b8e6] text-black px-4 py-2 rounded-lg text-sm font-bold transition-colors">
             <Plus size={16} />
             Novo Projeto
           </button>
@@ -120,7 +122,7 @@ export default function Portfolio() {
                   <div className="absolute top-0 right-0 p-3 flex flex-col gap-2">
                     <button 
                       onClick={(e) => handleToggleDestaque(projeto, e)}
-                      className={`w-8 h-8 rounded-full flex flex-col items-center justify-center transition-colors shadow-lg ${projeto.destaque ? 'bg-[#2EFF00] text-black' : 'bg-black/50 text-white hover:bg-black/80'}`}
+                      className={`w-8 h-8 rounded-full flex flex-col items-center justify-center transition-colors shadow-lg ${projeto.destaque ? 'bg-[#00d1ff] text-black' : 'bg-black/50 text-white hover:bg-black/80'}`}
                       title={projeto.destaque ? "Remover destaque" : "Marcar como destaque (max 5)"}
                     >
                       <Star size={14} fill={projeto.destaque ? "black" : "none"} />
@@ -132,7 +134,7 @@ export default function Portfolio() {
                   </div>
 
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                    <button onClick={() => handleOpenEdit(projeto)} className="w-12 h-12 bg-[#2EFF00] hover:bg-[#28e600] text-black rounded-xl flex items-center justify-center transition-transform hover:scale-110">
+                    <button onClick={() => handleOpenEdit(projeto)} className="w-12 h-12 bg-[#00d1ff] hover:bg-[#00b8e6] text-black rounded-xl flex items-center justify-center transition-transform hover:scale-110">
                       <Edit2 size={20} />
                     </button>
                     <button onClick={() => handleDelete(projeto.id!)} className="w-12 h-12 bg-red-500/80 hover:bg-red-500 text-white rounded-xl flex items-center justify-center transition-transform hover:scale-110 shadow-lg">
@@ -168,32 +170,43 @@ export default function Portfolio() {
             <div className="p-6 space-y-4 overflow-y-auto">
               <div>
                 <label className="block text-xs font-mono text-gray-500 tracking-wider mb-2">NOME DO PROJETO</label>
-                <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#2EFF00]" />
+                <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#00d1ff]" />
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-mono text-gray-500 tracking-wider mb-2">CATEGORIA</label>
-                  <input type="text" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#2EFF00]" />
+                  <label className="block text-xs font-mono text-gray-500 tracking-wider mb-2">CATEGORIA (ex: Branding, UI/UX)</label>
+                  <input type="text" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#00d1ff]" />
                 </div>
                 <div>
                   <label className="block text-xs font-mono text-gray-500 tracking-wider mb-2">SCORE (ex: 95%)</label>
-                  <input type="text" value={formData.score} onChange={e => setFormData({...formData, score: e.target.value})} className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#2EFF00]" />
+                  <input type="text" value={formData.score} onChange={e => setFormData({...formData, score: e.target.value})} className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#00d1ff]" />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono text-gray-500 tracking-wider mb-2">TAG (aba no portfolio)</label>
+                <select value={formData.tag} onChange={e => setFormData({...formData, tag: e.target.value})} className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#00d1ff]">
+                  <option value="">Selecionar...</option>
+                  <option value="Web Design">Web Design</option>
+                  <option value="Social Media">Social Media</option>
+                  <option value="Designer">Designer</option>
+                  <option value="Ilustração">Ilustração</option>
+                </select>
               </div>
 
               <div>
                 <label className="block text-xs font-mono text-gray-500 tracking-wider mb-2">URL DA IMAGEM</label>
-                <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#2EFF00]" />
+                <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#00d1ff]" />
               </div>
 
               <div>
                 <label className="block text-xs font-mono text-gray-500 tracking-wider mb-2">DESCRIÇÃO</label>
-                <textarea value={formData.desc} onChange={e => setFormData({...formData, desc: e.target.value})} rows={3} className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#2EFF00] resize-none" />
+                <textarea value={formData.desc} onChange={e => setFormData({...formData, desc: e.target.value})} rows={3} className="w-full bg-[#111] border border-[#333] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#00d1ff] resize-none" />
               </div>
               
               <div className="flex items-center gap-3 mt-4">
-                <input type="checkbox" id="destaque" checked={formData.destaque} onChange={e => setFormData({...formData, destaque: e.target.checked})} className="w-5 h-5 accent-[#2EFF00] bg-[#111] border-[#333] rounded" />
+                <input type="checkbox" id="destaque" checked={formData.destaque} onChange={e => setFormData({...formData, destaque: e.target.checked})} className="w-5 h-5 accent-[#00d1ff] bg-[#111] border-[#333] rounded" />
                 <label htmlFor="destaque" className="text-sm text-gray-300">Marcar como Destaque (Max 5 na Home)</label>
               </div>
             </div>
@@ -205,7 +218,7 @@ export default function Portfolio() {
               <button 
                 onClick={handleSave} 
                 disabled={!formData.name}
-                className="bg-[#2EFF00] hover:bg-[#28e600] disabled:opacity-50 disabled:cursor-not-allowed text-black px-6 py-3 rounded-lg text-sm font-bold transition-colors"
+                className="bg-[#00d1ff] hover:bg-[#00b8e6] disabled:opacity-50 disabled:cursor-not-allowed text-black px-6 py-3 rounded-lg text-sm font-bold transition-colors"
               >
                 Salvar Projeto
               </button>

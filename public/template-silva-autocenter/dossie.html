@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dossiê Estratégico | Silva Auto Center</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            light: '#fafafa',
+                            primary: '#ea580c', /* Orange */
+                            accent: '#2EFF00',  /* ESCOM Green */
+                            text: '#44403c',    /* Stone 700 */
+                            darkText: '#1c1917' /* Stone 900 */
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        body {
+            background-color: #f4f4f5;
+            color: #44403c;
+            user-select: none;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            font-family: 'Inter', sans-serif;
+        }
+        .pdf-page {
+            width: 210mm;
+            height: 297mm;
+            padding: 20mm;
+            margin: 30px auto;
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            position: relative;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            page-break-after: always;
+            page-break-inside: avoid;
+            border: 1px solid #e4e4e7;
+        }
+        .decor-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #2EFF00 0%, #ea580c 100%);
+            z-index: 20;
+        }
+        @media print {
+            body {
+                background-color: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                height: 100% !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .pdf-page {
+                margin: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                background: #ffffff !important;
+                color: #44403c !important;
+                page-break-after: always !important;
+                page-break-inside: avoid !important;
+            }
+            .print\:hidden {
+                display: none !important;
+            }
+        }
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 8rem;
+            color: rgba(0, 0, 0, 0.015);
+            font-weight: 800;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header flutuante de navegação para a Web -->
+    <div class="max-w-[210mm] mx-auto mb-2 mt-4 px-4 flex justify-between items-center text-xs text-stone-500 print:hidden">
+        <div>
+            <a href="index.html" class="text-stone-600 hover:text-brand-primary font-bold transition flex items-center gap-1">
+                <i class="fa-solid fa-arrow-left"></i> Voltar para o Site
+            </a>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>MODO DE IMPRESSÃO (A4 CLEAN)</span>
+        </div>
+    </div>
+
+    <!-- PÁGINA 1: CAPA EDITORIAL CLEAN -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer justify-between h-full py-8">
+            <div class="space-y-2">
+                <p class="text-stone-400 font-mono text-sm tracking-[0.2em] uppercase">ESCOM Studio &bull; Business Intelligence</p>
+                <h1 class="text-stone-900 font-display font-black text-5xl leading-tight">
+                    Análise Estratégica<br>
+                    <span class="text-brand-primary">Silva Auto Center</span>
+                </h1>
+                <div class="w-16 h-1.5 bg-[#2EFF00] mt-4"></div>
+            </div>
+
+            <!-- Imagem Centralizada com Borda Premium -->
+            <div class="my-6 relative overflow-hidden rounded-2xl border border-stone-200 shadow-md h-[110mm]">
+                <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=2070&auto=format&fit=crop');"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-stone-950/40 via-transparent to-transparent"></div>
+            </div>
+
+            <div class="flex justify-between items-end border-t border-stone-100 pt-6">
+                <div>
+                    <p class="text-xs text-stone-400 uppercase tracking-wider">Documento Preparado para</p>
+                    <p class="text-stone-900 font-bold text-lg">Diretoria Executiva</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-stone-400 uppercase tracking-wider">Status</p>
+                    <p class="text-emerald-600 font-mono font-bold text-sm uppercase tracking-wider flex items-center gap-1.5 justify-end">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Confidencial
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 2: CONTEÚDO -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="watermark">CONFIDENCIAL</div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-stone-900 mb-8 pb-3 border-b-2 border-stone-100 flex items-center gap-3">
+                Conteúdo <span class="text-brand-primary text-sm font-mono font-normal">/ Índice Geral</span>
+            </h2>
+            
+            <div class="grid grid-cols-2 gap-y-6 gap-x-12 text-base flex-1 py-4">
+                <div class="flex items-baseline gap-3 border-b border-stone-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">03</span>
+                    <span class="text-stone-900 font-semibold">Contexto Estratégico</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-stone-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">08</span>
+                    <span class="text-stone-900 font-semibold">6 Vantagens Competitivas</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-stone-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">04</span>
+                    <span class="text-stone-900 font-semibold">Maturidade do Mercado</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-stone-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">09</span>
+                    <span class="text-stone-900 font-semibold">Funil de Aquisição Digital</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-stone-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">05</span>
+                    <span class="text-stone-900 font-semibold">O Campo de Batalha</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-stone-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">10</span>
+                    <span class="text-stone-900 font-semibold">Plano de Ação Estratégico</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-stone-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">06</span>
+                    <span class="text-stone-900 font-semibold">O Espaço Vazio</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-stone-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">11</span>
+                    <span class="text-stone-900 font-semibold">Oceano Azul & Síntese</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-stone-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">07</span>
+                    <span class="text-stone-900 font-semibold">Diretriz de Comunicação</span>
+                </div>
+            </div>
+            
+            <div class="bg-stone-50 p-6 rounded-xl border-l-4 border-brand-primary mt-auto">
+                <p class="text-sm text-stone-650 leading-relaxed">
+                    Este documento apresenta uma leitura estratégica do mercado de <strong>manutenção automotiva de confiança</strong>, com foco em onde o mercado está, quem está competindo, e qual janela de oportunidade financeira ainda não foi ocupada na região.
+                </p>
+            </div>
+            <div class="mt-4 flex justify-end text-xs text-stone-400 font-mono">Página 2</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 3: DIAGNÓSTICO DO NEGÓCIO ATUAL (NOVA) -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="watermark">CONFIDENCIAL</div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-stone-900 mb-6 leading-tight">
+                Diagnóstico do Negócio:<br>
+                <span class="text-brand-primary">Silva Auto Center no Cenário Local</span>
+            </h2>
+            
+            <p class="text-xs text-stone-650 leading-relaxed mb-5">
+                Fundada há mais de 15 anos no bairro da Saúde em São Paulo (SP) pelo mecânico de confiança José Silva, a Silva Auto Center consolidou sua reputação física local prestando serviços automotivos de excelência.
+            </p>
+
+            <div class="space-y-4 flex-1 text-sm">
+                <div class="p-5 border border-stone-200 bg-stone-50/40 rounded-xl">
+                    <h3 class="text-brand-primary font-bold text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-award"></i> Reputação Física Consolidada
+                    </h3>
+                    <p class="text-xs text-stone-650 leading-relaxed">
+                        A Silva Auto Center é uma referência de confiança há mais de 15 anos no bairro da Saúde/Mirandópolis (SP). O excelente atendimento do proprietário José Silva e sua equipe gerou avaliações cinco estrelas orgânicas e profunda lealdade dos motoristas locais.
+                    </p>
+                </div>
+
+                <div class="p-5 border border-stone-200 bg-stone-50/40 rounded-xl">
+                    <h3 class="text-red-650 font-bold text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Ausência de Canais Digitais Próprios
+                    </h3>
+                    <p class="text-xs text-stone-650 leading-relaxed">
+                        O negócio carece de um site ou Landing Page própria na web, dependendo inteiramente da indicação boca a boca e do tráfego físico passivo de rua. Sem uma vitrine digital estruturada, é impossível transmitir os diferenciais de tecnologia (como o Scanner OBD2) e comodidade (como o Leva-e-Traz).
+                    </p>
+                </div>
+
+                <div class="bg-emerald-50/40 p-5 border border-emerald-100 rounded-xl">
+                    <h3 class="text-emerald-800 font-bold text-xs uppercase tracking-wider mb-1">A Janela de Oportunidade</h3>
+                    <p class="text-[11px] text-stone-650 leading-relaxed">
+                        Estabelecer um funil de atração digital local focado nos proprietários de carros premium e importados da Zona Sul, prometendo **Diagnóstico Técnico Visual por Vídeo no WhatsApp** e **Garantia de 1 Ano**, capturando leads diretamente para o agendamento.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-stone-400 font-mono border-t border-stone-100 pt-4">Página 3</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 4: CONTEXTO & MATURIDADE DO MERCADO (COMBINADA) -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="watermark">CONFIDENCIAL</div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-stone-900 mb-3">Contexto & Maturidade do Mercado</h2>
+            
+            <!-- Grid de 2 Colunas para compactar dados -->
+            <div class="grid grid-cols-2 gap-4 flex-1 text-xs">
+                <!-- Coluna da Esquerda: Contexto -->
+                <div class="space-y-3">
+                    <div class="bg-stone-50 p-4 rounded-xl border border-stone-200">
+                        <h3 class="font-bold text-stone-900 mb-1.5 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-brand-primary"></i> Mudança de Comportamento
+                        </h3>
+                        <p class="text-[10px] text-stone-600 leading-relaxed">
+                            O motorista moderno de alto padrão busca a agilidade do bairro aliada à tecnologia da concessionária, rejeitando a burocracia das autorizadas e o amadorismo de oficinas antigas.
+                        </p>
+                    </div>
+
+                    <div class="bg-stone-50 p-4 rounded-xl border border-stone-200">
+                        <h3 class="font-bold text-stone-900 mb-1.5 flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye text-emerald-700"></i> Tamanho do Mercado (TAM)
+                        </h3>
+                        <ul class="space-y-1.5 text-[9px] text-stone-600">
+                            <li>&bull; <strong class="text-stone-850">350.000 veículos</strong> elegíveis na região.</li>
+                            <li>&bull; <strong class="text-stone-850">Alta Premium:</strong> Crescimento de 34% da frota de importados fora da garantia de fábrica.</li>
+                            <li>&bull; <strong class="text-stone-850">Validação Digital:</strong> 100% do público A pesquisa no Maps antes de confiar.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Coluna da Direita: Tabela de Maturidade -->
+                <div class="flex flex-col justify-between">
+                    <div class="border border-stone-200 rounded-xl overflow-hidden">
+                        <div class="bg-stone-50 py-1.5 px-2 font-bold text-stone-800 text-[10px] uppercase border-b border-stone-200 text-center">Níveis de Decisão de Compra</div>
+                        <table class="w-full text-left text-[9px] leading-tight">
+                            <thead>
+                                <tr class="bg-stone-100 text-stone-700 font-bold">
+                                    <th class="py-1 px-1.5">Nível</th>
+                                    <th class="py-1 px-1.5 text-center">%</th>
+                                    <th class="py-1 px-1.5">Foco LP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-stone-100">
+                                    <td class="py-1 px-1.5 font-semibold">Sabe do ruído</td>
+                                    <td class="py-1 px-1.5 text-center text-brand-primary font-bold">35%</td>
+                                    <td class="py-1 px-1.5 text-stone-500">Mostrar diagnóstico.</td>
+                                </tr>
+                                <tr class="border-b border-stone-100 bg-emerald-50/20">
+                                    <td class="py-1 px-1.5 font-bold text-emerald-800">Quer solução</td>
+                                    <td class="py-1 px-1.5 text-center text-emerald-700 font-extrabold">30%</td>
+                                    <td class="py-1 px-1.5 text-emerald-800 font-bold">Foco Principal.</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1 px-1.5 font-semibold">Pesquisando</td>
+                                    <td class="py-1 px-1.5 text-center text-brand-primary font-bold">15%</td>
+                                    <td class="py-1 px-1.5 text-stone-500">Prova (Garantia).</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="bg-emerald-50/30 p-3 border border-emerald-100 rounded-xl text-center text-[10px] text-emerald-800 font-bold mt-2">
+                        60% do mercado local está pronto para agendar, aguardando apenas uma mecânica transparente e digitalizada de bairro.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-stone-400 font-mono border-t border-stone-100 pt-3">Página 4</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 5: O CAMPO DE BATALHA -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-stone-900 mb-3 border-l-8 border-brand-primary pl-4 leading-none">
+                O Campo de Batalha:<br>
+                <span class="text-brand-primary text-2xl font-bold">Quem Está Competindo e Onde</span>
+            </h2>
+            <p class="text-sm mb-4 text-stone-600">Existem concorrentes relevantes que o cliente encontra. Cada um ocupa um território definido e deixa um gap aberto.</p>
+            
+            <div class="space-y-4 flex-1">
+                <div>
+                    <h3 class="text-base font-bold text-stone-900 mb-2">1. Concessionárias Oficiais</h3>
+                    <div class="grid grid-cols-4 border border-stone-200 rounded-lg overflow-hidden text-xs">
+                        <div class="col-span-1 bg-blue-50 py-2 px-3 font-bold text-blue-800 flex items-center justify-center uppercase tracking-wider text-center">Faixa</div>
+                        <div class="col-span-3 bg-stone-50/50 py-2 px-3 font-semibold text-stone-800">R$ 1.500 a R$ 4.000+ por serviço</div>
+                        
+                        <div class="col-span-1 bg-emerald-50 py-2 px-3 font-bold text-emerald-800 flex items-center justify-center uppercase tracking-wider text-center">Forte</div>
+                        <div class="col-span-3 bg-white py-2 px-3 text-stone-600 border-t border-stone-100">Status de prestígio e selo da marca. Peças originais.</div>
+                        
+                        <div class="col-span-1 bg-red-50 py-2 px-3 font-bold text-red-800 flex items-center justify-center uppercase tracking-wider text-center">Fraco</div>
+                        <div class="col-span-3 bg-stone-50/50 py-2 px-3 text-stone-600 border-t border-stone-100">Preços exorbitantes, longa espera para agendar e burocracia excessiva.</div>
+                        
+                        <div class="col-span-1 bg-amber-50 py-2 px-3 font-bold text-amber-800 flex items-center justify-center uppercase tracking-wider text-center">GAP</div>
+                        <div class="col-span-3 bg-emerald-50/30 py-2 px-3 text-emerald-700 font-bold border-t border-stone-100">Cliente que quer qualidade técnica equivalente mas com agilidade e preço justificável.</div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-base font-bold text-stone-900 mb-2">2. Grandes Redes Autocenter</h3>
+                    <div class="grid grid-cols-4 border border-stone-200 rounded-lg overflow-hidden text-xs">
+                        <div class="col-span-1 bg-blue-50 py-2 px-3 font-bold text-blue-800 flex items-center justify-center uppercase tracking-wider text-center">Faixa</div>
+                        <div class="col-span-3 bg-stone-50/50 py-2 px-3 font-semibold text-stone-800">R$ 600 a R$ 2.000+</div>
+                        
+                        <div class="col-span-1 bg-emerald-50 py-2 px-3 font-bold text-emerald-800 flex items-center justify-center uppercase tracking-wider text-center">Forte</div>
+                        <div class="col-span-3 bg-white py-2 px-3 text-stone-600 border-t border-stone-100">Credibilidade nacional. Padronização.</div>
+                        
+                        <div class="col-span-1 bg-red-50 py-2 px-3 font-bold text-red-800 flex items-center justify-center uppercase tracking-wider text-center">Fraco</div>
+                        <div class="col-span-3 bg-stone-50/50 py-2 px-3 text-stone-600 border-t border-stone-100">Alta rotatividade técnica, foco em empurrar serviços desnecessários, impessoalidade.</div>
+                        
+                        <div class="col-span-1 bg-amber-50 py-2 px-3 font-bold text-amber-800 flex items-center justify-center uppercase tracking-wider text-center">GAP</div>
+                        <div class="col-span-3 bg-emerald-50/30 py-2 px-3 text-emerald-700 font-bold border-t border-stone-100">O cliente busca o "dono" da oficina. Relacionamento de confiança real.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-stone-400 font-mono border-t border-stone-100 pt-4">Página 5</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 6: O ESPAÇO VAZIO -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h3 class="text-base font-bold text-stone-900 mb-2">3. Oficina "De Bairro" Tradicional</h3>
+            <div class="grid grid-cols-4 border border-stone-200 rounded-lg overflow-hidden mb-6 text-xs">
+                <div class="col-span-1 bg-blue-50 py-2 px-3 font-bold text-blue-800 flex items-center justify-center uppercase tracking-wider text-center">Faixa</div>
+                <div class="col-span-3 bg-stone-50/50 py-2 px-3 font-semibold text-stone-800">R$ 150 a R$ 500</div>
+                
+                <div class="col-span-1 bg-emerald-50 py-2 px-3 font-bold text-emerald-800 flex items-center justify-center uppercase tracking-wider text-center">Forte</div>
+                <div class="col-span-3 bg-white py-2 px-3 text-stone-600 border-t border-stone-100">Proximidade, flexibilidade extrema de preço.</div>
+                
+                <div class="col-span-1 bg-red-50 py-2 px-3 font-bold text-red-800 flex items-center justify-center uppercase tracking-wider text-center">Fraco</div>
+                <div class="col-span-3 bg-stone-50/50 py-2 px-3 text-stone-600 border-t border-stone-100">Desorganizado, sem scanner atualizado, informalidade e aparência de desleixo.</div>
+                
+                <div class="col-span-1 bg-amber-50 py-2 px-3 font-bold text-amber-800 flex items-center justify-center uppercase tracking-wider text-center">GAP</div>
+                <div class="col-span-3 bg-emerald-50/30 py-2 px-3 text-emerald-700 font-bold border-t border-stone-100">O dono de carro de luxo foge. Ele tem pavor de deixar o carro no local.</div>
+            </div>
+            
+            <h2 class="text-3xl font-display font-black text-stone-900 mb-4 text-center">
+                O Espaço que Ninguém Ocupa
+            </h2>
+            
+            <div class="bg-emerald-50/30 rounded-xl p-5 border border-emerald-100 relative overflow-hidden flex-1 flex flex-col justify-center">
+                <p class="text-lg font-bold text-stone-850 mb-3 text-center">
+                    O espaço vazio é a combinação exata:
+                </p>
+                <h3 class="text-2xl text-emerald-700 font-display font-black text-center mb-4 leading-tight">
+                    Mecânica Avançada<br>+<br>Transparência Visual (Scanner/Vídeo)<br>+<br>Ambiente VIP Local
+                </h3>
+                <p class="text-center text-sm text-stone-600 max-w-md mx-auto leading-relaxed">
+                    Nenhum dos competidores locais ocupa esse espaço. A Concessionária é distante e burocrática. As Redes são impessoais. Os de Bairro são defasados.
+                </p>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-stone-400 font-mono border-t border-stone-100 pt-4">Página 6</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 7: DIRETRIZ DE COMUNICAÇÃO -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-stone-900 mb-4">O Que a Comunicação Deve Fazer</h2>
+            
+            <ol class="space-y-3 mb-6 text-sm text-stone-600">
+                <li class="flex gap-4 items-start">
+                    <strong class="text-brand-primary text-xl leading-none">1.</strong> 
+                    <span>Aparecer forte no Google para quem já busca ativamente oficinas confiáveis.</span>
+                </li>
+                <li class="flex gap-4 items-start">
+                    <strong class="text-brand-primary text-xl leading-none">2.</strong> 
+                    <span>Criar identificação imediata: fotos limpas, equipamentos de ponta, estética premium.</span>
+                </li>
+                <li class="flex gap-4 items-start">
+                    <strong class="text-brand-primary text-xl leading-none">3.</strong> 
+                    <span>Neutralizar objeções. Mostrar ao cliente que <strong>antes</strong> de trocar a peça, ele receberá um vídeo técnico no WhatsApp.</span>
+                </li>
+            </ol>
+            
+            <div class="border border-stone-200 rounded-lg overflow-hidden flex-1 flex flex-col mb-4">
+                <div class="bg-red-50 py-2.5 px-4 text-center font-bold text-red-800 text-sm tracking-wider uppercase border-b border-stone-200">
+                    <i class="fa-solid fa-ban text-red-500 mr-2"></i> Palavras a Evitar
+                </div>
+                <table class="w-full text-left text-xs flex-1">
+                    <thead>
+                        <tr class="bg-stone-50 text-stone-900">
+                            <th class="py-2 px-4 border-b border-stone-200">Palavras Gastas</th>
+                            <th class="py-2 px-4 border-b border-stone-200">Por que evitar</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-stone-600">
+                        <tr class="border-b border-stone-100">
+                            <td class="py-2 px-4 font-bold text-stone-800">"Oficina Completa"</td>
+                            <td class="py-2 px-4">Qualquer um fala. Não diferencia em nada.</td>
+                        </tr>
+                        <tr class="border-b border-stone-100">
+                            <td class="py-2 px-4 font-bold text-stone-800">"Preço Justo"</td>
+                            <td class="py-2 px-4">Frequentemente associado a gambiarras e serviço inferior.</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-4 font-bold text-stone-800">"Qualidade"</td>
+                            <td class="py-2.5 px-4">Obrigação primária. Dizer isso não gera valor real.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-stone-400 font-mono border-t border-stone-100 pt-4">Página 7</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 8: 6 VANTAGENS COMPETITIVAS (GRID 2 COLUNAS - EVITA CORTES) -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-stone-900 mb-6">6 Vantagens Competitivas Absolutas</h2>
+            
+            <!-- Grid de 2 Colunas por 3 Linhas - Extremamente compacto e Clean -->
+            <div class="grid grid-cols-2 gap-4 flex-1">
+                <div class="flex gap-4 p-4 border border-stone-200 bg-stone-50/50 rounded-xl items-start">
+                    <div class="text-2xl text-brand-primary mt-1"><i class="fa-solid fa-video"></i></div>
+                    <div>
+                        <h3 class="text-base font-bold text-stone-900 mb-1">Diagnóstico por Vídeo</h3>
+                        <p class="text-xs text-stone-650 leading-relaxed">O cliente aprova do escritório, vendo a peça sendo trocada em tempo real pelo WhatsApp.</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-4 p-4 border border-stone-200 bg-stone-50/50 rounded-xl items-start">
+                    <div class="text-2xl text-emerald-600 mt-1"><i class="fa-solid fa-truck-pickup"></i></div>
+                    <div>
+                        <h3 class="text-base font-bold text-stone-900 mb-1">Leva-e-Traz Rastreado</h3>
+                        <p class="text-xs text-stone-650 leading-relaxed">Segurança de retirar e entregar o carro na casa do cliente corporativo sem que ele perca tempo.</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-4 p-4 border border-stone-200 bg-stone-50/50 rounded-xl items-start">
+                    <div class="text-2xl text-brand-primary mt-1"><i class="fa-solid fa-certificate"></i></div>
+                    <div>
+                        <h3 class="text-base font-bold text-stone-900 mb-1">1 Ano de Garantia</h3>
+                        <p class="text-xs text-stone-650 leading-relaxed">Superar os 90 dias da lei elimina imediatamente o risco percebido de usar uma oficina independente.</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-4 p-4 border border-stone-200 bg-stone-50/50 rounded-xl items-start">
+                    <div class="text-2xl text-emerald-600 mt-1"><i class="fa-solid fa-box-open"></i></div>
+                    <div>
+                        <h3 class="text-base font-bold text-stone-900 mb-1">Peça Velha Devolvida</h3>
+                        <p class="text-xs text-stone-650 leading-relaxed">Um protocolo de transparência inquebrável que gera a mais profunda lealdade.</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-4 p-4 border border-stone-200 bg-stone-50/50 rounded-xl items-start">
+                    <div class="text-2xl text-brand-primary mt-1"><i class="fa-solid fa-sparkles"></i></div>
+                    <div>
+                        <h3 class="text-base font-bold text-stone-900 mb-1">Selo "Clean Shop"</h3>
+                        <p class="text-xs text-stone-650 leading-relaxed">Chão limpo de epóxi e LEDs. O cliente de alto padrão julga a mecânica pelo chão da oficina.</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-4 p-4 border border-stone-200 bg-stone-50/50 rounded-xl items-start">
+                    <div class="text-2xl text-emerald-600 mt-1"><i class="fa-solid fa-mug-hot"></i></div>
+                    <div>
+                        <h3 class="text-base font-bold text-stone-900 mb-1">Sala VIP (Coworking)</h3>
+                        <p class="text-xs text-stone-650 leading-relaxed">Wi-Fi ultra veloz. O cliente trabalha confortavelmente enquanto o carro recebe a manutenção rápida.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-stone-400 font-mono border-t border-stone-100 pt-4">Página 8</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 9: FUNIL DE AQUISIÇÃO AUTOMOTIVA DIGITAL -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="watermark">CONFIDENCIAL</div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-stone-900 mb-4">O Funil de Aquisição Automotiva Digital</h2>
+            
+            <p class="text-sm text-stone-600 mb-6 leading-relaxed">
+                O cliente de alto padrão que necessita de manutenção mecânica premium inicia sua jornada através de uma busca de alta intenção local. O objetivo do funil digital é capturar essa intenção e convertê-la em contato direto:
+            </p>
+            
+            <div class="space-y-4 flex-1">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 border border-stone-200 bg-stone-50/50 rounded-xl">
+                        <h3 class="text-brand-primary font-bold text-xs uppercase tracking-wider mb-2">1. Captura Local (Google Maps & SEO)</h3>
+                        <p class="text-[11px] text-stone-650 leading-relaxed">Otimização de perfil para pesquisas como "oficina mecânica importados" ou "diagnóstico mecânico perto de mim". Intenção de conversão imediata.</p>
+                    </div>
+                    <div class="p-4 border border-stone-200 bg-stone-50/50 rounded-xl">
+                        <h3 class="text-brand-primary font-bold text-xs uppercase tracking-wider mb-2">2. Experiência de LP Dedicada</h3>
+                        <p class="text-[11px] text-stone-650 leading-relaxed">Em vez de sites institucionais lentos, a LP exibe a infraestrutura premium da Silva Auto Center e o selo "Clean Shop" de organização.</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 border border-stone-200 bg-stone-50/50 rounded-xl">
+                        <h3 class="text-brand-primary font-bold text-xs uppercase tracking-wider mb-2">3. Confiança Técnica por Vídeo</h3>
+                        <p class="text-[11px] text-stone-650 leading-relaxed">Destaque para o "Diagnóstico por Vídeo via WhatsApp". O cliente sabe antes de agendar que receberá prova visual de qualquer peça substituída.</p>
+                    </div>
+                    <div class="p-4 border border-stone-200 bg-stone-50/50 rounded-xl">
+                        <h3 class="text-brand-primary font-bold text-xs uppercase tracking-wider mb-2">4. Pré-Atendimento e Agendamento</h3>
+                        <p class="text-[11px] text-stone-650 leading-relaxed">Encaminhamento rápido para o botão de WhatsApp. Um roteiro focado no agendamento do Leva-e-Traz minimiza perdas de conversão.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-emerald-50/30 p-4 border border-emerald-100 rounded-xl">
+                    <h3 class="text-emerald-800 font-bold text-xs uppercase tracking-wider mb-1">Diferencial do Funil Ativo</h3>
+                    <p class="text-[11px] text-stone-650 leading-relaxed">
+                        Ao contrário de mecânicas convencionais que dependem puramente do tráfego físico passivo de rua, a Silva Auto Center passa a controlar de forma previsível o fluxo diário de novos agendamentos qualificados na região.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-stone-400 font-mono border-t border-stone-100 pt-4">Página 9</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 10: PLANO DE AÇÃO ESTRATÉGICO (90 DIAS) -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="watermark">CONFIDENCIAL</div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-stone-900 mb-4">Plano de Ação Estratégico (90 Dias)</h2>
+            <p class="text-xs text-stone-650 mb-4">
+                Etapas operacionais detalhadas para estruturar e expandir a autoridade comercial digital da Silva Auto Center:
+            </p>
+            
+            <div class="space-y-4 flex-1 text-xs">
+                <div class="p-4 border border-stone-200 bg-stone-50/30 rounded-xl flex items-start gap-4">
+                    <div class="w-8 h-8 rounded-full bg-brand-primary text-white flex items-center justify-center font-bold text-xs shrink-0 font-mono">1</div>
+                    <div>
+                        <h3 class="text-stone-900 font-bold text-sm mb-1">Dia 1 a 30: Higienização Visual & Infraestrutura</h3>
+                        <p class="text-[11px] text-stone-600 leading-relaxed">Desenvolvimento da Landing Page de alta performance. Ensaios de fotografia premium da oficina limpa e equipamentos. Otimização do perfil comercial do Google Maps.</p>
+                    </div>
+                </div>
+
+                <div class="p-4 border border-stone-200 bg-stone-50/30 rounded-xl flex items-start gap-4">
+                    <div class="w-8 h-8 rounded-full bg-brand-primary text-white flex items-center justify-center font-bold text-xs shrink-0 font-mono">2</div>
+                    <div>
+                        <h3 class="text-stone-900 font-bold text-sm mb-1">Dia 31 a 60: Ativação e Otimização de Tráfego Ads</h3>
+                        <p class="text-[11px] text-stone-600 leading-relaxed">Campanhas direcionadas no Google Ads (palavras-chave de alta intenção como "freio importados" ou "revisão suspensão") e anúncios visuais de WhatsApp local no Instagram.</p>
+                    </div>
+                </div>
+
+                <div class="p-4 border border-stone-200 bg-stone-50/30 rounded-xl flex items-start gap-4">
+                    <div class="w-8 h-8 rounded-full bg-brand-primary text-white flex items-center justify-center font-bold text-xs shrink-0 font-mono">3</div>
+                    <div>
+                        <h3 class="text-stone-900 font-bold text-sm mb-1">Dia 61 a 90: Consolidação e Novos Canais de Receita</h3>
+                        <p class="text-[11px] text-stone-600 leading-relaxed">Implantação do modelo de assinatura recorrente de revisão periódica e prospecção direta de convênios B2B para frotas corporativas executivas na região.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-stone-400 font-mono border-t border-stone-100 pt-4">Página 10</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 11: OCEANO AZUL & SÍNTESE -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="watermark">CONFIDENCIAL</div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-stone-900 mb-6 text-center">
+                O Oceano Azul & Síntese
+            </h2>
+            
+            <div class="grid grid-cols-2 gap-6 mb-4">
+                <div class="bg-stone-50 p-5 rounded-xl border border-stone-200 relative overflow-hidden">
+                    <h3 class="text-lg font-bold text-brand-primary mb-2">Pilar 1: Assinatura Anual</h3>
+                    <p class="text-xs text-stone-600 leading-relaxed">O cliente paga um valor anual para checkups de segurança e prioridade de encaixe. Transforma a manutenção reativa em MRR (Receita Recorrente).</p>
+                </div>
+                <div class="bg-stone-50 p-5 rounded-xl border border-stone-200 relative overflow-hidden">
+                    <h3 class="text-lg font-bold text-emerald-600 mb-2">Pilar 2: B2B Frotas Executivas</h3>
+                    <p class="text-xs text-stone-650 leading-relaxed">Convênios com clínicas e escritórios de advogados locais para manter os carros dos sócios via leva-e-traz empresarial corporativo.</p>
+                </div>
+            </div>
+            
+            <div class="bg-stone-50 p-6 rounded-2xl border border-stone-200 flex-1 flex flex-col justify-center shadow-sm">
+                <h3 class="text-xl font-display font-black text-brand-primary mb-3">Síntese Estratégica</h3>
+                <p class="text-sm text-stone-650 leading-relaxed mb-3">
+                    O mercado está no momento exato de inflexão. O desejo existe. O que falta é a presença digital imponente, a UI/UX de transparência e a promessa inabalável de engenharia de serviço.
+                </p>
+                <p class="text-sm text-emerald-650 font-bold leading-relaxed mb-4">
+                    O primeiro na região a se estabelecer como a "Oficina Mecânica Transparente" criará uma vantagem injusta duradoura e dominará os leads qualificados do Google Maps e tráfego pago da região.
+                </p>
+                <p class="text-xs text-stone-700 font-medium leading-relaxed italic border-t border-stone-100 pt-3">
+                    Agora que você já deu o primeiro passo para alavancar a sua empresa com este novo site que preparamos, vamos bater um papo para conversar sobre o que mais podemos fazer com base nesta análise estratégica?<br>
+                    <span class="block mt-2 text-[10px] text-stone-500 font-sans not-italic font-semibold">Contato: es.comunicacao@outlook.com | WhatsApp: (13) 98106-2787</span>
+                </p>
+            </div>
+            
+            <div class="mt-auto flex justify-between items-center text-xs text-stone-400 font-mono border-t border-stone-100 pt-4">
+                <span>Dossiê Silva Auto Center - Projetado por ESCOM Studio</span>
+                <span>Página 11</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="pt-BR">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Sua Oficina está invisível no Google</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        red: {
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            900: '#7f1d1d',
+                            950: '#450a0a',
+                        },
+                        slate: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 font-sans text-slate-900 antialiased selection:bg-red-500 selection:text-white">
+
+    <!-- Header / Navbar -->
+    <header class="fixed w-full top-0 z-50 transition-all duration-300 bg-white/90 backdrop-blur-md border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold text-lg"><i class="fa-solid fa-wrench"></i></div>
+                <span class="font-serif font-bold text-slate-900 text-xl tracking-tight">Análise de Mercado</span>
+            </div>
+            <a href="#proposta" class="hidden md:inline-flex items-center justify-center h-10 px-6 rounded-full bg-slate-900 text-white text-sm font-semibold hover:bg-red-600 transition-colors">
+                Agendar Reunião
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 md:pt-40 md:pb-32 px-6 relative overflow-hidden bg-white">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <span class="text-red-600 font-bold uppercase tracking-widest text-xs mb-4 block">Alerta de Posicionamento</span>
+                <h1 class="text-5xl md:text-6xl font-serif font-bold text-slate-900 leading-tight mb-6">
+                    Sua oficina está <span class="text-red-600 italic">invisível</span> no Google.
+                </h1>
+                <p class="text-lg text-slate-600 leading-relaxed mb-8 max-w-lg">
+                    Enquanto você depende 100% de indicações, seus concorrentes estão faturando diariamente com motoristas buscando "mecânica perto de mim" na internet.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="#proposta" class="inline-flex items-center justify-center h-14 px-8 rounded-full bg-red-600 text-white font-semibold hover:bg-red-700 transition-colors shadow-lg shadow-red-500/30">
+                        Ver Custo de Oportunidade
+                    </a>
+                </div>
+            </div>
+            <div class="relative">
+                <div class="absolute inset-0 bg-red-500/10 rounded-full blur-3xl transform -translate-x-10 translate-y-10"></div>
+                <img src="https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?q=80&w=1200&auto=format&fit=crop" class="relative z-10 rounded-3xl shadow-2xl object-cover h-[500px] w-full" alt="Mecânico trabalhando">
+                
+                <!-- Floating Alert -->
+                <div class="absolute -bottom-6 -left-6 z-20 bg-white p-6 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600 text-xl">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-500 font-medium">Buscas Locais Mês</p>
+                        <p class="text-2xl font-bold text-slate-900">+18.400</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problema -->
+    <section class="py-24 bg-slate-950 text-white relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-4xl font-serif font-bold mb-6">O Preço da Invisibilidade</h2>
+                <p class="text-slate-400">Todo dia, dezenas de carros quebram ou precisam de revisão no seu bairro. Sem um site profissional e bem ranqueado, esses motoristas não acham você.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl">
+                    <i class="fa-solid fa-eye-slash text-red-500 text-3xl mb-4"></i>
+                    <h3 class="text-xl font-bold mb-3">Ninguém te Acha</h3>
+                    <p class="text-slate-400 text-sm">Depender apenas da fachada física limita o crescimento. No digital, sua oficina não existe para quem mora 3 quarteirões de distância.</p>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl">
+                    <i class="fa-solid fa-money-bill-trend-up text-red-500 text-3xl mb-4"></i>
+                    <h3 class="text-xl font-bold mb-3">Perda Financeira</h3>
+                    <p class="text-slate-400 text-sm">Seu ticket médio de revisão é R$ 1.500. Perder 15 orçamentos mensais para a concorrência custa R$ 22.500 por mês.</p>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl">
+                    <i class="fa-solid fa-triangle-exclamation text-red-500 text-3xl mb-4"></i>
+                    <h3 class="text-xl font-bold mb-3">Imagem Amadora</h3>
+                    <p class="text-slate-400 text-sm">Quando o cliente busca e não encontra um site ou encontra apenas redes sociais abandonadas, a confiança despenca na hora do orçamento.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="proposta" class="py-24 bg-red-600 text-white text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <h2 class="text-4xl font-serif font-bold mb-6">Pare de Perder Dinheiro Hoje</h2>
+            <p class="text-red-100 text-lg mb-10">Desenvolvemos uma estrutura digital "Mobile-First" específica para captação de clientes de mecânica na sua região. Agende uma demonstração gratuita de 15 minutos.</p>
+            <a href="https://wa.me/5511981062787?text=Gostaria+de+entender+como+captar+as+buscas+do+Google+para+minha+oficina" class="inline-flex items-center justify-center h-16 px-10 rounded-full bg-slate-950 text-white font-bold text-lg hover:bg-slate-900 transition-colors shadow-2xl">
+                <i class="fa-brands fa-whatsapp mr-2 text-xl"></i> Quero Ver Minha Oportunidade
+            </a>
+        </div>
+    </section>
+    
+    <!-- ESCOM Injections Placeholder (will be appended by layout builder if needed, or we just leave it standalone) -->
+    <div id="footer-injection"></div>
+
+</body>
+</html>

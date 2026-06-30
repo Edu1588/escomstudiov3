@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Dossiê Confidencial - Auto Center São José</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { background:#f4f4f5; color:#3f3f46; font-family:'Inter',sans-serif; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .page { width:210mm; height:297mm; padding:18mm; margin:30px auto; background:#ffffff; border:1px solid #e4e4e7; position:relative; overflow:hidden; page-break-after:always; page-break-inside:avoid; display:flex; flex-direction:column; justify-content:between; }
+    @media print { body { background:#ffffff !important; } .page { margin:0 !important; border:none !important; width:210mm !important; height:297mm !important; padding:14mm !important; background:#ffffff !important; color:#3f3f46 !important; } }
+    .font-serif { font-family:'Playfair Display',serif; }
+    .text-theme { color:#ef4444; }
+    .bg-theme { background-color:#ef4444; }
+    .bg-grid { background-size:40px 40px; background-image:linear-gradient(to right,rgba(0,0,0,.015) 1px,transparent 1px),linear-gradient(to bottom,rgba(0,0,0,.015) 1px,transparent 1px); }
+    .glow { position:absolute; width:500px; height:500px; background:radial-gradient(circle,#ef444408 0%,transparent 70%); z-index:0; pointer-events:none; }
+    .z { position:relative; z-index:10; display:flex; flex-direction:column; justify-content:between; height:100%; }
+    .decor-line { position:absolute; top:0; left:0; width:100%; height:6px; background:#ef4444; z-index:20; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 1: CAPA EDITORIAL CLEAN                 -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid">
+  <div class="decor-line"></div>
+  <div class="glow" style="top:-200px;right:-200px"></div>
+  <div class="z py-4">
+    <div class="text-[9px] tracking-[0.4em] text-zinc-400 uppercase flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-lock text-theme"></i> Documento Confidencial — Acesso Restrito
+    </div>
+    
+    <div class="space-y-4">
+      <p class="text-theme uppercase tracking-[0.4em] text-[10px] font-bold">Inteligência Competitiva & Auditoria UX</p>
+      <h1 class="text-zinc-900 font-serif font-black text-5xl leading-tight">Dossiê Estratégico<br><span class="italic text-zinc-500 font-light text-4xl">Auto Center São José</span></h1>
+      <div class="w-16 h-1 bg-brand-accent" style="background:#ef4444"></div>
+    </div>
+
+    <!-- Imagem em Arco Premium de Odontologia -->
+    <div class="my-6 relative overflow-hidden rounded-2xl border border-zinc-200 shadow-md h-[110mm]">
+      <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop');"></div>
+    </div>
+
+    <div class="flex justify-between items-end border-t border-zinc-200 pt-6">
+      <div>
+        <p class="text-zinc-400 text-[9px] uppercase tracking-widest mb-1">Elaborado por</p>
+        <p class="text-zinc-800 font-bold tracking-wider text-sm">ESCOM STUDIO</p>
+        <p class="text-zinc-500 text-[10px]">Inteligência Digital para Negócios de Alto Valor</p>
+      </div>
+      <p class="text-zinc-400 text-[10px] max-w-[200px] leading-relaxed text-right">
+        Estudo estratégico para reabilitação e captação estética premium.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 2: ANÁLISE DO NEGÓCIO                   -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid">
+  <div class="decor-line"></div>
+  <div class="glow" style="bottom:-200px;left:-200px"></div>
+  <div class="z">
+    <div class="border-b border-zinc-200 pb-5 mb-8 mt-8">
+      <span class="text-theme text-[10px] tracking-[0.3em] uppercase font-bold">Fase 01 • Inteligência de Mercado</span>
+      <h2 class="text-3xl font-serif mt-3 text-zinc-900">Análise do Negócio e Oportunidade</h2>
+    </div>
+    <p class="text-sm text-zinc-600 leading-relaxed mb-8">
+      Mapeamos o cenário real do mercado onde a Auto Center São José opera. Esses dados formam a base do diagnóstico e da projeção de receita deste estudo.
+    </p>
+
+    <div class="grid grid-cols-2 gap-4 mb-8">
+      <div class="bg-zinc-50 border border-zinc-200 p-5 rounded-xl text-center">
+        <i class="fa-solid fa-bullseye text-theme text-xl mb-3"></i>
+        <p class="text-zinc-400 text-[10px] uppercase mb-1">Segmento</p>
+        <p class="text-zinc-800 font-bold text-sm">Oficinas Mecânicas e Centros Automotivos</p>
+      </div>
+      <div class="bg-zinc-50 border border-zinc-200 p-5 rounded-xl text-center">
+        <i class="fa-solid fa-location-dot text-theme text-xl mb-3"></i>
+        <p class="text-zinc-400 text-[10px] uppercase mb-1">Região</p>
+        <p class="text-zinc-800 font-bold text-sm">São Paulo - SP</p>
+      </div>
+      <div class="bg-zinc-50 border border-zinc-200 p-5 rounded-xl text-center">
+        <i class="fa-solid fa-money-bill-trend-up text-theme text-xl mb-3"></i>
+        <p class="text-zinc-400 text-[10px] uppercase mb-1">Ticket Médio do Mercado</p>
+        <p class="text-zinc-800 font-bold text-lg">R$ 1.500</p>
+      </div>
+      <div class="bg-zinc-50 border border-zinc-200 p-5 rounded-xl text-center">
+        <i class="fa-solid fa-users text-theme text-xl mb-3"></i>
+        <p class="text-zinc-400 text-[10px] uppercase mb-1">Buscas Mensais (Google)</p>
+        <p class="text-zinc-800 font-bold text-lg">18.400+</p>
+      </div>
+    </div>
+
+    <div class="bg-zinc-50 border border-zinc-200 p-6 rounded-xl flex gap-6 items-center">
+      <div class="w-1/3 h-28 rounded-xl overflow-hidden shadow-sm border border-zinc-200">
+        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=300" className="w-full h-full object-cover" />
+      </div>
+      <div class="w-2/3">
+        <h3 class="text-zinc-900 font-bold mb-2 text-sm flex items-center gap-2"><i class="fa-solid fa-chart-line text-theme"></i> Contexto de Mercado</h3>
+        <p class="text-[11px] text-zinc-600 leading-relaxed mb-2">A busca por serviços automotivos locais cresceu 180% nos últimos 2 anos. Motoristas não guardam mais cartões de visita; quando uma luz acende no painel ou precisam de uma revisão, eles buscam "mecânica perto de mim" no Google e escolhem a oficina com melhor presença online.</p>
+        <p class="text-[11px] text-zinc-600 leading-relaxed">Estar fora do Google e não ter um site que transmita confiança imediata significa perder diariamente clientes que moram no seu próprio bairro, entregando esse faturamento diretamente para seus concorrentes locais.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 3: DIAGNÓSTICO DO SITE / AUSÊNCIA       -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid">
+  <div class="decor-line"></div>
+  <div class="z">
+    
+    <div class="border-b border-zinc-200 pb-5 mb-8 mt-8">
+      <span class="text-theme text-[10px] tracking-[0.3em] uppercase font-bold">Fase 02 • Ausência Digital</span>
+      <h2 class="text-3xl font-serif mt-3 text-zinc-900">O Custo de Não Ter um Site Profissional</h2>
+    </div>
+    <p class="text-sm text-zinc-600 leading-relaxed mb-8">
+      Hoje, Auto Center São José não possui um site estruturado. Isso representa uma perda real e mensurável de faturamento, já que seus concorrentes estão captando 100% da demanda digital do seu mercado.
+    </p>
+    <div>
+    <div class="bg-slate-50 border border-zinc-200 p-5 rounded-xl flex gap-4 mb-4 shadow-sm">
+      <div class="w-10 h-10 rounded-full bg-red-500/10 text-red-600 flex items-center justify-center flex-shrink-0 text-lg border border-red-500/20">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div>
+        <h4 class="text-zinc-900 font-bold mb-1 text-sm">Invisibilidade Digital Absoluta</h4>
+        <p class="text-xs text-zinc-600 leading-relaxed">Atualmente a oficina depende 100% de indicações ou passagem na porta. Os clientes da região que buscam no Google não encontram a sua oficina, indo direto para a concorrência que possui um site bem ranqueado.</p>
+      </div>
+    </div>
+    <div class="bg-slate-50 border border-zinc-200 p-5 rounded-xl flex gap-4 mb-4 shadow-sm">
+      <div class="w-10 h-10 rounded-full bg-red-500/10 text-red-600 flex items-center justify-center flex-shrink-0 text-lg border border-red-500/20">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div>
+        <h4 class="text-zinc-900 font-bold mb-1 text-sm">Perda de Faturamento Fixo</h4>
+        <p class="text-xs text-zinc-600 leading-relaxed">Com 18.400 buscas mensais na região, se apenas 0,5% escolhessem a sua oficina, seriam quase 100 novos clientes ao mês. Ao ticket médio de R$ 1.500, o custo dessa invisibilidade ultrapassa facilmente a casa dos R$ 100.000 mensais.</p>
+      </div>
+    </div>
+    <div class="bg-slate-50 border border-zinc-200 p-5 rounded-xl flex gap-4 mb-4 shadow-sm">
+      <div class="w-10 h-10 rounded-full bg-red-500/10 text-red-600 flex items-center justify-center flex-shrink-0 text-lg border border-red-500/20">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div>
+        <h4 class="text-zinc-900 font-bold mb-1 text-sm">Falta de Confiança e Profissionalismo Visual</h4>
+        <p class="text-xs text-zinc-600 leading-relaxed">Um site estruturado atua como uma vitrine 24h. Oficinas sem site passam a impressão de serem "amadoras" ou "de esquina", dificultando a venda de serviços mais caros como retíficas ou revisões preventivas completas.</p>
+      </div>
+    </div>
+    <div class="bg-slate-50 border border-zinc-200 p-5 rounded-xl flex gap-4 mb-4 shadow-sm">
+      <div class="w-10 h-10 rounded-full bg-red-500/10 text-red-600 flex items-center justify-center flex-shrink-0 text-lg border border-red-500/20">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div>
+        <h4 class="text-zinc-900 font-bold mb-1 text-sm">Dificuldade de Contato via WhatsApp</h4>
+        <p class="text-xs text-zinc-600 leading-relaxed">Não possuir um funil direto de agendamento online através de um clique força o cliente a ligar ou procurar outras opções. No trânsito ou com pressa, o cliente prefere a oficina que facilita o contato.</p>
+      </div>
+    </div></div>
+  
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 4: ANÁLISE VISUAL — PALETA DE CORES     -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid">
+  <div class="decor-line"></div>
+  <div class="glow" style="top:-150px;left:50%;transform:translateX(-50%)"></div>
+  <div class="z">
+    <div class="border-b border-zinc-200 pb-5 mb-8 mt-8">
+      <span class="text-theme text-[10px] tracking-[0.3em] uppercase font-bold">Fase 03 • Identidade Visual</span>
+      <h2 class="text-3xl font-serif mt-3 text-zinc-900">Paleta de Cores Estratégica</h2>
+    </div>
+    <p class="text-sm text-zinc-600 leading-relaxed mb-8">
+      As cores não são apenas escolhas visuais — elas moldam subconscientemente a percepção de valor. Definimos um ecossistema cromático sofisticado voltado ao público de Oficinas Mecânicas e Centros Automotivos.
+    </p>
+    <div class="grid grid-cols-2 gap-6 mb-8">
+      
+    <div class="flex items-center gap-4 mb-4">
+      <div class="w-14 h-14 rounded-xl shadow-md flex-shrink-0" style="background:#dc2626; border: 1px solid #e4e4e7;"></div>
+      <div>
+        <p class="text-zinc-900 font-bold text-sm">Vermelho Urgência (Primária)</p>
+        <p class="text-zinc-500 text-xs">HEX: #dc2626 · Botões, CTAs, Alertas — Transmite ação rápida e mecânica</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 mb-4">
+      <div class="w-14 h-14 rounded-xl shadow-md flex-shrink-0" style="background:#1e293b; border: 1px solid #e4e4e7;"></div>
+      <div>
+        <p class="text-zinc-900 font-bold text-sm">Asfalto Dark (Secundária)</p>
+        <p class="text-zinc-500 text-xs">HEX: #1e293b · Headers, fundos escuros — Profissionalismo e robustez</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 mb-4">
+      <div class="w-14 h-14 rounded-xl shadow-md flex-shrink-0" style="background:#f8fafc; border: 1px solid #e4e4e7;"></div>
+      <div>
+        <p class="text-zinc-900 font-bold text-sm">Cinza Gelo (Background)</p>
+        <p class="text-zinc-500 text-xs">HEX: #f8fafc · Fundos claros — Limpeza, organização técnica</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 mb-4">
+      <div class="w-14 h-14 rounded-xl shadow-md flex-shrink-0" style="background:#0f172a; border: 1px solid #e4e4e7;"></div>
+      <div>
+        <p class="text-zinc-900 font-bold text-sm">Preto Motor (Texto)</p>
+        <p class="text-zinc-500 text-xs">HEX: #0f172a · Corpo de texto — Contraste máximo e legibilidade</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 mb-4">
+      <div class="w-14 h-14 rounded-xl shadow-md flex-shrink-0" style="background:#eab308; border: 1px solid #e4e4e7;"></div>
+      <div>
+        <p class="text-zinc-900 font-bold text-sm">Amarelo Atenção (Acento)</p>
+        <p class="text-zinc-500 text-xs">HEX: #eab308 · Estrelas de avaliação, detalhes — Destaque</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 mb-4">
+      <div class="w-14 h-14 rounded-xl shadow-md flex-shrink-0" style="background:#ef4444; border: 1px solid #e4e4e7;"></div>
+      <div>
+        <p class="text-zinc-900 font-bold text-sm">Alerta Red (Urgência)</p>
+        <p class="text-zinc-500 text-xs">HEX: #ef4444 · Banners de urgência — Ação imediata</p>
+      </div>
+    </div>
+    </div>
+    <div class="bg-zinc-50 border border-zinc-200 p-5 rounded-xl">
+      <h4 class="text-zinc-900 font-bold text-sm mb-2"><i class="fa-solid fa-palette text-theme mr-2"></i> Racional Psicocromático</h4>
+      <p class="text-xs text-zinc-600 leading-relaxed">O esquema de cores une a robustez do asfalto escuro com o vermelho de alerta e urgência. Transmite a segurança de um centro automotivo moderno e limpo, diferenciando-se da oficina tradicional "suja de graxa".</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 5: ANÁLISE VISUAL — TIPOGRAFIA          -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid">
+  <div class="decor-line"></div>
+  <div class="z">
+    <div class="border-b border-zinc-200 pb-5 mb-8 mt-8">
+      <span class="text-theme text-[10px] tracking-[0.3em] uppercase font-bold">Fase 03 (cont.) • Tipografia</span>
+      <h2 class="text-3xl font-serif mt-3 text-zinc-900">Sistema Tipográfico</h2>
+    </div>
+    <p class="text-sm text-zinc-600 leading-relaxed mb-8">
+      A tipografia estabelece o tom de voz da clínica. Selecionamos fontes premium que comunicam robustez técnica e confiabilidade familiar.
+    </p>
+
+    
+    <div class="bg-zinc-50 border border-zinc-200 p-6 rounded-xl mb-6 shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <p class="text-zinc-400 text-[10px] uppercase tracking-widest">Títulos (Headline)</p>
+          <p class="text-zinc-900 text-2xl font-bold font-serif" style="font-family:'Playfair Display',sans-serif">Playfair Display</p>
+        </div>
+        <span class="text-theme text-xs font-bold border border-theme/20 px-3 py-1 rounded-full bg-theme/5">SemiBold 600</span>
+      </div>
+      <p class="text-2xl text-zinc-800 mb-3" style="font-family:'Playfair Display',sans-serif">Potência e Segurança em Cada Curva.</p>
+      <p class="text-xs text-zinc-500">Fonte forte e marcante que transmite tradição e confiabilidade.</p>
+    </div>
+    
+    <div class="bg-zinc-50 border border-zinc-200 p-6 rounded-xl mb-6 shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <p class="text-zinc-400 text-[10px] uppercase tracking-widest">Corpo de Texto (Body)</p>
+          <p class="text-zinc-900 text-2xl font-bold font-serif" style="font-family:'Inter',sans-serif">Inter</p>
+        </div>
+        <span class="text-theme text-xs font-bold border border-theme/20 px-3 py-1 rounded-full bg-theme/5">Regular 400</span>
+      </div>
+      <p class="text-2xl text-zinc-800 mb-3" style="font-family:'Inter',sans-serif">Agende a revisão do seu veículo agora pelo WhatsApp.</p>
+      <p class="text-xs text-zinc-500">Fonte técnica, moderna e legível para todas as telas.</p>
+    </div>
+    
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 6: BENCHMARK COMPETITIVO                -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid">
+  <div class="decor-line"></div>
+  <div class="z">
+    <div class="border-b border-zinc-200 pb-5 mb-8 mt-8">
+      <span class="text-theme text-[10px] tracking-[0.3em] uppercase font-bold">Fase 04 • Inteligência Competitiva</span>
+      <h2 class="text-3xl font-serif mt-3 text-zinc-900">Benchmark Local — São Paulo - SP</h2>
+    </div>
+    <p class="text-sm text-zinc-600 leading-relaxed mb-8">
+      Comparamos o posicionamento digital da sua marca frente aos líderes da região. A análise revela um gargalo de tráfego qualificado.
+    </p>
+
+    <table class="w-full text-left border-collapse mb-8">
+      <thead>
+        <tr class="border-b border-zinc-200 text-[10px] uppercase tracking-wider text-zinc-400">
+          <th class="py-3 px-3 font-normal">Critério</th>
+          <th class="py-3 px-3 font-normal text-center">Líderes de Mercado</th>
+          <th class="py-3 px-3 font-normal text-center text-red-500">Você Hoje</th>
+        </tr>
+      </thead>
+      <tbody>
+    <tr class="border-b border-zinc-200">
+      <td class="py-4 px-3 text-zinc-900 text-sm font-medium">Visibilidade no Google</td>
+      <td class="py-4 px-3 text-center text-green-600 text-sm font-semibold">Top 3 (Maps e Busca)</td>
+      <td class="py-4 px-3 text-center text-red-600 text-sm font-semibold">Invisível</td>
+    </tr>
+    <tr class="border-b border-zinc-200">
+      <td class="py-4 px-3 text-zinc-900 text-sm font-medium">Captura de Leads Automática</td>
+      <td class="py-4 px-3 text-center text-green-600 text-sm font-semibold">Botões WhatsApp</td>
+      <td class="py-4 px-3 text-center text-red-600 text-sm font-semibold">Nenhuma</td>
+    </tr>
+    <tr class="border-b border-zinc-200">
+      <td class="py-4 px-3 text-zinc-900 text-sm font-medium">Credibilidade (Provas Sociais)</td>
+      <td class="py-4 px-3 text-center text-green-600 text-sm font-semibold">Depoimentos e Avaliações</td>
+      <td class="py-4 px-3 text-center text-red-600 text-sm font-semibold">Ausente</td>
+    </tr>
+    <tr class="border-b border-zinc-200">
+      <td class="py-4 px-3 text-zinc-900 text-sm font-medium">Estrutura de Agendamento</td>
+      <td class="py-4 px-3 text-center text-green-600 text-sm font-semibold">Direto e Fácil</td>
+      <td class="py-4 px-3 text-center text-red-600 text-sm font-semibold">Indicação Boca a Boca</td>
+    </tr>
+    <tr class="border-b border-zinc-200">
+      <td class="py-4 px-3 text-zinc-900 text-sm font-medium">Responsividade</td>
+      <td class="py-4 px-3 text-center text-green-600 text-sm font-semibold">Otimizado para Celular</td>
+      <td class="py-4 px-3 text-center text-red-600 text-sm font-semibold">Sem site</td>
+    </tr>
+    <tr class="border-b border-zinc-200">
+      <td class="py-4 px-3 text-zinc-900 text-sm font-medium">Custo por Aquisição</td>
+      <td class="py-4 px-3 text-center text-green-600 text-sm font-semibold">Baixo (Orgânico Local)</td>
+      <td class="py-4 px-3 text-center text-red-600 text-sm font-semibold">Perda de Faturamento</td>
+    </tr></tbody>
+    </table>
+
+    <div class="bg-zinc-50 border border-zinc-200 p-5 rounded-xl text-center">
+      <p class="text-theme font-bold mb-1 text-sm">Oportunidade Estratégica</p>
+      <p class="text-xs text-zinc-600">Concorrentes locais com sites rápidos e organizados estão capturando diariamente os motoristas que buscam mecânica na sua região. Essa demanda existe e já está comprando, apenas não está comprando de você.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 7: PONTOS A MELHORAR / FAZER            -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid">
+  <div class="decor-line"></div>
+  <div class="z">
+    <div class="border-b border-zinc-200 pb-5 mb-8 mt-8">
+      <span class="text-theme text-[10px] tracking-[0.3em] uppercase font-bold">Fase 05 • Plano de Ação</span>
+      <h2 class="text-3xl font-serif mt-3 text-zinc-900">Pontos a Melhorar / Implementar</h2>
+    </div>
+    <p class="text-sm text-zinc-600 leading-relaxed mb-6">
+      Mapeamento e priorização de melhorias com foco imediato no aumento de captação e redução de bounce-rate.
+    </p>
+    
+    <div class="flex items-start gap-4 mb-4 bg-zinc-50 p-4 rounded-lg border border-zinc-200">
+      <span class="text-xs font-bold px-2 py-0.5 rounded border bg-red-500/10 text-red-600 border-red-500/20 flex-shrink-0 mt-0.5">Alto</span>
+      <div>
+        <h4 class="text-zinc-900 font-bold text-sm mb-1">Criação de Site Mobile-First</h4>
+        <p class="text-zinc-500 text-xs leading-relaxed">Desenvolver uma Landing Page rápida, voltada para captura de leads urgentes (ex: carro quebrado) direto no celular.</p>
+      </div>
+    </div>
+    <div class="flex items-start gap-4 mb-4 bg-zinc-50 p-4 rounded-lg border border-zinc-200">
+      <span class="text-xs font-bold px-2 py-0.5 rounded border bg-red-500/10 text-red-600 border-red-500/20 flex-shrink-0 mt-0.5">Alto</span>
+      <div>
+        <h4 class="text-zinc-900 font-bold text-sm mb-1">Integração com Google Meu Negócio</h4>
+        <p class="text-zinc-500 text-xs leading-relaxed">Configurar e conectar o site para ranquear no mapa local, aparecendo para quem pesquisa "mecânica".</p>
+      </div>
+    </div>
+    <div class="flex items-start gap-4 mb-4 bg-zinc-50 p-4 rounded-lg border border-zinc-200">
+      <span class="text-xs font-bold px-2 py-0.5 rounded border bg-red-500/10 text-red-600 border-red-500/20 flex-shrink-0 mt-0.5">Alto</span>
+      <div>
+        <h4 class="text-zinc-900 font-bold text-sm mb-1">Funil de Orçamento via WhatsApp</h4>
+        <p class="text-zinc-500 text-xs leading-relaxed">Botão flutuante onipresente que leva o cliente com 1 clique para falar com o mecânico.</p>
+      </div>
+    </div>
+    <div class="flex items-start gap-4 mb-4 bg-zinc-50 p-4 rounded-lg border border-zinc-200">
+      <span class="text-xs font-bold px-2 py-0.5 rounded border bg-yellow-500/10 text-yellow-600 border-yellow-500/20 flex-shrink-0 mt-0.5">Médio</span>
+      <div>
+        <h4 class="text-zinc-900 font-bold text-sm mb-1">Apresentação de Estrutura Física</h4>
+        <p class="text-zinc-500 text-xs leading-relaxed">Fotos da oficina limpa, equipamentos modernos e equipe, passando credibilidade.</p>
+      </div>
+    </div>
+    <div class="flex items-start gap-4 mb-4 bg-zinc-50 p-4 rounded-lg border border-zinc-200">
+      <span class="text-xs font-bold px-2 py-0.5 rounded border bg-yellow-500/10 text-yellow-600 border-yellow-500/20 flex-shrink-0 mt-0.5">Médio</span>
+      <div>
+        <h4 class="text-zinc-900 font-bold text-sm mb-1">Serviços Especializados em Destaque</h4>
+        <p class="text-zinc-500 text-xs leading-relaxed">Páginas/Seções explicando serviços de alto valor (ex: câmbio automático, injeção eletrônica).</p>
+      </div>
+    </div>
+    <div class="flex items-start gap-4 mb-4 bg-zinc-50 p-4 rounded-lg border border-zinc-200">
+      <span class="text-xs font-bold px-2 py-0.5 rounded border bg-blue-500/10 text-blue-600 border-blue-500/20 flex-shrink-0 mt-0.5">Baixo</span>
+      <div>
+        <h4 class="text-zinc-900 font-bold text-sm mb-1">Provas Sociais em Vídeo</h4>
+        <p class="text-zinc-500 text-xs leading-relaxed">Casos reais de clientes satisfeitos para aumentar a confiança inicial.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 8: ARQUITETURA DA SOLUÇÃO               -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid">
+  <div class="decor-line"></div>
+  <div class="z">
+    <div class="border-b border-zinc-200 pb-5 mb-8 mt-8">
+      <span class="text-theme text-[10px] tracking-[0.3em] uppercase font-bold">Fase 06 • A Nova Infraestrutura</span>
+      <h2 class="text-3xl font-serif mt-3 text-zinc-900">Arquitetura de Conversão Proposta</h2>
+    </div>
+    <p class="text-sm text-zinc-600 leading-relaxed mb-8">
+      Modelamos uma plataforma premium baseada em seis pilares técnicos para blindar a conversão de anúncios em contatos comerciais.
+    </p>
+    <div class="grid grid-cols-2 gap-4">
+      
+    <div class="border border-zinc-200 bg-zinc-50 p-5 rounded-xl relative overflow-hidden shadow-sm">
+      <div class="absolute top-0 left-0 w-1 h-full" style="background:#ef4444"></div>
+      <i class="fa-solid fa-car-burst text-lg mb-3" style="color:#ef4444"></i>
+      <h4 class="text-zinc-900 font-bold mb-2 text-sm">Captação de Urgência</h4>
+      <p class="text-[11px] text-zinc-500 leading-relaxed">Layout projetado para converter o cliente que está na rua precisando de ajuda rápida.</p>
+    </div>
+    <div class="border border-zinc-200 bg-zinc-50 p-5 rounded-xl relative overflow-hidden shadow-sm">
+      <div class="absolute top-0 left-0 w-1 h-full" style="background:#ef4444"></div>
+      <i class="fa-solid fa-bolt text-lg mb-3" style="color:#ef4444"></i>
+      <h4 class="text-zinc-900 font-bold mb-2 text-sm">Velocidade de Carregamento</h4>
+      <p class="text-[11px] text-zinc-500 leading-relaxed">O site abre instantaneamente no 4G, evitando que o motorista feche e vá para o próximo.</p>
+    </div>
+    <div class="border border-zinc-200 bg-zinc-50 p-5 rounded-xl relative overflow-hidden shadow-sm">
+      <div class="absolute top-0 left-0 w-1 h-full" style="background:#ef4444"></div>
+      <i class="fa-solid fa-mobile-screen-button text-lg mb-3" style="color:#ef4444"></i>
+      <h4 class="text-zinc-900 font-bold mb-2 text-sm">Design Mobile-First</h4>
+      <p class="text-[11px] text-zinc-500 leading-relaxed">Como 95% das buscas por mecânica ocorrem no celular, o site é 100% pensado para telas pequenas.</p>
+    </div>
+    <div class="border border-zinc-200 bg-zinc-50 p-5 rounded-xl relative overflow-hidden shadow-sm">
+      <div class="absolute top-0 left-0 w-1 h-full" style="background:#ef4444"></div>
+      <i class="fa-brands fa-whatsapp text-lg mb-3" style="color:#ef4444"></i>
+      <h4 class="text-zinc-900 font-bold mb-2 text-sm">Atendimento sem Fricção</h4>
+      <p class="text-[11px] text-zinc-500 leading-relaxed">Mensagens pré-configuradas no botão do WhatsApp ("Preciso de orçamento").</p>
+    </div>
+    <div class="border border-zinc-200 bg-zinc-50 p-5 rounded-xl relative overflow-hidden shadow-sm">
+      <div class="absolute top-0 left-0 w-1 h-full" style="background:#ef4444"></div>
+      <i class="fa-solid fa-magnifying-glass-location text-lg mb-3" style="color:#ef4444"></i>
+      <h4 class="text-zinc-900 font-bold mb-2 text-sm">Otimização Local SEO</h4>
+      <p class="text-[11px] text-zinc-500 leading-relaxed">Tags e estruturas otimizadas para ranquear nas pesquisas de bairro e região.</p>
+    </div>
+    <div class="border border-zinc-200 bg-zinc-50 p-5 rounded-xl relative overflow-hidden shadow-sm">
+      <div class="absolute top-0 left-0 w-1 h-full" style="background:#ef4444"></div>
+      <i class="fa-solid fa-shield-halved text-lg mb-3" style="color:#ef4444"></i>
+      <h4 class="text-zinc-900 font-bold mb-2 text-sm">Segurança Profissional</h4>
+      <p class="text-[11px] text-zinc-500 leading-relaxed">Site blindado com certificado SSL, passando confiança e estabilidade para o cliente.</p>
+    </div>
+    </div>
+    <div class="mt-8 bg-zinc-50 border border-zinc-200 rounded-xl p-5 text-center flex items-center justify-center gap-4">
+      <i class="fa-solid fa-lock text-zinc-400 text-xl"></i>
+      <p class="text-[10px] text-zinc-600 text-left leading-relaxed">
+        Plataforma hospedada em infraestrutura VPS, com SSL ativo e CDN de alta performance, preparada para grandes picos de tráfego.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 9: PROJEÇÃO DE FATURAMENTO E ROI        -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid">
+  <div class="decor-line"></div>
+  <div class="glow" style="top:-200px;right:-200px"></div>
+  <div class="z">
+    <div class="border-b border-zinc-200 pb-5 mb-8 mt-8">
+      <span class="text-theme text-[10px] tracking-[0.3em] uppercase font-bold">Fase 07 • Impacto Financeiro</span>
+      <h2 class="text-3xl font-serif mt-3 text-zinc-900">Projeção Conservadora de ROI</h2>
+    </div>
+    <p class="text-sm text-zinc-600 leading-relaxed mb-6">
+      Substituir o site genérico por uma máquina de vendas não é custo, é um investimento de retorno previsível.
+    </p>
+
+    <div class="bg-slate-50 border border-zinc-200 p-6 rounded-xl mb-6 shadow-sm">
+      <h3 class="text-zinc-900 font-bold mb-4 text-center text-sm">Cenário Esperado: 1000 Visitantes Únicos/mês</h3>
+      <div class="flex items-end justify-around h-40 border-b border-zinc-200 pb-2 relative">
+        <div class="absolute top-0 w-full border-t border-zinc-100 border-dashed"></div>
+        <div class="absolute top-1/2 w-full border-t border-zinc-100 border-dashed"></div>
+        <div class="flex flex-col items-center gap-2 z-10">
+          <span class="text-[10px] text-zinc-500">0% (Invisível) (Atual)</span>
+          <div class="w-14 h-8 bg-red-500/20 rounded-t border-t-2 border-red-500"></div>
+          <span class="text-xs font-bold text-zinc-800 mt-2">0 Pacientes</span>
+        </div>
+        <div class="flex flex-col items-center gap-2 z-10">
+          <span class="text-[10px] text-theme font-bold">Oportunidade (Novo Site)</span>
+          <div class="w-14 h-32 rounded-t border-t-2 relative" style="background:#ef444422;border-color:#ef4444">
+            <div class="absolute -top-3 -right-3 bg-white text-zinc-900 text-[8px] font-bold px-2 py-0.5 rounded-full border border-zinc-200 shadow-sm">+700%</div>
+          </div>
+          <span class="text-xs font-bold text-zinc-800 mt-2">15+ Pacientes</span>
+        </div>
+      </div>
+      <p class="text-center text-[9px] text-zinc-400 mt-3 uppercase tracking-widest font-mono">Taxa de Conversão do Funil</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <div class="bg-zinc-50 border border-zinc-200 p-4 rounded-xl text-center shadow-sm">
+        <p class="text-zinc-400 text-[10px] uppercase mb-1">Ticket Médio Estimado</p>
+        <p class="text-2xl font-bold text-zinc-900">R$ 1.500</p>
+      </div>
+      <div class="bg-zinc-50 border rounded-xl text-center p-4 shadow-sm" style="border-color:#ef444455;">
+        <p class="text-theme text-[10px] uppercase mb-1 font-bold">Potencial Faturamento Mensal</p>
+        <p class="text-2xl font-bold text-zinc-900">R$ 75.000 (Perda Estimada)</p>
+      </div>
+    </div>
+    <div class="text-center bg-zinc-50 border border-zinc-200 p-4 rounded-xl">
+      <p class="text-[10px] text-zinc-500 leading-relaxed"><i class="fa-solid fa-info-circle text-theme mr-1"></i> Projeção baseada em taxas de conversão de benchmarks locais do mesmo segmento.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 10: CTA — VAMOS CONVERSAR?              -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid flex flex-col justify-center items-center text-center">
+  <div class="decor-line"></div>
+  <div class="glow" style="top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+  <div class="z max-w-md my-auto">
+    <div class="w-16 h-16 rounded-full flex items-center justify-center text-2xl mb-6 mx-auto" style="background:#ef444415;color:#ef4444;border:1px solid #ef444433">
+      <i class="fa-brands fa-whatsapp"></i>
+    </div>
+    <p class="text-theme uppercase tracking-[0.3em] text-[10px] font-bold mb-3">Próximo Passo</p>
+    <h2 class="text-3xl font-serif mb-4 text-zinc-900">Agendar Apresentação</h2>
+    <div class="w-12 h-[2px] bg-zinc-200 mx-auto mb-6"></div>
+    <p class="text-zinc-600 text-xs leading-relaxed mb-8">
+      Este dossiê foi preparado exclusivamente para a direção do Auto Center São José. Gostaríamos de agendar uma conversa de 15 minutos para apresentar como podemos capturar essa demanda digital que hoje vai para a concorrência. Sem compromisso, sem pressão.
+    </p>
+
+    <div class="bg-slate-50 border border-zinc-200 rounded-2xl p-6 mb-6 w-full max-w-xs mx-auto shadow-sm">
+      <p class="text-zinc-500 text-[10px] uppercase tracking-wider mb-2">WhatsApp de Contato</p>
+      <div class="text-xl font-bold text-zinc-800 mb-1">(11) 98106-2787</div>
+      <p class="text-zinc-400 text-[9px]">Fale diretamente com nossa equipe de vendas</p>
+    </div>
+
+    <div class="bg-[#25D366] text-white font-bold px-6 py-3.5 rounded-xl shadow-md inline-flex items-center gap-2 text-xs uppercase tracking-wider transition-all hover:scale-105">
+      <i class="fa-brands fa-whatsapp text-sm"></i> Iniciar Conversa no WhatsApp
+    </div>
+
+    <div class="mt-12 pt-6 border-t border-zinc-200 w-full">
+      <p class="text-[9px] text-zinc-400 uppercase tracking-widest mb-1">Estudo conduzido por</p>
+      <p class="text-zinc-900 font-bold tracking-wider text-sm">ESCOM STUDIO</p>
+      <p class="text-zinc-400 text-[9px] mt-0.5">Inteligência Digital de Alta Conversão</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

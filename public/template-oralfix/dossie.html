@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Dossiê Confidencial - Oralfix Odonto</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { background:#f4f4f5; color:#3f3f46; font-family:'Inter',sans-serif; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .page { width:210mm; height:297mm; padding:18mm; margin:30px auto; background:#ffffff; border:1px solid #e4e4e7; position:relative; overflow:hidden; page-break-after:always; page-break-inside:avoid; display:flex; flex-direction:column; justify-content:between; }
+    @media print { body { background:#ffffff !important; } .page { margin:0 !important; border:none !important; width:210mm !important; height:297mm !important; padding:14mm !important; background:#ffffff !important; color:#3f3f46 !important; } }
+    .font-serif { font-family:'Playfair Display',serif; }
+    .text-theme { color:#0ea5e9; }
+    .bg-theme { background-color:#0ea5e9; }
+    .bg-grid { background-size:40px 40px; background-image:linear-gradient(to right,rgba(0,0,0,.015) 1px,transparent 1px),linear-gradient(to bottom,rgba(0,0,0,.015) 1px,transparent 1px); }
+    .glow { position:absolute; width:500px; height:500px; background:radial-gradient(circle,#0ea5e908 0%,transparent 70%); z-index:0; pointer-events:none; }
+    .z { position:relative; z-index:10; display:flex; flex-direction:column; justify-content:between; height:100%; }
+    .decor-line { position:absolute; top:0; left:0; width:100%; height:6px; background:#0ea5e9; z-index:20; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 1: CAPA EDITORIAL CLEAN                 -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid">
+  <div class="decor-line"></div>
+  <div class="glow" style="top:-200px;right:-200px"></div>
+  <div class="z py-4">
+    <div class="text-[9px] tracking-[0.4em] text-zinc-400 uppercase flex items-center gap-2 mb-6">
+      <i class="fa-solid fa-lock text-theme"></i> Documento Confidencial — Acesso Restrito
+    </div>
+    
+    <div class="space-y-4">
+      <p class="text-theme uppercase tracking-[0.4em] text-[10px] font-bold">Inteligência Competitiva & Auditoria UX</p>
+      <h1 class="text-zinc-900 font-serif font-black text-5xl leading-tight">Dossiê Estratégico<br><span class="italic text-zinc-500 font-light text-4xl">Oralfix Odonto</span></h1>
+      <div class="w-16 h-1 bg-brand-accent" style="background:#0ea5e9"></div>
+    </div>
+
+    <!-- Imagem em Arco Premium de Odontologia -->
+    <div class="my-6 relative overflow-hidden rounded-2xl border border-zinc-200 shadow-md h-[110mm]">
+      <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop');"></div>
+    </div>
+
+    <div class="flex justify-between items-end border-t border-zinc-200 pt-6">
+      <div>
+        <p class="text-zinc-400 text-[9px] uppercase tracking-widest mb-1">Elaborado por</p>
+        <p class="text-zinc-800 font-bold tracking-wider text-sm">ESCOM STUDIO</p>
+        <p class="text-zinc-500 text-[10px]">Inteligência Digital para Negócios de Alto Valor</p>
+      </div>
+      <p class="text-zinc-400 text-[10px] max-w-[200px] leading-relaxed text-right">
+        Estudo estratégico para reabilitação e captação estética premium.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 2: ANÁLISE DO NEGÓCIO                   -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid">
+  <div class="decor-line"></div>
+  <div class="glow" style="bottom:-200px;left:-200px"></div>
+  <div class="z">
+    <div class="border-b border-zinc-200 pb-5 mb-8 mt-8">
+      <span class="text-theme text-[10px] tracking-[0.3em] uppercase font-bold">Fase 01 • Inteligência de Mercado</span>
+      <h2 class="text-3xl font-serif mt-3 text-zinc-900">Análise do Negócio e Oportunidade</h2>
+    </div>
+    <p class="text-sm text-zinc-600 leading-relaxed mb-8">
+      Mapeamos o cenário real do mercado onde a Oralfix Odonto opera. Esses dados formam a base do diagnóstico e da projeção de receita deste estudo.
+    </p>
+
+    <div class="grid grid-cols-2 gap-4 mb-8">
+      <div class="bg-zinc-50 border border-zinc-200 p-5 rounded-xl text-center">
+        <i class="fa-solid fa-bullseye text-theme text-xl mb-3"></i>
+        <p class="text-zinc-400 text-[10px] uppercase mb-1">Segmento</p>
+        <p class="text-zinc-800 font-bold text-sm">Clínicas de Odontologia Estética e Reabilitação</p>
+      </div>
+      <div class="bg-zinc-50 border border-zinc-200 p-5 rounded-xl text-center">
+        <i class="fa-solid fa-location-dot text-theme text-xl mb-3"></i>
+        <p class="text-zinc-400 text-[10px] uppercase mb-1">Região</p>
+        <p class="text-zinc-800 font-bold text-sm">São Caetano do Sul - SP</p>
+      </div>
+      <div class="bg-zinc-50 border border-zinc-200 p-5 rounded-xl text-center">
+        <i class="fa-solid fa-money-bill-trend-up text-theme text-xl mb-3"></i>
+        <p class="text-zinc-400 text-[10px] uppercase mb-1">Ticket Médio do Mercado</p>
+        <p class="text-zinc-800 font-bold text-lg">R$ 8.500</p>
+      </div>
+      <div class="bg-zinc-50 border border-zinc-200 p-5 rounded-xl text-center">
+        <i class="fa-solid fa-users text-theme text-xl mb-3"></i>
+        <p class="text-zinc-400 text-[10px] uppercase mb-1">Buscas Mensais (Google)</p>
+        <p class="text-zinc-800 font-bold text-lg">14.800+</p>
+      </div>
+    </div>
+
+    <div class="bg-zinc-50 border border-zinc-200 p-6 rounded-xl flex gap-6 items-center">
+      <div class="w-1/3 h-28 rounded-xl overflow-hidden shadow-sm border border-zinc-200">
+        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=300" className="w-full h-full object-cover" />
+      </div>
+      <div class="w-2/3">
+        <h3 class="text-zinc-900 font-bold mb-2 text-sm flex items-center gap-2"><i class="fa-solid fa-chart-line text-theme"></i> Contexto de Mercado</h3>
+        <p class="text-[11px] text-zinc-600 leading-relaxed mb-2">O mercado de odontologia no Brasil segue em crescimento, mas a competição local exige posicionamento forte. São Caetano do Sul e a região do ABC Paulista concentram famílias e pacientes que buscam tratamentos duradouros e confiáveis, desde que encontrem um dentista de referência na região.</p>
+        <p class="text-[11px] text-zinc-600 leading-relaxed">A pesquisa por dentistas locais bem avaliados e acessíveis cresceu 340% nos últimos 3 anos no Google. Estar posicionado como a clínica mais confiável do bairro é o fator decisivo para captar as famílias que moram ao redor.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 3: DIAGNÓSTICO DO SITE / AUSÊNCIA       -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid">
+  <div class="decor-line"></div>
+  <div class="z">
+    
+    <div class="border-b border-zinc-200 pb-5 mb-8 mt-8">
+      <span class="text-theme text-[10px] tracking-[0.3em] uppercase font-bold">Fase 02 • Auditoria do Site Atual</span>
+      <h2 class="text-3xl font-serif mt-3 text-zinc-900">Diagnóstico do Site: oralfixodonto.com.br</h2>
+    </div>
+    <p class="text-sm text-zinc-600 leading-relaxed mb-8">
+      Realizamos um escaneamento completo do seu site atual e identificamos 4 pontos críticos que estão afastando pacientes de alto ticket e comprometendo sua taxa de conversão.
+    </p>
+    <div>
+    <div class="bg-slate-50 border border-zinc-200 p-5 rounded-xl flex gap-4 mb-4 shadow-sm">
+      <div class="w-10 h-10 rounded-full bg-red-500/10 text-red-600 flex items-center justify-center flex-shrink-0 text-lg border border-red-500/20">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div>
+        <h4 class="text-zinc-900 font-bold mb-1 text-sm">Visual aquém da credibilidade necessária</h4>
+        <p class="text-xs text-zinc-600 leading-relaxed">Pacientes buscando tratamento odontológico querem sentir segurança e acolhimento. Se o posicionamento digital da clínica parecer desatualizado, há uma desconexão imediata com o valor dos tratamentos, gerando desconfiança e busca pelo concorrente de esquina.</p>
+      </div>
+    </div>
+    <div class="bg-slate-50 border border-zinc-200 p-5 rounded-xl flex gap-4 mb-4 shadow-sm">
+      <div class="w-10 h-10 rounded-full bg-red-500/10 text-red-600 flex items-center justify-center flex-shrink-0 text-lg border border-red-500/20">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div>
+        <h4 class="text-zinc-900 font-bold mb-1 text-sm">Ausência de provas sociais da comunidade</h4>
+        <p class="text-xs text-zinc-600 leading-relaxed">Para tratamentos odontológicos para a família, a prova visual é o fator número um de conversão. Faltam depoimentos de moradores da região estruturados logo na página inicial.</p>
+      </div>
+    </div>
+    <div class="bg-slate-50 border border-zinc-200 p-5 rounded-xl flex gap-4 mb-4 shadow-sm">
+      <div class="w-10 h-10 rounded-full bg-red-500/10 text-red-600 flex items-center justify-center flex-shrink-0 text-lg border border-red-500/20">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div>
+        <h4 class="text-zinc-900 font-bold mb-1 text-sm">Excesso de explicações puramente técnicas</h4>
+        <p class="text-xs text-zinc-600 leading-relaxed">O paciente busca resolver a dor de dente ou melhorar o sorriso com facilidade e parcelamento. Termos extremamente técnicos afastam o leigo, que compra a experiência de estar sendo cuidado com segurança.</p>
+      </div>
+    </div>
+    <div class="bg-slate-50 border border-zinc-200 p-5 rounded-xl flex gap-4 mb-4 shadow-sm">
+      <div class="w-10 h-10 rounded-full bg-red-500/10 text-red-600 flex items-center justify-center flex-shrink-0 text-lg border border-red-500/20">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div>
+        <h4 class="text-zinc-900 font-bold mb-1 text-sm">Jornada de conversão digital com fricção</h4>
+        <p class="text-xs text-zinc-600 leading-relaxed">Falta um funil de agendamento ultra-rápido e direto de WhatsApp. Fazer o usuário rolar páginas e preencher formulários escondidos no rodapé gera perdas de até 40% nas conversões.</p>
+      </div>
+    </div></div>
+  
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 4: ANÁLISE VISUAL — PALETA DE CORES     -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid">
+  <div class="decor-line"></div>
+  <div class="glow" style="top:-150px;left:50%;transform:translateX(-50%)"></div>
+  <div class="z">
+    <div class="border-b border-zinc-200 pb-5 mb-8 mt-8">
+      <span class="text-theme text-[10px] tracking-[0.3em] uppercase font-bold">Fase 03 • Identidade Visual</span>
+      <h2 class="text-3xl font-serif mt-3 text-zinc-900">Paleta de Cores Estratégica</h2>
+    </div>
+    <p class="text-sm text-zinc-600 leading-relaxed mb-8">
+      As cores não são apenas escolhas visuais — elas moldam subconscientemente a percepção de valor. Definimos um ecossistema cromático sofisticado voltado ao público de Clínicas de Odontologia Estética e Reabilitação.
+    </p>
+    <div class="grid grid-cols-2 gap-6 mb-8">
+      
+    <div class="flex items-center gap-4 mb-4">
+      <div class="w-14 h-14 rounded-xl shadow-md flex-shrink-0" style="background:#0284c7; border: 1px solid #e4e4e7;"></div>
+      <div>
+        <p class="text-zinc-900 font-bold text-sm">Sky Blue (Primária)</p>
+        <p class="text-zinc-500 text-xs">HEX: #0284c7 · Botões, CTAs, destaques — Transmite confiança e saúde</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 mb-4">
+      <div class="w-14 h-14 rounded-xl shadow-md flex-shrink-0" style="background:#0c4a6e; border: 1px solid #e4e4e7;"></div>
+      <div>
+        <p class="text-zinc-900 font-bold text-sm">Deep Ocean (Secundária)</p>
+        <p class="text-zinc-500 text-xs">HEX: #0c4a6e · Headers, fundos escuros — Seriedade e profissionalismo</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 mb-4">
+      <div class="w-14 h-14 rounded-xl shadow-md flex-shrink-0" style="background:#f0f9ff; border: 1px solid #e4e4e7;"></div>
+      <div>
+        <p class="text-zinc-900 font-bold text-sm">Ice White (Background)</p>
+        <p class="text-zinc-500 text-xs">HEX: #f0f9ff · Fundos claros, cards — Limpeza e higiene visual</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 mb-4">
+      <div class="w-14 h-14 rounded-xl shadow-md flex-shrink-0" style="background:#1e293b; border: 1px solid #e4e4e7;"></div>
+      <div>
+        <p class="text-zinc-900 font-bold text-sm">Charcoal (Texto)</p>
+        <p class="text-zinc-500 text-xs">HEX: #1e293b · Corpo de texto — Legibilidade máxima</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 mb-4">
+      <div class="w-14 h-14 rounded-xl shadow-md flex-shrink-0" style="background:#f59e0b; border: 1px solid #e4e4e7;"></div>
+      <div>
+        <p class="text-zinc-900 font-bold text-sm">Amber Gold (Acento)</p>
+        <p class="text-zinc-500 text-xs">HEX: #f59e0b · Estrelas de avaliação, selos de prêmio — Exclusividade</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 mb-4">
+      <div class="w-14 h-14 rounded-xl shadow-md flex-shrink-0" style="background:#dc2626; border: 1px solid #e4e4e7;"></div>
+      <div>
+        <p class="text-zinc-900 font-bold text-sm">Alert Red (Urgência)</p>
+        <p class="text-zinc-500 text-xs">HEX: #dc2626 · Banners de urgência, avisos — Ação imediata</p>
+      </div>
+    </div>
+    </div>
+    <div class="bg-zinc-50 border border-zinc-200 p-5 rounded-xl">
+      <h4 class="text-zinc-900 font-bold text-sm mb-2"><i class="fa-solid fa-palette text-theme mr-2"></i> Racional Psicocromático</h4>
+      <p class="text-xs text-zinc-600 leading-relaxed">O azul é a cor mais associada a saúde, confiança e higiene na psicologia do consumidor. Combinado com tons brancos e o acento dourado, cria uma atmosfera de clínica confiável, moderna e preparada para receber a comunidade.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 5: ANÁLISE VISUAL — TIPOGRAFIA          -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid">
+  <div class="decor-line"></div>
+  <div class="z">
+    <div class="border-b border-zinc-200 pb-5 mb-8 mt-8">
+      <span class="text-theme text-[10px] tracking-[0.3em] uppercase font-bold">Fase 03 (cont.) • Tipografia</span>
+      <h2 class="text-3xl font-serif mt-3 text-zinc-900">Sistema Tipográfico</h2>
+    </div>
+    <p class="text-sm text-zinc-600 leading-relaxed mb-8">
+      A tipografia estabelece o tom de voz da clínica. Selecionamos fontes premium que comunicam sofisticação médica e acessibilidade moderna.
+    </p>
+
+    
+    <div class="bg-zinc-50 border border-zinc-200 p-6 rounded-xl mb-6 shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <p class="text-zinc-400 text-[10px] uppercase tracking-widest">Títulos (Headline)</p>
+          <p class="text-zinc-900 text-2xl font-bold font-serif" style="font-family:'Playfair Display',sans-serif">Playfair Display</p>
+        </div>
+        <span class="text-theme text-xs font-bold border border-theme/20 px-3 py-1 rounded-full bg-theme/5">SemiBold 600</span>
+      </div>
+      <p class="text-2xl text-zinc-800 mb-3" style="font-family:'Playfair Display',sans-serif">Transformamos sorrisos, recuperamos vidas.</p>
+      <p class="text-xs text-zinc-500">Fonte serifada elegante que transmite sofisticação e tradição médica.</p>
+    </div>
+    
+    <div class="bg-zinc-50 border border-zinc-200 p-6 rounded-xl mb-6 shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <p class="text-zinc-400 text-[10px] uppercase tracking-widest">Corpo de Texto (Body)</p>
+          <p class="text-zinc-900 text-2xl font-bold font-serif" style="font-family:'Inter',sans-serif">Inter</p>
+        </div>
+        <span class="text-theme text-xs font-bold border border-theme/20 px-3 py-1 rounded-full bg-theme/5">Regular 400</span>
+      </div>
+      <p class="text-2xl text-zinc-800 mb-3" style="font-family:'Inter',sans-serif">Agende sua avaliação digital completa hoje mesmo.</p>
+      <p class="text-xs text-zinc-500">Fonte sans-serif moderna, de alta legibilidade em telas pequenas e impressão.</p>
+    </div>
+    
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 6: BENCHMARK COMPETITIVO                -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid">
+  <div class="decor-line"></div>
+  <div class="z">
+    <div class="border-b border-zinc-200 pb-5 mb-8 mt-8">
+      <span class="text-theme text-[10px] tracking-[0.3em] uppercase font-bold">Fase 04 • Inteligência Competitiva</span>
+      <h2 class="text-3xl font-serif mt-3 text-zinc-900">Benchmark Local — São Caetano do Sul - SP</h2>
+    </div>
+    <p class="text-sm text-zinc-600 leading-relaxed mb-8">
+      Comparamos o posicionamento digital da sua marca frente aos líderes da região. A análise revela um gargalo de tráfego qualificado.
+    </p>
+
+    <table class="w-full text-left border-collapse mb-8">
+      <thead>
+        <tr class="border-b border-zinc-200 text-[10px] uppercase tracking-wider text-zinc-400">
+          <th class="py-3 px-3 font-normal">Critério</th>
+          <th class="py-3 px-3 font-normal text-center">Líderes de Mercado</th>
+          <th class="py-3 px-3 font-normal text-center text-red-500">Você Hoje</th>
+        </tr>
+      </thead>
+      <tbody>
+    <tr class="border-b border-zinc-200">
+      <td class="py-4 px-3 text-zinc-900 text-sm font-medium">Velocidade Mobile</td>
+      <td class="py-4 px-3 text-center text-green-600 text-sm font-semibold">1.2s</td>
+      <td class="py-4 px-3 text-center text-red-600 text-sm font-semibold">5.8s</td>
+    </tr>
+    <tr class="border-b border-zinc-200">
+      <td class="py-4 px-3 text-zinc-900 text-sm font-medium">Design & Autoridade</td>
+      <td class="py-4 px-3 text-center text-green-600 text-sm font-semibold">Alto Padrão</td>
+      <td class="py-4 px-3 text-center text-red-600 text-sm font-semibold">Genérico</td>
+    </tr>
+    <tr class="border-b border-zinc-200">
+      <td class="py-4 px-3 text-zinc-900 text-sm font-medium">Prova Social Visível</td>
+      <td class="py-4 px-3 text-center text-green-600 text-sm font-semibold">Sempre Visível</td>
+      <td class="py-4 px-3 text-center text-red-600 text-sm font-semibold">Oculta</td>
+    </tr>
+    <tr class="border-b border-zinc-200">
+      <td class="py-4 px-3 text-zinc-900 text-sm font-medium">Agendamento Online</td>
+      <td class="py-4 px-3 text-center text-green-600 text-sm font-semibold">WhatsApp Integrado</td>
+      <td class="py-4 px-3 text-center text-red-600 text-sm font-semibold">Telefone Fixo</td>
+    </tr>
+    <tr class="border-b border-zinc-200">
+      <td class="py-4 px-3 text-zinc-900 text-sm font-medium">SEO (Google Local)</td>
+      <td class="py-4 px-3 text-center text-green-600 text-sm font-semibold">Página 1</td>
+      <td class="py-4 px-3 text-center text-red-600 text-sm font-semibold">Invisível</td>
+    </tr>
+    <tr class="border-b border-zinc-200">
+      <td class="py-4 px-3 text-zinc-900 text-sm font-medium">Responsividade</td>
+      <td class="py-4 px-3 text-center text-green-600 text-sm font-semibold">Mobile-First</td>
+      <td class="py-4 px-3 text-center text-red-600 text-sm font-semibold">Quebrado no Mobile</td>
+    </tr></tbody>
+    </table>
+
+    <div class="bg-zinc-50 border border-zinc-200 p-5 rounded-xl text-center">
+      <p class="text-theme font-bold mb-1 text-sm">Oportunidade Estratégica</p>
+      <p class="text-xs text-zinc-600">A estrutura física do Instituto Dr. Leandro Luka e da Oralfix Odonto é excelente, mas no ambiente digital, concorrentes locais com sites rápidos e modernos captam a maior parte das famílias e pacientes que buscam na web.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 7: PONTOS A MELHORAR / FAZER            -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid">
+  <div class="decor-line"></div>
+  <div class="z">
+    <div class="border-b border-zinc-200 pb-5 mb-8 mt-8">
+      <span class="text-theme text-[10px] tracking-[0.3em] uppercase font-bold">Fase 05 • Plano de Ação</span>
+      <h2 class="text-3xl font-serif mt-3 text-zinc-900">Pontos a Melhorar / Implementar</h2>
+    </div>
+    <p class="text-sm text-zinc-600 leading-relaxed mb-6">
+      Mapeamento e priorização de melhorias com foco imediato no aumento de captação e redução de bounce-rate.
+    </p>
+    
+    <div class="flex items-start gap-4 mb-4 bg-zinc-50 p-4 rounded-lg border border-zinc-200">
+      <span class="text-xs font-bold px-2 py-0.5 rounded border bg-red-500/10 text-red-600 border-red-500/20 flex-shrink-0 mt-0.5">Alto</span>
+      <div>
+        <h4 class="text-zinc-900 font-bold text-sm mb-1">Redesign completo Mobile-First</h4>
+        <p class="text-zinc-500 text-xs leading-relaxed">Reconstruir toda a interface responsiva com design de alto padrão otimizado para celulares.</p>
+      </div>
+    </div>
+    <div class="flex items-start gap-4 mb-4 bg-zinc-50 p-4 rounded-lg border border-zinc-200">
+      <span class="text-xs font-bold px-2 py-0.5 rounded border bg-red-500/10 text-red-600 border-red-500/20 flex-shrink-0 mt-0.5">Alto</span>
+      <div>
+        <h4 class="text-zinc-900 font-bold text-sm mb-1">Botão flutuante de WhatsApp</h4>
+        <p class="text-zinc-500 text-xs leading-relaxed">CTA omnipresente em toda a navegação, reduzindo a fricção de contato de 5 cliques para 1.</p>
+      </div>
+    </div>
+    <div class="flex items-start gap-4 mb-4 bg-zinc-50 p-4 rounded-lg border border-zinc-200">
+      <span class="text-xs font-bold px-2 py-0.5 rounded border bg-red-500/10 text-red-600 border-red-500/20 flex-shrink-0 mt-0.5">Alto</span>
+      <div>
+        <h4 class="text-zinc-900 font-bold text-sm mb-1">Galeria de Antes/Depois interativa</h4>
+        <p class="text-zinc-500 text-xs leading-relaxed">Seção dedicada com slider comparativo para os principais procedimentos.</p>
+      </div>
+    </div>
+    <div class="flex items-start gap-4 mb-4 bg-zinc-50 p-4 rounded-lg border border-zinc-200">
+      <span class="text-xs font-bold px-2 py-0.5 rounded border bg-yellow-500/10 text-yellow-600 border-yellow-500/20 flex-shrink-0 mt-0.5">Médio</span>
+      <div>
+        <h4 class="text-zinc-900 font-bold text-sm mb-1">SEO Local (Google Meu Negócio)</h4>
+        <p class="text-zinc-500 text-xs leading-relaxed">Otimização de meta tags, schema markup para dentistas e integração com Google Maps.</p>
+      </div>
+    </div>
+    <div class="flex items-start gap-4 mb-4 bg-zinc-50 p-4 rounded-lg border border-zinc-200">
+      <span class="text-xs font-bold px-2 py-0.5 rounded border bg-yellow-500/10 text-yellow-600 border-yellow-500/20 flex-shrink-0 mt-0.5">Médio</span>
+      <div>
+        <h4 class="text-zinc-900 font-bold text-sm mb-1">Depoimentos em destaque</h4>
+        <p class="text-zinc-500 text-xs leading-relaxed">Cards com foto, nome e relato do paciente na home page.</p>
+      </div>
+    </div>
+    <div class="flex items-start gap-4 mb-4 bg-zinc-50 p-4 rounded-lg border border-zinc-200">
+      <span class="text-xs font-bold px-2 py-0.5 rounded border bg-blue-500/10 text-blue-600 border-blue-500/20 flex-shrink-0 mt-0.5">Baixo</span>
+      <div>
+        <h4 class="text-zinc-900 font-bold text-sm mb-1">Blog com conteúdo educativo</h4>
+        <p class="text-zinc-500 text-xs leading-relaxed">Artigos sobre cuidados dentários que posicionam organicamente no Google.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 8: ARQUITETURA DA SOLUÇÃO               -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid">
+  <div class="decor-line"></div>
+  <div class="z">
+    <div class="border-b border-zinc-200 pb-5 mb-8 mt-8">
+      <span class="text-theme text-[10px] tracking-[0.3em] uppercase font-bold">Fase 06 • A Nova Infraestrutura</span>
+      <h2 class="text-3xl font-serif mt-3 text-zinc-900">Arquitetura de Conversão Proposta</h2>
+    </div>
+    <p class="text-sm text-zinc-600 leading-relaxed mb-8">
+      Modelamos uma plataforma premium baseada em seis pilares técnicos para blindar a conversão de anúncios em contatos comerciais.
+    </p>
+    <div class="grid grid-cols-2 gap-4">
+      
+    <div class="border border-zinc-200 bg-zinc-50 p-5 rounded-xl relative overflow-hidden shadow-sm">
+      <div class="absolute top-0 left-0 w-1 h-full" style="background:#0ea5e9"></div>
+      <i class="fa-solid fa-paintbrush text-lg mb-3" style="color:#0ea5e9"></i>
+      <h4 class="text-zinc-900 font-bold mb-2 text-sm">Design Sensorial</h4>
+      <p class="text-[11px] text-zinc-500 leading-relaxed">Visual imersivo com paleta psicológica que transmite exclusividade e confiança.</p>
+    </div>
+    <div class="border border-zinc-200 bg-zinc-50 p-5 rounded-xl relative overflow-hidden shadow-sm">
+      <div class="absolute top-0 left-0 w-1 h-full" style="background:#0ea5e9"></div>
+      <i class="fa-solid fa-bolt text-lg mb-3" style="color:#0ea5e9"></i>
+      <h4 class="text-zinc-900 font-bold mb-2 text-sm">Carga Ultra-Rápida</h4>
+      <p class="text-[11px] text-zinc-500 leading-relaxed">Código otimizado para carregamento em menos de 1 segundo no mobile.</p>
+    </div>
+    <div class="border border-zinc-200 bg-zinc-50 p-5 rounded-xl relative overflow-hidden shadow-sm">
+      <div class="absolute top-0 left-0 w-1 h-full" style="background:#0ea5e9"></div>
+      <i class="fa-solid fa-bullseye text-lg mb-3" style="color:#0ea5e9"></i>
+      <h4 class="text-zinc-900 font-bold mb-2 text-sm">Copywriting Persuasivo</h4>
+      <p class="text-[11px] text-zinc-500 leading-relaxed">Textos focados em benefícios e alívio da dor, não em jargão técnico.</p>
+    </div>
+    <div class="border border-zinc-200 bg-zinc-50 p-5 rounded-xl relative overflow-hidden shadow-sm">
+      <div class="absolute top-0 left-0 w-1 h-full" style="background:#0ea5e9"></div>
+      <i class="fa-solid fa-robot text-lg mb-3" style="color:#0ea5e9"></i>
+      <h4 class="text-zinc-900 font-bold mb-2 text-sm">Funil WhatsApp Automático</h4>
+      <p class="text-[11px] text-zinc-500 leading-relaxed">Botão fixo que direciona o lead para atendimento imediato.</p>
+    </div>
+    <div class="border border-zinc-200 bg-zinc-50 p-5 rounded-xl relative overflow-hidden shadow-sm">
+      <div class="absolute top-0 left-0 w-1 h-full" style="background:#0ea5e9"></div>
+      <i class="fa-solid fa-chart-simple text-lg mb-3" style="color:#0ea5e9"></i>
+      <h4 class="text-zinc-900 font-bold mb-2 text-sm">Analytics Integrado</h4>
+      <p class="text-[11px] text-zinc-500 leading-relaxed">Rastreamento completo de cliques, conversões e origens de tráfego.</p>
+    </div>
+    <div class="border border-zinc-200 bg-zinc-50 p-5 rounded-xl relative overflow-hidden shadow-sm">
+      <div class="absolute top-0 left-0 w-1 h-full" style="background:#0ea5e9"></div>
+      <i class="fa-solid fa-shield-halved text-lg mb-3" style="color:#0ea5e9"></i>
+      <h4 class="text-zinc-900 font-bold mb-2 text-sm">SSL + Blindagem</h4>
+      <p class="text-[11px] text-zinc-500 leading-relaxed">Certificado de segurança e proteção contra cópia do código-fonte.</p>
+    </div>
+    </div>
+    <div class="mt-8 bg-zinc-50 border border-zinc-200 rounded-xl p-5 text-center flex items-center justify-center gap-4">
+      <i class="fa-solid fa-lock text-zinc-400 text-xl"></i>
+      <p class="text-[10px] text-zinc-600 text-left leading-relaxed">
+        Plataforma hospedada em infraestrutura VPS, com SSL ativo e CDN de alta performance, preparada para grandes picos de tráfego.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 9: PROJEÇÃO DE FATURAMENTO E ROI        -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid">
+  <div class="decor-line"></div>
+  <div class="glow" style="top:-200px;right:-200px"></div>
+  <div class="z">
+    <div class="border-b border-zinc-200 pb-5 mb-8 mt-8">
+      <span class="text-theme text-[10px] tracking-[0.3em] uppercase font-bold">Fase 07 • Impacto Financeiro</span>
+      <h2 class="text-3xl font-serif mt-3 text-zinc-900">Projeção Conservadora de ROI</h2>
+    </div>
+    <p class="text-sm text-zinc-600 leading-relaxed mb-6">
+      Substituir o site genérico por uma máquina de vendas não é custo, é um investimento de retorno previsível.
+    </p>
+
+    <div class="bg-slate-50 border border-zinc-200 p-6 rounded-xl mb-6 shadow-sm">
+      <h3 class="text-zinc-900 font-bold mb-4 text-center text-sm">Cenário Esperado: 1000 Visitantes Únicos/mês</h3>
+      <div class="flex items-end justify-around h-40 border-b border-zinc-200 pb-2 relative">
+        <div class="absolute top-0 w-full border-t border-zinc-100 border-dashed"></div>
+        <div class="absolute top-1/2 w-full border-t border-zinc-100 border-dashed"></div>
+        <div class="flex flex-col items-center gap-2 z-10">
+          <span class="text-[10px] text-zinc-500">0.5% (Atual)</span>
+          <div class="w-14 h-8 bg-red-500/20 rounded-t border-t-2 border-red-500"></div>
+          <span class="text-xs font-bold text-zinc-800 mt-2">5 Pacientes</span>
+        </div>
+        <div class="flex flex-col items-center gap-2 z-10">
+          <span class="text-[10px] text-theme font-bold">3.5% (Novo Site)</span>
+          <div class="w-14 h-32 rounded-t border-t-2 relative" style="background:#0ea5e922;border-color:#0ea5e9">
+            <div class="absolute -top-3 -right-3 bg-white text-zinc-900 text-[8px] font-bold px-2 py-0.5 rounded-full border border-zinc-200 shadow-sm">+700%</div>
+          </div>
+          <span class="text-xs font-bold text-zinc-800 mt-2">35 Pacientes</span>
+        </div>
+      </div>
+      <p class="text-center text-[9px] text-zinc-400 mt-3 uppercase tracking-widest font-mono">Taxa de Conversão do Funil</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <div class="bg-zinc-50 border border-zinc-200 p-4 rounded-xl text-center shadow-sm">
+        <p class="text-zinc-400 text-[10px] uppercase mb-1">Ticket Médio Estimado</p>
+        <p class="text-2xl font-bold text-zinc-900">R$ 8.500</p>
+      </div>
+      <div class="bg-zinc-50 border rounded-xl text-center p-4 shadow-sm" style="border-color:#0ea5e955;">
+        <p class="text-theme text-[10px] uppercase mb-1 font-bold">Potencial Faturamento Mensal</p>
+        <p class="text-2xl font-bold text-zinc-900">R$ 297.500</p>
+      </div>
+    </div>
+    <div class="text-center bg-zinc-50 border border-zinc-200 p-4 rounded-xl">
+      <p class="text-[10px] text-zinc-500 leading-relaxed"><i class="fa-solid fa-info-circle text-theme mr-1"></i> Projeção baseada em taxas de conversão de benchmarks locais do mesmo segmento.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- PÁGINA 10: CTA — VAMOS CONVERSAR?              -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="page bg-grid flex flex-col justify-center items-center text-center">
+  <div class="decor-line"></div>
+  <div class="glow" style="top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+  <div class="z max-w-md my-auto">
+    <div class="w-16 h-16 rounded-full flex items-center justify-center text-2xl mb-6 mx-auto" style="background:#0ea5e915;color:#0ea5e9;border:1px solid #0ea5e933">
+      <i class="fa-brands fa-whatsapp"></i>
+    </div>
+    <p class="text-theme uppercase tracking-[0.3em] text-[10px] font-bold mb-3">Próximo Passo</p>
+    <h2 class="text-3xl font-serif mb-4 text-zinc-900">Agendar Apresentação</h2>
+    <div class="w-12 h-[2px] bg-zinc-200 mx-auto mb-6"></div>
+    <p class="text-zinc-600 text-xs leading-relaxed mb-8">
+      Este dossiê foi preparado exclusivamente para a direção da Oralfix Odonto. Gostaríamos de agendar uma conversa de 15 minutos para apresentar as soluções ao vivo e responder suas dúvidas. Sem compromisso, sem pressão — apenas clareza sobre o potencial inexplorado do seu negócio.
+    </p>
+
+    <div class="bg-slate-50 border border-zinc-200 rounded-2xl p-6 mb-6 w-full max-w-xs mx-auto shadow-sm">
+      <p class="text-zinc-500 text-[10px] uppercase tracking-wider mb-2">WhatsApp de Contato</p>
+      <div class="text-xl font-bold text-zinc-800 mb-1">(13) 98106-2787</div>
+      <p class="text-zinc-400 text-[9px]">Fale diretamente com nossa equipe de vendas</p>
+    </div>
+
+    <div class="bg-[#25D366] text-white font-bold px-6 py-3.5 rounded-xl shadow-md inline-flex items-center gap-2 text-xs uppercase tracking-wider transition-all hover:scale-105">
+      <i class="fa-brands fa-whatsapp text-sm"></i> Iniciar Conversa no WhatsApp
+    </div>
+
+    <div class="mt-12 pt-6 border-t border-zinc-200 w-full">
+      <p class="text-[9px] text-zinc-400 uppercase tracking-widest mb-1">Estudo conduzido por</p>
+      <p class="text-zinc-900 font-bold tracking-wider text-sm">ESCOM STUDIO</p>
+      <p class="text-zinc-400 text-[9px] mt-0.5">Inteligência Digital de Alta Conversão</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

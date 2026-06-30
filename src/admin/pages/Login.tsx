@@ -34,7 +34,7 @@ export default function Login({ onLogin }: LoginProps) {
     <div className="flex h-screen bg-[#050505] text-white items-center justify-center font-sans">
       <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-2xl p-8 w-full max-w-sm">
         <div className="flex justify-center mb-6">
-          <div className="w-12 h-12 rounded-full bg-[#2EFF00]/10 flex items-center justify-center text-[#2EFF00]">
+          <div className="w-12 h-12 rounded-full bg-[#00d1ff]/10 flex items-center justify-center text-[#00d1ff]">
             <Lock size={20} />
           </div>
         </div>
@@ -51,7 +51,7 @@ export default function Login({ onLogin }: LoginProps) {
               placeholder="Senha de acesso"
               value={password}
               onChange={(e) => { setPassword(e.target.value); setError(""); }}
-              className={`w-full bg-[#111] border ${error ? 'border-red-500' : 'border-[#333] focus:border-[#2EFF00]'} rounded-lg px-4 py-3 text-white focus:outline-none transition-colors`}
+              className={`w-full bg-[#111] border ${error ? 'border-red-500' : 'border-[#333] focus:border-[#00d1ff]'} rounded-lg px-4 py-3 text-white focus:outline-none transition-colors`}
             />
             {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
           </div>
@@ -59,7 +59,7 @@ export default function Login({ onLogin }: LoginProps) {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full bg-[#2EFF00] hover:bg-[#28e600] text-black font-bold py-3 rounded-lg transition-colors ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`w-full bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-bold py-3 rounded-lg transition-colors ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {loading ? 'Acessando...' : 'Acessar Sistema'}
           </button>

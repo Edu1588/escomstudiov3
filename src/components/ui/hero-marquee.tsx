@@ -6,11 +6,11 @@ export function HeroMarquee() {
   return (
     <div id="hero-heading" className="font-jakarta text-4xl md:text-6xl lg:text-[4.5rem] leading-[0.95] tracking-tighter text-white font-black uppercase">
       REDUZA CUSTOS.<br/>
-      <div className="flex items-center text-[#2EFF00]">
+      <div className="flex items-center text-[#00d1ff]">
         <span className="mr-3 md:mr-5">OTIMIZE</span>
         <TextMorph
           words={["RESULTADOS.", "VELOCIDADE.", "TEMPO.", "GANHOS.", "CLIENTES."]}
-          color="#2EFF00"
+          color="#00d1ff"
           className=""
         />
       </div>

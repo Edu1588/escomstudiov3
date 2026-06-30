@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
-export const TextMorph = ({ words, color = '#2EFF00', className }: { words: string[], color?: string, className?: string }) => {
+export const TextMorph = ({ words, color = '#00d1ff', className }: { words: string[], color?: string, className?: string }) => {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {

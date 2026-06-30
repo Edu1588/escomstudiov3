@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dossiê Estratégico | Dra. Elizabete De Marchi</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            light: '#ffffff',
+                            primary: '#02c5ba', /* Purple */
+                            accent: '#c5a27e',  /* Emerald */
+                            text: '#3f3f46',    /* Zinc 700 */
+                            darkText: '#18181b' /* Zinc 900 */
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        body {
+            background-color: #f4f4f5;
+            color: #3f3f46;
+            user-select: none;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            font-family: 'Inter', sans-serif;
+        }
+        .pdf-page {
+            width: 210mm;
+            height: 297mm;
+            padding: 18mm;
+            margin: 30px auto;
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            position: relative;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            page-break-after: always;
+            page-break-inside: avoid;
+            border: 1px solid #e4e4e7;
+        }
+        .decor-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #02c5ba 0%, #c5a27e 100%);
+            z-index: 20;
+        }
+        @media print {
+            html, body {
+                background-color: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                height: 100% !important;
+                width: 210mm !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .pdf-page {
+                margin: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                background: #ffffff !important;
+                color: #3f3f46 !important;
+                width: 210mm !important;
+                height: 297mm !important;
+                page-break-after: always !important;
+                page-break-inside: avoid !important;
+            }
+            .print\:hidden {
+                display: none !important;
+            }
+        }
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 8rem;
+            color: rgba(0, 0, 0, 0.012);
+            font-weight: 800;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header flutuante de navegação para a Web -->
+    <div class="max-w-[210mm] mx-auto mb-2 mt-4 px-4 flex justify-between items-center text-xs text-zinc-500 print:hidden">
+        <div>
+            <a href="index.html" class="text-zinc-600 hover:text-brand-primary font-bold transition flex items-center gap-1">
+                <i class="fa-solid fa-arrow-left"></i> Voltar para o Site
+            </a>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>MODO DE IMPRESSÃO (A4 CLEAN)</span>
+        </div>
+    </div>
+
+    <!-- PÁGINA 1: CAPA EDITORIAL CLEAN -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer justify-between h-full py-6">
+            <div class="space-y-2">
+                <p class="text-zinc-400 font-mono text-sm tracking-[0.2em] uppercase">ESCOM Studio &bull; Business Intelligence</p>
+                <h1 class="text-zinc-900 font-display font-black text-5xl leading-tight">
+                    Análise Estratégica<br>
+                    <span class="text-brand-primary">Clínica Elizabete De Marchi</span>
+                </h1>
+                <div class="w-16 h-1.5 bg-brand-accent mt-4"></div>
+            </div>
+
+            <!-- Imagem Centralizada com Borda Premium -->
+            <div class="my-4 relative overflow-hidden rounded-2xl border border-zinc-200 shadow-md h-[115mm]">
+                <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1594824432258-454fa9156637?q=80&w=800&auto=format&fit=crop');"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/20 via-transparent to-transparent"></div>
+            </div>
+
+            <div class="flex justify-between items-end border-t border-zinc-100 pt-6">
+                <div>
+                    <p class="text-xs text-zinc-400 uppercase tracking-wider">Documento Preparado para</p>
+                    <p class="text-zinc-900 font-bold text-lg">Dra. Elizabete De Marchi & Diretoria</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-zinc-400 uppercase tracking-wider">Status</p>
+                    <p class="text-emerald-600 font-mono font-bold text-sm uppercase tracking-wider flex items-center gap-1.5 justify-end">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Confidencial
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- PÁGINA 2: SOBRE NÓS -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-zinc-900 mb-8 pb-3 border-b-2 border-zinc-100 flex items-center gap-3">
+                Sobre Nós <span class="text-brand-primary text-sm font-mono font-normal">/ ESCOM Studio</span>
+            </h2>
+            
+            <div class="flex-1">
+                <p class="text-sm text-zinc-700 leading-relaxed mb-6 font-medium">
+                    Olá! Somos a <strong>ESCOM Studio</strong>, uma empresa especializada em Web Design de luxo, Arquitetura de Conversão e Engenharia de Experiência do Usuário (UX).
+                </p>
+                <div class="bg-zinc-50 border border-zinc-200 rounded-xl p-6 mb-6">
+                    <p class="text-xs text-zinc-650 leading-relaxed">
+                        Nós não apenas desenhamos sites bonitos; nós desenvolvemos ecossistemas digitais baseados no comportamento humano, neurociência aplicada e posicionamento premium de mercado.
+                        Fizemos uma análise detalhada sobre o seu negócio e identificamos oportunidades valiosas para elevar a percepção de valor da sua marca, 
+                        aumentar o contraste e a usabilidade de acordo com as diretrizes internacionais (WCAG), e criar um design system irresistível aos olhos de clientes de alto ticket.
+                    </p>
+                </div>
+                <p class="text-xs text-zinc-650 leading-relaxed">
+                    Nas páginas a seguir, você encontrará um <strong>dossiê estratégico e visual</strong> cuidadosamente preparado, mostrando como sua presença digital atual pode ser aprimorada 
+                    e as soluções exatas que implementamos no seu novo projeto de landing page premium.
+                </p>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-zinc-400 font-mono border-t border-zinc-100 pt-4">Página 2</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 3: ÍNDICE -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="watermark">CONFIDENCIAL</div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-zinc-900 mb-8 pb-3 border-b-2 border-zinc-100 flex items-center gap-3">
+                Conteúdo <span class="text-brand-primary text-sm font-mono font-normal">/ Índice Executivo</span>
+            </h2>
+            
+            <div class="grid grid-cols-2 gap-y-6 gap-x-12 text-base flex-1 py-4">
+                <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">07</span>
+                    <span class="text-zinc-900 font-semibold">Identidade Visual & Cores</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">08</span>
+                    <span class="text-zinc-900 font-semibold">Tipografia Premium</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">04</span>
+                    <span class="text-zinc-900 font-semibold">Diagnóstico do Negócio Atual</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">11</span>
+                    <span class="text-zinc-900 font-semibold">Anatomia da LP de Alto Ticket</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">05</span>
+                    <span class="text-zinc-900 font-semibold">Psicografia & Avatares</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">12</span>
+                    <span class="text-zinc-900 font-semibold">ROI & Viabilidade Financeira</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">06</span>
+                    <span class="text-zinc-900 font-semibold">O Campo de Batalha</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">13</span>
+                    <span class="text-zinc-900 font-semibold">Oceano Azul & Turismo</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">09</span>
+                    <span class="text-zinc-900 font-semibold">Lacunas & Filtro de Copy</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">14</span>
+                    <span class="text-zinc-900 font-semibold">Síntese Final</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-zinc-100 pb-2 col-span-2">
+                    <span class="font-black text-brand-primary text-lg font-mono">10</span>
+                    <span class="text-zinc-900 font-semibold">Os 6 Pilares de Vantagem</span>
+                </div>
+            </div>
+            
+            <div class="bg-zinc-50 p-6 rounded-xl border-l-4 border-brand-primary mt-auto">
+                <p class="text-sm text-zinc-650 leading-relaxed">
+                    Este documento apresenta um raio-x estratégico para o mercado de estética avançada e rejuvenescimento facial de alto padrão. O foco está em atrair pacientes qualificados e que valorizam a individualização do diagnóstico.
+                </p>
+            </div>
+            <div class="mt-4 flex justify-between items-center text-xs text-zinc-400 font-mono">
+                <span>Dossiê Dra. Elizabete De Marchi - Inteligência Comercial</span>
+                <span>Página 3</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 4: DIAGNÓSTICO DO NEGÓCIO ATUAL (NOVA) -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="watermark">CONFIDENCIAL</div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-zinc-900 mb-6 leading-tight">
+                Diagnóstico do Negócio:<br>
+                <span class="text-brand-primary">Dra. Elizabete De Marchi Frente ao Posicionamento de Mercado</span>
+            </h2>
+            
+            <p class="text-xs text-zinc-650 leading-relaxed mb-5">
+                Atuando há mais de 10 anos em Curitiba (PR), a especialista Dra. Elizabete De Marchi, referência em biomedicina estética e harmonização facial de alto padrão, destaca-se pela individualização absoluta.
+            </p>
+
+            <div class="space-y-4 flex-1 text-sm">
+                <div class="p-5 border border-zinc-200 bg-zinc-50/40 rounded-xl">
+                    <h3 class="text-brand-primary font-bold text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-medal"></i> A Força Técnica do Cliente
+                    </h3>
+                    <p class="text-xs text-zinc-650 leading-relaxed">
+                        A Dra. Elizabete De Marchi destaca-se no mercado pelo atendimento focado em segurança e sua metodologia de consulta diagnóstica detalhada. É ganhadora de prêmios locais de melhor biomédica esteta e grande referência de confiança na região de Curitiba.
+                    </p>
+                </div>
+
+                <div class="p-5 border border-zinc-200 bg-zinc-50/40 rounded-xl">
+                    <h3 class="text-red-650 font-bold text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> O Gargalo do Canal de Comunicação Atual
+                    </h3>
+                    <p class="text-xs text-zinc-650 leading-relaxed">
+                        A abordagem digital atual capta muitos curiosos e pacientes desqualificados que buscam apenas "procedimentos de tabela" e pacotes fechados. Isso sobrecarrega a equipe de atendimento com leads que não entendem a exclusividade e a entrega de valor de um tratamento individualizado.
+                    </p>
+                </div>
+
+                <div class="bg-emerald-50/40 p-5 border border-emerald-100 rounded-xl">
+                    <h3 class="text-emerald-800 font-bold text-xs uppercase tracking-wider mb-1">A Solução Proposta</h3>
+                    <p class="text-[11px] text-zinc-650 leading-relaxed">
+                        Ajustar a presença digital para atuar como um **ímã de atração local**, posicionando a Dra. Elizabete como a clínica mais confiável ("Beleza sem Exageros") e valorizando o atendimento individualizado, convertendo pacientes da comunidade local para o WhatsApp.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-zinc-400 font-mono border-t border-zinc-100 pt-4">Página 4</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 5: PSICOGRAFIA & AVATARES (COMBINADA E COMPACTA) -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-zinc-900 mb-2">Psicografia & Avatares de Compra</h2>
+            <p class="text-xs text-zinc-600 mb-3">
+                Decodificação das dores subconscientes e segmentação do público-alvo de alto ticket:
+            </p>
+
+            <!-- Grid de 2 Colunas para os Avatares -->
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="bg-blue-50/40 p-3.5 rounded-xl border border-blue-100 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <i class="fa-solid fa-user-tie text-blue-500 text-sm"></i>
+                            <h3 class="text-zinc-900 font-bold text-xs">Avatar A: A Executiva / Empresária de Sucesso</h3>
+                        </div>
+                        <p class="text-[10px] text-zinc-650 leading-relaxed mb-2">
+                            <strong>Dores:</strong> Falta crônica de tempo e aversão à burocracia. Não quer ir a múltiplos laboratórios externos para exames.
+                        </p>
+                    </div>
+                    <div class="bg-white p-2 rounded-lg border border-blue-100 text-[10px]">
+                        <span class="text-blue-700 font-bold">Foco:</span> Harmonização Facial Individualizada e Protocolos de Rejuvenescimento.
+                    </div>
+                </div>
+
+                <div class="bg-purple-50/40 p-3.5 rounded-xl border border-purple-100 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <i class="fa-solid fa-person-dress text-purple-500 text-sm"></i>
+                            <h3 class="text-zinc-900 font-bold text-xs">Avatar B: A Mulher Madura e Ativa (45-65 anos)</h3>
+                        </div>
+                        <p class="text-[10px] text-zinc-650 leading-relaxed mb-2">
+                            <strong>Dores:</strong> Pavor extremo de dor cirúrgica e desconforto com moldagens clássicas de gesso.
+                        </p>
+                    </div>
+                    <div class="bg-white p-2 rounded-lg border border-purple-100 text-[10px]">
+                        <span class="text-purple-700 font-bold">Foco:</span> Sedação Consciente monitorada por médico anestesista.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Caixa de Neutralizadores Emocionais na base -->
+            <div class="bg-zinc-50 p-4 rounded-xl border border-zinc-200 text-xs">
+                <h3 class="text-zinc-900 font-bold text-xs mb-1.5"><i class="fa-solid fa-shield-halved text-brand-primary"></i> Matriz de Neutralização de Objeções</h3>
+                <ul class="grid grid-cols-3 gap-3 text-[10px] text-zinc-600">
+                    <li class="bg-white p-2.5 rounded-lg border border-zinc-150">
+                        <strong class="text-zinc-800 block mb-0.5">Medo de banguela:</strong> Carga Imediata (provisório instalado no mesmo dia cirúrgico).
+                    </li>
+                    <li class="bg-white p-2.5 rounded-lg border border-zinc-150">
+                        <strong class="text-zinc-800 block mb-0.5">Medo de dor:</strong> Sedação endovenosa para dormir e acordar pronto.
+                    </li>
+                    <li class="bg-white p-2.5 rounded-lg border border-zinc-150">
+                        <strong class="text-zinc-800 block mb-0.5">Custos:</strong> Ancoragem no valor inestimável da autoestima, segurança e produtos de alto padrão.
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-zinc-400 font-mono border-t border-zinc-100 pt-4">Página 5</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 6: O CAMPO DE BATALHA (GRID COMPACTO) -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-zinc-900 mb-3">O Campo de Batalha</h2>
+            <p class="text-xs text-zinc-600 mb-4">
+                Mapeamento das forças e fraquezas dos concorrentes locais para guiar o diferencial competitivo da Dra. Elizabete:
+            </p>
+
+            <div class="grid grid-cols-2 gap-3 flex-1 text-xs mb-3">
+                <div class="bg-zinc-50/50 p-3 rounded-xl border border-zinc-200 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-zinc-900 text-xs mb-1">1. Clínicas de Harmonização Premium</h3>
+                        <p class="text-[10px] text-zinc-600 leading-relaxed"><strong class="text-emerald-700">Força:</strong> Hotelaria excelente, indicação direta.</p>
+                        <p class="text-[10px] text-zinc-600 leading-relaxed"><strong class="text-red-600">Fraqueza:</strong> Resultados padronizados ("rostos iguais") por falta de estudo individualizado.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-zinc-50/50 p-3 rounded-xl border border-zinc-200 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-zinc-900 text-xs mb-1">2. Franquias de Estética Low-Cost</h3>
+                        <p class="text-[10px] text-zinc-600 leading-relaxed"><strong class="text-emerald-700">Força:</strong> Escala comercial agressiva e parcelamentos longos.</p>
+                        <p class="text-[10px] text-zinc-600 leading-relaxed"><strong class="text-red-600">Fraqueza:</strong> Sem privacidade, alta rotatividade técnica, uso de componentes genéricos.</p>
+                    </div>
+                </div>
+
+                <div class="bg-zinc-50/50 p-3 rounded-xl border border-zinc-200 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-zinc-900 text-xs mb-1">3. Clínicas de Estética de Bairro</h3>
+                        <p class="text-[10px] text-zinc-650 leading-relaxed"><strong class="text-emerald-700">Força:</strong> Boa aparência visual em avenidas e shoppings.</p>
+                        <p class="text-[10px] text-zinc-650 leading-relaxed"><strong class="text-red-600">Fraqueza:</strong> Não utilizam bioestimuladores importados de alta durabilidade e pureza.</p>
+                    </div>
+                </div>
+
+                <div class="bg-zinc-50/50 p-3 rounded-xl border border-zinc-200 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-zinc-900 text-xs mb-1">4. Redes de Estética Populares</h3>
+                        <p class="text-[10px] text-zinc-650 leading-relaxed"><strong class="text-emerald-700">Força:</strong> Postagens estéticas de antes e depois no feed.</p>
+                        <p class="text-[10px] text-zinc-650 leading-relaxed"><strong class="text-red-600">Fraqueza:</strong> Foco em pacotes fechados de grande volume; falta de especialização em rejuvenescimento natural.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5º concorrente em largura cheia para fechar a página com segurança -->
+            <div class="bg-zinc-50 p-3.5 rounded-xl border border-zinc-200 text-xs mb-2">
+                <h3 class="font-bold text-zinc-900 text-xs mb-1">5. Consultórios Médicos Tradicionais</h3>
+                <p class="text-[10px] text-zinc-600 leading-relaxed"><strong class="text-emerald-700">Força:</strong> Conexão familiar e confiança mútua de anos com o paciente local.</p>
+                <p class="text-[10px] text-zinc-600 leading-relaxed"><strong class="text-red-600">Fraqueza:</strong> Atendimento acelerado de volume; falta de personalização no pós-procedimento.</p>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-zinc-400 font-mono border-t border-zinc-100 pt-4">Página 6</div>
+        </div>
+    </div>
+
+    
+    <!-- PÁGINA 7: CORES -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-zinc-900 mb-4">Identidade Visual & Cores</h2>
+            <p class="text-xs text-zinc-600 mb-4">
+                A psicologia das cores foi ajustada especificamente para o posicionamento do seu negócio:
+            </p>
+
+            <div class="flex-1 bg-zinc-50/50 p-6 rounded-xl border border-zinc-200">
+                <h3 class="text-brand-primary font-bold text-lg mb-3">Racional Psicocromático</h3>
+                <p class="text-sm text-zinc-700 leading-relaxed mb-8">
+                    O Tiffany Blue comunica biossegurança, tranquilidade clínica e estética premium internacional, enquanto o Nude Rosé evoca feminilidade, delicadeza e acolhimento humano em cada consulta.
+                </p>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-full border border-zinc-300 shadow-sm" style="background-color: #02c5ba"></div>
+                        <div>
+                            <p class="font-bold text-zinc-900 text-sm">Tiffany Blue</p>
+                            <p class="text-[10px] text-zinc-500 font-mono">#02c5ba</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-full border border-zinc-300 shadow-sm" style="background-color: #c5a27e"></div>
+                        <div>
+                            <p class="font-bold text-zinc-900 text-sm">Nude Rosé</p>
+                            <p class="text-[10px] text-zinc-500 font-mono">#c5a27e</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-zinc-400 font-mono border-t border-zinc-100 pt-4">Página 7</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 8: TIPOGRAFIA -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-zinc-900 mb-4">Tipografia Premium</h2>
+            <p class="text-xs text-zinc-600 mb-4">
+                A seleção de fontes para compor a estética premium e profissional do projeto:
+            </p>
+
+            <div class="flex-1 bg-zinc-50/50 p-6 rounded-xl border border-zinc-200">
+                <h3 class="text-brand-primary font-bold text-lg mb-3">A Arquitetura das Palavras</h3>
+                <p class="text-sm text-zinc-700 leading-relaxed mb-8">
+                    A tipografia Playfair Display transmite a exclusividade de um atendimento boutique, enquanto a Inter garante legibilidade moderna e didática nas explicações dos procedimentos faciais.
+                </p>
+
+                <div class="space-y-6">
+                    <div class="p-4 bg-white border border-zinc-150 rounded-lg">
+                        <p class="text-xs text-zinc-500 uppercase tracking-wider mb-2">Títulos e Chamadas Principais</p>
+                        <p class="font-display text-3xl text-zinc-900" style="font-family: <!-- INJECT_FONT_1_CSS -->'Playfair Display', serif<!-- END_INJECT_FONT_1_CSS -->">
+                            Playfair Display
+                        </p>
+                    </div>
+                    <div class="p-4 bg-white border border-zinc-150 rounded-lg">
+                        <p class="text-xs text-zinc-500 uppercase tracking-wider mb-2">Textos e Parágrafos</p>
+                        <p class="font-sans text-xl text-zinc-800" style="font-family: <!-- INJECT_FONT_2_CSS -->'Inter', sans-serif<!-- END_INJECT_FONT_2_CSS -->">
+                            Inter
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-zinc-400 font-mono border-t border-zinc-100 pt-4">Página 8</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 9: LACUNAS & FILTRO DE COPY -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-zinc-900 mb-4">Lacunas & Filtro de Copy</h2>
+            
+            <div class="bg-purple-50/40 border border-purple-100 p-4 rounded-xl mb-4 text-xs">
+                <h3 class="text-zinc-900 font-bold text-sm mb-1 flex items-center gap-2">
+                    <i class="fa-solid fa-star text-purple-600"></i> O Espaço Vazio de Mercado
+                </h3>
+                <p class="text-zinc-650 leading-relaxed">
+                    A grande oportunidade reside em captar pacientes locais que buscam rejuvenescimento facial seguro e exigem <strong class="text-zinc-800">resultados naturais, segurança absoluta e um profissional de confiança no bairro.</strong> A metodologia ética (consulta detalhada + produtos de qualidade + prêmio local) é o trunfo que a isola das clínicas populares massificadas.
+                </p>
+            </div>
+
+            <div class="flex-1">
+                <h3 class="text-zinc-900 font-bold text-base mb-2"><i class="fa-solid fa-filter text-brand-primary"></i> Filtro de Comunicação (Copywriting)</h3>
+                <p class="text-xs text-zinc-600 mb-3">Para manter o ticket alto, o site deve eliminar termos genéricos e focar em argumentos sólidos e factuais:</p>
+                
+                <div class="grid grid-cols-2 gap-4 text-xs">
+                    <div class="bg-red-50/50 p-4 rounded-xl border border-red-200">
+                        <p class="font-bold text-red-700 mb-2 uppercase tracking-wider text-[10px]">Evitar Termos Gastos</p>
+                        <ul class="space-y-1.5 text-zinc-600">
+                            <li class="line-through">"Melhor preço do mercado"</li>
+                            <li class="line-through">"Beleza Natural e Elegante"</li>
+                            <li class="line-through">"Equipe qualificada"</li>
+                            <li class="line-through">"Materiais de ponta"</li>
+                        </ul>
+                    </div>
+                    <div class="bg-emerald-50/50 p-4 rounded-xl border border-emerald-200">
+                        <p class="font-bold text-emerald-800 mb-2 uppercase tracking-wider text-[10px]">Substituir por Fatos Reais</p>
+                        <ul class="space-y-1.5 text-zinc-700 font-medium">
+                            <li>&bull; "Consulta com 3 horas de duração"</li>
+                            <li>&bull; "Prêmio Melhores do Ano 3x consecutivas"</li>
+                            <li>&bull; "Técnicas de Biossegurança Rígidas"</li>
+                            <li>&bull; "Utilização de Allergan e Galderma"</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-zinc-400 font-mono border-t border-zinc-100 pt-4">Página 9</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 10: OS 6 PILARES DE VANTAGEM -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-zinc-900 mb-4">Os 6 Pilares de Vantagem da Dra. Elizabete</h2>
+            <p class="text-xs text-zinc-600 mb-4">
+                Como traduzimos a infraestrutura e os investimentos da clínica em argumentos simples e atraentes:
+            </p>
+
+            <div class="grid grid-cols-2 gap-4 flex-1 text-xs">
+                <div class="bg-zinc-50/50 p-4 rounded-xl border border-zinc-200">
+                    <div class="text-brand-primary text-lg mb-1"><i class="fa-solid fa-cube"></i></div>
+                    <h3 class="text-zinc-900 font-bold text-sm mb-1">1. Laboratório CAD/CAM Interno</h3>
+                    <p class="text-zinc-600 leading-relaxed text-[11px]">Consulta de Diagnóstico Biomédico de até 3 horas de duração para análise facial completa.</p>
+                </div>
+                
+                <div class="bg-zinc-50/50 p-4 rounded-xl border border-zinc-200">
+                    <div class="text-brand-primary text-lg mb-1"><i class="fa-solid fa-bed"></i></div>
+                    <h3 class="text-zinc-900 font-bold text-sm mb-1">2. Centro de Sedação Consciente</h3>
+                    <p class="text-zinc-600 leading-relaxed text-[11px]">Zero ansiedade ou desconforto. Médico anestesiologista acompanha todo o procedimento cirúrgico na clínica.</p>
+                </div>
+
+                <div class="bg-zinc-50/50 p-4 rounded-xl border border-zinc-200">
+                    <div class="text-brand-primary text-lg mb-1"><i class="fa-solid fa-camera"></i></div>
+                    <h3 class="text-zinc-900 font-bold text-sm mb-1">3. Diagnóstico Total Integrado</h3>
+                    <p class="text-zinc-600 leading-relaxed text-[11px]">Mapeamento Tridimensional das expressões faciais para manter a naturalidade dos movimentos.</p>
+                </div>
+
+                <div class="bg-zinc-50/50 p-4 rounded-xl border border-zinc-200">
+                    <div class="text-brand-primary text-lg mb-1"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <h3 class="text-zinc-900 font-bold text-sm mb-1">4. Autoridade e Reconhecimento Local</h3>
+                    <p class="text-zinc-600 leading-relaxed text-[11px]">Ganhadora do prêmio Melhores do Ano por três anos consecutivos (2021, 2022 e 2023) pelo Jornal A Folha do Batel.</p>
+                </div>
+
+                <div class="bg-zinc-50/50 p-4 rounded-xl border border-zinc-200">
+                    <div class="text-brand-primary text-lg mb-1"><i class="fa-solid fa-bolt"></i></div>
+                    <h3 class="text-zinc-900 font-bold text-sm mb-1">5. Carga Imediata Avançada</h3>
+                    <p class="text-zinc-600 leading-relaxed text-[11px]">Uso exclusivo de injetáveis importados de altíssima pureza (Allergan e Galderma).</p>
+                </div>
+
+                <div class="bg-zinc-50/50 p-4 rounded-xl border border-zinc-200">
+                    <div class="text-brand-primary text-lg mb-1"><i class="fa-solid fa-shield-virus"></i></div>
+                    <h3 class="text-zinc-900 font-bold text-sm mb-1">6. Protocolo de Biossegurança Rígido</h3>
+                    <p class="text-zinc-600 leading-relaxed text-[11px]">Acompanhamento detalhado pós-procedimento e suporte dedicado para total segurança clínica.</p>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-zinc-400 font-mono border-t border-zinc-100 pt-4">Página 10</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 11: ANATOMIA DA LANDING PAGE -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-zinc-900 mb-3">Anatomia da LP de Alto Ticket</h2>
+            <p class="text-xs text-zinc-600 mb-4">
+                Estrutura de blocos desenhada sob medida para converter leads de alto ticket e desarmar objeções emocionais:
+            </p>
+            
+            <div class="space-y-4 flex-1 text-xs">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 border border-zinc-200 bg-zinc-50/40 rounded-xl">
+                        <h3 class="text-brand-primary font-bold text-xs uppercase tracking-wider mb-2">1. Dobra Principal (Hero Section)</h3>
+                        <p class="text-[11px] text-zinc-600 leading-relaxed">Mensagem imediata de rejuvenescimento sutil e segurança: destaque para "Resultados Naturais" e "Biossegurança". Afasta curiosos de preço.</p>
+                    </div>
+                    <div class="p-4 border border-zinc-200 bg-zinc-50/40 rounded-xl">
+                        <h3 class="text-brand-primary font-bold text-xs uppercase tracking-wider mb-2">2. Bloco da Beleza Natural</h3>
+                        <p class="text-[11px] text-zinc-600 leading-relaxed">Seção focada no pilar da Sedação Consciente monitorada. Desarma o pavor cirúrgico clássico (indicado especialmente para o Avatar Mãe/Avó).</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 border border-zinc-200 bg-zinc-50/40 rounded-xl">
+                        <h3 class="text-brand-primary font-bold text-xs uppercase tracking-wider mb-2">3. Qualificação da Metodologia</h3>
+                        <p class="text-[11px] text-zinc-600 leading-relaxed">Exposição dos certificados de especialista e do prêmio Melhores do Ano. Passa credibilidade inabalável.</p>
+                    </div>
+                    <div class="p-4 border border-zinc-200 bg-zinc-50/40 rounded-xl">
+                        <h3 class="text-brand-primary font-bold text-xs uppercase tracking-wider mb-2">4. Depoimentos de Transformação</h3>
+                        <p class="text-[11px] text-zinc-600 leading-relaxed">Depoimentos reais em vídeo focados na recuperação da capacidade de mastigar e no ganho de autoconfiança no dia a dia social.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-emerald-50/40 p-4 border border-emerald-100 rounded-xl">
+                    <h3 class="text-emerald-800 font-bold text-xs uppercase tracking-wider mb-1">Ação Direta sem Barreiras (Fricção Zero)</h3>
+                    <p class="text-[11px] text-zinc-650 leading-relaxed">
+                        Eliminamos formulários complexos. O funil foca exclusivamente no botão do WhatsApp direcionando para um pré-atendimento de agendamento ágil guiado por secretária especialista.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-zinc-400 font-mono border-t border-zinc-100 pt-4">Página 11</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 12: ROI & VIABILIDADE FINANCEIRA -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-zinc-900 mb-3">ROI & Viabilidade Financeira</h2>
+            <p class="text-xs text-zinc-600 mb-4">
+                Diferente do tráfego focado apenas em limpezas baratas, as campanhas focam na atração de pacientes regulares e fiéis para tratamentos de estética facial contínuos:
+            </p>
+            
+            <div class="grid grid-cols-2 gap-4 mb-4 text-xs">
+                <div class="bg-zinc-50/40 p-4 rounded-xl border border-zinc-200 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-brand-primary font-bold text-xs mb-1.5 flex items-center gap-1.5">
+                            <i class="fa-solid fa-calculator"></i> Custo por Cliente Premium (CAC)
+                        </h3>
+                        <p class="text-[11px] text-zinc-600 leading-relaxed">Estimativa de investimento de tráfego variando de R$ 200 a R$ 400 por paciente de harmonização de alto valor fechado.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-zinc-50/40 p-4 rounded-xl border border-zinc-200 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-emerald-700 font-bold text-xs mb-1.5 flex items-center gap-1.5">
+                            <i class="fa-solid fa-chart-line"></i> Valor de Ciclo de Vida (LTV)
+                        </h3>
+                        <p class="text-[11px] text-zinc-600 leading-relaxed">Tratamentos de rejuvenescimento e harmonização facial possuem tickets excelentes, estabelecendo previsibilidade e escala de pacientes.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-purple-50/30 p-4 border border-purple-150 rounded-xl flex-1 flex flex-col justify-center">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-brand-primary mb-3 text-center">Simulação Prática Mensal Estimada</h3>
+                
+                <div class="grid grid-cols-3 gap-3 text-center text-xs">
+                    <div class="p-3 bg-white rounded-lg border border-purple-100 shadow-sm">
+                        <p class="text-zinc-500 text-[10px] uppercase">Investimento Ads</p>
+                        <p class="text-sm font-black text-zinc-900 mt-1">R$ 3.000</p>
+                    </div>
+                    <div class="p-3 bg-white rounded-lg border border-purple-100 shadow-sm">
+                        <p class="text-zinc-500 text-[10px] uppercase">Contratos Fechados</p>
+                        <p class="text-sm font-black text-brand-primary mt-1">3 a 5 casos</p>
+                    </div>
+                    <div class="p-3 bg-white rounded-lg border border-purple-100 shadow-sm">
+                        <p class="text-zinc-500 text-[10px] uppercase">Receita Estimada</p>
+                        <p class="text-sm font-black text-emerald-700 mt-1">R$ 35k - R$ 60k</p>
+                    </div>
+                </div>
+                
+                <p class="text-[10px] text-zinc-500 mt-3 text-center leading-relaxed">
+                    *Projeção estruturada em uma taxa de agendamento qualificado de 8% a 12% a partir dos contatos qualificados gerados pela Landing Page.
+                </p>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-zinc-400 font-mono border-t border-zinc-100 pt-4">Página 12</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 13: OCEANO AZUL & TURISMO -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-zinc-900 mb-4">Oceano Azul & Expansão</h2>
+            <p class="text-xs text-zinc-600 mb-4">
+                Como posicionar a clínica em categorias únicas de mercado onde a comparação direta de preços não existe:
+            </p>
+
+            <div class="space-y-4 flex-1 text-xs">
+                <div class="bg-blue-50/30 p-4 rounded-xl border border-blue-100 flex items-start gap-3">
+                    <div class="text-blue-600 text-lg"><i class="fa-solid fa-plane"></i></div>
+                    <div>
+                        <h3 class="text-zinc-900 font-bold text-sm mb-1">Plano Facial de Manutenção Anual</h3>
+                        <p class="text-[11px] text-zinc-650 leading-relaxed">
+                            Criar planos de acompanhamento continuado para aplicação preventiva de toxina botulínica e bioestimuladores de colágeno ao longo do ano, garantindo previsibilidade de receita e fidelização do paciente.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-purple-50/30 p-4 rounded-xl border border-purple-100 flex items-start gap-3">
+                    <div class="text-purple-600 text-lg"><i class="fa-solid fa-arrows-spin"></i></div>
+                    <div>
+                        <h3 class="text-zinc-900 font-bold text-sm mb-1">Upgrade de Reabilitações Antigas (Upsell)</h3>
+                        <p class="text-[11px] text-zinc-650 leading-relaxed">
+                            Captação de pacientes insatisfeitas com procedimentos exagerados realizados em outras clínicas, focando no posicionamento de refinamento sutil e correções elegantes.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-zinc-400 font-mono border-t border-zinc-100 pt-4">Página 13</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 14: RESUMO E CONCLUSÃO -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer justify-center items-center text-center h-full">
+            <div class="bg-zinc-50/80 p-8 rounded-2xl border border-zinc-200 shadow-sm max-w-xl">
+                <i class="fa-solid fa-rocket text-brand-primary text-5xl mb-6"></i>
+                <h2 class="text-zinc-900 font-display font-bold text-3xl mb-4">A Síntese Final</h2>
+                
+                <p class="text-sm text-zinc-600 leading-relaxed mb-6">
+                    Sua presença digital não deve ser apenas informativa. Ela deve ser seu principal ativo de prospecção. Com a arquitetura de conversão aplicada, traduzimos a expertise clínica, laboratório digital e sedação integrada em **desejo imediato de compra** na mente do paciente premium.
+                </p>
+
+                <p class="text-xs text-zinc-700 font-medium leading-relaxed italic border-t border-zinc-200 pt-4 mb-6">
+                    Agora que você já deu o primeiro passo para alavancar a sua empresa com este novo site que preparamos, vamos bater um papo para conversar sobre o que mais podemos fazer com base nesta análise estratégica?<br>
+                    <span class="block mt-2 text-[10px] text-zinc-500 font-sans not-italic font-semibold">Contato: es.comunicacao@outlook.com | WhatsApp: (13) 98106-2787</span>
+                </p>
+
+                <div class="flex items-center justify-center gap-3 text-xs text-zinc-400 border-t border-zinc-150 pt-4">
+                    <span class="font-bold text-zinc-800 tracking-wider uppercase">ESCOM Studio &bull; Business Intelligence</span>
+                </div>
+            </div>
+            
+            <div class="mt-auto w-full flex justify-between items-center text-xs text-zinc-400 font-mono border-t border-zinc-100 pt-4">
+                <span>Dossiê Clínica Elizabete De Marchi - Confidencial</span>
+                <span>Página 14</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

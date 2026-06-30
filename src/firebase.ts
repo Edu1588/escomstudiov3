@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import firebaseConfig from '../firebase-applet-config.json';
+import firebaseConfig from '../firebase-applet-config';
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 export const db = getFirestore(app, (firebaseConfig as any).firestoreDatabaseId);
@@ -23,6 +23,7 @@ export interface PortfolioProject {
   id?: string;
   name: string;
   category: string;
+  tag?: string;
   desc: string;
   image: string;
   score: string;
@@ -41,6 +42,7 @@ export const getPortfolioProjects = async () => {
         id: doc.id,
         name: data.title || data.name || '',
         category: data.category || '',
+        tag: data.tag || '',
         desc: data.description || data.desc || '',
         image: data.image || data.imageUrl || data.thumbnailUrl || '',
         score: data.score || '90%',
@@ -69,6 +71,7 @@ export const savePortfolioProject = async (project: PortfolioProject) => {
         name: data.name,
         title: data.name,
         category: data.category,
+        tag: data.tag || '',
         description: data.desc,
         desc: data.desc,
         image: data.image,
@@ -83,6 +86,7 @@ export const savePortfolioProject = async (project: PortfolioProject) => {
         name: project.name,
         title: project.name,
         category: project.category,
+        tag: project.tag || '',
         description: project.desc,
         desc: project.desc,
         image: project.image,
@@ -170,3 +174,64 @@ export const deleteExternalProject = async (id: string) => {
     return { success: false, error };
   }
 };
+
+export interface Experience {
+  id?: string;
+  role: string;
+  company: string;
+  period: string;
+  location: string;
+  desc: string;
+  createdAt?: any;
+}
+
+export const getExperiences = async () => {
+  try {
+    const { getDocs, query, collection } = await import('firebase/firestore');
+    const q = query(collection(db, 'experiences'));
+    const snapshot = await getDocs(q);
+    const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Experience));
+    return docs.sort((a, b) => {
+      const timeA = a.createdAt?.seconds || 0;
+      const timeB = b.createdAt?.seconds || 0;
+      return timeB - timeA;
+    });
+  } catch (error) {
+    console.error("Error fetching experiences:", error);
+    return [];
+  }
+};
+
+export const saveExperience = async (experience: Experience) => {
+  try {
+    const { doc, setDoc, updateDoc } = await import('firebase/firestore');
+    if (experience.id) {
+      const docRef = doc(db, 'experiences', experience.id);
+      const { id, ...data } = experience;
+      await updateDoc(docRef, data);
+      return { success: true, id: experience.id };
+    } else {
+      const { id, ...data } = experience;
+      const docRef = await addDoc(collection(db, 'experiences'), {
+        ...data,
+        createdAt: serverTimestamp()
+      });
+      return { success: true, id: docRef.id };
+    }
+  } catch (error) {
+    console.error("Error saving experience:", error);
+    return { success: false, error };
+  }
+};
+
+export const deleteExperience = async (id: string) => {
+  try {
+    const { doc, deleteDoc } = await import('firebase/firestore');
+    await deleteDoc(doc(db, 'experiences', id));
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting experience:", error);
+    return { success: false, error };
+  }
+};
+

@@ -1,0 +1,490 @@
+<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Skoziê Closet de Moda Feminina - Moda Premium em Goiânia</title>
+<style>
+:root { --primary: #E91E63; --font-body: 'eb_garamond', sans-serif; --font-headline: 'eb_garamond', sans-serif; }
+body { margin: 0; font-family: var(--font-body); }
+</style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+    <style>
+      :root {
+        --primary: #E91E63;
+        --primary-rgb: 233, 30, 99;
+        --primary-dark: #b80049;
+        --accent: #D4AF37;
+        --font-body: 'Plus Jakarta Sans', sans-serif;
+        --font-headline: 'Playfair Display', serif;
+        --glass-bg: rgba(255,255,255,0.08);
+        --glass-border: rgba(255,255,255,0.12);
+        --glass-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      }
+      html { scroll-behavior: smooth; }
+      body { margin: 0; font-family: var(--font-body); background: #faf9f9; color: #1a1a1a; overflow-x: hidden; -webkit-font-smoothing: antialiased; padding-top: 36px; }
+      h1, h2, h3, h4, h5, h6 { font-family: var(--font-headline); }
+      .glass { background: var(--glass-bg); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); }
+      .glass-nav { background: rgba(255,255,255,0.85); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid rgba(0,0,0,0.06); }
+      .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16,1,0.3,1); }
+      .reveal.visible { opacity: 1; transform: translateY(0); }
+      .reveal-left { opacity: 0; transform: translateX(-60px); transition: all 0.8s cubic-bezier(0.16,1,0.3,1); }
+      .reveal-left.visible { opacity: 1; transform: translateX(0); }
+      .reveal-right { opacity: 0; transform: translateX(60px); transition: all 0.8s cubic-bezier(0.16,1,0.3,1); }
+      .reveal-right.visible { opacity: 1; transform: translateX(0); }
+      .reveal-scale { opacity: 0; transform: scale(0.9); transition: all 0.8s cubic-bezier(0.16,1,0.3,1); }
+      .reveal-scale.visible { opacity: 1; transform: scale(1); }
+      .hover-lift { transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease; }
+      .hover-lift:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,0.12); }
+      .btn-shimmer { position: relative; overflow: hidden; background: linear-gradient(135deg, #E91E63, #b80049); border: none; color: #fff; font-weight: 700; padding: 1rem 2.5rem; border-radius: 12px; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; text-decoration: none; display: inline-block; }
+      .btn-shimmer::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.25) 50%, transparent 60%); animation: shimmer 3s ease-in-out infinite; }
+      @keyframes shimmer { 0% { transform: translateX(-100%) rotate(25deg); } 100% { transform: translateX(100%) rotate(25deg); } }
+      .btn-shimmer:hover { transform: scale(1.05); box-shadow: 0 12px 40px rgba(0,0,0,0.2); }
+      .parallax { will-change: transform; }
+      .stitch-section { max-width: 1200px; margin: 0 auto; padding: 5rem 1.5rem; }
+      #three-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+      #scroll-progress { position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: linear-gradient(90deg, #E91E63, #D4AF37); z-index: 9999; transition: width 0.1s linear; }
+      section { position: relative; }
+      #prospeccao-banner { position: fixed; top: 0; left: 0; width: 100%; height: 36px; background: linear-gradient(90deg, #dc2626, #b91c1c); color: #fff; z-index: 99999; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; gap: 8px; }
+      #prospeccao-banner i { font-size: 14px; }
+      .nav-blur { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+      .whatsapp-float { position: fixed; bottom: 24px; right: 24px; z-index: 9998; width: 60px; height: 60px; border-radius: 50%; background: #25D366; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 4px 20px rgba(37,211,102,0.4); transition: transform 0.3s; cursor: pointer; text-decoration: none; }
+      .whatsapp-float:hover { transform: scale(1.1); }
+      .product-card { position: relative; overflow: hidden; border-radius: 16px; cursor: pointer; }
+      .product-card img { transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); width: 100%; height: 100%; object-fit: cover; }
+      .product-card:hover img { transform: scale(1.08); }
+      .product-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%); display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; color: #fff; }
+      .faq-item { border-bottom: 1px solid #e4e4e7; padding: 20px 0; cursor: pointer; }
+      .faq-item:first-child { border-top: 1px solid #e4e4e7; }
+      .faq-question { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 16px; }
+      .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s ease; padding-top: 0; color: #52525b; font-size: 14px; line-height: 1.6; }
+      .faq-item.open .faq-answer { max-height: 300px; padding-top: 16px; }
+      .faq-item.open .faq-icon { transform: rotate(45deg); color: var(--primary); }
+      .faq-icon { transition: transform 0.3s; font-size: 20px; }
+      @media (max-width: 768px) { .stitch-section { padding: 3rem 1rem; } .reveal { transform: translateY(24px); } }
+    </style>
+    <script>
+      let threeScene, threeCamera, threeRenderer, threeMesh;
+      function initThree() {
+        try {
+          threeScene = new THREE.Scene();
+          threeCamera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+          threeRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+          threeRenderer.setSize(window.innerWidth, window.innerHeight);
+          threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+          const container = document.getElementById('three-bg');
+          if (container) container.appendChild(threeRenderer.domElement);
+          const geometry = new THREE.IcosahedronGeometry(1.2, 0);
+          const material = new THREE.MeshBasicMaterial({ color: 0xE91E63, wireframe: true, transparent: true, opacity: 0.05 });
+          threeMesh = new THREE.Mesh(geometry, material);
+          threeScene.add(threeMesh);
+          threeCamera.position.z = 3.5;
+          animateThree();
+        } catch(e) { console.log('[3D] Skipped:', e.message); }
+      }
+      function animateThree() {
+        requestAnimationFrame(animateThree);
+        if (threeMesh) { threeMesh.rotation.x += 0.002; threeMesh.rotation.y += 0.004; }
+        if (threeRenderer) threeRenderer.render(threeScene, threeCamera);
+      }
+      function initGSAP() {
+        if (typeof gsap === 'undefined') { useIntersectionObserver(); return; }
+        gsap.registerPlugin(ScrollTrigger);
+        gsap.utils.toArray('.stitch-section').forEach((section) => {
+          gsap.fromTo(section, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out', scrollTrigger: { trigger: section, start: 'top 85%', toggleActions: 'play none none reverse' } });
+        });
+        const nav = document.querySelector('nav');
+        if (nav) ScrollTrigger.create({ start: 'top -40px', onUpdate: (self) => { self.progress > 0 ? nav.classList.add('glass-nav') : nav.classList.remove('glass-nav'); } });
+      }
+      function useIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.15 });
+        document.querySelectorAll('.stitch-section').forEach(s => { s.classList.add('reveal'); observer.observe(s); });
+      }
+      function initScrollProgress() {
+        const bar = document.getElementById('scroll-progress');
+        if (!bar) return;
+        window.addEventListener('scroll', () => { const h = document.documentElement.scrollHeight - window.innerHeight; bar.style.width = (window.scrollY / h * 100) + '%'; });
+      }
+      function initCounters() {
+        document.querySelectorAll('[data-count]').forEach(el => {
+          const target = parseInt(el.dataset.count);
+          const duration = 2000;
+          const start = performance.now();
+          function update(now) { const progress = Math.min((now - start) / duration, 1); el.textContent = Math.floor(progress * target).toLocaleString('pt-BR'); if (progress < 1) requestAnimationFrame(update); }
+          const obs = new IntersectionObserver((entries) => { if (entries[0].isIntersecting) { requestAnimationFrame(update); obs.unobserve(el); } }, { threshold: 0.5 });
+          obs.observe(el);
+        });
+      }
+      function toggleFaq(el) { el.classList.toggle('open'); }
+      document.addEventListener('click', (e) => { const a = e.target.closest('a[href^="#"]'); if (a) { e.preventDefault(); const target = document.querySelector(a.getAttribute('href')); if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
+      document.addEventListener('DOMContentLoaded', () => { initThree(); initGSAP(); initScrollProgress(); initCounters(); });
+    </script>
+</head><body>
+<div id="three-bg"></div>
+<div id="scroll-progress"></div>
+
+<div id="prospeccao-banner">
+  <i class="fa-solid fa-bullhorn"></i>
+  <span>SITE EM PROSPECÇÃO COMERCIAL — <strong>ESCOM STUDIO</strong> — Transformação Digital para Negócios Locais</span>
+</div>
+
+<nav class="fixed top-[36px] left-0 w-full z-[9999] flex items-center justify-between px-6 md:px-16 h-16 md:h-20 transition-all duration-300" style="background: rgba(250,249,249,0.85);">
+  <a href="#" class="font-display text-2xl md:text-3xl font-bold text-[var(--primary)] tracking-tight no-underline" style="font-family: 'Playfair Display', serif;">Skoziê</a>
+  <div class="hidden md:flex items-center gap-8">
+    <a href="#categorias" class="text-sm font-medium text-zinc-600 hover:text-[var(--primary)] transition-colors no-underline">Categorias</a>
+    <a href="#sobre" class="text-sm font-medium text-zinc-600 hover:text-[var(--primary)] transition-colors no-underline">Sobre</a>
+    <a href="#faq" class="text-sm font-medium text-zinc-600 hover:text-[var(--primary)] transition-colors no-underline">FAQ</a>
+    <a href="#proposta" class="text-sm font-medium text-zinc-600 hover:text-[var(--primary)] transition-colors no-underline">Proposta</a>
+  </div>
+  <div class="flex items-center gap-4">
+    <a href="https://wa.me/5562983232480" target="_blank" class="inline-flex items-center gap-2 bg-[#25D366] text-white px-4 py-2 rounded-full text-sm font-semibold no-underline hover:bg-[#22c55e] transition-all">
+      <i class="fa-brands fa-whatsapp"></i>
+      <span class="hidden md:inline">(62) 98323-2480</span>
+    </a>
+  </div>
+</nav>
+
+<section class="relative w-full h-[90vh] min-h-[600px] flex items-center overflow-hidden" style="margin-top: 84px;">
+  <div class="absolute inset-0">
+    <img class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop" alt="Skoziê Closet - Moda Feminina Premium" style="filter: brightness(0.7);">
+  </div>
+  <div class="relative z-10 px-6 md:px-16 max-w-4xl">
+    <span class="inline-block text-xs uppercase tracking-[0.3em] text-[var(--accent)] font-semibold mb-4">Skoziê Closet de Moda Feminina</span>
+    <h1 class="text-4xl md:text-7xl font-bold text-white mb-6 leading-tight" style="font-family: 'Playfair Display', serif;">
+      A Essência da <br><span class="text-[var(--accent)]">Moda Feminina</span>
+    </h1>
+    <p class="text-lg md:text-xl text-white/80 max-w-xl mb-8 leading-relaxed">
+      Curadoria exclusiva de moda premium em Goiânia. Vestidos de gala, alfaiataria moderna, casual luxury e beachwear — tudo com tecidos nobres e consultoria personalizada.
+    </p>
+    <div class="flex gap-4">
+      <a href="https://wa.me/5562983232480?text=Ol%C3%A1%20Skozi%C3%AA!%20Vi%20o%20site%20e%20quero%20saber%20mais%20sobre%20as%20cole%C3%A7%C3%B5es." target="_blank" class="btn-shimmer">
+        <i class="fa-brands fa-whatsapp mr-2"></i>Falar com Consultoria
+      </a>
+      <a href="#categorias" class="inline-flex items-center px-8 py-4 border-2 border-white/30 text-white font-semibold rounded-xl no-underline hover:bg-white/10 transition-all">
+        Ver Coleções
+      </a>
+    </div>
+  </div>
+</section>
+
+<section id="categorias" class="stitch-section">
+  <div class="text-center mb-16 reveal">
+    <span class="inline-block text-xs uppercase tracking-[0.3em] text-[var(--primary)] font-semibold mb-3">Coleções</span>
+    <h2 class="text-3xl md:text-5xl font-bold text-zinc-900 mb-4" style="font-family: 'Playfair Display', serif;">Nossas Categorias</h2>
+    <p class="text-zinc-500 max-w-xl mx-auto">Uma curadoria exclusiva pensada para a mulher contemporânea que não abre mão da elegância.</p>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="product-card aspect-[3/4] reveal-left">
+      <img src="https://images.unsplash.com/photo-1566174053879-31528523f8ae?q=80&w=800&auto=format&fit=crop" alt="Vestidos de Gala">
+      <div class="product-overlay">
+        <h3 class="text-xl font-bold mb-1" style="font-family: 'Playfair Display', serif;">Vestidos de Gala</h3>
+        <p class="text-sm text-white/80 mb-3">A partir de R$ 890,00</p>
+        <a href="https://wa.me/5562983232480" target="_blank" class="inline-block px-5 py-2 border border-white/40 text-white text-xs font-bold uppercase tracking-widest rounded-lg no-underline hover:bg-[var(--primary)] hover:border-[var(--primary)] transition-all">Consultar</a>
+      </div>
+    </div>
+    <div class="product-card aspect-[3/4] reveal">
+      <img src="https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=800&auto=format&fit=crop" alt="Moda Casual Premium">
+      <div class="product-overlay">
+        <h3 class="text-xl font-bold mb-1" style="font-family: 'Playfair Display', serif;">Moda Casual Premium</h3>
+        <p class="text-sm text-white/80 mb-3">A partir de R$ 240,00</p>
+        <a href="https://wa.me/5562983232480" target="_blank" class="inline-block px-5 py-2 border border-white/40 text-white text-xs font-bold uppercase tracking-widest rounded-lg no-underline hover:bg-[var(--primary)] hover:border-[var(--primary)] transition-all">Consultar</a>
+      </div>
+    </div>
+    <div class="product-card aspect-[3/4] reveal-right">
+      <img src="https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?q=80&w=800&auto=format&fit=crop" alt="Alfaiataria Moderna">
+      <div class="product-overlay">
+        <h3 class="text-xl font-bold mb-1" style="font-family: 'Playfair Display', serif;">Alfaiataria Moderna</h3>
+        <p class="text-sm text-white/80 mb-3">A partir de R$ 450,00</p>
+        <a href="https://wa.me/5562983232480" target="_blank" class="inline-block px-5 py-2 border border-white/40 text-white text-xs font-bold uppercase tracking-widest rounded-lg no-underline hover:bg-[var(--primary)] hover:border-[var(--primary)] transition-all">Consultar</a>
+      </div>
+    </div>
+    <div class="product-card aspect-[3/4] reveal-left">
+      <img src="https://images.unsplash.com/photo-1506152983158-b4a74a01c721?q=80&w=800&auto=format&fit=crop" alt="Beachwear Luxury">
+      <div class="product-overlay">
+        <h3 class="text-xl font-bold mb-1" style="font-family: 'Playfair Display', serif;">Beachwear Luxury</h3>
+        <p class="text-sm text-white/80 mb-3">A partir de R$ 320,00</p>
+        <a href="https://wa.me/5562983232480" target="_blank" class="inline-block px-5 py-2 border border-white/40 text-white text-xs font-bold uppercase tracking-widest rounded-lg no-underline hover:bg-[var(--primary)] hover:border-[var(--primary)] transition-all">Consultar</a>
+      </div>
+    </div>
+    <div class="product-card aspect-[3/4] reveal">
+      <img src="https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?q=80&w=800&auto=format&fit=crop" alt="Acessórios">
+      <div class="product-overlay">
+        <h3 class="text-xl font-bold mb-1" style="font-family: 'Playfair Display', serif;">Acessórios</h3>
+        <p class="text-sm text-white/80 mb-3">A partir de R$ 120,00</p>
+        <a href="https://wa.me/5562983232480" target="_blank" class="inline-block px-5 py-2 border border-white/40 text-white text-xs font-bold uppercase tracking-widest rounded-lg no-underline hover:bg-[var(--primary)] hover:border-[var(--primary)] transition-all">Consultar</a>
+      </div>
+    </div>
+    <div class="product-card aspect-[3/4] reveal-right">
+      <img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?q=80&w=800&auto=format&fit=crop" alt="Sapatos">
+      <div class="product-overlay">
+        <h3 class="text-xl font-bold mb-1" style="font-family: 'Playfair Display', serif;">Sapatos</h3>
+        <p class="text-sm text-white/80 mb-3">A partir de R$ 380,00</p>
+        <a href="https://wa.me/5562983232480" target="_blank" class="inline-block px-5 py-2 border border-white/40 text-white text-xs font-bold uppercase tracking-widest rounded-lg no-underline hover:bg-[var(--primary)] hover:border-[var(--primary)] transition-all">Consultar</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sobre" class="py-20 md:py-32 px-6 md:px-16" style="background: #f5f3f3;">
+  <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+    <div class="reveal-left">
+      <span class="inline-block text-xs uppercase tracking-[0.3em] text-[var(--primary)] font-semibold mb-3">Nossa História</span>
+      <h2 class="text-3xl md:text-5xl font-bold text-zinc-900 mb-6" style="font-family: 'Playfair Display', serif;">Um Sonho de Closet</h2>
+      <p class="text-zinc-600 leading-relaxed mb-4">Fundada no coração de Goiânia, a Skoziê surgiu com o propósito de redefinir a experiência de moda para a mulher contemporânea. O que começou como uma boutique curada, transformou-se em um refúgio de estilo — um verdadeiro Closet de Moda Feminina.</p>
+      <p class="text-zinc-600 leading-relaxed mb-4">Nossa jornada é marcada pela busca incessante por tecidos nobres, modelagens impecáveis e um olhar atento ao detalhe. Entendemos que a roupa é uma forma de expressão e confiança.</p>
+      <p class="text-zinc-600 leading-relaxed">Hoje, somos referência local em sofisticação, mantendo o atendimento personalizado e a proximidade que nos trouxe até aqui, sempre focados em empoderar nossas clientes através do design.</p>
+    </div>
+    <div class="reveal-right relative">
+      <div class="aspect-[3/4] rounded-2xl overflow-hidden shadow-xl">
+        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=800&auto=format&fit=crop" alt="Skoziê Boutique" class="w-full h-full object-cover">
+      </div>
+      <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-lg hidden md:block">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-location-dot text-[var(--primary)] text-xl"></i>
+          <div>
+            <p class="text-xs text-zinc-500">Visite nossa boutique</p>
+            <p class="text-sm font-semibold">Av. T-6, n 201 - Setor Bueno</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-20 md:py-32 px-6 md:px-16">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-16 reveal">
+      <h2 class="text-3xl md:text-5xl font-bold text-zinc-900 mb-4" style="font-family: 'Playfair Display', serif;">Nossos Valores</h2>
+      <p class="text-zinc-500 max-w-xl mx-auto">Os pilares que sustentam cada escolha que fazemos na Skoziê.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="text-center p-8 reveal-left">
+        <div class="w-16 h-16 rounded-full bg-pink-100 flex items-center justify-center mx-auto mb-6">
+          <i class="fa-solid fa-wand-magic-sparkles text-[var(--primary)] text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-3" style="font-family: 'Playfair Display', serif;">Curadoria de Estilo</h3>
+        <p class="text-zinc-500 text-sm leading-relaxed">Seleção rigorosa de peças que equilibram o clássico e o moderno, garantindo versatilidade e elegância.</p>
+      </div>
+      <div class="text-center p-8 reveal">
+        <div class="w-16 h-16 rounded-full bg-pink-100 flex items-center justify-center mx-auto mb-6">
+          <i class="fa-solid fa-gem text-[var(--primary)] text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-3" style="font-family: 'Playfair Display', serif;">Qualidade Impecável</h3>
+        <p class="text-zinc-500 text-sm leading-relaxed">Priorizamos materiais de alta durabilidade e acabamentos manuais que elevam cada produto ao status de arte.</p>
+      </div>
+      <div class="text-center p-8 reveal-right">
+        <div class="w-16 h-16 rounded-full bg-pink-100 flex items-center justify-center mx-auto mb-6">
+          <i class="fa-solid fa-heart text-[var(--primary)] text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-3" style="font-family: 'Playfair Display', serif;">Conexão com a Mulher</h3>
+        <p class="text-zinc-500 text-sm leading-relaxed">Cada cliente é única. Nosso compromisso é ouvir, entender e vestir as conquistas de cada mulher.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-20 md:py-32 px-6 md:px-16" style="background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);">
+  <div class="max-w-4xl mx-auto text-center reveal">
+    <i class="fa-solid fa-quote-left text-[var(--primary)] text-4xl mb-6 opacity-50"></i>
+    <h2 class="text-3xl md:text-5xl font-bold text-zinc-900 mb-6" style="font-family: 'Playfair Display', serif;">O Que Nossas Clientes Dizem</h2>
+    <div class="grid md:grid-cols-3 gap-6 mt-12 text-left">
+      <div class="bg-white p-6 rounded-2xl shadow-sm reveal-left">
+        <div class="flex text-amber-400 mb-3">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+        </div>
+        <p class="text-zinc-600 text-sm leading-relaxed mb-4">"Simplesmente amei o vestido de gala! A consultoria de estilo foi essencial para encontrar o modelo perfeito. Entrega super rápida."</p>
+        <p class="font-semibold text-zinc-800 text-sm">Ana Clara M.</p>
+      </div>
+      <div class="bg-white p-6 rounded-2xl shadow-sm reveal">
+        <div class="flex text-amber-400 mb-3">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+        </div>
+        <p class="text-zinc-600 text-sm leading-relaxed mb-4">"A Skoziê tem um cuidado único com cada peça. O linho que comprei é de altíssima qualidade, muito superior ao que encontro em lojas comuns."</p>
+        <p class="font-semibold text-zinc-800 text-sm">Juliana P. Rocha</p>
+      </div>
+      <div class="bg-white p-6 rounded-2xl shadow-sm reveal-right">
+        <div class="flex text-amber-400 mb-3">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+        </div>
+        <p class="text-zinc-600 text-sm leading-relaxed mb-4">"Atendimento personalizado nota 10! A equipe me ajudou a montar um look completo para um evento corporativo. Virei cliente fiel!"</p>
+        <p class="font-semibold text-zinc-800 text-sm">Mariana S. Carvalho</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="stitch-section">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-12 reveal">
+      <h2 class="text-3xl md:text-5xl font-bold text-zinc-900 mb-4" style="font-family: 'Playfair Display', serif;">Dúvidas Frequentes</h2>
+      <p class="text-zinc-500">Tudo que você precisa saber antes de comprar na Skoziê.</p>
+    </div>
+    <div class="reveal">
+      <div class="faq-item open" onclick="toggleFaq(this)">
+        <div class="faq-question">Como encontro o meu tamanho?<span class="faq-icon">+</span></div>
+        <div class="faq-answer">Disponibilizamos um guia de medidas detalhado em cada produto. Além disso, nossa equipe oferece consultoria de estilo via WhatsApp para ajudar você a encontrar o tamanho ideal. Basta enviar suas medidas que indicamos a melhor opção.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Qual o prazo de entrega?<span class="faq-icon">+</span></div>
+        <div class="faq-answer">Oferecemos frete expresso com até 48h para capitais e o Skoziê Concierge com entrega agendada no mesmo dia para áreas selecionadas em Goiânia. O prazo padrão é de até 7 dias úteis.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Como funciona a política de trocas?<span class="faq-icon">+</span></div>
+        <div class="faq-answer">Você tem até 30 dias para solicitar troca ou devolução. O processo é gratuito e simples: entre em contato pelo WhatsApp, informamos o passo a passo e emitimos o código de postagem reversa.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Vocês têm loja física? Onde fica?<span class="faq-icon">+</span></div>
+        <div class="faq-answer">Sim! Nossa boutique fica na Av. T-6, n 201, Setor Bueno, Goiânia - GO. Funcionamos de segunda a sábado, das 10h às 19h. Agende uma visita pelo WhatsApp para atendimento personalizado.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Quais formas de pagamento são aceitas?<span class="faq-icon">+</span></div>
+        <div class="faq-answer">Aceitamos cartões de crédito (à vista ou parcelado), débito, PIX e transferência bancária. Para peças de alto valor, consulte condições especiais de pagamento pelo WhatsApp.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="proposta" class="py-20 md:py-32 px-6 md:px-16" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff;">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-16 reveal">
+      <span class="inline-block text-xs uppercase tracking-[0.3em] text-[var(--accent)] font-semibold mb-3">ESCOM STUDIO</span>
+      <h2 class="text-3xl md:text-5xl font-bold mb-4" style="font-family: 'Playfair Display', serif;">Proposta Comercial</h2>
+      <p class="text-white/60 max-w-2xl mx-auto">Transforme sua presença digital com um site premium que reflete a sofisticação da sua marca.</p>
+    </div>
+    <div class="grid md:grid-cols-2 gap-12 items-start">
+      <div class="reveal-left space-y-6">
+        <div class="flex items-start gap-4 bg-white/5 p-6 rounded-xl border border-white/10">
+          <div class="w-12 h-12 rounded-full bg-[var(--accent)]/20 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-globe text-[var(--accent)] text-xl"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-lg mb-1">Site Premium Completo</h3>
+            <p class="text-white/60 text-sm">Site profissional com design exclusivo, animações GSAP, Three.js, glassmorphism e experiência de navegação premium.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4 bg-white/5 p-6 rounded-xl border border-white/10">
+          <div class="w-12 h-12 rounded-full bg-[var(--accent)]/20 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-cart-shopping text-[var(--accent)] text-xl"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-lg mb-1">Vitrine Digital + WhatsApp</h3>
+            <p class="text-white/60 text-sm">Catálogo online com suas 6 categorias de produto, integração direta com WhatsApp para consultoria e vendas.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4 bg-white/5 p-6 rounded-xl border border-white/10">
+          <div class="w-12 h-12 rounded-full bg-[var(--accent)]/20 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-magnifying-glass-chart text-[var(--accent)] text-xl"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-lg mb-1">SEO Local + Google Meu Negócio</h3>
+            <p class="text-white/60 text-sm">Apareça no Google quando suas clientes pesquisarem por "moda feminina em Goiânia" e "boutique premium Goiânia".</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4 bg-white/5 p-6 rounded-xl border border-white/10">
+          <div class="w-12 h-12 rounded-full bg-[var(--accent)]/20 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-chart-line text-[var(--accent)] text-xl"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-lg mb-1">Hospedagem Vercel + Domínio .com.br</h3>
+            <p class="text-white/60 text-sm">Site hospedado na Vercel com CDN global, HTTPS, velocidade incomparável e domínio profissional registrado.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4 bg-white/5 p-6 rounded-xl border border-white/10">
+          <div class="w-12 h-12 rounded-full bg-[var(--accent)]/20 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-headset text-[var(--accent)] text-xl"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-lg mb-1">Suporte e Manutenção</h3>
+            <p class="text-white/60 text-sm">30 dias de suporte inclusos com atualizações de conteúdo, ajustes de layout e acompanhamento de desempenho.</p>
+          </div>
+        </div>
+      </div>
+      <div class="reveal-right">
+        <div class="bg-white/5 p-8 rounded-2xl border border-white/10">
+          <h3 class="text-2xl font-bold mb-2" style="font-family: 'Playfair Display', serif;">Solicite seu Orçamento</h3>
+          <p class="text-white/60 text-sm mb-6">Preencha e enviaremos uma proposta personalizada para seu negócio.</p>
+          <form class="space-y-4" id="form-proposta">
+            <input type="text" placeholder="Seu nome" required class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[var(--accent)]">
+            <input type="email" placeholder="Seu e-mail" required class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[var(--accent)]">
+            <input type="tel" placeholder="Seu WhatsApp" required class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[var(--accent)]">
+            <textarea placeholder="Conte um pouco sobre seu negócio..." rows="3" class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[var(--accent)]"></textarea>
+            <button type="submit" class="w-full btn-shimmer text-center" onclick="event.preventDefault(); window.open('https://wa.me/5513981062787?text=Ol%C3%A1%20ESCOM%20Studio!%20Acabei%20de%20preencher%20o%20formul%C3%A1rio%20de%20proposta%20no%20site%20da%20Skozi%C3%AA%20e%20quero%20saber%20mais%20sobre%20a%20transforma%C3%A7%C3%A3o%20digital.','_blank');">
+              <i class="fa-brands fa-whatsapp mr-2"></i>Enviar Proposta
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-16 reveal">
+      <p class="text-white/40 text-sm mb-4">Ou fale diretamente conosco:</p>
+      <a href="https://wa.me/5513981062787" target="_blank" class="inline-flex items-center gap-2 text-[var(--accent)] no-underline hover:underline">
+        <i class="fa-brands fa-whatsapp"></i> (13) 98106-2787
+      </a>
+      <span class="text-white/40 mx-3">|</span>
+      <a href="mailto:es.comunicacao@outlook.com" class="text-[var(--accent)] no-underline hover:underline">
+        es.comunicacao@outlook.com
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer style="background: #0f0f1a; color: #fff; padding: 60px 24px 40px;">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid md:grid-cols-4 gap-10 mb-10">
+      <div>
+        <h4 class="text-xl font-bold mb-4" style="font-family: 'Playfair Display', serif; color: var(--accent);">ESCOM STUDIO</h4>
+        <p class="text-white/50 text-sm leading-relaxed">Transformação Digital para Negócios Locais. Especialistas em Web Design de luxo, Arquitetura de Conversão e Engenharia de UX.</p>
+      </div>
+      <div>
+        <h5 class="font-bold text-sm uppercase tracking-wider mb-4 text-white/70">Navegação</h5>
+        <ul class="space-y-2 text-sm text-white/50">
+          <li><a href="#categorias" class="hover:text-[var(--accent)] transition-colors no-underline">Categorias</a></li>
+          <li><a href="#sobre" class="hover:text-[var(--accent)] transition-colors no-underline">Sobre</a></li>
+          <li><a href="#faq" class="hover:text-[var(--accent)] transition-colors no-underline">FAQ</a></li>
+          <li><a href="#proposta" class="hover:text-[var(--accent)] transition-colors no-underline">Proposta</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5 class="font-bold text-sm uppercase tracking-wider mb-4 text-white/70">Contato</h5>
+        <ul class="space-y-2 text-sm text-white/50">
+          <li><a href="https://wa.me/5513981062787" class="hover:text-[var(--accent)] transition-colors no-underline"><i class="fa-brands fa-whatsapp mr-2"></i>(13) 98106-2787</a></li>
+          <li><a href="mailto:es.comunicacao@outlook.com" class="hover:text-[var(--accent)] transition-colors no-underline">es.comunicacao@outlook.com</a></li>
+          <li><i class="fa-regular fa-clock mr-2"></i>Seg-Sex 9h-18h</li>
+        </ul>
+      </div>
+      <div>
+        <h5 class="font-bold text-sm uppercase tracking-wider mb-4 text-white/70">Redes</h5>
+        <div class="flex gap-3">
+          <a href="https://instagram.com/escom.studio" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[var(--accent)] transition-colors no-underline">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+          <a href="https://wa.me/5513981062787" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[var(--accent)] transition-colors no-underline">
+            <i class="fa-brands fa-whatsapp"></i>
+          </a>
+          <a href="mailto:es.comunicacao@outlook.com" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[var(--accent)] transition-colors no-underline">
+            <i class="fa-regular fa-envelope"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-white/30">
+      <p>&copy; 2026 ESCOM STUDIO. Todos os direitos reservados.</p>
+      <p class="text-xs">Este é um site em prospecção comercial para Skoziê Closet de Moda Feminina</p>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/5562983232480" target="_blank" class="whatsapp-float" aria-label="WhatsApp Skoziê">
+  <i class="fa-brands fa-whatsapp"></i>
+</a>
+
+<script>
+  document.querySelectorAll('.faq-item').forEach(item => {
+    item.addEventListener('click', function() { this.classList.toggle('open'); });
+  });
+</script>
+</body></html>

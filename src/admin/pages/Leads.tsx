@@ -33,9 +33,13 @@ export default function Leads() {
           return isNaN(d.getTime()) ? 0 : d.getTime();
         };
 
-        // Sort by date descending
-        loaded.sort((a: any, b: any) => getTimestamp(b.createdAt) - getTimestamp(a.createdAt));
-        setLeads(loaded);
+        if (Array.isArray(loaded)) {
+          // Sort by date descending
+          loaded.sort((a: any, b: any) => getTimestamp(b.createdAt) - getTimestamp(a.createdAt));
+          setLeads(loaded);
+        } else {
+          setLeads([]);
+        }
       }
     } catch (error) {
       console.warn("Error fetching leads:", error);
@@ -160,7 +164,7 @@ export default function Leads() {
           <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-6">
             <div className="text-[10px] text-gray-500 font-mono tracking-widest mb-2">LEADS ATIVOS</div>
             <div className="text-3xl font-bold text-white mb-2">{leads.length}</div>
-            <div className="text-[11px] font-mono text-[#2EFF00] flex items-center gap-1">
+            <div className="text-[11px] font-mono text-[#00d1ff] flex items-center gap-1">
               <span>↗</span> Total cadastrado
             </div>
           </div>
@@ -180,7 +184,7 @@ export default function Leads() {
           </div>
           <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-6">
             <div className="text-[10px] text-gray-500 font-mono tracking-widest mb-2">PIPELINE TOTAL</div>
-            <div className="text-3xl font-bold text-[#2EFF00] mb-2">R$ 0</div>
+            <div className="text-3xl font-bold text-[#00d1ff] mb-2">R$ 0</div>
             <div className="text-[11px] font-mono text-gray-500 flex items-center gap-1">
               Volume em negociação
             </div>
@@ -194,7 +198,7 @@ export default function Leads() {
               <button onClick={handleExportCSV} className="flex items-center gap-2 bg-[#1a1a1a] hover:bg-[#222] border border-[#333] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                 Exportar CSV
               </button>
-              <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 bg-[#2EFF00] hover:bg-[#28e600] text-black px-4 py-2 rounded-lg text-sm font-bold transition-colors">
+              <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 bg-[#00d1ff] hover:bg-[#00b8e6] text-black px-4 py-2 rounded-lg text-sm font-bold transition-colors">
                 <Plus size={16} />
                 Novo Lead
               </button>
@@ -276,7 +280,7 @@ export default function Leads() {
                   type="text" 
                   value={newLead.nome}
                   onChange={(e) => setNewLead({...newLead, nome: e.target.value})}
-                  className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white outline-none focus:border-[#2EFF00] transition-colors"
+                  className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white outline-none focus:border-[#00d1ff] transition-colors"
                   placeholder="Nome do Lead"
                 />
               </div>
@@ -287,7 +291,7 @@ export default function Leads() {
                   type="text" 
                   value={newLead.email}
                   onChange={(e) => setNewLead({...newLead, email: e.target.value})}
-                  className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white outline-none focus:border-[#2EFF00] transition-colors"
+                  className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white outline-none focus:border-[#00d1ff] transition-colors"
                   placeholder="contato@email.com"
                 />
               </div>
@@ -298,7 +302,7 @@ export default function Leads() {
                   type="text" 
                   value={newLead.origem}
                   onChange={(e) => setNewLead({...newLead, origem: e.target.value})}
-                  className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white outline-none focus:border-[#2EFF00] transition-colors"
+                  className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white outline-none focus:border-[#00d1ff] transition-colors"
                   placeholder="Instagram, Indicação..."
                 />
               </div>
@@ -313,7 +317,7 @@ export default function Leads() {
               </button>
               <button 
                 onClick={handleAddLead}
-                className="bg-[#2EFF00] hover:bg-[#28e600] text-black px-4 py-2 rounded-lg text-sm font-bold transition-colors"
+                className="bg-[#00d1ff] hover:bg-[#00b8e6] text-black px-4 py-2 rounded-lg text-sm font-bold transition-colors"
               >
                 Salvar
               </button>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { TextEffect } from '@/components/ui/text-effect';
 import { Mail, Send, CheckCircle2, AlertCircle } from "lucide-react";
 
 export default function Contact() {
@@ -44,15 +45,21 @@ export default function Contact() {
        <div className="container mx-auto">
          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24">
             <div>
-               <h2 className="text-6xl md:text-9xl font-black font-tech leading-[0.85] mb-12 uppercase">
+               <motion.h2
+                 initial={{ opacity: 0, filter: 'blur(20px)' }}
+                 whileInView={{ opacity: 1, filter: 'blur(0px)' }}
+                 transition={{ duration: 1.2, ease: 'easeOut' }}
+                 viewport={{ once: true }}
+                 className="text-6xl md:text-9xl font-black font-tech leading-[0.85] mb-12 uppercase"
+               >
                  VAMOS CRIAR <br />
                  ALGO BRUTO <br />
                  <span className="text-primary">JUNTOS.</span>
-               </h2>
+               </motion.h2>
                
-               <p className="text-white/30 max-w-sm font-mono text-[10px] tracking-[0.25em] leading-relaxed mb-16 uppercase font-bold">
+               <TextEffect preset="blur" per="word" as="p" className="text-white/30 max-w-sm font-mono text-[10px] tracking-[0.25em] leading-relaxed mb-16 uppercase font-bold">
                  ENTRE EM CONTATO PARA DISCUTIR O SEU PRÓXIMO CORE DIGITAL.
-               </p>
+               </TextEffect>
 
                <div className="space-y-10">
                  <div className="flex items-center gap-8 group cursor-pointer" onClick={() => window.location.href = 'mailto:es.comunicacao@outlook.com'}>
