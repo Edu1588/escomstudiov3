@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="meta-title">Proposta de Implementação Técnica</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Montserrat"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .btn-pdf-shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-pdf-shimmer::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 30%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(30deg);
+            transition: none;
+            animation: shimmer-btn 4s infinite linear;
+        }
+        @keyframes shimmer-btn {
+            0% { left: -60%; }
+            30% { left: 140%; }
+            100% { left: 140%; }
+        }
+        @keyframes shimmer-bar {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] text-stone-200 font-sans antialiased overflow-x-hidden pt-[32px]">
+
+    <!-- ========== FAIXA DE URGÊNCIA (OBRIGATÓRIO) ========== -->
+    <div id="banner-urgencia" class="fixed top-0 left-0 w-full z-[100] py-2 px-4 text-center" style="background: linear-gradient(90deg, #10b981, #047857, #10b981); background-size: 200% 100%; animation: shimmer-bar 3s ease-in-out infinite;">
+        <p class="text-white text-xs sm:text-sm font-bold tracking-wide flex items-center justify-center gap-2 flex-wrap">
+            <span class="inline-flex items-center gap-1.5">
+                <i class="fas fa-clock animate-pulse"></i>
+                <span>Proposta exclusiva válida por <strong class="underline underline-offset-2">3 dias</strong></span>
+            </span>
+            <span class="hidden sm:inline text-white/70">|</span>
+            <span class="text-white/90">Condições Especiais de Posicionamento de Marca</span>
+        </p>
+    </div>
+
+    <!-- ========== HEADER ========== -->
+    <header class="w-full bg-transparent absolute top-[32px] left-0 z-50">
+        <nav class="flex justify-between items-center w-full container mx-auto px-6 py-6 md:px-12">
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#primaryHex] to-[#secondaryHex] flex items-center justify-center text-white shadow-md shadow-[#primaryHex]/20">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                </div>
+                <span class="text-xl font-bold text-white tracking-tight group-hover:opacity-95 transition-opacity" id="header-brand-name">Boutique</span>
+            </a>
+            <ul class="hidden md:flex items-center gap-8 text-sm font-semibold text-stone-300">
+                <li><a href="#hero" class="hover:text-white transition-colors">Início</a></li>
+                <li><a href="#servicos" class="hover:text-white transition-colors">A Marca</a></li>
+                <li><a href="#analise" class="hover:text-white transition-colors">Diagnóstico</a></li>
+                <li><a href="#dossie-comercial" class="hover:text-white transition-colors">Dossiê</a></li>
+                <li><a href="#proposta-comercial" class="hover:text-white transition-colors">Proposta</a></li>
+            </ul>
+            <a href="#prospection" class="bg-white/10 hover:bg-white/20 text-white font-semibold text-xs py-2.5 px-5 rounded-full border border-white/10 transition-all uppercase tracking-wider">Contato</a>
+        </nav>
+    </header>
+
+    <!-- ========== HERO SECTION ========== -->
+    <section id="hero" class="relative min-h-screen flex flex-col items-center justify-center text-center px-4 bg-cover bg-center overflow-hidden" style="background-image: linear-gradient(to bottom, rgba(10,10,10,0.85), rgba(10,10,10,0.95)), url('#hero-bg-url');">
+        <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent"></div>
+        <div class="max-w-4xl space-y-8 z-10 pt-20">
+            <span class="bg-[#primaryHex]/15 text-[#primaryHex] border border-[#primaryHex]/20 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-[0.25em] mb-6 inline-block" id="hero-tagline">Boutique e Moda Premium</span>
+            <h1 class="text-4xl sm:text-6xl md:text-8xl font-black text-white font-serif tracking-tight leading-[1.1] uppercase" id="hero-title">
+                Moda e Estilo em <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-[#primaryHex] to-[#secondaryHex]">Alto Padrão</span>
+            </h1>
+            <p class="text-stone-300 text-base sm:text-xl max-w-2xl mx-auto leading-relaxed font-light" id="hero-subtitle">
+                Curadoria de looks sofisticados das principais marcas nacionais e importadas para o seu estilo VIP.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+                <a href="#proposta-comercial" class="w-full sm:w-auto bg-gradient-to-r from-[#primaryHex] to-[#secondaryHex] hover:opacity-95 text-white font-bold py-4 px-8 rounded-full transition-all shadow-lg shadow-[#primaryHex]/20 text-sm uppercase tracking-wider">
+                    Conhecer Proposta
+                </a>
+                <a href="#dossie-comercial" class="w-full sm:w-auto bg-white/5 hover:bg-white/10 text-white font-semibold py-4 px-8 rounded-full border border-white/10 transition-all text-sm uppercase tracking-wider">
+                    Visualizar Dossiê
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SERVIÇOS / DIFERENCIAIS ========== -->
+    <section id="servicos" class="py-32 bg-[#0e0e0e] border-y border-stone-900 relative">
+        <div class="container mx-auto px-6">
+            <div class="max-w-3xl mx-auto text-center space-y-4 mb-20">
+                <span class="text-[#primaryHex] text-xs font-bold uppercase tracking-[0.2em]">Exclusividade Boutique</span>
+                <h2 class="text-3xl md:text-5xl font-black text-white font-serif">A Verdadeira <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#primaryHex] to-[#secondaryHex]">Experiência VIP</span></h2>
+                <p class="text-stone-400 max-w-lg mx-auto">Oferecemos mais do que roupas: curadoria personalizada e estilo sob medida para a sua identidade.</p>
+                <div class="w-12 h-1 bg-[#primaryHex] mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Card 1 -->
+                <div class="bg-[#121212]/50 border border-stone-800 rounded-3xl p-8 space-y-6 hover:border-[#primaryHex]/30 transition-all duration-500 group">
+                    <div class="w-16 h-16 rounded-2xl bg-[#primaryHex]/10 flex items-center justify-center text-[#primaryHex] text-2xl group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-shirt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white font-serif" id="service-1-title">Curadoria sob Medida</h3>
+                    <p class="text-stone-400 text-sm leading-relaxed" id="service-1-desc">
+                        Peças selecionadas das principais marcas com exclusividade para o seu closet.
+                    </p>
+                </div>
+                <!-- Card 2 -->
+                <div class="bg-[#121212]/50 border border-stone-800 rounded-3xl p-8 space-y-6 hover:border-[#primaryHex]/30 transition-all duration-500 group">
+                    <div class="w-16 h-16 rounded-2xl bg-[#primaryHex]/10 flex items-center justify-center text-[#primaryHex] text-2xl group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white font-serif" id="service-2-title">Atendimento Privativo</h3>
+                    <p class="text-stone-400 text-sm leading-relaxed" id="service-2-desc">
+                        Consultoria individualizada de moda e imagem em horários reservados sob medida.
+                    </p>
+                </div>
+                <!-- Card 3 -->
+                <div class="bg-[#121212]/50 border border-stone-800 rounded-3xl p-8 space-y-6 hover:border-[#primaryHex]/30 transition-all duration-500 group">
+                    <div class="w-16 h-16 rounded-2xl bg-[#primaryHex]/10 flex items-center justify-center text-[#primaryHex] text-2xl group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-store"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white font-serif" id="service-3-title">Ambiente Sofisticado</h3>
+                    <p class="text-stone-400 text-sm leading-relaxed" id="service-3-desc">
+                        Espaço físico de altíssimo padrão com total privacidade para experimentar suas escolhas.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SEÇÃO DE DIAGNÓSTICO E ANÁLISE ESTRATÉGICA (OBRIGATÓRIO) ========== -->
+    <section id="analise" class="py-32 bg-[#0b0b0b] relative overflow-hidden">
+        <div class="container mx-auto px-6">
+            <div class="max-w-3xl mx-auto text-center space-y-4 mb-20">
+                <span class="text-[#primaryHex] text-xs font-bold uppercase tracking-[0.2em]">Análise Estratégica</span>
+                <h2 class="text-3xl md:text-5xl font-black text-white font-serif">Diagnóstico de <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#primaryHex] to-[#secondaryHex]">Alto Desempenho</span></h2>
+                <p class="text-stone-400 max-w-lg mx-auto">Identificamos falhas de conversão e oportunidades digitais valiosas para a sua marca física de luxo.</p>
+                <div class="w-12 h-1 bg-[#primaryHex] mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                <div class="bg-[#121212]/40 backdrop-blur-md rounded-2xl p-8 text-center space-y-4 border border-stone-800/80 hover:border-[#primaryHex]/30 transition-all">
+                    <div class="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-500 mx-auto text-2xl">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="text-4xl font-black text-green-500">95</div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Score de Qualidade</h3>
+                    <p class="text-xs text-stone-400 leading-relaxed">Potencial de sucesso e engajamento da marca muito acima do mercado.</p>
+                </div>
+                <div class="bg-[#121212]/40 backdrop-blur-md rounded-2xl p-8 text-center space-y-4 border border-stone-800/80 hover:border-[#primaryHex]/30 transition-all">
+                    <div class="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 mx-auto text-2xl">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="text-4xl font-black text-red-500">4</div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Pontos Críticos</h3>
+                    <p class="text-xs text-stone-400 leading-relaxed">Gargalos no posicionamento e funil digital atual que precisam de ajuste.</p>
+                </div>
+                <div class="bg-[#121212]/40 backdrop-blur-md rounded-2xl p-8 text-center space-y-4 border border-stone-800/80 hover:border-[#primaryHex]/30 transition-all">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 mx-auto text-2xl">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <div class="text-4xl font-black text-blue-500">7</div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Oportunidades</h3>
+                    <p class="text-xs text-stone-400 leading-relaxed">Canais de captação e estratégias de fidelização inexploradas.</p>
+                </div>
+                <div class="bg-[#121212]/40 backdrop-blur-md rounded-2xl p-8 text-center space-y-4 border border-stone-800/80 hover:border-[#primaryHex]/30 transition-all">
+                    <div class="w-14 h-14 rounded-2xl bg-[#primaryHex]/10 flex items-center justify-center text-[#primaryHex] mx-auto text-2xl">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="text-4xl font-black text-[#primaryHex]">+300%</div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">ROI Projetado</h3>
+                    <p class="text-xs text-stone-400 leading-relaxed">Projeção estimada de aumento de reservas com a nossa estrutura.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SEÇÃO DO DOSSIÊ COMERCIAL (OBRIGATÓRIO) ========== -->
+    <section id="dossie-comercial" class="py-24 bg-[#0e0e0e] text-center border-t border-stone-900">
+        <div class="max-w-4xl mx-auto px-6 space-y-8">
+            <div class="w-16 h-16 rounded-full bg-[#primaryHex]/10 text-[#primaryHex] flex items-center justify-center text-2xl mx-auto">
+                <i class="fa-solid fa-file-pdf"></i>
+            </div>
+            <h2 class="text-3xl md:text-5xl font-black text-white font-serif">Acesse o Dossiê UX & Inteligência Comercial</h2>
+            <p class="text-stone-400 max-w-xl mx-auto leading-relaxed">
+                Preparamos um relatório executivo de alta fidelidade compilando a análise técnica de conversão e melhorias projetadas especificamente para a sua empresa.
+            </p>
+            <div class="pt-4">
+                <a href="dossie.pdf" target="_blank" class="btn-pdf-shimmer active:scale-95 active:translate-y-[1px] bg-transparent hover:bg-stone-900 border-2 border-[#primaryHex]/30 text-white font-bold py-4.5 px-10 rounded-full transition-all inline-flex items-center gap-3 group hover:border-[#primaryHex]">
+                    <i class="fa-solid fa-file-pdf text-[#primaryHex] text-xl group-hover:scale-110 transition-transform"></i> Acessar Dossiê & Proposta
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SEÇÃO DE PROPOSTA COMERCIAL (OBRIGATÓRIO) ========== -->
+    <section id="proposta-comercial" class="py-32 bg-[#090909] text-white border-t border-stone-900 relative overflow-hidden">
+        <div class="container mx-auto px-6 relative z-10 max-w-6xl">
+            <div class="max-w-4xl mx-auto text-center space-y-12">
+                <div class="space-y-4">
+                    <span class="bg-[#primaryHex]/10 text-[#primaryHex] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border border-[#primaryHex]/20 mb-6 inline-block">Proposta Exclusiva ESCOM Studio</span>
+                    <h2 class="text-3xl md:text-5xl font-black font-serif">Investimento do Projeto</h2>
+                    <p class="text-stone-400 max-w-xl mx-auto">Este é o escopo financeiro exato para a implementação do site da sua empresa, com design de alta performance e engenharia de conversão voltada para captação.</p>
+                </div>
+
+                <!-- Card Principal de Preço -->
+                <div class="bg-[#121212] border border-stone-855 p-8 md:p-12 text-left max-w-2xl mx-auto space-y-8 shadow-2xl rounded-3xl relative">
+                    <div class="absolute top-0 right-0 bg-[#primaryHex] text-black text-xs font-bold px-4 py-1.5 rounded-tr-3xl rounded-bl-xl z-20">OFERTA DE PROSPECÇÃO</div>
+                    
+                    <h3 class="text-2xl font-bold text-white">Website de Conversão Ativa</h3>
+                    <p class="text-stone-400 text-xs pb-6 border-b border-white/10" id="proposal-desc">Design UI/UX Premium Sob Medida, Otimização de SEO Local, Carregamento Ultra-rápido, Integração WhatsApp, Copywriting Altamente Persuasivo.</p>
+                    
+                    <!-- Investimento Único (R$ 990 / taxa única) -->
+                    <div class="bg-black/40 border border-stone-800 rounded-2xl p-8 mb-8 relative shadow-inner text-center">
+                        <div class="flex items-center justify-center gap-2 mb-4">
+                            <i class="fa-solid fa-bolt text-[#primaryHex] text-lg"></i>
+                            <span class="text-[#primaryHex] text-xs font-bold uppercase tracking-widest">Investimento Único</span>
+                        </div>
+                        <div class="flex items-baseline justify-center gap-x-2">
+                            <span class="text-2xl font-bold text-stone-500">R$</span>
+                            <span class="text-5xl sm:text-6xl font-black text-[#primaryHex] tracking-tighter drop-shadow-[0_0_15px_rgba(var(--primary-rgb),0.35)]">990</span>
+                            <span class="text-lg font-medium text-stone-500">/taxa única</span>
+                        </div>
+                        <p class="text-center text-stone-500 text-[10px] mt-4 font-semibold tracking-wider uppercase">PAGAMENTO À VISTA VIA PIX OU TRANSFERÊNCIA</p>
+                    </div>
+
+                    <ul class="space-y-4 mb-10 text-sm text-stone-300">
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#primaryHex] text-lg"></i> Configuração completa de domínio e hospedagem</li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#primaryHex] text-lg"></i> SEO integrado para posicionamento local</li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#primaryHex] text-lg"></i> Certificado SSL de Conexão Segura</li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#primaryHex] text-lg"></i> Suporte técnico prioritário de 30 dias</li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-circle-info text-[#primaryHex] text-lg"></i> <strong class="text-white">Investimento único, sem mensalidades ou taxas ocultas</strong></li>
+                    </ul>
+
+                    <div class="pt-6">
+                        <button id="btn-aceitar-proposta" class="btn-pdf-shimmer w-full bg-[#primaryHex] hover:opacity-95 text-white text-base font-black py-5 rounded-2xl transition-all shadow-lg shadow-[#primaryHex]/30 flex items-center justify-center gap-3 group relative overflow-hidden">
+                            ACEITAR PROPOSTA AGORA <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Seção de Serviços Adicionais (Upsells) -->
+                <div class="max-w-5xl mx-auto mt-24 bg-gradient-to-b from-[#1c1917]/20 to-[#0c0a09]/80 p-8 md:p-12 rounded-3xl border border-[#primaryHex]/20 shadow-lg relative backdrop-blur-md text-left">
+                    <div class="absolute -top-4 left-8 bg-[#primaryHex] text-black text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">
+                        Expansões Tecnológicas
+                    </div>
+                    
+                    <h3 class="text-2xl md:text-3xl font-display font-extrabold text-white mb-4 flex items-center gap-3">
+                        <i class="fa-solid fa-square-plus text-[#primaryHex]"></i> Módulos Avançados sob Demanda
+                    </h3>
+                    <p class="text-stone-400 mb-10 text-sm max-w-3xl leading-relaxed">
+                        Leve a sua captação, operação e análise para o próximo nível. Integre novos recursos tecnológicos desenvolvidos sob medida pela ESCOM Studio:
+                    </p>
+                    
+                    <div class="grid md:grid-cols-2 gap-6 mb-12">
+                        <!-- CRM -->
+                        <div class="group bg-black/40 rounded-2xl border border-stone-850 hover:border-[#primaryHex]/50 hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                            <div class="p-6 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <div class="w-10 h-10 bg-[#primaryHex]/15 text-[#primaryHex] rounded-xl flex items-center justify-center text-lg mb-4">
+                                        <i class="fa-solid fa-users"></i>
+                                    </div>
+                                    <h4 class="font-bold text-white text-base mb-2" id="upsell-1-name">CRM e Fidelização de Clientes</h4>
+                                    <p class="text-stone-400 text-xs leading-relaxed" id="upsell-1-desc">Histórico de compras, grades de preferência e campanhas automáticas via WhatsApp.</p>
+                                </div>
+                                <span class="text-[10px] text-[#primaryHex] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Retenção & Recorrência</span>
+                            </div>
+                        </div>
+
+                        <!-- Dashboard -->
+                        <div class="group bg-black/40 rounded-2xl border border-stone-850 hover:border-[#primaryHex]/50 hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                            <div class="p-6 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <div class="w-10 h-10 bg-[#primaryHex]/15 text-[#primaryHex] rounded-xl flex items-center justify-center text-lg mb-4">
+                                        <i class="fa-solid fa-chart-line"></i>
+                                    </div>
+                                    <h4 class="font-bold text-white text-base mb-2" id="upsell-2-name">Dashboard de Vendas & ROI</h4>
+                                    <p class="text-stone-400 text-xs leading-relaxed" id="upsell-2-desc">Visualização e controle do ticket médio, faturamento das principais peças e conversão de novos clientes.</p>
+                                </div>
+                                <span class="text-[10px] text-[#primaryHex] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Gestão & Lucro</span>
+                            </div>
+                        </div>
+
+                        <!-- Agente IA -->
+                        <div class="group bg-black/40 rounded-2xl border border-stone-850 hover:border-[#primaryHex]/50 hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                            <div class="p-6 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <div class="w-10 h-10 bg-[#primaryHex]/15 text-[#primaryHex] rounded-xl flex items-center justify-center text-lg mb-4">
+                                        <i class="fa-solid fa-robot"></i>
+                                    </div>
+                                    <h4 class="font-bold text-white text-base mb-2" id="upsell-3-name">WhatsApp Assistant com Catálogo IA</h4>
+                                    <p class="text-stone-400 text-xs leading-relaxed" id="upsell-3-desc">Agente inteligente que atende clientes, indica looks por tamanho e envia links de pagamento 24 horas.</p>
+                                </div>
+                                <span class="text-[10px] text-[#primaryHex] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Atendimento 24/7</span>
+                            </div>
+                        </div>
+
+                        <!-- Estoque -->
+                        <div class="group bg-black/40 rounded-2xl border border-stone-850 hover:border-[#primaryHex]/50 hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                            <div class="p-6 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <div class="w-10 h-10 bg-[#primaryHex]/15 text-[#primaryHex] rounded-xl flex items-center justify-center text-lg mb-4">
+                                        <i class="fa-solid fa-boxes-stacked"></i>
+                                    </div>
+                                    <h4 class="font-bold text-white text-base mb-2" id="upsell-4-name">Controle de Estoque VIP</h4>
+                                    <p class="text-stone-400 text-xs leading-relaxed" id="upsell-4-desc">Controle digital de grade e cores, envio de alertas de reposição para as peças mais vendidas.</p>
+                                </div>
+                                <span class="text-[10px] text-[#primaryHex] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Organização & Agilidade</span>
+                            </div>
+                        </div>
+
+                        <!-- Processos -->
+                        <div class="group bg-black/40 rounded-2xl border border-stone-850 hover:border-[#primaryHex]/50 hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                            <div class="p-6 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <div class="w-10 h-10 bg-[#primaryHex]/15 text-[#primaryHex] rounded-xl flex items-center justify-center text-lg mb-4">
+                                        <i class="fa-solid fa-clock-rotate-left"></i>
+                                    </div>
+                                    <h4 class="font-bold text-white text-base mb-2" id="upsell-5-name">Omnichannel & Logística</h4>
+                                    <p class="text-stone-400 text-xs leading-relaxed" id="upsell-5-desc">Mapeamento e integração da loja física com sistemas online para envio rápido de sacolas e provador virtual.</p>
+                                </div>
+                                <span class="text-[10px] text-[#primaryHex] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Produtividade Técnica</span>
+                            </div>
+                        </div>
+
+                        <!-- E-commerce -->
+                        <div class="group bg-black/40 rounded-2xl border border-stone-850 hover:border-[#primaryHex]/50 hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                            <div class="p-6 flex-1 flex flex-col justify-between">
+                                <div>
+                                    <div class="w-10 h-10 bg-[#primaryHex]/15 text-[#primaryHex] rounded-xl flex items-center justify-center text-lg mb-4">
+                                        <i class="fa-solid fa-cart-shopping"></i>
+                                    </div>
+                                    <h4 class="font-bold text-white text-base mb-2" id="upsell-6-name">E-commerce & Sacola Digital</h4>
+                                    <p class="text-stone-400 text-xs leading-relaxed" id="upsell-6-desc">Vitrine virtual interativa com finalização de pedido de peças e pagamento online integrados.</p>
+                                </div>
+                                <span class="text-[10px] text-[#primaryHex] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Canal de Vendas Extra</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulário de Upsell -->
+                    <div class="bg-black/60 p-8 rounded-2xl border border-stone-800 shadow-inner">
+                        <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane text-[#primaryHex]"></i> Solicitar Orçamento das Expansões
+                        </h4>
+                        <p class="text-stone-400 text-xs mb-6">Selecione o módulo de seu interesse. Nossa equipe de arquitetura técnica analisará a infraestrutura necessária e enviará o orçamento detalhado.</p>
+                        
+                        <form id="form-upsell" class="space-y-4 text-xs">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input type="text" id="upsell-nome" placeholder="Seu Nome / Responsável" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#primaryHex] text-white placeholder-stone-600 text-xs transition" required>
+                                <input type="email" id="upsell-email" placeholder="E-mail Corporativo" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#primaryHex] text-white placeholder-stone-600 text-xs transition" required>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <select id="upsell-servico" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#primaryHex] text-stone-455 text-xs transition" required>
+                                    <option value="" disabled selected>Selecione o Módulo Tecnológico</option>
+                                    <option value="crm" id="opt-1">CRM</option>
+                                    <option value="dashboard" id="opt-2">Dashboard</option>
+                                    <option value="bot" id="opt-3">WhatsApp Bot</option>
+                                    <option value="estoque" id="opt-4">Controle de Insumos</option>
+                                    <option value="otimizacao" id="opt-5">Otimização</option>
+                                    <option value="ecommerce" id="opt-6">Menu Digital</option>
+                                </select>
+                                <input type="tel" id="upsell-whatsapp" placeholder="WhatsApp para Contato" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#primaryHex] text-white placeholder-stone-600 text-xs transition" required>
+                            </div>
+                            <button type="submit" class="w-full bg-[#primaryHex] hover:opacity-90 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-[#primaryHex]/20 border border-[#primaryHex]/10 text-xs uppercase tracking-wider">Enviar Solicitação de Adicionais</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== DEPOIMENTOS ========== -->
+    <section class="py-32 bg-[#0b0b0b] border-t border-stone-900">
+        <div class="container mx-auto px-6">
+            <div class="max-w-3xl mx-auto text-center space-y-4 mb-20">
+                <span class="text-[#primaryHex] text-xs font-bold uppercase tracking-[0.2em]">Clientes Satisfeitos</span>
+                <h2 class="text-3xl md:text-5xl font-black text-white font-serif">O Que Dizem Nossos <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#primaryHex] to-[#secondaryHex]">Membros</span></h2>
+                <div class="w-12 h-1 bg-[#primaryHex] mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="bg-[#121212]/50 border border-stone-800 p-8 rounded-3xl space-y-4">
+                    <p class="text-stone-300 italic text-sm leading-relaxed" id="testimonial-1-text">
+                        "A experiência foi incomparável. Do atendimento exclusivo à riqueza dos pratos apresentados, tudo transborda sofisticação e qualidade impecável."
+                    </p>
+                    <div>
+                        <h4 class="font-bold text-white" id="testimonial-1-author">Ricardo Santos</h4>
+                        <span class="text-xs text-stone-500">Membro Prime</span>
+                    </div>
+                </div>
+                <div class="bg-[#121212]/50 border border-stone-800 p-8 rounded-3xl space-y-4">
+                    <p class="text-stone-300 italic text-sm leading-relaxed" id="testimonial-2-text">
+                        "Um ambiente de negócios disfarçado de alta culinária. Reservas práticas, privacidade total e pratos autorais fantásticos."
+                    </p>
+                    <div>
+                        <h4 class="font-bold text-white" id="testimonial-2-author">Carla Albuquerque</h4>
+                        <span class="text-xs text-stone-500">CEO Grupo Luminous</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FORMULÁRIO DE PROSPECÇÃO (OBRIGATÓRIO) ========== -->
+    <section id="prospection" class="py-32 bg-[#0e0e0e] border-t border-stone-900 relative">
+        <div class="container mx-auto px-6">
+            <div class="max-w-xl mx-auto bg-[#121212] border border-stone-800 p-8 md:p-10 rounded-3xl space-y-8 shadow-2xl">
+                <div class="text-center space-y-3">
+                    <h3 class="text-2xl md:text-3xl font-black font-serif text-white">Solicite o Diagnóstico Gratuito</h3>
+                    <p class="text-xs text-stone-400">Preencha o formulário abaixo e receba uma análise exclusiva do potencial da sua marca digital.</p>
+                </div>
+                <form class="space-y-4" onsubmit="event.preventDefault(); alert('Formulário enviado com sucesso!');">
+                    <div>
+                        <label class="text-xs font-bold text-stone-400 uppercase tracking-wider block mb-2">Nome Completo</label>
+                        <input type="text" placeholder="Seu nome" class="w-full bg-[#1c1c1c] border border-stone-850 focus:border-[#primaryHex] rounded-xl p-4 text-white text-sm outline-none transition-colors">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-stone-400 uppercase tracking-wider block mb-2">WhatsApp / Contato</label>
+                        <input type="text" placeholder="Ex: (11) 99999-9999" class="w-full bg-[#1c1c1c] border border-stone-850 focus:border-[#primaryHex] rounded-xl p-4 text-white text-sm outline-none transition-colors">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-stone-400 uppercase tracking-wider block mb-2">E-mail Corporativo</label>
+                        <input type="email" placeholder="seu@email.com" class="w-full bg-[#1c1c1c] border border-stone-850 focus:border-[#primaryHex] rounded-xl p-4 text-white text-sm outline-none transition-colors">
+                    </div>
+                    <button type="submit" class="w-full bg-white hover:bg-stone-250 text-black font-bold py-4 rounded-xl text-sm uppercase tracking-wider transition-colors pt-4">
+                        Garantir Análise
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== RODAPÉ ========== -->
+    <footer class="py-12 bg-[#090909] text-stone-500 text-xs border-t border-stone-900">
+        <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-stone-400">ESCOM STUDIO</span>
+                <span>| Proposta Comercial Confidencial</span>
+            </div>
+            <div class="flex gap-4">
+                <span>Endereço Comercial do Lead: <span id="tech-address" class="text-stone-400">Carregando...</span></span>
+                <span>Telefone: <span id="tech-phone" class="text-stone-400">Carregando...</span></span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========== BOTÃO WHATSAPP FLUTUANTE ========== -->
+    <a id="btn-whatsapp-flutuante" href="https://wa.me/" target="_blank" class="fixed bottom-6 right-6 z-[90] w-14 h-14 bg-[#25D366] hover:bg-[#20ba5a] text-white rounded-full flex items-center justify-center text-2xl shadow-lg transition-transform hover:scale-105 active:scale-95">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Lógica de interações da proposta -->
+    <script>
+        const btnAceitar = document.getElementById('btn-aceitar-proposta');
+        if (btnAceitar) {
+            btnAceitar.addEventListener('click', () => {
+                btnAceitar.innerHTML = '<i class="fa-solid fa-circle-check"></i> PROPOSTA ACEITA!';
+                btnAceitar.className = 'w-full bg-green-600 text-white text-base font-black py-5 rounded-2xl shadow-lg shadow-green-600/30 flex items-center justify-center gap-3 cursor-default';
+                
+                setTimeout(() => {
+                    window.open('https://wa.me/5513981062787?text=Olá%20ESCOM%20Studio,%20acabei%20de%20aceitar%20a%20proposta%20no%20protótipo!', '_blank');
+                }, 1000);
+            });
+        }
+    </script>
+</body>
+</html>

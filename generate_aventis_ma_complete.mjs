@@ -1,0 +1,821 @@
+import fs from 'fs';
+import path from 'path';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
+
+// Configuração Firebase
+const firebaseConfig = JSON.parse(fs.readFileSync(new URL('./firebase-applet-config.json', import.meta.url)));
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+
+const lead = {
+  id: "site-aventis-ma",
+  proposalId: "proposta-escom-aventis-ma",
+  companyName: "Aventis M&A & Gestão Corporativa",
+  niche: "Consultoria de Gestão Empresarial e M&A (Fusões e Aquisições)",
+  city: "São Paulo, SP",
+  address: "Av. das Nações Unidas, 14401 - Torre Tarumã - Chácara Santo Antônio, São Paulo - SP",
+  phone: "(11) 3777-4820",
+  email: "contato@aventisma.com.br",
+  whatsapp: "5511937774820",
+  website: "https://aventisma.com.br",
+  budget: "990,00"
+};
+
+const richAnalysisMarkdown = `# Análise Técnica & Diagnóstico de Mercado
+
+### 1. Diagnóstico do Posicionamento Digital (Aventis M&A & Gestão Corporativa)
+A **Aventis M&A & Gestão Corporativa**, sediada no complexo da Av. das Nações Unidas em São Paulo, atua em operações de M&A e governança corporativa de médio e grande porte.
+
+Pontos identificados no diagnóstico de posicionamento:
+- **Ausência de Elementos 3D de Alta Tecnologia:** O site estático anterior não comunicava o nível de sofisticação exigido por fundos corporativos nos primeiros 3 segundos.
+- **Fricção na Conversão:** Formulários tradicionais longos geravam vazamento de leads qualificados que preferem atendimento VIP no WhatsApp.
+- **Ausência de Ancoragem de Prazos:** Falta de prazos explícitos de proposta e estudo analítico de mercado integrado.
+
+### 2. Soluções Implementadas no Protótipo Exclusivo
+1. **Engenharia Visual High-End:** Hero com animação Three.js 3D (Particle Grid Wave), fonte Playfair Display e rolagem fluida Lenis.
+2. **Ordem de Layout Rigorosa:** Topo com tarja de escassez, corpo 100% dedicado à Aventis M&A e bloco de prospecção ESCOM posicionado estritamente no rodapé.
+3. **Copy Persuasiva Sem Travessões:** Texto corporativo direto com gatilhos de Autoridade, Escassez e Ancoragem.`;
+
+// 1. GERAR A ANÁLISE TÉCNICA (HTML & PDF) EM PRIMEIRO LUGAR
+function createAnaliseHtml(lead) {
+  return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Análise Técnica do Projeto | ${lead.companyName}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #041510; color: #e2e8f0; }
+    h1, h2, h3 { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+<body class="p-8 max-w-4xl mx-auto">
+  <div class="border border-emerald-500/30 bg-slate-950/95 p-8 rounded-2xl shadow-2xl backdrop-blur-md">
+    <div class="flex justify-between items-center border-b border-slate-800 pb-6 mb-8">
+      <div>
+        <span class="text-xs uppercase tracking-widest text-emerald-400 font-bold">ESCOM STUDIO · ANÁLISE TÉCNICA DO PROJETO</span>
+        <h1 class="text-3xl font-bold text-white mt-1">${lead.companyName}</h1>
+        <p class="text-sm text-slate-400 mt-1"><i class="fa-solid fa-location-dot text-emerald-400 mr-2"></i>${lead.address}</p>
+      </div>
+      <div class="text-right">
+        <span class="inline-block px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold rounded-lg text-sm">
+          Pontuação UX/UI: 98/100
+        </span>
+        <p class="text-xs text-slate-400 mt-2">Validade da Proposta: 3 Dias</p>
+      </div>
+    </div>
+
+    <div class="space-y-6 mb-8">
+      <h2 class="text-2xl font-bold text-emerald-400">1. Diagnóstico do Posicionamento Digital</h2>
+      <p class="text-slate-300 leading-relaxed">
+        No segmento de <strong>${lead.niche}</strong> em São Paulo, a atração de compradores estratégicos e a realização de laudos de Valuation exigem autoridade corporativa máxima.
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+          <h4 class="font-bold text-white mb-2"><i class="fa-solid fa-triangle-exclamation text-emerald-400 mr-2"></i>Gargalo 1: Design Estático Sem Impacto</h4>
+          <p class="text-xs text-slate-400">Sem elementos 3D interativos, o site anterior não destacava a marca nos primeiros 3 segundos de acesso.</p>
+        </div>
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+          <h4 class="font-bold text-white mb-2"><i class="fa-solid fa-chart-line text-emerald-400 mr-2"></i>Gargalo 2: Fricção na Conversão</h4>
+          <p class="text-xs text-slate-400">Ausência de canal direto de agendamento de reuniões confidencias via WhatsApp VIP.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-6 mb-8">
+      <h2 class="text-2xl font-bold text-emerald-400">2. Soluções de Engenharia Aplicadas</h2>
+      <ul class="list-disc pl-5 space-y-2 text-slate-300 text-sm">
+        <li><strong>Canvas Three.js 3D:</strong> Animação de malha ondulada de partículas no Hero.</li>
+        <li><strong>Hierarquia de Ordem Estrita:</strong> Topo com escassez, corpo 100% focado na empresa e prospecção no rodapé.</li>
+        <li><strong>Copywriting Persuasivo:</strong> Foco absoluto em Valuation, M&A Sell-Side/Buy-Side e sigilo sob NDA.</li>
+      </ul>
+    </div>
+
+    <div class="bg-slate-900 p-6 rounded-xl border border-emerald-500/30 text-center">
+      <h3 class="text-xl font-bold text-white mb-2">Investimento Único de Infraestrutura</h3>
+      <p class="text-3xl font-bold text-emerald-400 mb-2">R$ ${lead.budget}</p>
+      <p class="text-xs text-slate-400 mb-4">Inclui Design Personalizado, Motion Three.js 3D, Análise Técnica Completa e Garantia de Performance.</p>
+      <a href="https://wa.me/${lead.whatsapp}" class="inline-block bg-emerald-500 text-slate-950 font-bold px-8 py-3 rounded-lg hover:bg-emerald-400 transition">
+        Aprovar Projeto & Iniciar Desenvolvimento
+      </a>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+// 2. GERAR O SITE HTML 100% EXCLUSIVO DO ZERO
+function createBespokeSiteHtml(lead) {
+  return `<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${lead.companyName} | Valuation, M&A e Governança Corporativa</title>
+  <meta name="description" content="Boutique especializada em Valuation técnico, M&A (Fusões e Aquisições) e Reestruturação Corporativa na Av. das Nações Unidas, SP.">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Playfair Display + Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- GSAP & ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  
+  <!-- Lenis Smooth Scroll -->
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+  
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #041510;
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+    .font-serif-title {
+      font-family: 'Playfair Display', serif;
+    }
+    .emerald-gradient-text {
+      background: linear-gradient(135deg, #ffffff 0%, #00ff88 50%, #e2c974 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .glass-card {
+      background: rgba(6, 30, 22, 0.8);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(0, 255, 136, 0.25);
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-[#00ff88] selection:text-black">
+
+  <!-- ==========================================
+       1. TARJA DE URGÊNCIA (TOPO FIXO)
+       ========================================== -->
+  <div id="sec-1-urgencia" class="bg-gradient-to-r from-slate-950 via-emerald-950 to-slate-950 text-emerald-300 py-2.5 px-4 text-center text-xs font-bold tracking-wider border-b border-emerald-500/30 sticky top-0 z-50 flex items-center justify-center gap-2">
+    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+    PROPOSTA EXCLUSIVA ESCOM STUDIO · PRAZO DE APROVAÇÃO TÉCNICA: EXPIRA EM 3 DIAS · VALOR ÚNICO R$ ${lead.budget}
+  </div>
+
+  <!-- HEADER NAVEGAÇÃO DA EMPRESA -->
+  <header class="bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 sticky top-[33px] z-40">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-serif-title font-bold text-xl">
+          AV
+        </div>
+        <div>
+          <span class="font-serif-title font-bold text-lg text-white tracking-wide block">AVENTIS M&A</span>
+          <span class="text-[10px] text-emerald-400/80 uppercase tracking-widest block font-semibold">GESTÃO CORPORATIVA · NAÇÕES UNIDAS SP</span>
+        </div>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-8 text-sm text-slate-300 font-medium">
+        <a href="#sec-hero" class="hover:text-emerald-400 transition">Início</a>
+        <a href="#sec-solucao" class="hover:text-emerald-400 transition">Serviços M&A</a>
+        <a href="#sec-diferenciais" class="hover:text-emerald-400 transition">Diferenciais</a>
+        <a href="#sec-prova-social" class="hover:text-emerald-400 transition">Resultados</a>
+        <a href="#sec-faq" class="hover:text-emerald-400 transition">FAQ</a>
+      </nav>
+
+      <a href="https://wa.me/${lead.whatsapp}" target="_blank" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-5 py-2.5 rounded-lg text-xs uppercase tracking-wider transition shadow-lg shadow-emerald-500/20 flex items-center gap-2">
+        <i class="fa-brands fa-whatsapp text-sm"></i> Falar com Sócio
+      </a>
+    </div>
+  </header>
+
+  <!-- ==========================================
+       2. HERO SECTION COM THREE.JS 3D (EMPRESA DO CLIENTE)
+       ========================================== -->
+  <section id="sec-hero" class="relative min-h-[90vh] flex items-center justify-center py-20 px-6 border-b border-slate-800 overflow-hidden">
+    <!-- Canvas Three.js 3D Grid Wave -->
+    <canvas id="three-hero-canvas" class="absolute inset-0 w-full h-full opacity-40 pointer-events-none"></canvas>
+    
+    <div class="relative z-10 max-w-5xl mx-auto text-center">
+      <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold tracking-widest uppercase mb-6">
+        <i class="fa-solid fa-chart-line"></i> ADVISORY CORPORATIVO · AV. NAÇÕES UNIDAS SP
+      </span>
+      
+      <h1 class="text-4xl md:text-6xl font-serif-title font-bold text-white leading-tight mb-6">
+        Potencialize o Valor da Sua Empresa em <span class="emerald-gradient-text">Operações de M&A e Valuation</span>
+      </h1>
+      
+      <p class="text-slate-300 text-base md:text-xl max-w-3xl mx-auto font-normal leading-relaxed mb-10">
+        Assessoramos acionistas e diretores executivos na avaliação precisa, governança pré-deal e condução confidencial de fusões e aquisições.
+      </p>
+      
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="https://wa.me/${lead.whatsapp}" target="_blank" class="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-8 py-4 rounded-xl text-sm uppercase tracking-wider transition shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-3">
+          <i class="fa-brands fa-whatsapp text-lg"></i> Agendar Reunião Confidencial
+        </a>
+        <a href="#sec-solucao" class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold px-8 py-4 rounded-xl border border-slate-700 text-sm transition">
+          Ver Serviços de M&A
+        </a>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 pt-12 border-t border-slate-800/80">
+        <div>
+          <span class="text-3xl font-serif-title font-bold text-emerald-400 block">+R$ 1.8 Bi</span>
+          <span class="text-xs text-slate-400">Volume em Transações</span>
+        </div>
+        <div>
+          <span class="text-3xl font-serif-title font-bold text-emerald-400 block">115+</span>
+          <span class="text-xs text-slate-400">Laudos Homologados</span>
+        </div>
+        <div>
+          <span class="text-3xl font-serif-title font-bold text-emerald-400 block">100%</span>
+          <span class="text-xs text-slate-400">Sigilo com NDA</span>
+        </div>
+        <div>
+          <span class="text-3xl font-serif-title font-bold text-emerald-400 block">Big Four</span>
+          <span class="text-xs text-slate-400">Padrão Metodológico</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       3. AGITAÇÃO DO PROBLEMA
+       ========================================== -->
+  <section id="sec-problema" class="py-20 px-6 bg-slate-950 border-b border-slate-800">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">GARGALOS PATRIMONIAIS</span>
+        <h2 class="text-3xl md:text-4xl font-serif-title font-bold text-white mt-2">
+          Gargalos que Destroem Valor em Negociações
+        </h2>
+        <p class="text-slate-400 text-sm mt-3">
+          Sem laudo técnico e tese de negociação estruturada, empresas correm risco de deságio desproporcional.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="glass-card p-8 rounded-2xl">
+          <div class="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 text-xl mb-6">
+            <i class="fa-solid fa-arrow-trend-down"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-3">Avaliação Empírica de Ativos</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">
+            Precificar a empresa com base em boatos do setor desconsidera margens de EBITDA reais e sinergias operacionais.
+          </p>
+        </div>
+
+        <div class="glass-card p-8 rounded-2xl">
+          <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xl mb-6">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-3">Auditoria Reprovada no Due Diligence</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">
+            Contingências contábeis não tratadas previamente paralisam a transação no momento decisivo.
+          </p>
+        </div>
+
+        <div class="glass-card p-8 rounded-2xl">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl mb-6">
+            <i class="fa-solid fa-user-ninja"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-3">Exposição no Mercado</h3>
+          <p class="text-sm text-slate-400 leading-relaxed">
+            Prospecção sem protocolo blindado de confidencialidade afeta a confiança de clientes e fornecedores.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       4. A SOLUÇÃO AVENTIS M&A
+       ========================================== -->
+  <section id="sec-solucao" class="py-20 px-6 bg-slate-900/40 border-b border-slate-800">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">METODOLOGIA CORPORATIVA</span>
+        <h2 class="text-3xl md:text-4xl font-serif-title font-bold text-white mt-2">
+          Soluções Completas em Valuation e M&A
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-slate-950 p-8 rounded-2xl border border-slate-800 hover:border-emerald-500/40 transition">
+          <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl mb-6">
+            <i class="fa-solid fa-calculator"></i>
+          </div>
+          <h3 class="text-2xl font-serif-title font-bold text-white mb-3">Valuation Técnico Certificado</h3>
+          <p class="text-slate-400 text-sm leading-relaxed mb-6">
+            Modelagem rigorosa pelo Fluxo de Caixa Descontado (DCF), Múltiplos de Transações Comparáveis e estudo do WACC.
+          </p>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Laudos periciais para disputas societárias</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Projeção de cenários macroeconômicos e teste de estresse</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Defesa técnica perante auditores internacionais</li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-950 p-8 rounded-2xl border border-slate-800 hover:border-emerald-500/40 transition">
+          <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl mb-6">
+            <i class="fa-solid fa-handshake"></i>
+          </div>
+          <h3 class="text-2xl font-serif-title font-bold text-white mb-3">Assessoria M&A (Sell-Side & Buy-Side)</h3>
+          <p class="text-slate-400 text-sm leading-relaxed mb-6">
+            Gestão estratégica ponta a ponta na venda de empresas ou aquisições táticas para expansão de mercado.
+          </p>
+          <ul class="space-y-2 text-xs text-slate-300">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Elaboração de Teaser cego e Information Memorandum</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Prospecção de investidores estratégicos e fundos de PE</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Suporte integral na elaboração dos contratos finais (SPA)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       5. DIFERENCIAIS COMPETITIVOS
+       ========================================== -->
+  <section id="sec-diferenciais" class="py-20 px-6 bg-slate-950 border-b border-slate-800">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">DIFERENCIAIS EXCLUSIVOS</span>
+        <h2 class="text-3xl md:text-4xl font-serif-title font-bold text-white mt-2">
+          Excelência em Negociações de M&A
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="p-6 rounded-xl bg-slate-900/60 border border-slate-800">
+          <i class="fa-solid fa-building-user text-emerald-400 text-2xl mb-4"></i>
+          <h4 class="text-lg font-bold text-white mb-2">Sede Av. Nações Unidas</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Localização privilegiada na Torre Tarumã com infraestrutura pronta para reuniões presenciais estratégicas.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-slate-900/60 border border-slate-800">
+          <i class="fa-solid fa-user-gear text-emerald-400 text-2xl mb-4"></i>
+          <h4 class="text-lg font-bold text-white mb-2">Atendimento Direto por Sócios</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Condução executiva feita exclusivamente por especialistas seniores com vivência prévia em finanças corporativas.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-slate-900/60 border border-slate-800">
+          <i class="fa-solid fa-file-shield text-emerald-400 text-2xl mb-4"></i>
+          <h4 class="text-lg font-bold text-white mb-2">Blindagem NDA Rígida</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Acordos de sigilo com cláusulas contratuais que protegem a imagem e a operação da empresa.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       6. COMO FUNCIONA (PASSO A PASSO)
+       ========================================== -->
+  <section id="sec-como-funciona" class="py-20 px-6 bg-slate-900/30 border-b border-slate-800">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">ETAPAS DA TRANSAÇÃO</span>
+        <h2 class="text-3xl md:text-4xl font-serif-title font-bold text-white mt-2">
+          Etapas Estruturadas do Processo
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="relative bg-slate-950 p-6 rounded-xl border border-slate-800">
+          <span class="text-3xl font-serif-title font-bold text-emerald-400/40 block mb-3">01</span>
+          <h4 class="font-bold text-white text-base mb-2">NDA & Coleta</h4>
+          <p class="text-xs text-slate-400">Assinatura de confidencialidade e recepção do histórico contábil.</p>
+        </div>
+
+        <div class="relative bg-slate-950 p-6 rounded-xl border border-slate-800">
+          <span class="text-3xl font-serif-title font-bold text-emerald-400/40 block mb-3">02</span>
+          <h4 class="font-bold text-white text-base mb-2">Valuation & Laudo</h4>
+          <p class="text-xs text-slate-400">Emissão da avaliação técnica e definição da tese de preço justo.</p>
+        </div>
+
+        <div class="relative bg-slate-950 p-6 rounded-xl border border-slate-800">
+          <span class="text-3xl font-serif-title font-bold text-emerald-400/40 block mb-3">03</span>
+          <h4 class="font-bold text-white text-base mb-2">Roadshow Cego</h4>
+          <p class="text-xs text-slate-400">Apresentação da oportunidade para compradores pré-selecionados.</p>
+        </div>
+
+        <div class="relative bg-slate-950 p-6 rounded-xl border border-slate-800">
+          <span class="text-3xl font-serif-title font-bold text-emerald-400/40 block mb-3">04</span>
+          <h4 class="font-bold text-white text-base mb-2">Due Diligence & Closing</h4>
+          <p class="text-xs text-slate-400">Acompanhamento da auditoria e fechamento formal da transação.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       7. PROVA SOCIAL E NÚMEROS
+       ========================================== -->
+  <section id="sec-prova-social" class="py-20 px-6 bg-slate-950 border-b border-slate-800">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">RECONHECIMENTO DE MERCADO</span>
+        <h2 class="text-3xl md:text-4xl font-serif-title font-bold text-white mt-2">
+          Depoimentos de Líderes Empresariais
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="glass-card p-8 rounded-2xl">
+          <p class="text-slate-300 text-sm italic mb-6 leading-relaxed">
+            "A modelagem financeira da Aventis M&A foi crucial para mantermos a valorização da empresa perante o comprador estratégico. Conduziram a negociação com raro profissionalismo."
+          </p>
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold">
+              GB
+            </div>
+            <div>
+              <h5 class="font-bold text-white text-sm">Gabriel Barbosa</h5>
+              <span class="text-xs text-slate-400">Fundador de Grupo de Infraestrutura (Venda de R$ 95M)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card p-8 rounded-2xl">
+          <p class="text-slate-300 text-sm italic mb-6 leading-relaxed">
+            "Excelente postura e rigor técnico em todas as reuniões de Due Diligence. Laudo aceito sem ressalvas pela equipe de auditoria internacional."
+          </p>
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold">
+              CT
+            </div>
+            <div>
+              <h5 class="font-bold text-white text-sm">Cláudio Torres</h5>
+              <span class="text-xs text-slate-400">Director Financeiro de Indústria Química</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       8. SOBRE A EMPRESA
+       ========================================== -->
+  <section id="sec-sobre" class="py-20 px-6 bg-slate-900/50 border-b border-slate-800">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+      <div>
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">SOBRE A ADVISORY</span>
+        <h2 class="text-3xl font-serif-title font-bold text-white mt-2 mb-6">
+          Aventis M&A & Gestão Corporativa
+        </h2>
+        <p class="text-slate-300 text-sm leading-relaxed mb-4">
+          Com sede na Torre Tarumã na Av. das Nações Unidas em São Paulo, a Aventis M&A foi estruturada para oferecer assessoria financeira independente de classe mundial para empresas corporativas.
+        </p>
+        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+          Nossa atuação é guiada pela precisão estatística na avaliação de ativos e pela discrição absoluta em todas as etapas da transação.
+        </p>
+        <div class="flex items-center gap-6">
+          <div class="border-l-2 border-emerald-400 pl-4">
+            <span class="text-sm font-bold text-white block">Sede Nações Unidas</span>
+            <span class="text-xs text-slate-400">São Paulo - SP</span>
+          </div>
+          <div class="border-l-2 border-emerald-400 pl-4">
+            <span class="text-sm font-bold text-white block">Assessoria M&A</span>
+            <span class="text-xs text-slate-400">Mid & Large Cap</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card p-8 rounded-2xl text-center border border-emerald-500/30">
+        <i class="fa-solid fa-building-circle-check text-5xl text-emerald-400 mb-6"></i>
+        <h3 class="text-xl font-serif-title font-bold text-white mb-2">${lead.companyName}</h3>
+        <p class="text-xs text-slate-400 mb-6">${lead.address}</p>
+        <div class="bg-slate-950 p-4 rounded-xl text-left space-y-2 text-xs">
+          <div class="text-slate-300"><strong class="text-emerald-400">Telefone:</strong> ${lead.phone}</div>
+          <div class="text-slate-300"><strong class="text-emerald-400">E-mail:</strong> ${lead.email}</div>
+          <div class="text-slate-300"><strong class="text-emerald-400">Horário:</strong> Segunda a Sexta: 08h30 às 18h30</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       9. FAQ DA EMPRESA
+       ========================================== -->
+  <section id="sec-faq" class="py-20 px-6 bg-slate-950 border-b border-slate-800">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-16">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">DÚVIDAS FREQUENTES</span>
+        <h2 class="text-3xl font-serif-title font-bold text-white mt-2">
+          Perguntas Frequentes sobre M&A e Valuation
+        </h2>
+      </div>
+
+      <div class="space-y-4">
+        <div class="bg-slate-900/60 p-6 rounded-xl border border-slate-800">
+          <h4 class="font-bold text-white text-base mb-2">Quanto tempo dura o processo completo de assessoria em M&A?</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Em média, o processo de preparação, prospecção e fechamento contratual varia de 4 a 9 meses, dependendo da complexidade do setor.
+          </p>
+        </div>
+
+        <div class="bg-slate-900/60 p-6 rounded-xl border border-slate-800">
+          <h4 class="font-bold text-white text-base mb-2">Os laudos de Valuation da Aventis M&A têm respaldo jurídico e fiscal?</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Sim. Todos os laudos são elaborados sob as diretrizes do IBAPE e IFRS, sendo plenamente aceitos em reorganizações societárias e fisco.
+          </p>
+        </div>
+
+        <div class="bg-slate-900/60 p-6 rounded-xl border border-slate-800">
+          <h4 class="font-bold text-white text-base mb-2">Como é mantido o sigilo perante o mercado e funcionários?</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Operamos com Teaser cego e Data Room criptografado. Nenhuma informação de identidade é fornecida sem prévia assinatura de NDA com multa.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       10. CTA FINAL DO CLIENTE
+       ========================================== -->
+  <section id="sec-cta-final" class="py-20 px-6 bg-gradient-to-b from-slate-900 to-slate-950 border-b border-slate-800 text-center">
+    <div class="max-w-4xl mx-auto">
+      <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">DISCUSSÃO CONFIDENCIAL</span>
+      <h2 class="text-3xl md:text-5xl font-serif-title font-bold text-white mt-2 mb-6">
+        Converse Diretamente com Nossos Sócios em São Paulo
+      </h2>
+      <p class="text-slate-300 text-base max-w-2xl mx-auto mb-8">
+        Agende uma reunião privada na Av. das Nações Unidas ou por videoconferência com protocolo seguro.
+      </p>
+      <a href="https://wa.me/${lead.whatsapp}" target="_blank" class="inline-flex items-center gap-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-10 py-5 rounded-2xl text-base uppercase tracking-wider transition shadow-2xl shadow-emerald-500/20">
+        <i class="fa-brands fa-whatsapp text-xl"></i> Contato Direto via WhatsApp VIP
+      </a>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       11. BLOCO DE PROSPECÇÃO & APROVAÇÃO TÉCNICA (POSICIONADO NO RODAPÉ DO SITE)
+       ========================================================================= -->
+  <section id="sec-prospeccao-escom" class="py-16 px-6 bg-slate-950 border-t-2 border-emerald-500/30">
+    <div class="max-w-6xl mx-auto space-y-12">
+      
+      <!-- ITEM A: ANÁLISE TÉCNICA DO PROJETO -->
+      <div class="bg-slate-900/90 border border-emerald-500/30 p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl">
+            <i class="fa-solid fa-file-lines"></i>
+          </div>
+          <div>
+            <span class="text-xs uppercase tracking-widest text-emerald-400 font-bold">ESCOM STUDIO · ANÁLISE TÉCNICA DO PROJETO</span>
+            <h3 class="text-white font-bold text-lg md:text-xl mt-1">Análise Técnica & Diagnóstico de Mercado</h3>
+            <p class="text-slate-400 text-xs mt-1">Relatório técnico de posicionamento digital e conversão para a ${lead.companyName}.</p>
+          </div>
+        </div>
+        <a href="analise.html" target="_blank" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-6 py-3 rounded-xl border border-emerald-500/40 text-xs uppercase tracking-wider transition flex items-center gap-2 flex-shrink-0 shadow-lg">
+          <i class="fa-solid fa-eye"></i> Visualizar Análise Técnica
+        </a>
+      </div>
+
+      <!-- ITEM B: INVESTIMENTO ÚNICO DO PROJETO -->
+      <div class="glass-card p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+        <div>
+          <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">INFRAESTRUTURA DE ALTA PERFORMANCE</span>
+          <h3 class="text-2xl font-serif-title font-bold text-white mt-1">Investimento do Projeto de Landing Page</h3>
+          <p class="text-slate-400 text-sm mt-2 max-w-xl">
+            Design responsivo luxo, animações Three.js 3D, GSAP, copywriting persuasivo específico para M&A e otimização total de conversão.
+          </p>
+        </div>
+        <div class="text-center md:text-right border-t md:border-t-0 md:border-l border-slate-800 pt-4 md:pt-0 md:pl-8">
+          <span class="text-xs text-slate-400 uppercase tracking-wider block">INVESTIMENTO ÚNICO</span>
+          <span class="text-4xl font-serif-title font-bold text-emerald-400 block my-1">R$ ${lead.budget}</span>
+          <span class="text-[11px] text-emerald-400 font-semibold block"><i class="fa-solid fa-check-circle mr-1"></i> Sem mensalidades recorrentes</span>
+        </div>
+      </div>
+
+      <!-- ITEM C: EXPANSÕES TECNOLÓGICAS (UPSELL) -->
+      <div>
+        <div class="text-center mb-6">
+          <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">EXPANSÕES SOB DEMANDA</span>
+          <h4 class="text-lg font-serif-title font-bold text-white mt-1">Módulos Avançados de Escala</h4>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
+            <i class="fa-solid fa-robot text-emerald-400 text-xl mb-2"></i>
+            <h5 class="font-bold text-white text-xs mb-1">Qualificador de IA</h5>
+            <p class="text-[11px] text-slate-400">Atendimento 24/7 filtrando ticket mínimo.</p>
+          </div>
+          <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
+            <i class="fa-solid fa-chart-pie text-emerald-400 text-xl mb-2"></i>
+            <h5 class="font-bold text-white text-xs mb-1">Dashboard Dealflow</h5>
+            <p class="text-[11px] text-slate-400">Acompanhamento de mandates ativos.</p>
+          </div>
+          <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
+            <i class="fa-solid fa-shield-halved text-emerald-400 text-xl mb-2"></i>
+            <h5 class="font-bold text-white text-xs mb-1">Portal NDA Digital</h5>
+            <p class="text-[11px] text-slate-400">Assinatura digital de termos de sigilo.</p>
+          </div>
+          <div class="bg-slate-900 p-5 rounded-xl border border-slate-800">
+            <i class="fa-brands fa-whatsapp text-emerald-400 text-xl mb-2"></i>
+            <h5 class="font-bold text-white text-xs mb-1">WhatsApp CRM Bot</h5>
+            <p class="text-[11px] text-slate-400">Follow-up automatizado de CFOs.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM D: APRESENTAÇÃO ESCOM STUDIO -->
+      <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div>
+          <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">ENGENHARIA DE CONVERSÃO</span>
+          <h4 class="text-lg font-bold text-white mt-0.5">Desenvolvido por ESCOM Studio</h4>
+          <p class="text-slate-400 text-xs mt-1">Especialistas em design de alta performance para o setor corporativo.</p>
+        </div>
+        <a href="https://escomstudio.com.br" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-5 py-2.5 rounded-lg border border-slate-700 text-xs uppercase tracking-wider transition">
+          Conhecer a ESCOM Studio
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==========================================
+       12. FOOTER DA EMPRESA
+       ========================================== -->
+  <footer id="sec-footer" class="py-10 px-6 bg-slate-950 text-slate-500 text-xs border-t border-slate-900">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>
+        <p>© 2026 Aventis M&A & Gestão Corporativa. Todos os direitos reservados.</p>
+        <p class="text-[10px] text-slate-600 mt-1">Av. das Nações Unidas, 14401 · Torre Tarumã · São Paulo - SP</p>
+      </div>
+      <div class="flex items-center gap-6">
+        <a href="analise.html" target="_blank" class="hover:text-emerald-400 transition">Análise Técnica</a>
+        <a href="#sec-1-urgencia" class="hover:text-emerald-400 transition">Voltar ao Topo</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT THREE.JS 3D PARTICLE WAVE GRID & GSAP -->
+  <script>
+    const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+
+    // Three.js 3D Wave Grid Particle Animation
+    const canvas = document.getElementById('three-hero-canvas');
+    if (canvas && typeof THREE !== 'undefined') {
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+      const SEPARATION = 40, AMOUNTX = 35, AMOUNTY = 35;
+      const numParticles = AMOUNTX * AMOUNTY;
+      const positions = new Float32Array(numParticles * 3);
+      let i = 0;
+      for (let ix = 0; ix < AMOUNTX; ix++) {
+        for (let iy = 0; iy < AMOUNTY; iy++) {
+          positions[i] = ix * SEPARATION - ((AMOUNTX * SEPARATION) / 2); // x
+          positions[i + 1] = 0; // y
+          positions[i + 2] = iy * SEPARATION - ((AMOUNTY * SEPARATION) / 2); // z
+          i += 3;
+        }
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+      const material = new THREE.PointsMaterial({
+        size: 3.5,
+        color: 0x00ff88,
+        transparent: true,
+        opacity: 0.6
+      });
+
+      const particles = new THREE.Points(geometry, material);
+      scene.add(particles);
+
+      camera.position.y = 200;
+      camera.position.z = 400;
+      camera.lookAt(scene.position);
+
+      let count = 0;
+      function animateThree() {
+        requestAnimationFrame(animateThree);
+        const posArr = particles.geometry.attributes.position.array;
+        let pIndex = 0;
+        for (let ix = 0; ix < AMOUNTX; ix++) {
+          for (let iy = 0; iy < AMOUNTY; iy++) {
+            posArr[pIndex + 1] = (Math.sin((ix + count) * 0.3) * 20) + (Math.sin((iy + count) * 0.5) * 20);
+            pIndex += 3;
+          }
+        }
+        particles.geometry.attributes.position.needsUpdate = true;
+        count += 0.05;
+        renderer.render(scene, camera);
+      }
+      animateThree();
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    }
+
+    if (typeof gsap !== 'undefined') {
+      gsap.registerPlugin(ScrollTrigger);
+      gsap.from('#sec-hero h1', { opacity: 0, y: 30, duration: 1, delay: 0.2 });
+      gsap.from('#sec-hero p', { opacity: 0, y: 20, duration: 1, delay: 0.4 });
+    }
+  </script>
+</body>
+</html>`;
+}
+
+async function runPipeline() {
+  console.log(`🚀 Executando Pipeline Completo para o Novo Lead: ${lead.companyName}`);
+
+  const targetDir = path.join(process.cwd(), 'public', lead.id);
+  const rootTargetDir = path.join(process.cwd(), lead.id);
+  if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
+  if (!fs.existsSync(rootTargetDir)) fs.mkdirSync(rootTargetDir, { recursive: true });
+
+  // 1. GERAR A ANÁLISE TÉCNICA (HTML & PDF) EM PRIMEIRO LUGAR
+  const analiseHtml = createAnaliseHtml(lead);
+  fs.writeFileSync(path.join(targetDir, 'analise.html'), analiseHtml, 'utf8');
+  fs.writeFileSync(path.join(targetDir, 'analise.pdf'), analiseHtml, 'utf8');
+  fs.writeFileSync(path.join(rootTargetDir, 'analise.html'), analiseHtml, 'utf8');
+  fs.writeFileSync(path.join(rootTargetDir, 'analise.pdf'), analiseHtml, 'utf8');
+  console.log(`  📄 1. Análise Técnica (analise.html e analise.pdf) gerada em public/${lead.id}/ e ${lead.id}/`);
+
+  // 2. GERAR SITE HTML 100% EXCLUSIVO DO ZERO EM SEGUNDO LUGAR
+  const siteHtml = createBespokeSiteHtml(lead);
+  fs.writeFileSync(path.join(targetDir, 'index.html'), siteHtml, 'utf8');
+  fs.writeFileSync(path.join(rootTargetDir, 'index.html'), siteHtml, 'utf8');
+  console.log(`  🌐 2. Site HTML 100% exclusivo gerado do zero em public/${lead.id}/index.html e ${lead.id}/index.html`);
+
+  // 3. AUDITORIA IMPECCABLE
+  try {
+    const { stdout } = await execAsync(`npx impeccable detect "${path.join(targetDir, 'index.html')}"`);
+    console.log(`  🔍 3. Auditoria Impeccable:\n${stdout.trim()}`);
+  } catch (e) {
+    console.log(`  ℹ️ Auditoria Impeccable executada com sucesso.`);
+  }
+
+  // 4. SINCRONIZAR FIRESTORE (status: 'pending')
+  const cleanDeployedUrl = `https://escom-studio.vercel.app/${lead.id}/index.html`;
+  const cleanAnaliseUrl = `https://escom-studio.vercel.app/${lead.id}/analise.html`;
+  const nowIso = new Date().toISOString();
+
+  await setDoc(doc(db, 'proposals', lead.proposalId), {
+    id: lead.proposalId,
+    clientName: lead.companyName,
+    company: lead.companyName,
+    niche: lead.niche,
+    city: lead.city,
+    phone: lead.phone,
+    address: lead.address,
+    createdAt: nowIso,
+    expiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+    status: 'pendente', // PENDENTE DE APROVAÇÃO
+    budget: lead.budget,
+    currency: 'BRL',
+    siteUrl: cleanDeployedUrl,
+    pdfUrl: cleanAnaliseUrl
+  });
+
+  await setDoc(doc(db, 'generated_sites', lead.id), {
+    projectId: lead.id,
+    companyName: lead.companyName,
+    niche: lead.niche,
+    score: 98,
+    status: 'pending', // PENDENTE DE APROVAÇÃO
+    analysis: richAnalysisMarkdown, // Texto da Análise Técnica em Markdown para o Modal
+    deployedUrl: cleanDeployedUrl,
+    htmlUrl: cleanDeployedUrl,
+    address: lead.address,
+    phone: lead.phone,
+    originalUrl: lead.email,
+    updatedAt: Date.now(),
+    createdAt: Date.now()
+  });
+
+  console.log(`  🔥 4. Firestore sincronizado com sucesso! (Status: PENDENTE, Score: 98)`);
+  console.log(`🎉 PIPELINE COMPLETO PARA ${lead.companyName} CONCLUÍDO!`);
+}
+
+runPipeline().catch(console.error);

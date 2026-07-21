@@ -98,6 +98,7 @@ export default function Mineracao() {
   const [isSearching, setIsSearching] = useState(false);
   const [leadsList, setLeadsList] = useState<any[]>([]);
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'discarded' | 'created-sites'>('all');
+  const [filterSiteStatus, setFilterSiteStatus] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
   const [leadSelected, setLeadSelected] = useState(false); // Novo estado para travar os passos seguintes
   const [expandedLeadId, setExpandedLeadId] = useState<string | null>(null);
 
@@ -536,22 +537,11 @@ export default function Mineracao() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: searchQuery })
       });
-      const resText = await response.text();
-      let data: any = {};
-      try { data = JSON.parse(resText); } catch(e) {}
+      const data = await response.json();
       
       if (data.success) {
-        setLeadsList(prev => {
-          const newFetched = data.data.map((lead: any) => ({
-            ...lead,
-            updatedAt: new Date().toLocaleString('pt-BR'),
-            name: lead.title?.split('-')[0].trim() || 'Empresa'
-          }));
-          
-          const combined = [...newFetched, ...prev];
-          const unique = Array.from(new Map(combined.map(item => [item.id || item.placeId, item])).values());
-          return unique;
-        });
+        await fetchCreatedSites();
+        setCurrentView('created-sites');
       }
     } catch (err) {
       console.error(err);
@@ -922,6 +912,7 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
 
   const navigateTo = (view: string) => {
     setCurrentView(view);
+    if (view === 'created-sites') fetchCreatedSites();
     if (window.innerWidth < 768) setIsMineracaoSidebarOpen(false);
   };
 
@@ -982,23 +973,11 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
           <nav className="space-y-1">
               <button onClick={() => navigateTo('leads')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${currentView === 'leads' ? 'bg-[#00d1ff]/10 text-[#00d1ff] border border-[#00d1ff]/20' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'}`}>
                 <Search size={18} />
-                <span className="text-sm font-medium">1. Buscar Sites</span>
+                <span className="text-sm font-medium">Buscar Sites</span>
               </button>
-              <button onClick={() => leadSelected && navigateTo('generator')} disabled={!leadSelected} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${currentView === 'generator' ? 'bg-[#00d1ff]/10 text-[#00d1ff] border border-[#00d1ff]/20' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'} ${!leadSelected ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                <PenTool size={18} />
-                <span className="text-sm font-medium">2. Gerador Copy</span>
-              </button>
-              <button onClick={() => generatedPrompt && navigateTo('preview')} disabled={!generatedPrompt || !leadSelected} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${currentView === 'preview' ? 'bg-[#00d1ff]/10 text-[#00d1ff] border border-[#00d1ff]/20' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 disabled:opacity-50 disabled:cursor-not-allowed'}`}>
-                <LayoutTemplate size={18} />
-                <span className="text-sm font-medium">3. Estrutura Site</span>
-              </button>
-              <button onClick={() => generatedPrompt && navigateTo('brand-pdf')} disabled={!generatedPrompt || !leadSelected} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${currentView === 'brand-pdf' ? 'bg-[#00d1ff]/10 text-[#00d1ff] border border-[#00d1ff]/20' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 disabled:opacity-50 disabled:cursor-not-allowed'}`}>
-                <FileCheck size={18} />
-                <span className="text-sm font-medium">4. Brand PDF</span>
-              </button>
-              <button onClick={() => { setFilterStatus('created-sites'); navigateTo('leads'); }} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${currentView === 'leads' && filterStatus === 'created-sites' ? 'bg-[#00d1ff]/10 text-[#00d1ff] border border-[#00d1ff]/20' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'}`}>
+              <button onClick={() => navigateTo('created-sites')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${currentView === 'created-sites' ? 'bg-[#00d1ff]/10 text-[#00d1ff] border border-[#00d1ff]/20' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'}`}>
                 <Globe size={18} />
-                <span className="text-sm font-medium">5. Sites Criados</span>
+                <span className="text-sm font-medium">Sites Criados</span>
               </button>
             </nav>
           </div>
@@ -1083,11 +1062,11 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                   <div>
                     <h2 className="text-2xl font-bold text-white mb-2">Mineração de Sites</h2>
-                    <p className="text-zinc-400 text-sm">Busca manual instantânea via Google Maps ou acompanhamento da mineração e auditoria automatizada diária (30 sites/dia).</p>
+                    <p className="text-zinc-400 text-sm">Busca manual instantânea via Google Maps ou acompanhamento da mineração e auditoria automatizada diária (5 sites/dia).</p>
                   </div>
                   <div className="bg-[#00d1ff]/10 border border-[#00d1ff]/30 rounded-xl px-4 py-2 flex items-center gap-2 shrink-0">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#00d1ff] animate-pulse"></span>
-                    <span className="text-xs font-mono font-bold text-[#00d1ff] tracking-wider">ROBÔ DIÁRIO ATIVO (30 SITES)</span>
+                    <span className="text-xs font-mono font-bold text-[#00d1ff] tracking-wider">ROBÔ DIÁRIO ATIVO (5 SITES)</span>
                   </div>
                 </div>
                 
@@ -1136,337 +1115,6 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                   </div>
                 </div>
               </div>
-
-              {/* Results Grid */}
-              {leadsList.length > 0 && (
-                <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                    <h3 className="text-white font-bold flex items-center gap-2">
-                      {filterStatus === 'created-sites' ? 'Protótipos de Sites Criados' : 'Resultados da Busca'} <span className="bg-zinc-800 text-zinc-400 text-xs px-2 py-0.5 rounded-full">{filterStatus === 'created-sites' ? createdSitesList.length : leadsList.filter(l => filterStatus === 'all' || l.status === filterStatus).length}</span>
-                    </h3>
-                    <div className="flex bg-[#121212] p-1 rounded-lg border border-zinc-800 self-start">
-                      {['all', 'pending', 'approved', 'discarded', 'created-sites'].map((status) => (
-                        <button
-                          key={status}
-                          onClick={() => setFilterStatus(status as any)}
-                          className={`px-4 py-1.5 text-xs font-bold uppercase rounded-md transition-all ${
-                            filterStatus === status 
-                            ? 'bg-zinc-800 text-[#00d1ff]' 
-                            : 'text-zinc-500 hover:text-zinc-300'
-                          }`}
-                        >
-                          {status === 'all' ? 'Todos' : 
-                           status === 'pending' ? 'Pendentes' : 
-                           status === 'approved' ? 'Aprovados' : 
-                           status === 'discarded' ? 'Descartados' : 'Sites Criados'}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {filterStatus === 'created-sites' ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {createdSitesList.map((site: any) => (
-                        <div key={site.projectId} className="bg-[#121212] border border-zinc-800 rounded-2xl p-6 relative overflow-hidden flex flex-col shadow-lg hover:border-[#00d1ff]/30 transition-all duration-300">
-                          <div className={`absolute top-0 left-0 w-1.5 h-full ${
-                            site.status === 'pending' ? 'bg-orange-500' : 
-                            (site.status === 'approved' || site.status === 'deployed') ? 'bg-[#00d1ff]' : 'bg-red-500'
-                          }`}></div>
-
-                          <div className="flex-1 flex flex-col justify-between">
-                            <div>
-                              <div className="flex justify-between items-start mb-2 pl-2">
-                                <h3 className="text-lg font-bold text-white">{site.companyName}</h3>
-                                <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${
-                                  site.status === 'pending' ? 'bg-orange-500/10 text-orange-500 border border-orange-500/20' :
-                                  (site.status === 'approved' || site.status === 'deployed') ? 'bg-[#00d1ff]/10 text-[#00d1ff] border border-[#00d1ff]/20' :
-                                  'bg-red-500/10 text-red-500 border border-red-500/20'
-                                }`}>
-                                  {site.status === 'pending' ? 'Aguardando Aprovação' : 
-                                   (site.status === 'approved' || site.status === 'deployed') ? 'Aprovado (No Ar)' : 'Rejeitado'}
-                                </span>
-                              </div>
-                              <p className="text-zinc-400 text-xs font-mono mb-4 pl-2">Nicho: {site.niche} | Score: {site.score || 95}</p>
-                            </div>
-
-                            <div className="mt-4 flex flex-col gap-3 pl-2">
-                              {(site.deployedUrl || site.htmlUrl) && (
-                                <a 
-                                  href={site.deployedUrl || `/api/view-prototype/${site.projectId || site.id}`} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="bg-[#1a1a1a] hover:bg-[#252525] border border-zinc-800 text-zinc-300 font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-colors"
-                                >
-                                  <Globe size={14} className="text-[#00d1ff]" /> Visualizar Protótipo Stitch
-                                </a>
-                              )}
-                              
-                              <button 
-                                onClick={() => { setAnalysisSite(site); setAnalysisModalOpen(true); }}
-                                className="bg-[#1a1a1a] hover:bg-[#252525] border border-zinc-800 text-zinc-300 font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-colors w-full"
-                              >
-                                <Sparkles size={14} className="text-[#00d1ff]" /> Ver Análise do Protótipo
-                              </button>
-
-                              {(site.status === 'approved' || site.status === 'deployed') && site.deployedUrl && (
-                                <a 
-                                  href={site.deployedUrl} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="bg-[#00d1ff]/10 border border-[#00d1ff]/30 hover:bg-[#00d1ff]/20 text-[#00d1ff] font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-colors"
-                                >
-                                  <Rocket size={14} /> Acessar Site no Vercel (Produção)
-                                </a>
-                              )}
-
-                              {site.status === 'pending' && (
-                                <div className="flex gap-2">
-                                  <button
-                                    onClick={() => handleApproveAndDeploy(site)}
-                                    disabled={isDeploying}
-                                    className="flex-1 bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-wait"
-                                  >
-                                    {isDeploying && deployingProjectId === site.projectId ? (
-                                      <>
-                                        <Loader2 size={14} className="animate-spin" />
-                                        <span>Publicando...</span>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <CheckCircle2 size={14} />
-                                        <span>Aprovar & Deploy</span>
-                                      </>
-                                    )}
-                                  </button>
-                                  <button
-                                    onClick={() => handleRejectSite(site.projectId)}
-                                    className="bg-transparent hover:bg-red-500/10 border border-red-500/30 text-red-500 py-2.5 px-4 rounded-xl text-xs transition-colors"
-                                  >
-                                    Rejeitar
-                                  </button>
-                                </div>
-                              )}
-
-                              {/* Seção de Digitar Alterações */}
-                              <div className="mt-4 pt-4 border-t border-zinc-800">
-                                <label className="text-[10px] text-zinc-500 font-bold uppercase mb-2 block">Ajuste Fino na Página Gerada</label>
-                                <div className="flex flex-col gap-2">
-                                  <textarea 
-                                    rows={2}
-                                    placeholder="Descreva as alterações. Ex: Mudar a cor do botão para azul, trocar título para X..."
-                                    value={revisionRequests[site.projectId] || ''}
-                                    onChange={(e) => setRevisionRequests(prev => ({ ...prev, [site.projectId]: e.target.value }))}
-                                    className="w-full bg-[#0a0a0a] border border-zinc-700 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-[#00d1ff] transition-colors resize-none placeholder:text-zinc-600"
-                                  ></textarea>
-                                  <button 
-                                    onClick={() => handleRequestSiteRevision(site.projectId)}
-                                    disabled={isRequestingRevision[site.projectId] || !revisionRequests[site.projectId]}
-                                    className="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 font-bold py-2 rounded-lg text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50"
-                                  >
-                                    {isRequestingRevision[site.projectId] ? (
-                                      <><Loader2 size={12} className="animate-spin"/> Aplicando IA...</>
-                                    ) : (
-                                      <><PenTool size={12}/> Solicitar Alterações </>
-                                    )}
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                      {createdSitesList.length === 0 && (
-                        <div className="col-span-2 py-24 text-center border border-[#1a1a1a] border-dashed rounded-xl bg-[#0a0a0a]/50">
-                          <Globe size={48} className="mx-auto text-zinc-700 mb-4" />
-                          <h3 className="text-zinc-500 font-mono text-sm uppercase">NENHUM SITE CRIADO AINDA</h3>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-4">
-                    {leadsList.filter(l => filterStatus === 'all' || l.status === filterStatus).map(lead => (
-                      <div key={lead.id} className="bg-[#121212] border border-zinc-800 rounded-2xl p-6 relative overflow-hidden flex flex-col shadow-lg hover:border-[#00d1ff]/30 transition-all duration-300">
-                        {/* Status Border */}
-                        <div className={`absolute top-0 left-0 w-1.5 h-full ${
-                          lead.status === 'pending' ? 'bg-orange-500' : 
-                          lead.status === 'approved' ? 'bg-[#00d1ff]' : 'bg-red-500'
-                        }`}></div>
-
-                        <div className="flex flex-col md:flex-row items-center gap-6 w-full">
-                          {/* Corpo do Card */}
-                          <div className="pl-3 flex-1 flex flex-col w-full">
-                            <div className="flex justify-between items-start mb-2">
-                              <h4 className="text-lg font-bold text-white line-clamp-1 leading-tight">{lead.title || lead.name || lead.nome || 'Empresa não identificada'}</h4>
-                              <div className="flex items-center gap-3">
-                                {lead.score !== undefined && (
-                                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
-                                    lead.score >= 90 ? 'bg-[#00d1ff]/15 text-[#00d1ff] border border-[#00d1ff]/30' :
-                                    lead.score >= 50 ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' :
-                                    'bg-red-500/10 text-red-500 border border-red-500/20'
-                                  }`}>
-                                    Score: {lead.score}
-                                  </span>
-                                )}
-                                <div className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider ${
-                                  lead.status === 'pending' ? 'text-orange-500' : 
-                                  lead.status === 'approved' ? 'text-[#00d1ff]' : 'text-red-500'
-                                }`}>
-                                  <div className="w-1.5 h-1.5 rounded-full bg-current"></div>
-                                  {lead.status === 'pending' ? 'Pendente' : lead.status === 'approved' ? 'Aprovado' : 'Descartado'}
-                                </div>
-                              </div>
-                            </div>
-                            <div className="text-zinc-400 font-mono text-sm mb-3 text-left">{lead.phone}</div>
-                            
-                            <div className="flex flex-wrap gap-4 mb-4 text-xs text-zinc-500">
-                              <div className="flex items-center gap-1.5 max-w-xs shrink-0">
-                                <MapPin size={12} className="shrink-0" /> 
-                                <span className="truncate">{lead.address || 'Sem endereço'}</span>
-                              </div>
-                              {(lead.website || lead.link || lead.site) ? (
-                                <div className="flex items-center gap-1.5 text-[#00d1ff] shrink-0">
-                                  <Globe size={12} className="shrink-0" /> 
-                                  <a href={lead.website || lead.link || lead.site} target="_blank" rel="noreferrer" className="hover:underline text-zinc-300 truncate max-w-[200px]">{lead.website || lead.link || lead.site}</a>
-                                </div>
-                              ) : (
-                                <div className="flex items-center gap-1.5 text-zinc-600 shrink-0">
-                                  <Globe size={12} className="shrink-0" /> 
-                                  <span>Sem website detectado</span>
-                                </div>
-                              )}
-
-                              {/* IA Badges */}
-                              {lead.auditData && (
-                                <span className="bg-[#00d1ff]/10 text-[#00d1ff] text-[9px] font-mono px-2 py-0.5 rounded border border-[#00d1ff]/20 flex items-center gap-1">
-                                  ⚡ AUDITADO POR IA
-                                </span>
-                              )}
-                              {lead.sitePlan && (
-                                <span className="bg-[#00d1ff]/10 text-[#00d1ff] text-[9px] font-mono px-2 py-0.5 rounded border border-[#00d1ff]/20 flex items-center gap-1">
-                                  💡 PLANO DE SITE PRONTO
-                                </span>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Ações Direita */}
-                          <div className="flex flex-col gap-2 shrink-0 w-full md:w-auto">
-                             <button 
-                               onClick={() => handleGenerateSiteForLead(lead)}
-                                className="w-full md:w-48 bg-white hover:bg-zinc-200 text-black font-bold py-2.5 rounded-xl transition-all shadow-[0_0_15px_rgba(255,255,255,0.1)] flex items-center justify-center gap-2 text-sm"
-                              >
-                                <Sparkles size={14} className="text-[#00d1ff]" /> Validar Lead
-                              </button>
-
-                              {lead.score >= 90 && (
-                                <button 
-                                   onClick={() => handleOpenCommercialDossier(lead)}
-                                   className="w-full md:w-48 bg-[#00d1ff]/10 border border-[#00d1ff]/30 hover:bg-[#00d1ff]/20 text-[#00d1ff] font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 text-sm transition-all"
-                                >
-                                   <Sparkles size={14} /> Dossiê Comercial PRO
-                                </button>
-                              )}
-
-                              {(lead.auditData || lead.sitePlan) && (
-                                <button 
-                                  onClick={() => setExpandedLeadId(expandedLeadId === lead.id ? null : lead.id)}
-                                  className="w-full md:w-48 bg-[#1a1a1a] hover:bg-[#252525] text-zinc-300 font-bold py-2.5 rounded-xl border border-zinc-800 flex items-center justify-center gap-2 text-sm transition-all"
-                                >
-                                  {expandedLeadId === lead.id ? 'Ocultar Análise' : 'Exibir Análise (IA)'}
-                                </button>
-                              )}
-
-                              <div className="flex gap-2">
-                                 <a 
-                                   href={`https://wa.me/${(lead.phoneNumber || lead.phone || '').replace(/\D/g, '')}`} 
-                                   target="_blank" 
-                                   rel="noreferrer"
-                                   className="flex-1 bg-transparent border border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-white font-bold py-2 rounded-xl flex items-center justify-center gap-2 transition-all text-sm"
-                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                      <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
-                                    </svg> Contato
-                                 </a>
-                              </div>
-                              {/* Controles rápidos de Status */}
-                              <div className="flex justify-center gap-4 items-center mt-1">
-                                <button onClick={() => updateLeadStatus(lead.id, 'approved')} className={`transition-colors ${lead.status === 'approved' ? 'text-[#00d1ff]' : 'text-zinc-500 hover:text-[#00d1ff]'}`} title="Aprovar">
-                                  <CheckCircle size={16} />
-                                </button>
-                                <button onClick={() => updateLeadStatus(lead.id, 'pending')} className={`transition-colors ${lead.status === 'pending' || lead.status === 'Pendente' || !lead.status ? 'text-orange-500' : 'text-zinc-500 hover:text-orange-500'}`} title="Pendente">
-                                  <Clock size={16} />
-                                </button>
-                                <button onClick={() => updateLeadStatus(lead.id, 'discarded')} className={`transition-colors ${lead.status === 'discarded' ? 'text-red-500' : 'text-zinc-500 hover:text-red-500'}`} title="Descartar">
-                                  <Trash2 size={16} />
-                                </button>
-                              </div>
-                          </div>
-                        </div>
-
-                        {/* Expandable IA Analysis Container */}
-                        {expandedLeadId === lead.id && (
-                          <div className="mt-6 pt-6 border-t border-zinc-800/80 w-full animate-in fade-in slide-in-from-top-4 duration-300">
-                            {lead.auditData ? (
-                              <div className="space-y-6">
-                                <div className="p-4 bg-zinc-950 rounded-xl border border-zinc-850">
-                                  <div className="text-xs font-bold text-[#00d1ff] font-mono mb-2">RESUMO DA AUDITORIA CRO</div>
-                                  <p className="text-zinc-300 text-xs leading-relaxed">{lead.auditData.summary}</p>
-                                </div>
-                                <div className="space-y-3">
-                                  <div className="text-xs font-bold text-zinc-400 font-mono tracking-wider">PROBLEMAS CRÍTICOS IDENTIFICADOS</div>
-                                  {lead.auditData.issues && lead.auditData.issues.map((issue: any, iIdx: number) => (
-                                    <div key={iIdx} className="bg-zinc-900/60 p-4 rounded-xl border border-zinc-800 flex flex-col gap-2">
-                                      <div className="flex justify-between items-center">
-                                        <span className="text-xs font-bold text-white uppercase tracking-wider">{issue.title}</span>
-                                        <span className="bg-[#00d1ff]/10 text-[#00d1ff] border border-[#00d1ff]/20 text-[8px] font-mono px-2 py-0.5 rounded uppercase">{issue.tab || issue.category}</span>
-                                      </div>
-                                      <p className="text-zinc-400 text-[11px] leading-relaxed">{issue.description}</p>
-                                      <div className="mt-1 p-2 bg-[#00d1ff]/5 border border-[#00d1ff]/10 rounded text-[11px] text-[#00d1ff] leading-relaxed">
-                                        <strong>Correção Recomendada:</strong> {issue.recommendation}
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            ) : lead.sitePlan ? (
-                              <div className="space-y-6">
-                                <div className="p-4 bg-zinc-950 rounded-xl border border-zinc-850">
-                                  <div className="text-xs font-bold text-[#00d1ff] font-mono mb-2">PLANO DE SITE OTIMIZADO PARA PROSPECÇÃO</div>
-                                  <p className="text-zinc-300 text-xs leading-relaxed">{lead.sitePlan.summary}</p>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                  <div className="p-4 bg-zinc-900/40 rounded-xl border border-zinc-800">
-                                    <div className="text-[10px] font-bold text-zinc-400 font-mono uppercase tracking-wider mb-1">Paleta de Cores</div>
-                                    <div className="text-xs text-white">{lead.sitePlan.colors}</div>
-                                  </div>
-                                  <div className="p-4 bg-zinc-900/40 rounded-xl border border-zinc-800">
-                                    <div className="text-[10px] font-bold text-zinc-400 font-mono uppercase tracking-wider mb-1">Tom de Voz</div>
-                                    <div className="text-xs text-white">{lead.sitePlan.tone}</div>
-                                  </div>
-                                  <div className="p-4 bg-zinc-900/40 rounded-xl border border-zinc-800">
-                                    <div className="text-[10px] font-bold text-zinc-400 font-mono uppercase tracking-wider mb-1">Diferenciais CRO</div>
-                                    <div className="text-xs text-white">{lead.sitePlan.differentiators}</div>
-                                  </div>
-                                </div>
-                                <div className="space-y-3">
-                                  <div className="text-xs font-bold text-zinc-400 font-mono tracking-wider">ESTRUTURA DE COPY SEÇÃO A SEÇÃO</div>
-                                  {lead.sitePlan.sections && lead.sitePlan.sections.map((sec: any, sIdx: number) => (
-                                    <div key={sIdx} className="bg-zinc-900/60 p-4 rounded-xl border border-zinc-800">
-                                      <div className="text-xs font-bold text-white mb-1.5">{sec.title}</div>
-                                      <p className="text-zinc-400 text-[11px] leading-relaxed">{sec.description}</p>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            ) : null}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                  )}
-                </div>
-              )}
             </div>
           )}
 
@@ -1479,11 +1127,38 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                 <p className="text-zinc-400 text-sm">Gerencie os designs criados via Google Stitch e publique na Vercel com um clique.</p>
               </div>
 
+              <div className="flex items-center justify-between">
+                <div className="flex bg-[#121212] p-1 rounded-lg border border-zinc-800">
+                  {(['all', 'pending', 'approved', 'rejected'] as const).map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setFilterSiteStatus(s)}
+                      className={`px-4 py-1.5 text-xs font-bold uppercase rounded-md transition-all ${
+                        filterSiteStatus === s
+                        ? 'bg-zinc-800 text-[#00d1ff]'
+                        : 'text-zinc-500 hover:text-zinc-300'
+                      }`}
+                    >
+                      {s === 'all' ? 'Todos' : s === 'pending' ? 'Pendentes' : s === 'approved' ? 'Aprovados' : 'Rejeitados'}
+                    </button>
+                  ))}
+                </div>
+                <span className="text-zinc-500 text-xs font-mono">
+                  {createdSitesList.filter(s => filterSiteStatus === 'all' || 
+                    (filterSiteStatus === 'approved' ? (s.status === 'approved' || s.status === 'deployed') : s.status === filterSiteStatus)
+                  ).length} / {createdSitesList.length} sites
+                </span>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {createdSitesList.map((site: any) => (
+                {createdSitesList
+                  .filter(s => filterSiteStatus === 'all' || 
+                    (filterSiteStatus === 'approved' ? (s.status === 'approved' || s.status === 'deployed') : s.status === filterSiteStatus))
+                  .map((site: any) => (
                   <div key={site.projectId} className="bg-[#121212] border border-zinc-800 rounded-2xl p-6 relative overflow-hidden flex flex-col shadow-lg hover:border-[#00d1ff]/30 transition-all duration-300">
                     <div className={`absolute top-0 left-0 w-1.5 h-full ${
-                      site.status === 'pending' ? 'bg-orange-500' : 
+                      site.status === 'pending' && !site.viewed ? 'bg-green-500' :
+                      site.status === 'pending' && site.viewed ? 'bg-orange-500' : 
                       site.status === 'approved' ? 'bg-[#00d1ff]' : 'bg-red-500'
                     }`}></div>
 
@@ -1500,19 +1175,33 @@ Retorne exclusivamente o JSON, sem nenhuma outra mensagem ou tags markdown de c�
                              site.status === 'approved' ? 'Aprovado (No Ar)' : 'Rejeitado'}
                           </span>
                         </div>
-                        <p className="text-zinc-400 text-xs font-mono mb-4 pl-2">Nicho: {site.niche} | Score: {site.score || 95}</p>
+                         <p className="text-zinc-400 text-xs font-mono mb-2 pl-2">Nicho: {site.niche} | Score: {site.score || 95}</p>
+                         {site.visualReferences && site.visualReferences.length > 0 && (
+                           <div className="text-[10px] text-zinc-500 pl-2 mb-4">
+                             <span className="font-bold block text-zinc-400">Referências de Design:</span>
+                             <div className="flex gap-2 flex-wrap mt-1">
+                               {site.visualReferences.map((ref: string, idx: number) => (
+                                 <a key={idx} href={ref} target="_blank" rel="noreferrer" className="text-[#00d1ff] hover:underline font-mono">
+                                   Referência {idx + 1}
+                                 </a>
+                               ))}
+                             </div>
+                           </div>
+                         )}
                       </div>
 
                       <div className="mt-4 flex flex-col gap-3 pl-2">
-                        {(site.deployedUrl || site.htmlUrl) && (
-                          <a 
-                            href={site.deployedUrl || `/api/view-prototype/${site.projectId || site.id}`} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
+                        {(site.deployedUrl || site.htmlUrl || site.htmlContent) && (
+                          <button 
+                            onClick={() => {
+                              fetch(`/api/generated-sites/${site.projectId}/mark-viewed`, { method:"POST" }).catch(()=>{});
+                              setCreatedSitesList((prev: any[]) => prev.map((s: any) => s.projectId === site.projectId ? { ...s, viewed: true } : s));
+                              window.open(site.deployedUrl || `/api/view-prototype/${site.projectId || site.id}`, "_blank");
+                            }}
                             className="bg-[#1a1a1a] hover:bg-[#252525] border border-zinc-800 text-zinc-300 font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs transition-colors"
                           >
                             <Globe size={14} className="text-[#00d1ff]" /> Visualizar Protótipo Stitch
-                          </a>
+                          </button>
                         )}
 
                         <button 

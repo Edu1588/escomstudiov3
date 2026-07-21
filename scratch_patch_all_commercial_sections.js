@@ -758,6 +758,51 @@ const templateConfigs = [
     faqKey: 'skozi',
     contactLang: 'skozi',
     bannerBg: '#E91E63'
+  },
+  {
+    dir: 'site-novatech-automotive',
+    display: 'NovaTech Automotive',
+    isEn: false,
+    pdfUrl: '/proposta-escom-novatech-automotive',
+    faqKey: 'silva',
+    contactLang: 'silva',
+    bannerBg: '#f96c26'
+  },
+  {
+    dir: 'site-gio-estetica',
+    display: 'GiO Estética Avançada',
+    isEn: false,
+    pdfUrl: '/proposta-escom-gio-estetica',
+    faqKey: 'giovana',
+    contactLang: 'giovana',
+    bannerBg: '#6f0052'
+  },
+  {
+    dir: 'site-clinica-pillar',
+    display: 'Clínica Pillar',
+    isEn: false,
+    pdfUrl: '/proposta-escom-clinica-pillar',
+    faqKey: 'clinica',
+    contactLang: 'clinica',
+    bannerBg: '#047857'
+  },
+  {
+    dir: 'site-dr-raymond-hall',
+    display: 'Dr. Raymond Hall',
+    isEn: true,
+    pdfUrl: '/proposta-escom-dr-raymond-hall',
+    faqKey: 'chiropractic',
+    contactLang: 'chiropractic',
+    bannerBg: '#0369a1'
+  },
+  {
+    dir: 'site-innovative-business',
+    display: 'Innovative Business Contabilidade',
+    isEn: false,
+    pdfUrl: '/proposta-escom-innovative-business',
+    faqKey: 'silva',
+    contactLang: 'silva',
+    bannerBg: '#2563eb'
   }
 ];
 

@@ -39,3 +39,14 @@ Gerar:
 4. SEO
 5. Responsividade
 6. Instruções de deploy
+
+```bash
+npm install framer-motion
+npm install lucide-react
+npm install zod
+npm install clsx
+npm install class-variance-authority
+npm install tailwind-merge
+
+npx shadcn@latest init
+```

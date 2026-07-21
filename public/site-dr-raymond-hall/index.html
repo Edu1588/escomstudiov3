@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Raymond Hall, D.C. | Chiropractic & Spinal Decompression Los Angeles</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        clinical: {
+                            blue: '#0284c7',
+                            ice: '#f0f9ff',
+                            dark: '#0f172a',
+                            turq: '#0d9488',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Source Sans Pro', 'sans-serif'],
+                        heading: ['Oswald', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .font-heading { font-family: 'Oswald', sans-serif; }
+        .glass-card-clinical {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.02);
+        }
+        .glow-hover:hover {
+            border-color: #0284c7;
+            box-shadow: 0 10px 30px rgba(2, 132, 199, 0.05);
+            transform: translateY(-2px);
+        }
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    
+        /* PDF Shimmer Button Animation */
+        .btn-pdf-shimmer {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: pulse-glow-green 2s infinite alternate;
+        }
+        .btn-pdf-shimmer:active {
+            animation: click-effect-green 0.2s forwards;
+            transform: scale(0.95);
+        }
+        .btn-pdf-shimmer::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 30%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.35) 30%,
+                rgba(255, 255, 255, 0.45) 50%,
+                rgba(255, 255, 255, 0.35) 70%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shimmer-btn 4.5s infinite ease-in-out;
+        }
+        @keyframes shimmer-btn {
+            0% { left: -60%; }
+            25% { left: 140%; }
+            100% { left: 140%; }
+        }
+        @keyframes pulse-glow-green {
+            0% { box-shadow: 0 0 5px rgba(7, 220, 64, 0.2); border-color: rgba(63, 63, 70, 0.5); }
+            100% { box-shadow: 0 0 25px rgba(7, 220, 64, 0.8); border-color: rgba(7, 220, 64, 0.9); }
+        }
+        @keyframes click-effect-green {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.92); box-shadow: inset 0 0 25px rgba(7, 220, 64, 0.9); }
+            100% { transform: scale(0.95); box-shadow: inset 0 0 10px rgba(7, 220, 64, 0.5); }
+        }
+</style>
+</head>
+<body class="bg-clinical-ice text-clinical-dark font-sans antialiased overflow-x-hidden">
+
+<!-- BANNER DE URGÊNCIA (PROPOSTA COMERCIAL) -->
+<div id="banner-urgencia" class="fixed top-0 left-0 w-full min-h-[40px] py-2 bg-[#0369a1] text-white text-center flex items-center justify-center px-4 text-[10px] sm:text-xs md:text-sm font-bold shadow-md z-[100] animate-pulse transition-all">
+    Technical proposal available for Dr. Raymond Hall. Valid for 3 days.
+</div>
+
+    <!-- ========== FAIXA DE URGÊNCIA ========== -->
+    
+    <style>
+        @keyframes shimmer-bar {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        body { padding-top: 32px; } /* Espaço para o banner */
+    </style>
+
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 py-4">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <a href="#" class="flex flex-col">
+                <span class="font-heading text-xl font-bold tracking-wider text-clinical-blue">DR. RAYMOND HALL, D.C.</span>
+                <span class="text-[9px] font-bold uppercase tracking-widest text-clinical-turq">Spine & Posture Specialist</span>
+            </a>
+            <nav class="hidden md:flex items-center gap-8">
+                <a href="#about" class="text-xs font-bold uppercase tracking-wider text-clinical-dark hover:text-clinical-blue transition-colors">About</a>
+                <a href="#services" class="text-xs font-bold uppercase tracking-wider text-clinical-dark hover:text-clinical-blue transition-colors">Services</a>
+                <a href="#decompression" class="text-xs font-bold uppercase tracking-wider text-clinical-dark hover:text-clinical-blue transition-colors">Decompression</a>
+            </nav>
+            <div>
+                <a href="https://wa.me/13108734415" target="_blank" class="bg-clinical-blue text-white px-5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-clinical-dark transition-all active:scale-95 flex items-center gap-2">
+                    <i class="fab fa-whatsapp text-sm"></i> Book Evaluation
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center pt-24 overflow-hidden bg-white">
+        <div class="container mx-auto px-6 relative z-10 grid md:grid-cols-12 gap-12 items-center">
+            <div class="md:col-span-7 space-y-6">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-clinical-blue/5 border border-clinical-blue/10 text-clinical-blue text-xs font-bold tracking-wider uppercase">
+                    <i class="fas fa-heartbeat"></i> Professional Chiropractic Care
+                </div>
+                <h1 class="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-clinical-dark leading-tight uppercase">
+                    Advanced Spinal <br class="hidden sm:inline">
+                    <span class="text-clinical-blue">Decompression</span> & Care.
+                </h1>
+                <p class="text-base text-gray-500 max-w-xl leading-relaxed">
+                    Relieving pain, improving posture, and restoring mobility for patients in Los Angeles since 2005. Professional chiropractic treatments tailored to your body's specific biomechanical needs.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                    <a href="https://wa.me/13108734415" target="_blank" class="bg-clinical-blue hover:bg-clinical-dark text-white px-8 py-4 rounded-xl font-bold text-sm text-center transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2 shadow-lg">
+                        <i class="fab fa-whatsapp text-lg"></i> Book Your Evaluation Now
+                    </a>
+                    <a href="/proposta-escom-dr-raymond-hall" class="border border-gray-200 hover:border-clinical-blue bg-clinical-ice hover:bg-white text-clinical-dark px-8 py-4 rounded-xl font-bold text-sm text-center transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                        <i class="fas fa-file-invoice"></i> View Strategic Proposal
+                    </a>
+                </div>
+            </div>
+            <div class="md:col-span-5 relative hidden md:block">
+                <img src="https://images.unsplash.com/photo-1519828863384-38329b186b87?q=80&w=1200&auto=format&fit=crop" alt="Chiropractic Adjustment Spine" class="rounded-3xl shadow-xl object-cover w-full h-[450px]">
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-24 bg-clinical-ice border-t border-b border-gray-200 fade-in-section">
+        <div class="container mx-auto px-6">
+            <div class="max-w-3xl mx-auto text-center space-y-4 mb-16">
+                <span class="text-clinical-blue text-xs font-bold uppercase tracking-widest">Holistic Healing</span>
+                <h2 class="font-heading text-3xl md:text-4xl font-bold text-clinical-dark uppercase">Chiropractic Specializations</h2>
+                <p class="text-gray-500 text-sm">Advanced clinical treatments for spinal alignment, joint mobilization, and postural balance.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Service 1 -->
+                <div class="glass-card-clinical p-8 rounded-2xl transition-all duration-300 glow-hover">
+                    <div class="w-12 h-12 rounded-lg bg-clinical-blue/5 flex items-center justify-center text-clinical-blue mb-6">
+                        <i class="fas fa-hand-holding-medical text-xl"></i>
+                    </div>
+                    <h3 class="font-heading text-xl font-bold text-clinical-dark mb-2 uppercase">Spinal Adjustment</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed">Precise, manual manipulation to restore proper joint mobility, reduce nerve pressure, and alleviate chronic back pain.</p>
+                </div>
+                <!-- Service 2 -->
+                <div class="glass-card-clinical p-8 rounded-2xl transition-all duration-300 glow-hover">
+                    <div class="w-12 h-12 rounded-lg bg-clinical-blue/5 flex items-center justify-center text-clinical-blue mb-6">
+                        <i class="fas fa-child text-xl"></i>
+                    </div>
+                    <h3 class="font-heading text-xl font-bold text-clinical-dark mb-2 uppercase">Posture Modification</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed">Comprehensive biomechanical analysis to correct muscular imbalances and realign structural posture.</p>
+                </div>
+                <!-- Service 3 -->
+                <div class="glass-card-clinical p-8 rounded-2xl transition-all duration-300 glow-hover">
+                    <div class="w-12 h-12 rounded-lg bg-clinical-blue/5 flex items-center justify-center text-clinical-blue mb-6">
+                        <i class="fas fa-running text-xl"></i>
+                    </div>
+                    <h3 class="font-heading text-xl font-bold text-clinical-dark mb-2 uppercase">Sports Injury Rehab</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed">Targeted spinal and extremity adjustments to accelerate athletic recovery and prevent future structural fatigue.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Decompression Section -->
+    <section id="decompression" class="py-24 bg-white fade-in-section">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="relative">
+                    <img src="https://images.unsplash.com/photo-1594824813573-246434e33963?q=80&w=1200&auto=format&fit=crop" alt="Advanced Spine Therapy Clinic" class="rounded-3xl shadow-xl object-cover w-full h-[400px]">
+                </div>
+                <div class="space-y-6">
+                    <span class="text-clinical-blue text-xs font-bold uppercase tracking-widest">Advanced Spine Tech</span>
+                    <h2 class="font-heading text-3xl md:text-4xl font-bold text-clinical-dark uppercase">Non-Surgical Spinal Decompression</h2>
+                    <p class="text-gray-500 text-sm leading-relaxed">
+                        Spinal decompression therapy is a modern, non-surgical treatment that gently stretches the spine using a computerized table. This creates negative intradiscal pressure, allowing herniated or bulging discs to retract and intake oxygen and nutrients for natural healing.
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-lg bg-clinical-blue/5 text-clinical-blue flex items-center justify-center shrink-0"><i class="fas fa-check"></i></div>
+                            <div>
+                                <h4 class="font-bold text-clinical-dark uppercase text-sm">Pain Relief & Disk Repair</h4>
+                                <p class="text-xs text-gray-500">Targeted decompression is highly effective for sciatica, bulging discs, and neck pain.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-lg bg-clinical-blue/5 text-clinical-blue flex items-center justify-center shrink-0"><i class="fas fa-running"></i></div>
+                            <div>
+                                <h4 class="font-bold text-clinical-dark uppercase text-sm">Enhanced Mobility</h4>
+                                <p class="text-xs text-gray-500">Restores spinal fluid lubrication, increasing flexibility and physical endurance.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="py-24 bg-clinical-ice fade-in-section">
+        <div class="container mx-auto px-6 text-center max-w-3xl space-y-6">
+            <span class="text-clinical-blue text-xs font-bold uppercase tracking-widest">Our Mission</span>
+            <h2 class="font-heading text-3xl md:text-4xl font-bold text-clinical-dark uppercase">Holistic Healing & Precision Care</h2>
+            <p class="text-gray-500 text-sm leading-relaxed">
+                Dr. Raymond Hall specializes in restoring natural biomechanical balance using state-of-the-art chiropractic care. Our modern facility on Wilshire Boulevard provides a calm, therapeutic environment where we focus on finding and treating the root cause of your pain rather than just treating temporary symptoms.
+            </p>
+        </div>
+    </section>
+
+    
+<!-- FAQ Section -->
+<section class="py-24 bg-[#050c0f] border-t border-slate-800/85" id="faq">
+    <div class="max-w-4xl mx-auto px-6">
+        <h2 class="text-center text-3xl font-display font-extrabold text-slate-100 mb-12">Frequently Asked Questions (FAQ)</h2>
+        <div class="space-y-4">
+            
+            <div class="bg-[#0a191e] border border-slate-800 p-6 rounded-xl cursor-pointer group transition-all duration-300 hover:border-brand-500/50 faq-item">
+                <details class="w-full">
+                    <summary class="font-bold text-white list-none flex justify-between items-center group-open:text-brand-500 select-none">
+                        <span>What is a chiropractic adjustment?</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-300"></i>
+                    </summary>
+                    <p class="text-sm text-slate-400 mt-4 pl-1 leading-relaxed text-slate-300 border-t border-slate-800 pt-4">
+                        A chiropractic adjustment is a precise, controlled force applied to a spinal joint to restore proper alignment, improve range of motion, and relieve nerve pressure/back pain.
+                    </p>
+                </details>
+            </div>
+    
+            <div class="bg-[#0a191e] border border-slate-800 p-6 rounded-xl cursor-pointer group transition-all duration-300 hover:border-brand-500/50 faq-item">
+                <details class="w-full">
+                    <summary class="font-bold text-white list-none flex justify-between items-center group-open:text-brand-500 select-none">
+                        <span>Are chiropractic treatments safe?</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-300"></i>
+                    </summary>
+                    <p class="text-sm text-slate-400 mt-4 pl-1 leading-relaxed text-slate-300 border-t border-slate-800 pt-4">
+                        Yes, chiropractic care is widely recognized as one of the safest drug-free, non-invasive therapies available for back pain, neck pain, and joint issues.
+                    </p>
+                </details>
+            </div>
+    
+            <div class="bg-[#0a191e] border border-slate-800 p-6 rounded-xl cursor-pointer group transition-all duration-300 hover:border-brand-500/50 faq-item">
+                <details class="w-full">
+                    <summary class="font-bold text-white list-none flex justify-between items-center group-open:text-brand-500 select-none">
+                        <span>How many sessions will I need?</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-300"></i>
+                    </summary>
+                    <p class="text-sm text-slate-400 mt-4 pl-1 leading-relaxed text-slate-300 border-t border-slate-800 pt-4">
+                        This depends on your condition, pain level, and lifestyle. After your initial evaluation, our clinical team will outline a personalized treatment plan for fast relief.
+                    </p>
+                </details>
+            </div>
+    
+            <div class="bg-[#0a191e] border border-slate-800 p-6 rounded-xl cursor-pointer group transition-all duration-300 hover:border-brand-500/50 faq-item">
+                <details class="w-full">
+                    <summary class="font-bold text-white list-none flex justify-between items-center group-open:text-brand-500 select-none">
+                        <span>Does the chiropractic adjustment hurt?</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-300"></i>
+                    </summary>
+                    <p class="text-sm text-slate-400 mt-4 pl-1 leading-relaxed text-slate-300 border-t border-slate-800 pt-4">
+                        Generally, adjustments are painless. Many patients experience immediate relief or a feeling of release. Some mild soreness may occur afterwards, similar to starting a new exercise.
+                    </p>
+                </details>
+            </div>
+    
+            <div class="bg-[#0a191e] border border-slate-800 p-6 rounded-xl cursor-pointer group transition-all duration-300 hover:border-brand-500/50 faq-item">
+                <details class="w-full">
+                    <summary class="font-bold text-white list-none flex justify-between items-center group-open:text-brand-500 select-none">
+                        <span>Can I seek chiropractic care if I am pregnant?</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-300"></i>
+                    </summary>
+                    <p class="text-sm text-slate-400 mt-4 pl-1 leading-relaxed text-slate-300 border-t border-slate-800 pt-4">
+                        Absolutely! Chiropractic adjustments are safe and beneficial during pregnancy, helping to balance the pelvis, reduce lower back stress, and improve overall alignment.
+                    </p>
+                </details>
+            </div>
+    
+            <div class="bg-[#0a191e] border border-slate-800 p-6 rounded-xl cursor-pointer group transition-all duration-300 hover:border-brand-500/50 faq-item">
+                <details class="w-full">
+                    <summary class="font-bold text-white list-none flex justify-between items-center group-open:text-brand-500 select-none">
+                        <span>Do you accept health insurance or payment plans?</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-300"></i>
+                    </summary>
+                    <p class="text-sm text-slate-400 mt-4 pl-1 leading-relaxed text-slate-300 border-t border-slate-800 pt-4">
+                        We work with many major insurance providers and offer transparent self-pay rates and convenient family package plans to keep your spine care affordable.
+                    </p>
+                </details>
+            </div>
+    
+        </div>
+    </div>
+</section>
+  
+<!-- Contact Section -->
+<section class="py-24 bg-[#0a191e]/50" id="contact">
+    <div class="max-w-4xl mx-auto bg-[#050c0f] border border-slate-800 p-8 md:p-12 rounded-3xl">
+        <h4 class="text-2xl font-bold text-white mb-6 text-center">Get in Touch</h4>
+        <form class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="text" placeholder="Your Name" class="w-full bg-[#0a191e] border border-slate-800 focus:border-brand-500 text-white placeholder-slate-500 px-4 py-3 rounded-xl focus:outline-none transition">
+                <input type="tel" placeholder="Your Phone" class="w-full bg-[#0a191e] border border-slate-800 focus:border-brand-500 text-white placeholder-slate-500 px-4 py-3 rounded-xl focus:outline-none transition">
+            </div>
+            <textarea rows="4" placeholder="Describe your request or questions..." class="w-full bg-[#0a191e] border border-slate-800 focus:border-brand-500 text-white placeholder-slate-500 px-4 py-3 rounded-xl focus:outline-none transition"></textarea>
+            <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-4 rounded-xl transition shadow-lg hover:shadow-xl">Send Message</button>
+        </form>
+    </div>
+</section>
+  <!-- Footer -->
+    
+    <!-- ========== SEÇÃO DE PROSPECÇÃO / ANÁLISE DIGITAL ========== -->
+    <section id="analise" class="py-24 bg-zinc-900 relative overflow-hidden">
+        <div class="container mx-auto px-6">
+            <div class="max-w-3xl mx-auto text-center space-y-4 mb-16 fade-in-section">
+                <span class="text-amber-500 text-xs font-bold uppercase tracking-[0.2em]">Análise Estratégica</span>
+                <h2 class="text-3xl md:text-4xl lg:text-5xl font-black text-white">Diagnóstico Digital de <span class="text-amber-500">Alto Desempenho</span></h2>
+                <p class="text-slate-400 text-base leading-relaxed max-w-xl mx-auto">Identificamos oportunidades e pontos críticos de melhoria com base nos mais altos padrões do seu segmento.</p>
+                <div class="w-16 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                <div class="bg-zinc-800/50 backdrop-blur-md rounded-2xl p-7 text-center space-y-4 border border-zinc-700/50 hover:border-amber-500/30 transition-all duration-500 fade-in-section">
+                    <div class="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-500 mx-auto text-2xl">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="text-4xl font-black text-green-500">95</div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Score de Qualidade</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">Potencial de sucesso acima de 90% dos concorrentes.</p>
+                </div>
+                <div class="bg-zinc-800/50 backdrop-blur-md rounded-2xl p-7 text-center space-y-4 border border-zinc-700/50 hover:border-amber-500/30 transition-all duration-500 fade-in-section">
+                    <div class="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 mx-auto text-2xl">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="text-4xl font-black text-red-500">4</div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Pontos Críticos</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">Fatores que precisam de atenção imediata.</p>
+                </div>
+                <div class="bg-zinc-800/50 backdrop-blur-md rounded-2xl p-7 text-center space-y-4 border border-zinc-700/50 hover:border-amber-500/30 transition-all duration-500 fade-in-section">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 mx-auto text-2xl">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <div class="text-4xl font-black text-blue-500">7</div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Oportunidades</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">Estratégias inexploradas no seu nicho.</p>
+                </div>
+                <div class="bg-zinc-800/50 backdrop-blur-md rounded-2xl p-7 text-center space-y-4 border border-zinc-700/50 hover:border-amber-500/30 transition-all duration-500 fade-in-section">
+                    <div class="w-14 h-14 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500 mx-auto text-2xl">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="text-4xl font-black text-amber-500">+300%</div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">ROI Projetado</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">Projeção de retorno com as otimizações aplicadas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+\n<footer class="bg-clinical-dark text-white py-16">
+        <div class="container mx-auto px-6 grid md:grid-cols-3 gap-8">
+            <div class="space-y-4">
+                <span class="font-heading text-xl font-bold tracking-wider text-white">DR. RAYMOND HALL, D.C.</span>
+                <p class="text-xs text-slate-400 leading-relaxed max-w-xs">
+                    Clinical chiropractic center specializing in structural spinal alignment and posture modification. Los Angeles, CA.
+                </p>
+            </div>
+            <div class="space-y-3">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-clinical-blue">Direct Contact</h4>
+                <p class="text-xs text-slate-300"><i class="fab fa-whatsapp text-clinical-blue mr-2"></i> (310) 873-4415</p>
+                <p class="text-xs text-slate-300"><i class="fas fa-envelope text-clinical-blue mr-2"></i> info@drraymondhall.com</p>
+            </div>
+            <div class="space-y-3">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-clinical-blue">Clinic Location</h4>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    <i class="fas fa-map-marker-alt text-clinical-blue mr-2"></i> 11710 Wilshire Blvd., Los Angeles, CA 90025
+                </p>
+            </div>
+        </div>
+        <div class="container mx-auto px-6 border-t border-white/5 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <span class="text-[10px] text-slate-500">&copy; 2026 Dr. Raymond Hall, D.C. All rights reserved.</span>
+            <div class="flex items-center gap-4">
+                <a href="/proposta-escom-dr-raymond-hall" class="text-[10px] text-slate-400 hover:text-white transition-colors">Strategic Proposal</a>
+            </div>
+        </div>
+    </footer>
+<!-- SEÇÃO DO DOSSIÊ COMERCIAL (PDF/ESTRATÉGIA) -->
+<section id="dossie-comercial" class="py-16 bg-[#111] text-center border-t-2 border-zinc-800">
+    <div class="max-w-3xl mx-auto px-6">
+        <h3 class="text-[#07dc40] font-mono text-xs font-bold uppercase tracking-widest mb-4"><i class="fa-solid fa-lock mr-2"></i> Confidential Document</h3>
+        <h2 class="text-3xl font-bold text-white mb-6">Strategic Analysis & Market Dossier</h2>
+        <p class="text-zinc-400 mb-8 text-sm">Restricted access to the conversion architecture study, local market insights, and financial projections for Dr. Raymond Hall.</p>
+        <a href="/proposta-escom-dr-raymond-hall" target="_blank" class="btn-pdf-shimmer active:scale-95 active:translate-y-[1px] bg-transparent hover:bg-stone-850 border-2 border-[#07dc40]/30 text-white font-bold py-4 px-8 rounded-xl transition-all flex items-center justify-center gap-3 mx-auto group inline-flex hover:border-[#07dc40]">
+            <i class="fa-solid fa-file-pdf text-[#07dc40] text-xl group-hover:scale-110 transition-transform"></i> Access Strategic Dossier (PDF Analysis)
+        </a>
+    </div>
+</section>
+  
+<!-- SEÇÃO COMERCIAL ESCOM STUDIO (PROPOSTA) -->
+<section id="proposta-comercial" class="py-24 bg-[#0a0a0a] relative overflow-hidden text-white border-t-8 border-[#07dc40]">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-stone-900/20 via-[#0a0a0a] to-[#0a0a0a] pointer-events-none"></div>
+    
+    <div class="container mx-auto px-6 max-w-6xl relative z-10">
+        <div class="text-center mb-16">
+            <span class="bg-[#07dc40]/10 text-[#07dc40] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border border-[#07dc40]/20 mb-6 inline-block">Exclusive ESCOM Studio Proposal</span>
+            <h2 class="text-4xl md:text-5xl font-display font-extrabold text-white mb-6">Project Investment</h2>
+            <p class="text-zinc-400 max-w-2xl mx-auto text-lg">This is the exact financial scope for the implementation of your website, with high-performance design and conversion engineering.</p>
+        </div>
+
+        <!-- Card Principal de Preço -->
+        <div class="max-w-2xl mx-auto bg-gradient-to-b from-stone-900/60 to-zinc-900/60 p-10 rounded-3xl border border-stone-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] mb-16 relative backdrop-blur-sm transform transition hover:scale-[1.01]">
+            <div class="absolute top-0 right-0 bg-[#07dc40] text-black text-xs font-bold px-4 py-1 rounded-tr-3xl rounded-bl-xl z-20">CURRENT OFFER</div>
+            
+            <h3 class="text-2xl font-bold mb-2">High-Conversion Website</h3>
+            <p class="text-zinc-400 text-sm mb-6 pb-6 border-b border-white/10">Custom UI/UX Design, Local SEO, Mobile-First Responsiveness, WhatsApp Integration, Persuasive Copywriting.</p>
+            
+            <!-- Investimento Único (Sem parcelamento) -->
+            <div class="bg-stone-950/85 border border-stone-800 rounded-2xl p-8 mb-8 relative shadow-[0_10px_30px_rgba(0,0,0,0.4)] mt-8 text-center">
+                <div class="flex items-center justify-center gap-2 mb-4">
+                    <i class="fa-solid fa-bolt text-[#07dc40] text-lg"></i>
+                    <span class="text-[#07dc40] text-xs font-bold uppercase tracking-widest">Upfront Investment</span>
+                </div>
+                <div class="flex items-baseline justify-center gap-x-2">
+                    <span class="text-2xl font-bold text-stone-400">$</span>
+                    <span class="text-5xl sm:text-6xl font-black text-[#07dc40] tracking-tighter drop-shadow-[0_0_15px_rgba(7, 220, 64,0.35)]">990</span>
+                    <span class="text-lg font-medium text-stone-500">/single fee</span>
+                </div>
+                <p class="text-center text-stone-500 text-[10px] mt-4 font-semibold tracking-wider uppercase">PAYMENT VIA PIX, DEBIT, OR WIRE TRANSFER</p>
+            </div>
+
+            <ul class="space-y-4 mb-10 text-sm text-zinc-300">
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#07dc40] text-lg"></i> Domain name registration & hosting setup</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#07dc40] text-lg"></i> SEO optimization for Google Local Pack</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#07dc40] text-lg"></i> SSL Security Certificate Integration</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#07dc40] text-lg"></i> 30 Days of Priority Technical Support</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-circle-info text-[#07dc40] text-lg"></i> <strong class="text-white">Single investment, no recurring monthly fees</strong></li>
+            </ul>
+
+            <button id="btn-aceitar-proposta" class="btn-pdf-shimmer w-full bg-[#07dc40] hover:bg-[#00b5ab] text-black text-lg font-black py-5 rounded-2xl transition-all shadow-lg shadow-[#07dc40]/30 flex items-center justify-center gap-3 group relative overflow-hidden">
+                ACCEPT PROPOSAL NOW <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+            </button>
+            <p class="text-center text-xs text-zinc-500 mt-4"><i class="fa-solid fa-lock text-zinc-600 mr-1"></i> Secure contract and invoice sent immediately after acceptance.</p>
+        </div>
+
+        <!-- Seção de Serviços Adicionais (Upsells) - 2 COLUNAS -->
+        <div class="max-w-5xl mx-auto mt-24 bg-gradient-to-b from-[#1c1917]/40 to-[#0c0a09]/80 p-8 md:p-12 rounded-3xl border border-[#07dc40]/20 shadow-[0_0_50px_rgba(7, 220, 64,0.05)] relative backdrop-blur-md">
+            <div class="absolute -top-4 left-8 bg-[#07dc40] text-black text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">
+                Advanced Expansions
+            </div>
+            
+            <h3 class="text-2xl md:text-3xl font-display font-extrabold text-white mb-4 flex items-center gap-3">
+                <i class="fa-solid fa-square-plus text-[#07dc40]"></i> Optional Tech Modules
+            </h3>
+            <p class="text-stone-400 mb-10 text-sm max-w-3xl leading-relaxed">
+                Take your customer acquisition, operations, and analysis to the next level. Integrate advanced modules developed by ESCOM Studio:
+            </p>
+            
+            <div class="grid md:grid-cols-2 gap-6 mb-12">
+                <!-- CRM -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_crm.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="CRM">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">CRM & Client Lead Management</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Automated scheduling funnels, automated alerts, and follow-ups via WhatsApp. Complete customer history database.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Focus: Retention & Recurrence</span>
+                    </div>
+                </div>
+
+                <!-- Dashboard -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_dashboard.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Dashboard">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Financial Performance Dashboard</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Real-time billing analytics, customer acquisition cost (CAC) tracking, and conversion rates inside a beautiful visual admin.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Focus: Management & Profit</span>
+                    </div>
+                </div>
+
+                <!-- Agente IA -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_robot.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="AI Agent">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">AI Customer Support Agent (WhatsApp)</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Smart chatbot operating 24/7 to answer customer queries, schedule appointments, and qualify incoming leads automatically.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Focus: 24/7 Support</span>
+                    </div>
+                </div>
+
+                <!-- Estoque -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_estoque.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Inventory">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Smart Inventory Management</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Track inputs and outputs with automated shortage alerts and instant restock notifications.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Focus: Organization</span>
+                    </div>
+                </div>
+
+                <!-- Processos -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_processos.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Process">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Business Process Optimization</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Digital mapping of operational workflows to identify bottlenecks and maximize team output.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Focus: Productivity</span>
+                    </div>
+                </div>
+
+                <!-- E-commerce -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_ecommerce.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="E-commerce">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">E-commerce & Digital Catalog</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Online store integration allowing clients to buy services, products, and schedule installations in advance.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Focus: New Sales Channels</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulário Upsell -->
+            <div class="bg-stone-950/90 p-8 rounded-2xl border border-stone-800 shadow-inner">
+                <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane text-[#07dc40]"></i> Request Expansion Details
+                </h4>
+                <p class="text-stone-400 text-xs mb-6">Select the module you want. Our development team will analyze your infrastructure and send a custom quote.</p>
+                
+                <form id="form-upsell" class="space-y-4 text-xs">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="upsell-nome" placeholder="Your Name" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#07dc40] text-white placeholder-stone-600 text-xs transition" required>
+                        <input type="email" id="upsell-email" placeholder="Corporate Email" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#07dc40] text-white placeholder-stone-600 text-xs transition" required>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <select id="upsell-servico" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#07dc40] text-stone-400 text-xs transition" required>
+                            <option value="" disabled selected>Select Module</option>
+                            <option value="crm">CRM</option>
+                            <option value="dashboard">Dashboard</option>
+                            <option value="bot">WhatsApp Bot</option>
+                            <option value="estoque">Smart Inventory</option>
+                            <option value="otimizacao">Process Optimization</option>
+                            <option value="ecommerce">E-commerce</option>
+                        </select>
+                        <input type="tel" id="upsell-whatsapp" placeholder="WhatsApp Phone" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#07dc40] text-white placeholder-stone-600 text-xs transition" required>
+                    </div>
+                    <button type="submit" class="w-full bg-[#07dc40] hover:bg-[#00b5ab] text-black font-bold py-4 rounded-xl transition shadow-lg shadow-[#07dc40]/20 border border-[#07dc40]/10 text-xs uppercase tracking-wider">Submit Request</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- RODAPÉ COMERCIAL FINAL DA PROPOSTA (ESCOM STUDIO) -->
+<footer class="py-12 bg-[#060606] border-t border-zinc-900 text-center text-xs text-zinc-500 relative z-10 font-sans">
+    <div class="max-w-3xl mx-auto px-6 space-y-3">
+        <p class="font-bold tracking-wider text-zinc-400">ESCOM STUDIO · CONVERSÃO DIGITAL PREMIUM</p>
+        <p class="opacity-80">This technical proposal and its contents are confidential and property of the recipient and ESCOM Studio.</p>
+        <p class="text-[10px] opacity-50">&copy; 2026 ESCOM Studio. Todos os direitos reservados.</p>
+    </div>
+</footer>
+  
+
+<!-- Estilos dinâmicos injetados para elementos flutuantes -->
+<style>
+    /* WhatsApp Flutuante com Efeito Pulse */
+    .whatsapp-float { 
+        position: fixed; 
+        bottom: 24px; 
+        right: 24px; 
+        z-index: 9998; 
+        width: 60px; 
+        height: 60px; 
+        border-radius: 50%; 
+        background: #25D366; 
+        color: #fff; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: 32px; 
+        box-shadow: 0 8px 30px rgba(37,211,102,.4); 
+        transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        cursor: pointer; 
+        text-decoration: none; 
+        animation: pulse-wpp 2s infinite; 
+    }
+    .whatsapp-float:hover { 
+        transform: scale(1.1) rotate(5deg); 
+        background: #22c55e; 
+        color: #fff;
+    }
+    @keyframes pulse-wpp {
+      0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+      70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+    }
+
+    /* Botão Voltar ao Topo Flutuante */
+    .back-to-top { 
+        position: fixed; 
+        bottom: 96px; 
+        right: 29px; 
+        z-index: 9998; 
+        width: 50px; 
+        height: 50px; 
+        border-radius: 50%; 
+        background: #1b1c1c; 
+        color: #fff; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: 20px; 
+        box-shadow: 0 4px 20px rgba(0,0,0,.15); 
+        border: 1px solid rgba(255,255,255,.1); 
+        transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        cursor: pointer; 
+        text-decoration: none; 
+        opacity: 0; 
+        pointer-events: none; 
+        transform: scale(0.8); 
+    }
+    .back-to-top.visible { 
+        opacity: 1; 
+        pointer-events: auto; 
+        transform: scale(1); 
+    }
+    .back-to-top:hover { 
+        transform: scale(1.1) translateY(-3px); 
+        background: #E91E63; 
+        box-shadow: 0 8px 25px rgba(233,30,99,.3); 
+        color: #fff; 
+    }
+
+    /* Cards Flutuantes de Categoria e Depoimentos */
+    .product-card { 
+        transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+    }
+    .product-card:hover { 
+        transform: translateY(-8px) scale(1.01); 
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15); 
+    }
+    .product-card img { 
+        transition: transform .6s cubic-bezier(.16,1,.3,1); 
+    }
+    .product-card:hover img { 
+        transform: scale(1.05); 
+    }
+
+    .testimonial-card-hover { 
+        transition: transform 0.4s ease, box-shadow 0.4s ease; 
+    }
+    .testimonial-card-hover:hover { 
+        transform: translateY(-6px); 
+        box-shadow: 0 15px 35px rgba(0,0,0,0.08); 
+    }
+</style>
+
+<!-- Botão WhatsApp Flutuante Fixo -->
+<a href="#" id="globalWhatsAppBtn" target="_blank" class="whatsapp-float" aria-label="Fale conosco no WhatsApp">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" style="width: 30px; height: 30px; display: block;">
+        <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+    </svg>
+</a>
+
+<!-- Botão Voltar ao Topo Flutuante Fixo -->
+<a href="#" id="backToTop" class="back-to-top" aria-label="Voltar ao topo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="currentColor" style="width: 20px; height: 20px; display: block;">
+        <path d="M352 352c-8.188 0-16.38-3.125-22.62-9.375L192 205.3 54.6 342.6c-12.5 12.5-32.75 12.5-45.25 0s-12.5-32.75 0-45.25l160-160c12.5-12.5 32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25C368.4 348.9 360.2 352 352 352z"/>
+    </svg>
+</a>
+
+<!-- Bibliotecas de Animação e Interatividade Premium -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.36/dist/lenis.min.js"></script>
+<script src="https://unpkg.com/split-type"></script>
+
+<script>
+    // Configurar o link de WhatsApp dinamicamente
+    (function() {
+        const wppBtn = document.getElementById('globalWhatsAppBtn');
+        if (wppBtn) {
+            const firstWppLink = Array.from(document.querySelectorAll('a')).find(a => {
+                return a.href.includes('wa.me') && !a.classList.contains('whatsapp-float') && !a.id.includes('globalWhatsAppBtn');
+            });
+            if (firstWppLink) {
+                wppBtn.href = firstWppLink.href;
+            } else {
+                wppBtn.href = "https://wa.me/5562983232480?text=Ol%C3%A1%20Skozi%C3%AA!%20Vi%20o%20site%20e%20quero%20saber%20mais";
+            }
+        }
+    })();
+
+    // FAQ Accordion
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+        const details = item.querySelector('details');
+        const summary = item.querySelector('summary');
+        if (details && summary) {
+            summary.addEventListener('click', (e) => {
+                // Fechar outros accordions abertos se desejado, ou deixar nativo
+            });
+        }
+    });
+    
+    // Scroll Navbar Effect
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('navbar');
+        if (nav) {
+            if (window.scrollY > 50) {
+                nav.classList.remove('top-10');
+                nav.classList.add('top-0', 'shadow-md');
+            } else {
+                const statusCache = localStorage.getItem('escom_lead_status');
+                if (statusCache !== 'pago') {
+                    nav.classList.remove('top-0');
+                    nav.classList.add('top-10');
+                }
+            }
+        }
+    });
+
+    // Accept Proposal Event Handler
+    const btnAceitar = document.getElementById('btn-aceitar-proposta');
+    if (btnAceitar) {
+        btnAceitar.addEventListener('click', function(e) {
+            e.preventDefault();
+            btnAceitar.innerHTML = 'Processing...';
+            btnAceitar.classList.add('opacity-80', 'cursor-wait');
+
+            setTimeout(() => {
+                const leadData = {
+                    id: 'lead_' + Date.now(),
+                    empresa: 'Dr. Raymond Hall',
+                    status: 'pagamento_pendente',
+                    valor: 990,
+                    data: new Date().toISOString()
+                };
+                
+                localStorage.setItem('escom_new_lead_conversion', JSON.stringify(leadData));
+                window.dispatchEvent(new CustomEvent('escom-lead-converted', { detail: leadData }));
+
+                btnAceitar.innerHTML = 'PROPOSAL ACCEPTED!';
+                btnAceitar.classList.remove('bg-[#07dc40]', 'hover:bg-[#00b5ab]', 'text-black', 'cursor-wait');
+                btnAceitar.classList.add('bg-zinc-800', 'text-[#07dc40]', 'border', 'border-[#07dc40]', 'cursor-not-allowed');
+                
+                alert("Thank you! Your acceptance has been registered. The ESCOM Studio team will contact you shortly.");
+            }, 1500);
+        });
+    }
+
+    // Upsell Form Event Handler
+    const formUpsell = document.getElementById('form-upsell');
+    if (formUpsell) {
+        formUpsell.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btnSubmit = formUpsell.querySelector('button[type="submit"]');
+            const originalText = btnSubmit.innerHTML;
+            
+            btnSubmit.innerHTML = 'Sending Request...';
+            btnSubmit.classList.add('opacity-80', 'cursor-wait');
+            
+            setTimeout(() => {
+                alert("Request successfully sent! Our technical team will reach out.");
+                btnSubmit.innerHTML = 'Sent successfully';
+                btnSubmit.classList.remove('opacity-80', 'cursor-wait', 'bg-[#07dc40]', 'hover:bg-[#00b5ab]');
+                btnSubmit.classList.add('bg-zinc-800', 'text-[#07dc40]', 'cursor-not-allowed', 'border', 'border-[#07dc40]');
+                formUpsell.reset();
+            }, 1000);
+        });
+    }
+
+    // Client Mode Check
+    function verificarStatusDoLead() {
+        const pathParts = window.location.pathname.split('/');
+        const templateSlug = pathParts.find(p => p.startsWith('template-')) || 'default';
+        const statusCache = localStorage.getItem('escom_lead_status_' + templateSlug) || localStorage.getItem('escom_lead_status');
+        if (statusCache === 'pago') {
+            const banner = document.getElementById('banner-urgencia');
+            const dossie = document.getElementById('dossie-comercial');
+            const proposta = document.getElementById('proposta-comercial');
+            const navbar = document.getElementById('navbar');
+            
+            if (banner) banner.style.display = 'none';
+            if (navbar) {
+                navbar.classList.remove('top-10');
+                navbar.classList.add('top-0');
+            }
+            if (dossie) dossie.style.display = 'none';
+            if (proposta) proposta.style.display = 'none';
+        }
+    }
+    verificarStatusDoLead();
+    window.addEventListener('storage', (e) => {
+        const pathParts = window.location.pathname.split('/');
+        const templateSlug = pathParts.find(p => p.startsWith('template-')) || 'default';
+        if ((e.key === 'escom_lead_status' || e.key === ('escom_lead_status_' + templateSlug)) && e.newValue === 'pago') {
+            verificarStatusDoLead();
+        }
+    });
+
+    // Blindagem Anti-Cópia Silenciosa
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.addEventListener('keydown', (e) => {
+        const isCopying = (e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C');
+        const isSaving = (e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S');
+        const isPrinting = (e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P');
+        const isPrintScreen = e.key === 'PrintScreen';
+        const isMacSnippet = e.metaKey && e.shiftKey;
+
+        if (isCopying || isSaving || isPrinting || isPrintScreen || isMacSnippet) {
+            e.preventDefault();
+        }
+    });
+    document.addEventListener('copy', (e) => {
+        e.clipboardData.setData('text/plain', '');
+        e.preventDefault();
+    });
+
+    // Controle do Botão Voltar ao Topo
+    const backToTopBtn = document.getElementById('backToTop');
+    if (backToTopBtn) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        backToTopBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+
+    // Inicialização do Lenis Smooth Scroll Global
+    (function() {
+        if (typeof Lenis !== 'undefined') {
+            const lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                smoothWheel: true
+            });
+            function raf(time) {
+                lenis.raf(time);
+                requestAnimationFrame(raf);
+            }
+            requestAnimationFrame(raf);
+            
+            // Sincronizar Lenis com GSAP ScrollTrigger
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                lenis.on('scroll', ScrollTrigger.update);
+                gsap.ticker.add((time) => {
+                    lenis.raf(time * 1000);
+                });
+                gsap.ticker.lagSmoothing(0);
+            }
+        }
+    })();
+
+    // GSAP ScrollTrigger para Efeito de Reveal Premium nos Elementos
+    (function() {
+        if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Animar elementos com classe reveal
+            gsap.utils.toArray('.reveal').forEach((el) => {
+                gsap.fromTo(el, 
+                    { opacity: 0, y: 30 },
+                    { 
+                        opacity: 1, 
+                        y: 0, 
+                        duration: 0.8, 
+                        ease: "power2.out",
+                        scrollTrigger: {
+                            trigger: el,
+                            start: "top 88%",
+                            toggleActions: "play none none none"
+                        }
+                    }
+                );
+            });
+
+            // Animação de hover 3D em cards flutuantes (depoimentos, serviços e produtos)
+            const floatCards = document.querySelectorAll('.product-card, .testimonial-card-hover, .service-card');
+            floatCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    gsap.to(card, { y: -8, scale: 1.01, boxShadow: "0 20px 40px rgba(0,0,0,0.12)", duration: 0.4, ease: "power2.out" });
+                });
+                card.addEventListener('mouseleave', () => {
+                    gsap.to(card, { y: 0, scale: 1, boxShadow: "0 4px 15px rgba(0,0,0,0.05)", duration: 0.4, ease: "power2.out" });
+                });
+            });
+        } else {
+            // Fallback clássico caso as CDNs falhem por algum bloqueio
+            const revealElements = document.querySelectorAll('.reveal');
+            if (revealElements.length > 0) {
+                const checkReveal = () => {
+                    const triggerBottom = window.innerHeight * 0.85;
+                    revealElements.forEach(el => {
+                        const elTop = el.getBoundingClientRect().top;
+                        if (elTop < triggerBottom) {
+                            el.classList.add('active');
+                        }
+                    });
+                };
+                window.addEventListener('scroll', checkReveal);
+                window.addEventListener('resize', checkReveal);
+                checkReveal();
+                setTimeout(checkReveal, 300);
+            }
+        }
+    })();
+</script>
+  </body>
+</html>

@@ -1,0 +1,1778 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaTech Automotive | Oficina Premium Curitiba — Importados, Híbridos e Alta Performance</title>
+    <meta name="description" content="NovaTech Automotive: Centro técnico especializado em veículos importados, híbridos e alta performance em Curitiba. Diagnóstico computadorizado original, transparência por vídeo e garantia de 1 ano. Audi, BMW, Mercedes, Porsche.">
+    <meta name="keywords" content="oficina importados curitiba, mecanica premium, porsche curitiba, bmw curitiba, audi curitiba, mercedes curitiba, hibridos curitiba, diagnostico computadorizado, novatech automotive">
+    <link rel="canonical" href="https://escom-studio.vercel.app/site-novatech-automotive/index.html">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://escom-studio.vercel.app/site-novatech-automotive/index.html">
+    <meta property="og:title" content="NovaTech Automotive | Oficina Premium de Importados em Curitiba">
+    <meta property="og:description" content="Centro técnico especializado em Audi, BMW, Mercedes e Porsche. Diagnóstico computadorizado original com transparência total.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1617531653332-bd46c24f2068?q=80&w=1200&auto=format&fit=crop">
+    <!-- Schema.org -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "AutoRepair",
+      "name": "NovaTech Automotive",
+      "image": "https://novatechautomotive.com.br/wp-content/uploads/2019/10/Novatech-Automotive-Curitiba-Imports.png",
+      "url": "https://novatechautomotive.com.br",
+      "telephone": "+554132565962",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Rua Professora Carmem Lima de Almeida, 108A - Bacacheri",
+        "addressLocality": "Curitiba",
+        "addressRegion": "PR",
+        "postalCode": "82515-280",
+        "addressCountry": "BR"
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+        "opens": "08:00",
+        "closes": "18:00"
+      }
+    }
+    </script>
+
+    <script>
+        if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+        window.scrollTo(0, 0);
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- GSAP + ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            DEFAULT: '#091124',
+                            light: '#11192a',
+                            dark: '#050a16',
+                            mid: '#0d1830',
+                        },
+                        orange: {
+                            premium: '#f96c26',
+                            light: '#ff8c4a',
+                            dark: '#e05a1a',
+                            glow: '#ff6a1a',
+                        },
+                        gold: {
+                            DEFAULT: '#c9a84c',
+                            light: '#e0c675',
+                            dark: '#a88a30',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Montserrat', 'sans-serif'],
+                        accent: ['Bebas Neue', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* ===== Custom Styles ===== */
+        .font-heading { font-family: 'Montserrat', sans-serif; }
+        .font-accent { font-family: 'Bebas Neue', sans-serif; }
+
+        /* Glass Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        .glass-card:hover {
+            border-color: rgba(249, 108, 38, 0.35);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* Neon Glow */
+        .neon-glow { box-shadow: 0 0 25px rgba(249, 108, 38, 0.3); }
+        .neon-glow-hover:hover { box-shadow: 0 0 40px rgba(249, 108, 38, 0.55); }
+
+        /* Urgency Bar */
+        .urgency-bar {
+            background: linear-gradient(90deg, #f96c26, #e05a1a, #f96c26);
+            background-size: 200% 100%;
+            animation: shimmer-bar 3s ease-in-out infinite;
+        }
+        @keyframes shimmer-bar {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Hero Parallax */
+        .hero-image {
+            transition: transform 0.1s linear;
+            will-change: transform;
+        }
+
+        /* Logo Marquee */
+        .marquee-track {
+            display: flex;
+            animation: marquee 30s linear infinite;
+            width: max-content;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Vehicle Card */
+        .vehicle-card img {
+            transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .vehicle-card:hover img {
+            transform: scale(1.08);
+        }
+        .vehicle-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(5,10,22,0.95) 0%, rgba(5,10,22,0.4) 40%, transparent 70%);
+            z-index: 1;
+            border-radius: inherit;
+        }
+
+        /* Counter */
+        .counter-value {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* FAQ Accordion */
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), padding 0.5s ease;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 300px;
+            padding-top: 1rem;
+        }
+        .faq-item.active .faq-arrow {
+            transform: rotate(180deg);
+        }
+        .faq-arrow {
+            transition: transform 0.3s ease;
+        }
+
+        /* Scroll reveal classes */
+        .reveal { opacity: 0; transform: translateY(40px); }
+        .reveal-left { opacity: 0; transform: translateX(-60px); }
+        .reveal-right { opacity: 0; transform: translateX(60px); }
+        .reveal-scale { opacity: 0; transform: scale(0.85); }
+
+        /* CTA Pulse */
+        @keyframes cta-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(249,108,38,0.5); }
+            50% { box-shadow: 0 0 0 15px rgba(249,108,38,0); }
+        }
+        .cta-pulse { animation: cta-pulse 2.5s ease-in-out infinite; }
+
+        /* Star Rating */
+        .stars { color: #f59e0b; }
+
+        /* WhatsApp Float */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #25D366;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 25px rgba(37,211,102,0.45);
+            transition: all 0.3s;
+            z-index: 999;
+            text-decoration: none;
+            font-size: 1.75rem;
+            color: #fff;
+        }
+        .whatsapp-float:hover {
+            transform: scale(1.12);
+            box-shadow: 0 6px 35px rgba(37,211,102,0.65);
+        }
+
+        /* Horizontal Rule Gradient */
+        .hr-gradient {
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(249,108,38,0.3), transparent);
+            border: none;
+        }
+
+        /* Back to Top */
+        .back-to-top {
+            position: fixed;
+            bottom: 5rem;
+            right: 1.5rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(249,108,38,0.15);
+            border: 1px solid rgba(249,108,38,0.3);
+            color: #f96c26;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
+            z-index: 998;
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .back-to-top:hover {
+            background: rgba(249,108,38,0.3);
+        }
+
+        /* Smooth scroll for all */
+        html { scroll-behavior: smooth; }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050a16; }
+        ::-webkit-scrollbar-thumb { background: rgba(249,108,38,0.3); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(249,108,38,0.5); }
+    
+        /* PDF Shimmer Button Animation */
+        .btn-pdf-shimmer {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: pulse-glow-green 2s infinite alternate;
+        }
+        .btn-pdf-shimmer:active {
+            animation: click-effect-green 0.2s forwards;
+            transform: scale(0.95);
+        }
+        .btn-pdf-shimmer::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 30%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.35) 30%,
+                rgba(255, 255, 255, 0.45) 50%,
+                rgba(255, 255, 255, 0.35) 70%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shimmer-btn 4.5s infinite ease-in-out;
+        }
+        @keyframes shimmer-btn {
+            0% { left: -60%; }
+            25% { left: 140%; }
+            100% { left: 140%; }
+        }
+        @keyframes pulse-glow-green {
+            0% { box-shadow: 0 0 5px rgba(7, 220, 64, 0.2); border-color: rgba(63, 63, 70, 0.5); }
+            100% { box-shadow: 0 0 25px rgba(7, 220, 64, 0.8); border-color: rgba(7, 220, 64, 0.9); }
+        }
+        @keyframes click-effect-green {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.92); box-shadow: inset 0 0 25px rgba(7, 220, 64, 0.9); }
+            100% { transform: scale(0.95); box-shadow: inset 0 0 10px rgba(7, 220, 64, 0.5); }
+        }
+</style>
+</head>
+<body class="bg-navy-dark text-slate-200 font-sans antialiased overflow-x-hidden">
+
+<!-- BANNER DE URGÊNCIA (PROPOSTA COMERCIAL) -->
+<div id="banner-urgencia" class="fixed top-0 left-0 w-full min-h-[40px] py-2 bg-[#f96c26] text-white text-center flex items-center justify-center px-4 text-[10px] sm:text-xs md:text-sm font-bold shadow-md z-[100] animate-pulse transition-all">
+    Proposta de implementação técnica disponível para aprovação de NovaTech Automotive. Válida por 3 dias.
+</div>
+
+    <!-- ========== FAIXA DE URGÊNCIA ========== -->
+    <div class="urgency-bar fixed top-0 left-0 w-full z-[60] py-2.5 px-4 text-center">
+        <p class="text-white text-xs sm:text-sm font-bold tracking-wide flex items-center justify-center gap-2 flex-wrap">
+            <span class="inline-flex items-center gap-1.5">
+                <i class="fas fa-clock animate-pulse"></i>
+                <span>Proposta exclusiva válida por <strong class="underline underline-offset-2">3 dias</strong></span>
+            </span>
+            <span class="hidden sm:inline text-white/70">|</span>
+            <span class="text-white/90">Diagnóstico computadorizado + Orçamento por vídeo <strong>GRÁTIS</strong></span>
+            <a href="https://wa.me/554132565962" target="_blank" class="ml-2 bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all inline-flex items-center gap-1">
+                <i class="fab fa-whatsapp"></i> Agendar
+            </a>
+        </p>
+    </div>
+
+    <!-- ========== HEADER / NAVBAR ========== -->
+    <header class="fixed top-10 left-0 w-full z-50 bg-navy/85 backdrop-blur-xl border-b border-white/5 py-3.5 transition-all duration-300" id="main-header">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <a href="#" class="flex items-center gap-3">
+                <img src="https://novatechautomotive.com.br/wp-content/uploads/2019/10/Novatech-Automotive-Curitiba-Imports.png" alt="NovaTech Automotive" class="h-10 md:h-12 w-auto object-contain">
+            </a>
+            <nav class="hidden lg:flex items-center gap-8">
+                <a href="#sobre" class="text-sm font-medium text-slate-300 hover:text-orange-premium transition-colors duration-300 relative group">
+                    Sobre
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-premium transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#servicos" class="text-sm font-medium text-slate-300 hover:text-orange-premium transition-colors duration-300 relative group">
+                    Serviços Premium
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-premium transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#frota" class="text-sm font-medium text-slate-300 hover:text-orange-premium transition-colors duration-300 relative group">
+                    Veículos
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-premium transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#diagnostico" class="text-sm font-medium text-slate-300 hover:text-orange-premium transition-colors duration-300 relative group">
+                    Tecnologia
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-premium transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#diferenciais" class="text-sm font-medium text-slate-300 hover:text-orange-premium transition-colors duration-300 relative group">
+                    Diferenciais
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-premium transition-all duration-300 group-hover:w-full"></span>
+                </a>
+                <a href="#faq" class="text-sm font-medium text-slate-300 hover:text-orange-premium transition-colors duration-300 relative group">
+                    FAQ
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-premium transition-all duration-300 group-hover:w-full"></span>
+                </a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <a href="tel:+554132565962" class="hidden md:flex text-sm text-slate-400 hover:text-white transition-colors items-center gap-2">
+                    <i class="fas fa-phone text-orange-premium text-xs"></i> (41) 3256-5962
+                </a>
+                <a href="https://wa.me/554132565962" target="_blank" class="bg-orange-premium text-white px-5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-orange-dark transition-all active:scale-95 neon-glow neon-glow-hover flex items-center gap-2">
+                    <i class="fab fa-whatsapp text-sm"></i> Agendar
+                </a>
+                <!-- Mobile Menu Toggle -->
+                <button class="lg:hidden text-white text-xl" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-navy-dark/95 backdrop-blur-xl border-t border-white/5 mt-3">
+            <div class="container mx-auto px-6 py-4 flex flex-col gap-3">
+                <a href="#sobre" class="text-sm text-slate-300 hover:text-orange-premium py-2">Sobre</a>
+                <a href="#servicos" class="text-sm text-slate-300 hover:text-orange-premium py-2">Serviços Premium</a>
+                <a href="#frota" class="text-sm text-slate-300 hover:text-orange-premium py-2">Veículos</a>
+                <a href="#diagnostico" class="text-sm text-slate-300 hover:text-orange-premium py-2">Tecnologia</a>
+                <a href="#diferenciais" class="text-sm text-slate-300 hover:text-orange-premium py-2">Diferenciais</a>
+                <a href="#faq" class="text-sm text-slate-300 hover:text-orange-premium py-2">FAQ</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========== HERO SECTION ========== -->
+    <section class="relative min-h-screen flex items-center pt-32 pb-20 overflow-hidden">
+        <!-- Background Car Image — OVERLAY LEVE para o carro ficar BEM VISÍVEL -->
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1617531653332-bd46c24f2068?q=80&w=2070&auto=format&fit=crop"
+                 alt="Porsche na garagem premium NovaTech" 
+                 class="hero-image w-full h-full object-cover" 
+                 style="opacity: 0.55;">
+            <!-- Gradient overlay — apenas o suficiente para legibilidade do texto -->
+            <div class="absolute inset-0 bg-gradient-to-r from-navy-dark/90 via-navy-dark/60 to-navy-dark/30"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-navy-dark via-transparent to-navy-dark/40"></div>
+        </div>
+
+        <!-- Particles / Ambient Light -->
+        <div class="absolute top-20 right-20 w-96 h-96 rounded-full bg-orange-premium/5 blur-[120px] pointer-events-none"></div>
+        <div class="absolute bottom-10 left-10 w-72 h-72 rounded-full bg-orange-premium/3 blur-[100px] pointer-events-none"></div>
+
+        <div class="container mx-auto px-6 relative z-10 grid lg:grid-cols-12 gap-12 items-center">
+            <div class="lg:col-span-7 space-y-7 reveal-left">
+                <!-- Badge -->
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-premium/10 border border-orange-premium/30 text-orange-premium text-xs font-bold tracking-wider uppercase">
+                    <i class="fas fa-microchip"></i> Tecnologia & Performance Alemã
+                </div>
+                <!-- Título Principal -->
+                <h1 class="font-heading text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.05] drop-shadow-2xl">
+                    Especialistas em <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-premium to-orange-light">Veículos Premium</span> em Curitiba.
+                </h1>
+                <!-- Subtítulo -->
+                <p class="text-lg lg:text-xl text-slate-300 max-w-xl leading-relaxed drop-shadow-lg">
+                    Especialistas em engenharia automotiva alemã: Porsche, BMW, Audi, Mercedes-Benz e veículos híbridos. Transparência de concessionária, tecnologia de ponta e cuidado milimétrico.
+                </p>
+                <!-- CTAs — SEM botão de dossiê -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-2">
+                    <a href="https://wa.me/554132565962" target="_blank" class="bg-orange-premium text-white px-8 py-4 rounded-xl font-bold text-sm text-center hover:bg-orange-dark transition-all hover:-translate-y-1 neon-glow neon-glow-hover cta-pulse flex items-center justify-center gap-2.5 shadow-xl">
+                        <i class="fab fa-whatsapp text-xl"></i> Agendar Diagnóstico Gratuito
+                    </a>
+                    <a href="#servicos" class="border border-white/15 hover:border-orange-premium/50 bg-white/5 hover:bg-white/10 px-8 py-4 rounded-xl font-bold text-sm text-center transition-all hover:-translate-y-1 flex items-center justify-center gap-2 backdrop-blur-sm">
+                        <i class="fas fa-wrench text-orange-premium"></i> Nossos Serviços
+                    </a>
+                </div>
+                <!-- Trust badges -->
+                <div class="flex items-center gap-6 pt-4 flex-wrap">
+                    <div class="flex items-center gap-2 text-xs text-slate-400">
+                        <i class="fas fa-shield-halved text-green-500"></i> Garantia de 1 Ano
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-slate-400">
+                        <i class="fas fa-video text-orange-premium"></i> Orçamento por Vídeo
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-slate-400">
+                        <i class="fas fa-star text-yellow-500"></i> 4.9/5 Google
+                    </div>
+                </div>
+            </div>
+            <!-- Hero Stats Card -->
+            <div class="lg:col-span-5 reveal-right hidden lg:block">
+                <div class="glass-card rounded-3xl p-8 space-y-6 border border-white/10 relative overflow-hidden">
+                    <div class="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-orange-premium/10 blur-[60px]"></div>
+                    <h3 class="font-heading text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fas fa-chart-line text-orange-premium"></i> Performance NovaTech
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-navy/60 rounded-xl p-4 text-center border border-white/5">
+                            <div class="text-3xl font-black text-orange-premium counter-value" data-target="2500">0</div>
+                            <div class="text-[11px] text-slate-500 mt-1">Veículos Atendidos</div>
+                        </div>
+                        <div class="bg-navy/60 rounded-xl p-4 text-center border border-white/5">
+                            <div class="text-3xl font-black text-green-500">98%</div>
+                            <div class="text-[11px] text-slate-500 mt-1">Satisfação</div>
+                        </div>
+                        <div class="bg-navy/60 rounded-xl p-4 text-center border border-white/5">
+                            <div class="text-3xl font-black text-orange-light counter-value" data-target="12">0</div>
+                            <div class="text-[11px] text-slate-500 mt-1">Anos de Experiência</div>
+                        </div>
+                        <div class="bg-navy/60 rounded-xl p-4 text-center border border-white/5">
+                            <div class="text-3xl font-black text-blue-400 counter-value" data-target="500">0</div>
+                            <div class="text-[11px] text-slate-500 mt-1">Importados</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-slate-500">
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        Atualizações em tempo real
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-slate-500 animate-bounce">
+            <span class="text-[10px] uppercase tracking-widest">Scroll</span>
+            <i class="fas fa-chevron-down text-xs"></i>
+        </div>
+    </section>
+
+    <!-- ========== BARRA DE LOGOS / MARCAS ========== -->
+    <section class="py-6 bg-navy border-y border-white/5 overflow-hidden relative">
+        <div class="absolute inset-0 bg-gradient-to-r from-navy via-transparent to-navy z-10 pointer-events-none"></div>
+        <div class="marquee-track">
+            <!-- Set 1 -->
+            <div class="flex items-center gap-16 px-8">
+                <div class="flex items-center gap-3 text-slate-500 hover:text-white transition-colors shrink-0">
+                    <i class="fa-brands fa-font-awesome text-3xl"></i>
+                    <span class="text-sm font-semibold tracking-wide">Mercedes-Benz</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-500 hover:text-white transition-colors shrink-0">
+                    <svg viewBox="0 0 24 24" class="w-8 h-8 fill-current"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" font-weight="bold">B</text></svg>
+                    <span class="text-sm font-semibold tracking-wide">BMW</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-500 hover:text-white transition-colors shrink-0">
+                    <svg viewBox="0 0 24 24" class="w-8 h-8 fill-current"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="16" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+                    <span class="text-sm font-semibold tracking-wide">Audi</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-500 hover:text-white transition-colors shrink-0">
+                    <span class="text-xl font-accent tracking-[0.15em]">PORSCHE</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-500 hover:text-white transition-colors shrink-0">
+                    <span class="text-xl font-accent tracking-[0.15em]">VOLVO</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-500 hover:text-white transition-colors shrink-0">
+                    <span class="text-xl font-accent tracking-[0.15em]">LAND ROVER</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-500 hover:text-white transition-colors shrink-0">
+                    <span class="text-xl font-accent tracking-[0.15em]">VOLKSWAGEN</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-500 hover:text-white transition-colors shrink-0">
+                    <span class="text-xl font-accent tracking-[0.15em]">JAGUAR</span>
+                </div>
+            </div>
+            <!-- Set 2 (Duplicado para loop infinito) -->
+            <div class="flex items-center gap-16 px-8">
+                <div class="flex items-center gap-3 text-slate-500 hover:text-white transition-colors shrink-0">
+                    <i class="fa-brands fa-font-awesome text-3xl"></i>
+                    <span class="text-sm font-semibold tracking-wide">Mercedes-Benz</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-500 hover:text-white transition-colors shrink-0">
+                    <svg viewBox="0 0 24 24" class="w-8 h-8 fill-current"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor" font-weight="bold">B</text></svg>
+                    <span class="text-sm font-semibold tracking-wide">BMW</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-500 hover:text-white transition-colors shrink-0">
+                    <svg viewBox="0 0 24 24" class="w-8 h-8 fill-current"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1"/><circle cx="16" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+                    <span class="text-sm font-semibold tracking-wide">Audi</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-500 hover:text-white transition-colors shrink-0">
+                    <span class="text-xl font-accent tracking-[0.15em]">PORSCHE</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-500 hover:text-white transition-colors shrink-0">
+                    <span class="text-xl font-accent tracking-[0.15em]">VOLVO</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-500 hover:text-white transition-colors shrink-0">
+                    <span class="text-xl font-accent tracking-[0.15em]">LAND ROVER</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-500 hover:text-white transition-colors shrink-0">
+                    <span class="text-xl font-accent tracking-[0.15em]">VOLKSWAGEN</span>
+                </div>
+                <div class="flex items-center gap-3 text-slate-500 hover:text-white transition-colors shrink-0">
+                    <span class="text-xl font-accent tracking-[0.15em]">JAGUAR</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SEÇÃO DE PROSPECÇÃO / ANÁLISE DIGITAL ========== -->
+    <section id="analise" class="py-24 bg-gradient-to-b from-navy to-navy-dark relative overflow-hidden">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-orange-premium/3 blur-[150px] pointer-events-none"></div>
+        <div class="container mx-auto px-6">
+            <div class="max-w-3xl mx-auto text-center space-y-4 mb-16 reveal">
+                <span class="text-orange-premium text-xs font-bold uppercase tracking-[0.2em]">Análise Estratégica</span>
+                <h2 class="font-heading text-3xl md:text-4xl lg:text-5xl font-black text-white">Diagnóstico Digital do Seu <span class="text-orange-premium">Negócio</span></h2>
+                <p class="text-slate-400 text-base leading-relaxed max-w-xl mx-auto">Identificamos oportunidades de crescimento e pontos críticos que impactam diretamente a captação de clientes.</p>
+                <div class="w-16 h-1 bg-gradient-to-r from-transparent via-orange-premium to-transparent mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                <!-- Card 1 -->
+                <div class="glass-card rounded-2xl p-7 text-center space-y-4 hover:-translate-y-2 transition-all duration-500 reveal">
+                    <div class="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-500 mx-auto text-2xl">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="text-4xl font-black text-green-500 font-heading">95</div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Score de Qualidade</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">Seu potencial de conversão digital está acima de 90% dos concorrentes locais.</p>
+                    <div class="h-1.5 bg-navy rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full" style="width: 95%"></div>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div class="glass-card rounded-2xl p-7 text-center space-y-4 hover:-translate-y-2 transition-all duration-500 reveal">
+                    <div class="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 mx-auto text-2xl">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="text-4xl font-black text-red-500 font-heading">4</div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Problemas Críticos</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">Velocidade de carregamento, SEO local, CTA ausente e mobile não otimizado.</p>
+                    <div class="h-1.5 bg-navy rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-red-500 to-orange-500 rounded-full" style="width: 40%"></div>
+                    </div>
+                </div>
+                <!-- Card 3 -->
+                <div class="glass-card rounded-2xl p-7 text-center space-y-4 hover:-translate-y-2 transition-all duration-500 reveal">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 mx-auto text-2xl">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <div class="text-4xl font-black text-blue-500 font-heading">7</div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Oportunidades</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">Google Maps, remarketing, agendamento online, WhatsApp Business e mais.</p>
+                    <div class="h-1.5 bg-navy rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full" style="width: 70%"></div>
+                    </div>
+                </div>
+                <!-- Card 4 -->
+                <div class="glass-card rounded-2xl p-7 text-center space-y-4 hover:-translate-y-2 transition-all duration-500 reveal">
+                    <div class="w-14 h-14 rounded-2xl bg-orange-premium/10 flex items-center justify-center text-orange-premium mx-auto text-2xl">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="text-4xl font-black text-orange-premium font-heading">+320%</div>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">ROI Projetado</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">Projeção de retorno em 90 dias com a landing page otimizada e tráfego local.</p>
+                    <div class="h-1.5 bg-navy rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-orange-premium to-orange-light rounded-full animate-pulse" style="width: 90%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== GALERIA DE VEÍCULOS (Estilo Premium) ========== -->
+    <section id="frota" class="py-24 bg-navy-dark relative overflow-hidden">
+        <div class="container mx-auto px-6">
+            <div class="max-w-3xl mx-auto text-center space-y-4 mb-16 reveal">
+                <span class="text-orange-premium text-xs font-bold uppercase tracking-[0.2em]">Expertise Automotiva</span>
+                <h2 class="font-heading text-3xl md:text-4xl lg:text-5xl font-black text-white">Veículos que <span class="text-orange-premium">Atendemos</span></h2>
+                <p class="text-slate-400 text-base leading-relaxed max-w-xl mx-auto">Trabalhamos com as marcas mais exigentes do mercado. Confira algumas das linhas que passam pela nossa oficina.</p>
+                <div class="w-16 h-1 bg-gradient-to-r from-transparent via-orange-premium to-transparent mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Vehicle Card 1 - Porsche -->
+                <div class="vehicle-card relative rounded-3xl overflow-hidden h-[420px] group cursor-pointer reveal">
+                    <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=800&auto=format&fit=crop" alt="Porsche 911 Turbo" class="w-full h-full object-cover">
+                    <div class="absolute bottom-0 left-0 right-0 p-6 z-10">
+                        <span class="text-orange-premium text-[10px] font-bold uppercase tracking-[0.25em]">Porsche</span>
+                        <h3 class="font-heading text-2xl font-black text-white mt-1">911 Turbo S</h3>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">Manutenção completa do powertrain, calibração de módulos e revisão certificada.</p>
+                        <a href="https://wa.me/554132565962?text=Gostaria de agendar serviço para meu Porsche" target="_blank" class="inline-flex items-center gap-2 mt-4 text-orange-premium text-xs font-bold uppercase tracking-wider hover:gap-3 transition-all">
+                            <span>Agendar</span> <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="absolute top-4 right-4 z-10 bg-orange-premium/20 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold text-orange-premium uppercase border border-orange-premium/30">
+                        Premium
+                    </div>
+                </div>
+                <!-- Vehicle Card 2 - BMW -->
+                <div class="vehicle-card relative rounded-3xl overflow-hidden h-[420px] group cursor-pointer reveal">
+                    <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800&auto=format&fit=crop" alt="BMW M4 Competition" class="w-full h-full object-cover">
+                    <div class="absolute bottom-0 left-0 right-0 p-6 z-10">
+                        <span class="text-blue-400 text-[10px] font-bold uppercase tracking-[0.25em]">BMW</span>
+                        <h3 class="font-heading text-2xl font-black text-white mt-1">M4 Competition</h3>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">Diagnóstico ISTA, programação de módulos e otimização de performance esportiva.</p>
+                        <a href="https://wa.me/554132565962?text=Gostaria de agendar serviço para meu BMW" target="_blank" class="inline-flex items-center gap-2 mt-4 text-blue-400 text-xs font-bold uppercase tracking-wider hover:gap-3 transition-all">
+                            <span>Agendar</span> <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="absolute top-4 right-4 z-10 bg-blue-500/20 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold text-blue-400 uppercase border border-blue-500/30">
+                        Sport
+                    </div>
+                </div>
+                <!-- Vehicle Card 3 - Mercedes -->
+                <div class="vehicle-card relative rounded-3xl overflow-hidden h-[420px] group cursor-pointer reveal">
+                    <img src="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=800&auto=format&fit=crop" alt="Mercedes-AMG GT" class="w-full h-full object-cover">
+                    <div class="absolute bottom-0 left-0 right-0 p-6 z-10">
+                        <span class="text-slate-300 text-[10px] font-bold uppercase tracking-[0.25em]">Mercedes-AMG</span>
+                        <h3 class="font-heading text-2xl font-black text-white mt-1">AMG GT 63</h3>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">Sistema XENTRY completo, calibragem de suspensão ativa e revisão de motor V8 biturbo.</p>
+                        <a href="https://wa.me/554132565962?text=Gostaria de agendar serviço para meu Mercedes" target="_blank" class="inline-flex items-center gap-2 mt-4 text-slate-300 text-xs font-bold uppercase tracking-wider hover:gap-3 transition-all">
+                            <span>Agendar</span> <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="absolute top-4 right-4 z-10 bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold text-white uppercase border border-white/20">
+                        AMG
+                    </div>
+                </div>
+            </div>
+
+            <!-- Extra vehicles list -->
+            <div class="max-w-3xl mx-auto mt-12 space-y-3 reveal">
+                <div class="flex items-center gap-4 text-sm text-slate-400">
+                    <i class="fas fa-check-circle text-orange-premium"></i>
+                    <span><strong class="text-white">Audi RS / S-Line</strong> — diagnóstico ODIS, manutenção Quattro e DSG</span>
+                </div>
+                <div class="flex items-center gap-4 text-sm text-slate-400">
+                    <i class="fas fa-check-circle text-orange-premium"></i>
+                    <span><strong class="text-white">Volvo / Land Rover</strong> — módulos VIDA/SDD, sistemas híbridos PHEV</span>
+                </div>
+                <div class="flex items-center gap-4 text-sm text-slate-400">
+                    <i class="fas fa-check-circle text-orange-premium"></i>
+                    <span><strong class="text-white">VW / Bentley / Lamborghini</strong> — plataformas compartilhadas do grupo VAG</span>
+                </div>
+            </div>
+
+            <div class="text-center mt-10 reveal">
+                <a href="https://wa.me/554132565962?text=Quero saber se vocês atendem meu veículo" target="_blank" class="inline-flex items-center gap-2 bg-orange-premium/10 hover:bg-orange-premium/20 border border-orange-premium/30 text-orange-premium px-8 py-3.5 rounded-xl font-bold text-sm transition-all hover:-translate-y-1">
+                    <i class="fas fa-car"></i> Consulte sua marca <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SCANNER / DIAGNÓSTICO INTERATIVO ========== -->
+    <section id="diagnostico" class="py-24 bg-navy border-t border-b border-white/5 relative">
+        <div class="container mx-auto px-6">
+            <div class="max-w-3xl mx-auto text-center space-y-4 mb-16 reveal">
+                <span class="text-orange-premium text-xs font-bold uppercase tracking-[0.2em]">Painel Digital Ativo</span>
+                <h2 class="font-heading text-3xl md:text-4xl lg:text-5xl font-black text-white">Scanner de <span class="text-orange-premium">Codificação & Programação ECU</span></h2>
+                <p class="text-slate-400 text-sm max-w-xl mx-auto leading-relaxed">Transparência em tempo real. Veja a telemetria do protocolo de calibração ativa que aplicamos nos sistemas dos veículos.</p>
+                <div class="w-16 h-1 bg-gradient-to-r from-transparent via-orange-premium to-transparent mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="max-w-5xl mx-auto glass-card rounded-3xl p-6 md:p-10 shadow-2xl relative reveal-scale">
+                <div class="absolute top-4 right-6 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-ping"></span>
+                    <span class="text-[10px] text-green-500 font-bold uppercase tracking-widest">CONECTADO VIA ECU OBD-II</span>
+                </div>
+                <div class="grid md:grid-cols-3 gap-6 mt-6">
+                    <!-- Scanner Item 1 -->
+                    <div class="bg-navy/50 border border-white/5 hover:border-orange-premium/20 rounded-2xl p-6 text-center space-y-4 transition-all duration-300 hover:-translate-y-1">
+                        <div class="w-12 h-12 rounded-xl bg-orange-premium/10 flex items-center justify-center text-orange-premium mx-auto">
+                            <i class="fas fa-car-battery text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-white">Codificação & Programação ECU</h3>
+                            <p class="text-xs text-slate-500">Mapeamento de cilindros</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="h-2 bg-navy rounded-full overflow-hidden">
+                                <div class="h-full bg-green-500 w-full animate-pulse"></div>
+                            </div>
+                            <span class="text-xs text-green-500 font-bold">100% OK / ESTÁVEL</span>
+                        </div>
+                    </div>
+                    <!-- Scanner Item 2 -->
+                    <div class="bg-navy/50 border border-white/5 hover:border-orange-premium/20 rounded-2xl p-6 text-center space-y-4 transition-all duration-300 hover:-translate-y-1">
+                        <div class="w-12 h-12 rounded-xl bg-orange-premium/10 flex items-center justify-center text-orange-premium mx-auto">
+                            <i class="fas fa-microchip text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-white">Diagnóstico Alemão (Odis/Icom)</h3>
+                            <p class="text-xs text-slate-500">Curvas de torque & potência</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="h-2 bg-navy rounded-full overflow-hidden">
+                                <div class="h-full bg-green-500 w-full animate-pulse"></div>
+                            </div>
+                            <span class="text-xs text-green-500 font-bold">100% OK / OTIMIZADA</span>
+                        </div>
+                    </div>
+                    <!-- Scanner Item 3 -->
+                    <div class="bg-navy/50 border border-white/5 hover:border-orange-premium/20 rounded-2xl p-6 text-center space-y-4 transition-all duration-300 hover:-translate-y-1">
+                        <div class="w-12 h-12 rounded-xl bg-orange-premium/10 flex items-center justify-center text-orange-premium mx-auto">
+                            <i class="fas fa-sliders text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-white">Calibração Suspensão Pneumática</h3>
+                            <p class="text-xs text-slate-500">Autonomia & Baterias</p>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="h-2 bg-navy rounded-full overflow-hidden">
+                                <div class="h-full bg-green-500 w-full animate-pulse"></div>
+                            </div>
+                            <span class="text-xs text-green-500 font-bold">100% OK / EFICIENTE</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SERVIÇOS PREMIUM ========== -->
+    <section id="servicos" class="py-24 bg-gradient-to-b from-navy-dark to-navy relative">
+        <div class="container mx-auto px-6">
+            <div class="max-w-3xl mx-auto text-center space-y-4 mb-16 reveal">
+                <span class="text-orange-premium text-xs font-bold uppercase tracking-[0.2em]">Nossas Especialidades</span>
+                <h2 class="font-heading text-3xl md:text-4xl lg:text-5xl font-black text-white">Serviços Automotivos <span class="text-orange-premium">Especializados</span></h2>
+                <p class="text-slate-400 text-sm max-w-xl mx-auto leading-relaxed">Tecnologia avançada para manter as especificações e o prazer de dirigir do seu importado.</p>
+                <div class="w-16 h-1 bg-gradient-to-r from-transparent via-orange-premium to-transparent mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                <!-- Card 1 -->
+                <div class="glass-card p-8 rounded-2xl hover:-translate-y-2 transition-all duration-500 border border-white/5 hover:border-orange-premium/30 group reveal">
+                    <div class="w-14 h-14 rounded-2xl bg-white/5 group-hover:bg-orange-premium/10 flex items-center justify-center text-slate-400 group-hover:text-orange-premium transition-all duration-300 mb-6 text-2xl">
+                        <i class="fas fa-terminal"></i>
+                    </div>
+                    <h3 class="font-heading text-lg font-bold text-white mb-3">Codificação de Módulos</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Configuração eletrônica original de fábrica de todos os módulos eletrônicos alemães de forma direta.</p>
+                </div>
+                <!-- Card 2 -->
+                <div class="glass-card p-8 rounded-2xl hover:-translate-y-2 transition-all duration-500 border border-white/5 hover:border-orange-premium/30 group reveal">
+                    <div class="w-14 h-14 rounded-2xl bg-white/5 group-hover:bg-orange-premium/10 flex items-center justify-center text-slate-400 group-hover:text-orange-premium transition-all duration-300 mb-6 text-2xl">
+                        <i class="fas fa-circle-dot"></i>
+                    </div>
+                    <h3 class="font-heading text-lg font-bold text-white mb-3">Pastilhas de Cerâmica (Brembo)</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Manutenção e troca com ferramental de alta precisão e pastilhas homologadas de alto desempenho.</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="glass-card p-8 rounded-2xl hover:-translate-y-2 transition-all duration-500 border border-white/5 hover:border-orange-premium/30 group reveal">
+                    <div class="w-14 h-14 rounded-2xl bg-white/5 group-hover:bg-orange-premium/10 flex items-center justify-center text-slate-400 group-hover:text-orange-premium transition-all duration-300 mb-6 text-2xl">
+                        <i class="fas fa-compress"></i>
+                    </div>
+                    <h3 class="font-heading text-lg font-bold text-white mb-3">Suspensão Pneumática</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Diagnóstico, reparo e calibragem de bolsas pneumáticas e amortecedores com precisão milimétrica.</p>
+                </div>
+                <!-- Card 4 -->
+                <div class="glass-card p-8 rounded-2xl hover:-translate-y-2 transition-all duration-500 border border-white/5 hover:border-orange-premium/30 group reveal">
+                    <div class="w-14 h-14 rounded-2xl bg-white/5 group-hover:bg-orange-premium/10 flex items-center justify-center text-slate-400 group-hover:text-orange-premium transition-all duration-300 mb-6 text-2xl">
+                        <i class="fas fa-gauge-high"></i>
+                    </div>
+                    <h3 class="font-heading text-lg font-bold text-white mb-3">Motores Híbridos</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Diagnóstico térmico completo, saúde de pack de células e inversores com técnicos qualificados ASE.</p>
+                </div>
+                <!-- Card 5 -->
+                <div class="glass-card p-8 rounded-2xl hover:-translate-y-2 transition-all duration-500 border border-white/5 hover:border-orange-premium/30 group reveal">
+                    <div class="w-14 h-14 rounded-2xl bg-white/5 group-hover:bg-orange-premium/10 flex items-center justify-center text-slate-400 group-hover:text-orange-premium transition-all duration-300 mb-6 text-2xl">
+                        <i class="fas fa-oil-can"></i>
+                    </div>
+                    <h3 class="font-heading text-lg font-bold text-white mb-3">Revisão Completa</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Revisão preventiva e corretiva seguindo checklists oficiais das montadoras com peças originais.</p>
+                </div>
+                <!-- Card 6 -->
+                <div class="glass-card p-8 rounded-2xl hover:-translate-y-2 transition-all duration-500 border border-white/5 hover:border-orange-premium/30 group reveal">
+                    <div class="w-14 h-14 rounded-2xl bg-white/5 group-hover:bg-orange-premium/10 flex items-center justify-center text-slate-400 group-hover:text-orange-premium transition-all duration-300 mb-6 text-2xl">
+                        <i class="fas fa-car-side"></i>
+                    </div>
+                    <h3 class="font-heading text-lg font-bold text-white mb-3">Câmbio DSG / PDK</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Troca de fluido, mecatrônica e adaptação com scanners de última geração para transmissões automatizadas.</p>
+                </div>
+                <!-- Card 7 -->
+                <div class="glass-card p-8 rounded-2xl hover:-translate-y-2 transition-all duration-500 border border-white/5 hover:border-orange-premium/30 group reveal">
+                    <div class="w-14 h-14 rounded-2xl bg-white/5 group-hover:bg-orange-premium/10 flex items-center justify-center text-slate-400 group-hover:text-orange-premium transition-all duration-300 mb-6 text-2xl">
+                        <i class="fas fa-snowflake"></i>
+                    </div>
+                    <h3 class="font-heading text-lg font-bold text-white mb-3">Ar Condicionado Digital</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Higienização, recarga e reparo de sistemas dual-zone e multi-zone com fluidos R1234yf.</p>
+                </div>
+                <!-- Card 8 -->
+                <div class="glass-card p-8 rounded-2xl hover:-translate-y-2 transition-all duration-500 border border-white/5 hover:border-orange-premium/30 group reveal">
+                    <div class="w-14 h-14 rounded-2xl bg-white/5 group-hover:bg-orange-premium/10 flex items-center justify-center text-slate-400 group-hover:text-orange-premium transition-all duration-300 mb-6 text-2xl">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="font-heading text-lg font-bold text-white mb-3">Elétrica Automotiva</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Diagnóstico e reparo de chicotes elétricos, módulos de conforto e sistemas de iluminação LED/Xenon.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== DIFERENCIAIS ========== -->
+    <section id="diferenciais" class="py-24 bg-navy-dark border-t border-white/5 relative overflow-hidden">
+        <div class="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-orange-premium/5 blur-[120px] pointer-events-none"></div>
+        <div class="container mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
+                <div class="space-y-8 reveal-left">
+                    <div>
+                        <span class="text-orange-premium text-xs font-bold uppercase tracking-[0.2em]">Padrão Concessionária</span>
+                        <h2 class="font-heading text-3xl md:text-4xl lg:text-5xl font-black text-white mt-3">Por que a <span class="text-orange-premium">NovaTech</span>?</h2>
+                        <p class="text-slate-400 leading-relaxed text-base mt-4 max-w-lg">
+                            Desenvolvemos protocolos que eliminam o "chute" nas manutenções automotivas. Nossos diferenciais protegem o valor do seu patrimônio sobre rodas.
+                        </p>
+                    </div>
+                    <div class="space-y-5">
+                        <div class="flex items-start gap-4 group">
+                            <div class="w-12 h-12 rounded-xl bg-orange-premium/10 text-orange-premium flex items-center justify-center shrink-0 group-hover:bg-orange-premium/20 transition-colors text-lg">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-base">Garantia estendida de 1 ano</h4>
+                                <p class="text-sm text-slate-500 mt-1 leading-relaxed">Tranquilidade assegurada em todas as manutenções e peças instaladas no seu veículo.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4 group">
+                            <div class="w-12 h-12 rounded-xl bg-orange-premium/10 text-orange-premium flex items-center justify-center shrink-0 group-hover:bg-orange-premium/20 transition-colors text-lg">
+                                <i class="fas fa-video"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-base">Orçamento transparente via Vídeo</h4>
+                                <p class="text-sm text-slate-500 mt-1 leading-relaxed">Mostramos em detalhes a desmontagem e o diagnóstico do seu motor antes da aprovação.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4 group">
+                            <div class="w-12 h-12 rounded-xl bg-orange-premium/10 text-orange-premium flex items-center justify-center shrink-0 group-hover:bg-orange-premium/20 transition-colors text-lg">
+                                <i class="fas fa-laptop-code"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-base">Diagnóstico computacional original</h4>
+                                <p class="text-sm text-slate-500 mt-1 leading-relaxed">Acesso aos servidores oficiais das montadoras para programação eletrônica direta.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4 group">
+                            <div class="w-12 h-12 rounded-xl bg-orange-premium/10 text-orange-premium flex items-center justify-center shrink-0 group-hover:bg-orange-premium/20 transition-colors text-lg">
+                                <i class="fas fa-truck-fast"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-base">Leva e Traz Premium</h4>
+                                <p class="text-sm text-slate-500 mt-1 leading-relaxed">Buscamos e devolvemos seu veículo com seguro total durante o transporte. Zero preocupação.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative reveal-right">
+                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2070&auto=format&fit=crop" alt="Oficina Automotiva Premium" class="rounded-3xl shadow-2xl border border-white/5 object-cover w-full h-[550px]">
+                    <div class="absolute inset-0 rounded-3xl bg-gradient-to-t from-navy-dark/70 via-transparent to-transparent"></div>
+                    <!-- Stats overlay -->
+                    <div class="absolute bottom-6 left-6 right-6 z-10">
+                        <div class="glass-card rounded-2xl p-5 flex items-center justify-between gap-4 flex-wrap">
+                            <div class="text-center">
+                                <div class="text-2xl font-black text-orange-premium">+12</div>
+                                <div class="text-[10px] text-slate-500 uppercase tracking-wider">Anos</div>
+                            </div>
+                            <div class="w-px h-8 bg-white/10"></div>
+                            <div class="text-center">
+                                <div class="text-2xl font-black text-white">98%</div>
+                                <div class="text-[10px] text-slate-500 uppercase tracking-wider">Satisfação</div>
+                            </div>
+                            <div class="w-px h-8 bg-white/10"></div>
+                            <div class="text-center">
+                                <div class="text-2xl font-black text-green-500">4.9</div>
+                                <div class="text-[10px] text-slate-500 uppercase tracking-wider flex items-center gap-1"><i class="fab fa-google text-[8px]"></i> Google</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== RESULTADOS EM NÚMEROS ========== -->
+    <section class="py-20 bg-gradient-to-r from-navy via-navy-light to-navy border-y border-white/5 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(249,108,38,0.06),transparent_70%)] pointer-events-none"></div>
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto text-center">
+                <div class="space-y-2 reveal">
+                    <div class="text-5xl lg:text-6xl font-black text-orange-premium font-heading counter-value" data-target="2500" data-prefix="+">0</div>
+                    <div class="text-xs text-slate-500 uppercase tracking-widest font-semibold">Veículos Atendidos</div>
+                </div>
+                <div class="space-y-2 reveal">
+                    <div class="text-5xl lg:text-6xl font-black text-white font-heading">98<span class="text-orange-premium">%</span></div>
+                    <div class="text-xs text-slate-500 uppercase tracking-widest font-semibold">Clientes Satisfeitos</div>
+                </div>
+                <div class="space-y-2 reveal">
+                    <div class="text-5xl lg:text-6xl font-black text-white font-heading counter-value" data-target="12" data-prefix="+">0</div>
+                    <div class="text-xs text-slate-500 uppercase tracking-widest font-semibold">Anos de Mercado</div>
+                </div>
+                <div class="space-y-2 reveal">
+                    <div class="text-5xl lg:text-6xl font-black text-white font-heading counter-value" data-target="500" data-prefix="+">0</div>
+                    <div class="text-xs text-slate-500 uppercase tracking-widest font-semibold">Importados Atendidos</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SOBRE / ESSÊNCIA ========== -->
+    <section id="sobre" class="py-24 bg-navy-dark relative">
+        <div class="container mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
+                <div class="relative reveal-left">
+                    <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=900&auto=format&fit=crop" alt="Engenharia automotiva alemã" class="rounded-3xl shadow-2xl border border-white/5 object-cover w-full h-[450px]">
+                    <div class="absolute inset-0 rounded-3xl bg-gradient-to-t from-navy-dark/60 to-transparent"></div>
+                </div>
+                <div class="space-y-6 reveal-right">
+                    <span class="text-orange-premium text-xs font-bold uppercase tracking-[0.2em]">Nossa Essência</span>
+                    <h2 class="font-heading text-3xl md:text-4xl font-black text-white">Paixão pela <span class="text-orange-premium">Engenharia Alemã</span></h2>
+                    <p class="text-slate-400 text-base leading-relaxed">
+                        A NovaTech Automotive nasceu da necessidade de entregar a Curitiba uma alternativa às concessionárias tradicionais que mantivesse o rigor técnico, mas oferecesse um atendimento consultivo e transparente.
+                    </p>
+                    <p class="text-slate-400 text-base leading-relaxed">
+                        Nossos profissionais são constantemente certificados nas maiores escolas de mecânica europeia. Utilizamos scanners originais das montadoras (ODIS, ISTA, XENTRY, SDD) para garantir que cada diagnóstico seja preciso e cada reparo mantenha o padrão da fábrica.
+                    </p>
+                    <div class="grid grid-cols-3 gap-4 pt-4">
+                        <div class="bg-navy/60 rounded-xl p-4 text-center border border-white/5">
+                            <div class="text-sm font-bold text-orange-premium">ODIS</div>
+                            <div class="text-[10px] text-slate-500 mt-1">Audi / VW</div>
+                        </div>
+                        <div class="bg-navy/60 rounded-xl p-4 text-center border border-white/5">
+                            <div class="text-sm font-bold text-orange-premium">ISTA</div>
+                            <div class="text-[10px] text-slate-500 mt-1">BMW / Mini</div>
+                        </div>
+                        <div class="bg-navy/60 rounded-xl p-4 text-center border border-white/5">
+                            <div class="text-sm font-bold text-orange-premium">XENTRY</div>
+                            <div class="text-[10px] text-slate-500 mt-1">Mercedes</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== DEPOIMENTOS ========== -->
+    <section class="py-24 bg-gradient-to-b from-navy to-navy-dark relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-96 h-96 rounded-full bg-orange-premium/3 blur-[150px] pointer-events-none"></div>
+        <div class="container mx-auto px-6">
+            <div class="max-w-3xl mx-auto text-center space-y-4 mb-16 reveal">
+                <span class="text-orange-premium text-xs font-bold uppercase tracking-[0.2em]">Depoimentos</span>
+                <h2 class="font-heading text-3xl md:text-4xl lg:text-5xl font-black text-white">O que Nossos <span class="text-orange-premium">Clientes</span> Dizem</h2>
+                <p class="text-slate-400 text-base max-w-xl mx-auto leading-relaxed">Histórias reais de quem confia o patrimônio mais valioso da garagem à NovaTech.</p>
+                <div class="w-16 h-1 bg-gradient-to-r from-transparent via-orange-premium to-transparent mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Depoimento 1 -->
+                <div class="glass-card rounded-2xl p-8 hover:-translate-y-2 transition-all duration-500 reveal relative">
+                    <div class="absolute -top-1 left-8 right-8 h-1 bg-gradient-to-r from-transparent via-orange-premium to-transparent rounded-full"></div>
+                    <div class="stars text-lg mb-4">★★★★★</div>
+                    <p class="text-slate-300 text-sm leading-relaxed italic mb-6">"Levei meu Porsche Cayenne para um diagnóstico e a transparência foi surreal. Me mandaram vídeo de cada etapa da desmontagem. Nunca vi nada igual em Curitiba."</p>
+                    <div class="flex items-center gap-3">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop" alt="Ricardo M." class="w-11 h-11 rounded-full object-cover border-2 border-orange-premium/30">
+                        <div>
+                            <div class="font-bold text-white text-sm">Ricardo M.</div>
+                            <div class="text-xs text-slate-500">Porsche Cayenne 2023</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Depoimento 2 -->
+                <div class="glass-card rounded-2xl p-8 hover:-translate-y-2 transition-all duration-500 reveal relative">
+                    <div class="absolute -top-1 left-8 right-8 h-1 bg-gradient-to-r from-transparent via-orange-premium to-transparent rounded-full"></div>
+                    <div class="stars text-lg mb-4">★★★★★</div>
+                    <p class="text-slate-300 text-sm leading-relaxed italic mb-6">"Profissionalismo de outro nível. O scanner ODIS original da Audi faz total diferença. Resolveram um problema que 3 oficinas não conseguiram diagnosticar."</p>
+                    <div class="flex items-center gap-3">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=100&auto=format&fit=crop" alt="Fernanda K." class="w-11 h-11 rounded-full object-cover border-2 border-orange-premium/30">
+                        <div>
+                            <div class="font-bold text-white text-sm">Fernanda K.</div>
+                            <div class="text-xs text-slate-500">Audi Q7 2022</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Depoimento 3 -->
+                <div class="glass-card rounded-2xl p-8 hover:-translate-y-2 transition-all duration-500 reveal relative">
+                    <div class="absolute -top-1 left-8 right-8 h-1 bg-gradient-to-r from-transparent via-orange-premium to-transparent rounded-full"></div>
+                    <div class="stars text-lg mb-4">★★★★★</div>
+                    <p class="text-slate-300 text-sm leading-relaxed italic mb-6">"O leva-e-traz com seguro total é o diferencial. Agendei pelo WhatsApp às 8h, às 17h meu BMW estava de volta revisado. Garantia de 1 ano nas peças."</p>
+                    <div class="flex items-center gap-3">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=100&auto=format&fit=crop" alt="Carlos A." class="w-11 h-11 rounded-full object-cover border-2 border-orange-premium/30">
+                        <div>
+                            <div class="font-bold text-white text-sm">Carlos A.</div>
+                            <div class="text-xs text-slate-500">BMW X5 2024</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FAQ ========== -->
+    
+<!-- FAQ Section -->
+<section class="py-24 bg-[#0c0a09] border-t border-stone-850" id="faq">
+    <div class="max-w-4xl mx-auto px-6">
+        <h2 class="text-center text-3xl font-display font-extrabold text-stone-100 mb-12">Dúvidas Frequentes (FAQ)</h2>
+        <div class="space-y-4">
+            
+            <div class="bg-[#1c1917] border border-stone-800 p-6 rounded-xl cursor-pointer group transition-all duration-300 hover:border-mecanica-500/50 faq-item">
+                <details class="w-full">
+                    <summary class="font-bold text-white list-none flex justify-between items-center group-open:text-mecanica-500 select-none">
+                        <span>Como funciona o orçamento por WhatsApp?</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-300"></i>
+                    </summary>
+                    <p class="text-sm text-stone-400 mt-4 pl-1 leading-relaxed text-stone-300 border-t border-stone-800 pt-4">
+                        Gravamos vídeos explicativos e tiramos fotos das peças gastas do seu carro, enviando tudo de forma clara via WhatsApp com o valor detalhado antes de iniciar o serviço. Transparência total.
+                    </p>
+                </details>
+            </div>
+    
+            <div class="bg-[#1c1917] border border-stone-800 p-6 rounded-xl cursor-pointer group transition-all duration-300 hover:border-mecanica-500/50 faq-item">
+                <details class="w-full">
+                    <summary class="font-bold text-white list-none flex justify-between items-center group-open:text-mecanica-500 select-none">
+                        <span>O serviço de Leva-e-Traz cobra alguma taxa?</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-300"></i>
+                    </summary>
+                    <p class="text-sm text-stone-400 mt-4 pl-1 leading-relaxed text-stone-300 border-t border-stone-800 pt-4">
+                        Não cobramos taxa! O Leva-e-Traz é 100% gratuito para serviços agendados acima de R$ 300,00 e que estejam localizados dentro do raio de até 8km da nossa oficina.
+                    </p>
+                </details>
+            </div>
+    
+            <div class="bg-[#1c1917] border border-stone-800 p-6 rounded-xl cursor-pointer group transition-all duration-300 hover:border-mecanica-500/50 faq-item">
+                <details class="w-full">
+                    <summary class="font-bold text-white list-none flex justify-between items-center group-open:text-mecanica-500 select-none">
+                        <span>Qual a garantia dos serviços?</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-300"></i>
+                    </summary>
+                    <p class="text-sm text-stone-400 mt-4 pl-1 leading-relaxed text-stone-300 border-t border-stone-800 pt-4">
+                        Oferecemos 1 ano (12 meses) de garantia real na mão de obra e nas peças selecionadas de primeira linha, garantindo total segurança para você e sua família.
+                    </p>
+                </details>
+            </div>
+    
+            <div class="bg-[#1c1917] border border-stone-800 p-6 rounded-xl cursor-pointer group transition-all duration-300 hover:border-mecanica-500/50 faq-item">
+                <details class="w-full">
+                    <summary class="font-bold text-white list-none flex justify-between items-center group-open:text-mecanica-500 select-none">
+                        <span>Com qual frequência devo realizar o alinhamento e balanceamento?</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-300"></i>
+                    </summary>
+                    <p class="text-sm text-stone-400 mt-4 pl-1 leading-relaxed text-stone-300 border-t border-stone-800 pt-4">
+                        Recomendamos fazer o alinhamento e balanceamento a cada 10.000 km rodados, após trocas de pneus, ou imediatamente se notar trepidações no volante ou desgaste irregular.
+                    </p>
+                </details>
+            </div>
+    
+            <div class="bg-[#1c1917] border border-stone-800 p-6 rounded-xl cursor-pointer group transition-all duration-300 hover:border-mecanica-500/50 faq-item">
+                <details class="w-full">
+                    <summary class="font-bold text-white list-none flex justify-between items-center group-open:text-mecanica-500 select-none">
+                        <span>Quais marcas de óleo e filtros vocês utilizam?</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-300"></i>
+                    </summary>
+                    <p class="text-sm text-stone-400 mt-4 pl-1 leading-relaxed text-stone-300 border-t border-stone-800 pt-4">
+                        Utilizamos exclusivamente lubrificantes sintéticos homologados pelas montadoras e filtros de marcas renomadas (como Fram, Mann ou Bosch) para estender a vida útil do seu motor.
+                    </p>
+                </details>
+            </div>
+    
+            <div class="bg-[#1c1917] border border-stone-800 p-6 rounded-xl cursor-pointer group transition-all duration-300 hover:border-mecanica-500/50 faq-item">
+                <details class="w-full">
+                    <summary class="font-bold text-white list-none flex justify-between items-center group-open:text-mecanica-500 select-none">
+                        <span>Vocês aceitam cartões e parcelamento?</span>
+                        <i class="fa-solid fa-chevron-down group-open:rotate-180 transition-transform duration-300"></i>
+                    </summary>
+                    <p class="text-sm text-stone-400 mt-4 pl-1 leading-relaxed text-stone-300 border-t border-stone-800 pt-4">
+                        Sim! Aceitamos cartões de crédito e débito, pix e oferecemos parcelamentos especiais sem juros para reparos mecânicos completos.
+                    </p>
+                </details>
+            </div>
+    
+        </div>
+    </div>
+</section>
+  
+<!-- Contact Section -->
+<section class="py-24 bg-[#1c1917]/50" id="contato">
+    <div class="max-w-4xl mx-auto bg-[#0c0a09] border border-stone-800 p-8 md:p-12 rounded-3xl">
+        <h4 class="text-2xl font-bold text-white mb-6 text-center">Fale Conosco</h4>
+        <form class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="text" placeholder="Seu Nome" class="w-full bg-[#1c1917] border border-stone-800 focus:border-mecanica-500 text-white placeholder-stone-500 px-4 py-3 rounded-xl focus:outline-none transition">
+                <input type="tel" placeholder="Seu WhatsApp" class="w-full bg-[#1c1917] border border-stone-800 focus:border-mecanica-500 text-white placeholder-stone-500 px-4 py-3 rounded-xl focus:outline-none transition">
+            </div>
+            <textarea rows="4" placeholder="Descreva sua solicitação ou dúvidas..." class="w-full bg-[#1c1917] border border-stone-800 focus:border-mecanica-500 text-white placeholder-stone-500 px-4 py-3 rounded-xl focus:outline-none transition"></textarea>
+            <button type="submit" class="w-full bg-mecanica-600 hover:bg-mecanica-500 text-[#1c1917] font-bold font-bold py-4 rounded-xl transition shadow-lg hover:shadow-xl">Enviar Mensagem</button>
+        </form>
+    </div>
+</section>
+  <footer class="bg-navy border-t border-white/5 pt-16 pb-8">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-10 mb-12">
+                <!-- Col 1: Logo + Descrição -->
+                <div class="md:col-span-2 space-y-5">
+                    <img src="https://novatechautomotive.com.br/wp-content/uploads/2019/10/Novatech-Automotive-Curitiba-Imports.png" alt="NovaTech Automotive" class="h-12 w-auto object-contain">
+                    <p class="text-sm text-slate-500 leading-relaxed max-w-sm">
+                        Centro técnico independente especializado em veículos importados e de alta performance. Diagnóstico original, transparência absoluta e garantia de 1 ano.
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-orange-premium hover:border-orange-premium/30 transition-all">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-orange-premium hover:border-orange-premium/30 transition-all">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://wa.me/554132565962" target="_blank" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-green-500 hover:border-green-500/30 transition-all">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-orange-premium hover:border-orange-premium/30 transition-all">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                <!-- Col 2: Contato -->
+                <div class="space-y-4">
+                    <h4 class="text-sm font-bold text-white uppercase tracking-wider">Canais de Contato</h4>
+                    <div class="space-y-3">
+                        <a href="tel:+554132565962" class="flex items-center gap-2 text-xs text-slate-400 hover:text-white transition-colors">
+                            <i class="fas fa-phone text-orange-premium w-4 text-center"></i> (41) 3256-5962
+                        </a>
+                        <a href="https://wa.me/554132565962" target="_blank" class="flex items-center gap-2 text-xs text-slate-400 hover:text-white transition-colors">
+                            <i class="fab fa-whatsapp text-orange-premium w-4 text-center"></i> WhatsApp
+                        </a>
+                        <a href="mailto:contato@novatechautomotive.com.br" class="flex items-center gap-2 text-xs text-slate-400 hover:text-white transition-colors">
+                            <i class="fas fa-envelope text-orange-premium w-4 text-center"></i> contato@novatechautomotive.com.br
+                        </a>
+                    </div>
+                </div>
+                <!-- Col 3: Localização -->
+                <div class="space-y-4">
+                    <h4 class="text-sm font-bold text-white uppercase tracking-wider">Localização</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        <i class="fas fa-map-marker-alt text-orange-premium mr-1"></i> Rua Professora Carmem Lima de Almeida, 108A<br>
+                        Bacacheri, Curitiba - PR<br>
+                        CEP: 82515-280
+                    </p>
+                    <div class="space-y-2">
+                        <p class="text-xs text-slate-500"><i class="fas fa-clock text-orange-premium mr-1"></i> Seg-Sex: 08h às 18h</p>
+                        <p class="text-xs text-slate-500"><i class="fas fa-clock text-orange-premium mr-1"></i> Sábado: 08h às 12h</p>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="hr-gradient my-8">
+
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <span class="text-xs text-slate-600">&copy; 2026 NovaTech Automotive. Todos os direitos reservados.</span>
+                <div class="flex items-center gap-4">
+                    <a href="#" class="text-xs text-slate-500 hover:text-white transition-colors">Privacidade</a>
+                    <a href="#" class="text-xs text-slate-500 hover:text-white transition-colors">Termos</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+<!-- SEÇÃO DO DOSSIÊ COMERCIAL (PDF/ESTRATÉGIA) -->
+<section id="dossie-comercial" class="py-16 bg-[#111] text-center border-t-2 border-zinc-800">
+    <div class="max-w-3xl mx-auto px-6">
+        <h3 class="text-[#07dc40] font-mono text-xs font-bold uppercase tracking-widest mb-4"><i class="fa-solid fa-lock mr-2"></i> Documento Confidencial</h3>
+        <h2 class="text-3xl font-bold text-white mb-6">Análise Estratégica & Dossiê de Mercado</h2>
+        <p class="text-zinc-400 mb-8 text-sm">Acesso restrito ao estudo de arquitetura de conversão, dados reais de faturamento local e projeção financeira para NovaTech Automotive.</p>
+        <a href="/proposta-escom-novatech-automotive" target="_blank" class="btn-pdf-shimmer active:scale-95 active:translate-y-[1px] bg-transparent hover:bg-stone-850 border-2 border-[#07dc40]/30 text-white font-bold py-4 px-8 rounded-xl transition-all flex items-center justify-center gap-3 mx-auto group inline-flex hover:border-[#07dc40]">
+            <i class="fa-solid fa-file-pdf text-[#07dc40] text-xl group-hover:scale-110 transition-transform"></i> Acessar Dossiê & Proposta & Proposta
+        </a>
+    </div>
+</section>
+  
+<!-- SEÇÃO COMERCIAL ESCOM STUDIO (PROPOSTA) -->
+<section id="proposta-comercial" class="py-24 bg-[#0a0a0a] relative overflow-hidden text-white border-t-8 border-[#07dc40]">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-stone-900/20 via-[#0a0a0a] to-[#0a0a0a] pointer-events-none"></div>
+    
+    <div class="container mx-auto px-6 max-w-6xl relative z-10">
+        <div class="text-center mb-16">
+            <span class="bg-[#07dc40]/10 text-[#07dc40] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border border-[#07dc40]/20 mb-6 inline-block">Proposta Exclusiva ESCOM Studio</span>
+            <h2 class="text-4xl md:text-5xl font-display font-extrabold text-white mb-6">Investimento do Projeto</h2>
+            <p class="text-zinc-400 max-w-2xl mx-auto text-lg">Este é o escopo financeiro exato para a implementação do site da sua empresa, com design de alta performance e engenharia de conversão voltada para captação.</p>
+        </div>
+
+        <!-- Card Principal de Preço -->
+        <div class="max-w-2xl mx-auto bg-gradient-to-b from-stone-900/60 to-zinc-900/60 p-10 rounded-3xl border border-stone-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] mb-16 relative backdrop-blur-sm transform transition hover:scale-[1.01]">
+            <div class="absolute top-0 right-0 bg-[#07dc40] text-black text-xs font-bold px-4 py-1 rounded-tr-3xl rounded-bl-xl z-20">OFERTA DE PROSPECÇÃO</div>
+            
+            <h3 class="text-2xl font-bold mb-2">Website de Conversão Ativa</h3>
+            <p class="text-zinc-400 text-sm mb-6 pb-6 border-b border-white/10">Design UI/UX Sob Medida, Otimização de SEO, Responsividade Mobile-First, Integração WhatsApp, Copywriting Persuasivo.</p>
+            
+            <!-- Investimento Único (Sem parcelamento) -->
+            <div class="bg-stone-950/85 border border-stone-800 rounded-2xl p-8 mb-8 relative shadow-[0_10px_30px_rgba(0,0,0,0.4)] mt-8 text-center">
+                <div class="flex items-center justify-center gap-2 mb-4">
+                    <i class="fa-solid fa-bolt text-[#07dc40] text-lg"></i>
+                    <span class="text-[#07dc40] text-xs font-bold uppercase tracking-widest">Investimento Único</span>
+                </div>
+                <div class="flex items-baseline justify-center gap-x-2">
+                    <span class="text-2xl font-bold text-stone-400">R$</span>
+                    <span class="text-5xl sm:text-6xl font-black text-[#07dc40] tracking-tighter drop-shadow-[0_0_15px_rgba(7, 220, 64,0.35)]">990</span>
+                    <span class="text-lg font-medium text-stone-500">/taxa única</span>
+                </div>
+                <p class="text-center text-stone-500 text-[10px] mt-4 font-semibold tracking-wider uppercase">PAGAMENTO À VISTA VIA PIX OU TRANSFERÊNCIA</p>
+            </div>
+
+            <ul class="space-y-4 mb-10 text-sm text-zinc-300">
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#07dc40] text-lg"></i> Configuração completa de domínio e hospedagem</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#07dc40] text-lg"></i> SEO integrado para posicionamento local</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#07dc40] text-lg"></i> Certificado SSL de Conexão Segura</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#07dc40] text-lg"></i> Suporte técnico prioritário de 30 dias</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-circle-info text-[#07dc40] text-lg"></i> <strong class="text-white">Investimento único, sem mensalidades ou taxas ocultas</strong></li>
+            </ul>
+
+            <button id="btn-aceitar-proposta" class="btn-pdf-shimmer w-full bg-[#07dc40] hover:bg-[#00b5ab] text-black text-lg font-black py-5 rounded-2xl transition-all shadow-lg shadow-[#07dc40]/30 flex items-center justify-center gap-3 group relative overflow-hidden">
+                ACEITAR PROPOSTA AGORA <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+            </button>
+            <p class="text-center text-xs text-zinc-500 mt-4"><i class="fa-solid fa-lock text-zinc-600 mr-1"></i> Contrato e Nota Fiscal emitidos logo após a aprovação.</p>
+        </div>
+
+        <!-- Seção de Serviços Adicionais (Upsells) - 2 COLUNAS -->
+        <div class="max-w-5xl mx-auto mt-24 bg-gradient-to-b from-[#1c1917]/40 to-[#0c0a09]/80 p-8 md:p-12 rounded-3xl border border-[#07dc40]/20 shadow-[0_0_50px_rgba(7, 220, 64,0.05)] relative backdrop-blur-md">
+            <div class="absolute -top-4 left-8 bg-[#07dc40] text-black text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">
+                Expansões Tecnológicas
+            </div>
+            
+            <h3 class="text-2xl md:text-3xl font-display font-extrabold text-white mb-4 flex items-center gap-3">
+                <i class="fa-solid fa-square-plus text-[#07dc40]"></i> Módulos Avançados sob Demanda
+            </h3>
+            <p class="text-stone-400 mb-10 text-sm max-w-3xl leading-relaxed">
+                Leve a sua captação, operação e análise para o próximo nível. Integre novos recursos tecnológicos desenvolvidos sob medida pela ESCOM Studio:
+            </p>
+            
+            <div class="grid md:grid-cols-2 gap-6 mb-12">
+                <!-- CRM -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_crm.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="CRM">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">CRM e Controle de Clientes</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Funil de agendamentos automatizado, envio de lembretes automáticos e acompanhamento via WhatsApp. Histórico de relacionamento com cliente.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Retenção & Recorrência</span>
+                    </div>
+                </div>
+
+                <!-- Dashboard -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_dashboard.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Dashboard">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Dashboard Financeiro</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Visualização do fluxo de caixa e conversão de novos clientes em tempo real, controle de faturamento diário com gráficos intuitivos.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Gestão & Lucro</span>
+                    </div>
+                </div>
+
+                <!-- Agente IA -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_robot.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="AI Agent">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Agente de Atendimento IA</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Robô inteligente integrado ao WhatsApp Business, operando 24 horas por dia para realizar agendamentos e tirar dúvidas.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Atendimento 24/7</span>
+                    </div>
+                </div>
+
+                <!-- Estoque -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_estoque.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Inventory">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Estoque Digital Inteligente</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Controle digital de entrada e saída de insumos com alerta de estoque mínimo e integração.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Organização & Agilidade</span>
+                    </div>
+                </div>
+
+                <!-- Processos -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_processos.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Process">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Otimização de Processos</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Mapeamento e automação de fluxos operacionais para remover gargalos e acelerar a produtividade.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Produtividade Técnica</span>
+                    </div>
+                </div>
+
+                <!-- E-commerce -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_ecommerce.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="E-commerce">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Loja de Peças & Acessórios</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Loja virtual integrada para venda online de produtos ou serviços adicionais com pagamento online.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Canal de Vendas Extra</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulário Upsell -->
+            <div class="bg-stone-950/90 p-8 rounded-2xl border border-stone-800 shadow-inner">
+                <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane text-[#07dc40]"></i> Solicitar Orçamento das Expansões
+                </h4>
+                <p class="text-stone-400 text-xs mb-6">Selecione o módulo de seu interesse. Nossa equipe de arquitetura técnica analisará a infraestrutura necessária e enviará o orçamento detalhado.</p>
+                
+                <form id="form-upsell" class="space-y-4 text-xs">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="upsell-nome" placeholder="Seu Nome / Responsável" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#07dc40] text-white placeholder-stone-600 text-xs transition" required>
+                        <input type="email" id="upsell-email" placeholder="E-mail Corporativo" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#07dc40] text-white placeholder-stone-600 text-xs transition" required>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <select id="upsell-servico" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#07dc40] text-stone-400 text-xs transition" required>
+                            <option value="" disabled selected>Selecione o Módulo Tecnológico</option>
+                            <option value="crm">CRM</option>
+                            <option value="dashboard">Dashboard</option>
+                            <option value="bot">WhatsApp Bot</option>
+                            <option value="estoque">Estoque Digital</option>
+                            <option value="otimizacao">Otimização de Processos</option>
+                            <option value="ecommerce">E-commerce</option>
+                        </select>
+                        <input type="tel" id="upsell-whatsapp" placeholder="WhatsApp para Contato" class="w-full bg-stone-900 px-4 py-3 rounded-xl border border-stone-800 focus:outline-none focus:border-[#07dc40] text-white placeholder-stone-600 text-xs transition" required>
+                    </div>
+                    <button type="submit" class="w-full bg-[#07dc40] hover:bg-[#00b5ab] text-black font-bold py-4 rounded-xl transition shadow-lg shadow-[#07dc40]/20 border border-[#07dc40]/10 text-xs uppercase tracking-wider">Enviar Solicitação de Adicionais</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- RODAPÉ COMERCIAL FINAL DA PROPOSTA (ESCOM STUDIO) -->
+<footer class="py-12 bg-[#060606] border-t border-zinc-900 text-center text-xs text-zinc-500 relative z-10 font-sans">
+    <div class="max-w-3xl mx-auto px-6 space-y-3">
+        <p class="font-bold tracking-wider text-zinc-400">ESCOM STUDIO · CONVERSÃO DIGITAL PREMIUM</p>
+        <p class="opacity-80">Esta proposta técnica de implementação e seu conteúdo são confidenciais e de propriedade exclusiva do destinatário e da ESCOM Studio.</p>
+        <p class="text-[10px] opacity-50">&copy; 2026 ESCOM Studio. Todos os direitos reservados.</p>
+    </div>
+</footer>
+  
+
+<!-- Estilos dinâmicos injetados para elementos flutuantes -->
+<style>
+    /* WhatsApp Flutuante com Efeito Pulse */
+    .whatsapp-float { 
+        position: fixed; 
+        bottom: 24px; 
+        right: 24px; 
+        z-index: 9998; 
+        width: 60px; 
+        height: 60px; 
+        border-radius: 50%; 
+        background: #25D366; 
+        color: #fff; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: 32px; 
+        box-shadow: 0 8px 30px rgba(37,211,102,.4); 
+        transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        cursor: pointer; 
+        text-decoration: none; 
+        animation: pulse-wpp 2s infinite; 
+    }
+    .whatsapp-float:hover { 
+        transform: scale(1.1) rotate(5deg); 
+        background: #22c55e; 
+        color: #fff;
+    }
+    @keyframes pulse-wpp {
+      0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+      70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+    }
+
+    /* Botão Voltar ao Topo Flutuante */
+    .back-to-top { 
+        position: fixed; 
+        bottom: 96px; 
+        right: 29px; 
+        z-index: 9998; 
+        width: 50px; 
+        height: 50px; 
+        border-radius: 50%; 
+        background: #1b1c1c; 
+        color: #fff; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: 20px; 
+        box-shadow: 0 4px 20px rgba(0,0,0,.15); 
+        border: 1px solid rgba(255,255,255,.1); 
+        transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        cursor: pointer; 
+        text-decoration: none; 
+        opacity: 0; 
+        pointer-events: none; 
+        transform: scale(0.8); 
+    }
+    .back-to-top.visible { 
+        opacity: 1; 
+        pointer-events: auto; 
+        transform: scale(1); 
+    }
+    .back-to-top:hover { 
+        transform: scale(1.1) translateY(-3px); 
+        background: #E91E63; 
+        box-shadow: 0 8px 25px rgba(233,30,99,.3); 
+        color: #fff; 
+    }
+
+    /* Cards Flutuantes de Categoria e Depoimentos */
+    .product-card { 
+        transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+    }
+    .product-card:hover { 
+        transform: translateY(-8px) scale(1.01); 
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15); 
+    }
+    .product-card img { 
+        transition: transform .6s cubic-bezier(.16,1,.3,1); 
+    }
+    .product-card:hover img { 
+        transform: scale(1.05); 
+    }
+
+    .testimonial-card-hover { 
+        transition: transform 0.4s ease, box-shadow 0.4s ease; 
+    }
+    .testimonial-card-hover:hover { 
+        transform: translateY(-6px); 
+        box-shadow: 0 15px 35px rgba(0,0,0,0.08); 
+    }
+</style>
+
+<!-- Botão WhatsApp Flutuante Fixo -->
+<a href="#" id="globalWhatsAppBtn" target="_blank" class="whatsapp-float" aria-label="Fale conosco no WhatsApp">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" style="width: 30px; height: 30px; display: block;">
+        <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+    </svg>
+</a>
+
+<!-- Botão Voltar ao Topo Flutuante Fixo -->
+<a href="#" id="backToTop" class="back-to-top" aria-label="Voltar ao topo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="currentColor" style="width: 20px; height: 20px; display: block;">
+        <path d="M352 352c-8.188 0-16.38-3.125-22.62-9.375L192 205.3 54.6 342.6c-12.5 12.5-32.75 12.5-45.25 0s-12.5-32.75 0-45.25l160-160c12.5-12.5 32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25C368.4 348.9 360.2 352 352 352z"/>
+    </svg>
+</a>
+
+<!-- Bibliotecas de Animação e Interatividade Premium -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.36/dist/lenis.min.js"></script>
+<script src="https://unpkg.com/split-type"></script>
+
+<script>
+    // Configurar o link de WhatsApp dinamicamente
+    (function() {
+        const wppBtn = document.getElementById('globalWhatsAppBtn');
+        if (wppBtn) {
+            const firstWppLink = Array.from(document.querySelectorAll('a')).find(a => {
+                return a.href.includes('wa.me') && !a.classList.contains('whatsapp-float') && !a.id.includes('globalWhatsAppBtn');
+            });
+            if (firstWppLink) {
+                wppBtn.href = firstWppLink.href;
+            } else {
+                wppBtn.href = "https://wa.me/5562983232480?text=Ol%C3%A1%20Skozi%C3%AA!%20Vi%20o%20site%20e%20quero%20saber%20mais";
+            }
+        }
+    })();
+
+    // FAQ Accordion
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+        const details = item.querySelector('details');
+        const summary = item.querySelector('summary');
+        if (details && summary) {
+            summary.addEventListener('click', (e) => {
+                // Fechar outros accordions abertos se desejado, ou deixar nativo
+            });
+        }
+    });
+    
+    // Scroll Navbar Effect
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('navbar');
+        if (nav) {
+            if (window.scrollY > 50) {
+                nav.classList.remove('top-10');
+                nav.classList.add('top-0', 'shadow-md');
+            } else {
+                const statusCache = localStorage.getItem('escom_lead_status');
+                if (statusCache !== 'pago') {
+                    nav.classList.remove('top-0');
+                    nav.classList.add('top-10');
+                }
+            }
+        }
+    });
+
+    // Accept Proposal Event Handler
+    const btnAceitar = document.getElementById('btn-aceitar-proposta');
+    if (btnAceitar) {
+        btnAceitar.addEventListener('click', function(e) {
+            e.preventDefault();
+            btnAceitar.innerHTML = 'Processando...';
+            btnAceitar.classList.add('opacity-80', 'cursor-wait');
+
+            setTimeout(() => {
+                const leadData = {
+                    id: 'lead_' + Date.now(),
+                    empresa: 'NovaTech Automotive',
+                    status: 'pagamento_pendente',
+                    valor: 990,
+                    data: new Date().toISOString()
+                };
+                
+                localStorage.setItem('escom_new_lead_conversion', JSON.stringify(leadData));
+                window.dispatchEvent(new CustomEvent('escom-lead-converted', { detail: leadData }));
+
+                btnAceitar.innerHTML = 'PROPOSTA ACEITA!';
+                btnAceitar.classList.remove('bg-[#07dc40]', 'hover:bg-[#00b5ab]', 'text-black', 'cursor-wait');
+                btnAceitar.classList.add('bg-zinc-800', 'text-[#07dc40]', 'border', 'border-[#07dc40]', 'cursor-not-allowed');
+                
+                alert("Obrigado! Seu aceite foi registrado. A equipe da ESCOM Studio entrará em contato para os detalhes de faturamento.");
+            }, 1500);
+        });
+    }
+
+    // Upsell Form Event Handler
+    const formUpsell = document.getElementById('form-upsell');
+    if (formUpsell) {
+        formUpsell.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btnSubmit = formUpsell.querySelector('button[type="submit"]');
+            const originalText = btnSubmit.innerHTML;
+            
+            btnSubmit.innerHTML = 'Enviando Solicitação...';
+            btnSubmit.classList.add('opacity-80', 'cursor-wait');
+            
+            setTimeout(() => {
+                alert("Mensagem enviada com sucesso! Nossa equipe técnica entrará em contato.");
+                btnSubmit.innerHTML = 'Enviado com sucesso';
+                btnSubmit.classList.remove('opacity-80', 'cursor-wait', 'bg-[#07dc40]', 'hover:bg-[#00b5ab]');
+                btnSubmit.classList.add('bg-zinc-800', 'text-[#07dc40]', 'cursor-not-allowed', 'border', 'border-[#07dc40]');
+                formUpsell.reset();
+            }, 1000);
+        });
+    }
+
+    // Client Mode Check
+    function verificarStatusDoLead() {
+        const pathParts = window.location.pathname.split('/');
+        const templateSlug = pathParts.find(p => p.startsWith('template-')) || 'default';
+        const statusCache = localStorage.getItem('escom_lead_status_' + templateSlug) || localStorage.getItem('escom_lead_status');
+        if (statusCache === 'pago') {
+            const banner = document.getElementById('banner-urgencia');
+            const dossie = document.getElementById('dossie-comercial');
+            const proposta = document.getElementById('proposta-comercial');
+            const navbar = document.getElementById('navbar');
+            
+            if (banner) banner.style.display = 'none';
+            if (navbar) {
+                navbar.classList.remove('top-10');
+                navbar.classList.add('top-0');
+            }
+            if (dossie) dossie.style.display = 'none';
+            if (proposta) proposta.style.display = 'none';
+        }
+    }
+    verificarStatusDoLead();
+    window.addEventListener('storage', (e) => {
+        const pathParts = window.location.pathname.split('/');
+        const templateSlug = pathParts.find(p => p.startsWith('template-')) || 'default';
+        if ((e.key === 'escom_lead_status' || e.key === ('escom_lead_status_' + templateSlug)) && e.newValue === 'pago') {
+            verificarStatusDoLead();
+        }
+    });
+
+    // Blindagem Anti-Cópia Silenciosa
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.addEventListener('keydown', (e) => {
+        const isCopying = (e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C');
+        const isSaving = (e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S');
+        const isPrinting = (e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P');
+        const isPrintScreen = e.key === 'PrintScreen';
+        const isMacSnippet = e.metaKey && e.shiftKey;
+
+        if (isCopying || isSaving || isPrinting || isPrintScreen || isMacSnippet) {
+            e.preventDefault();
+        }
+    });
+    document.addEventListener('copy', (e) => {
+        e.clipboardData.setData('text/plain', '');
+        e.preventDefault();
+    });
+
+    // Controle do Botão Voltar ao Topo
+    const backToTopBtn = document.getElementById('backToTop');
+    if (backToTopBtn) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        backToTopBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+
+    // Inicialização do Lenis Smooth Scroll Global
+    (function() {
+        if (typeof Lenis !== 'undefined') {
+            const lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                smoothWheel: true
+            });
+            function raf(time) {
+                lenis.raf(time);
+                requestAnimationFrame(raf);
+            }
+            requestAnimationFrame(raf);
+            
+            // Sincronizar Lenis com GSAP ScrollTrigger
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                lenis.on('scroll', ScrollTrigger.update);
+                gsap.ticker.add((time) => {
+                    lenis.raf(time * 1000);
+                });
+                gsap.ticker.lagSmoothing(0);
+            }
+        }
+    })();
+
+    // GSAP ScrollTrigger para Efeito de Reveal Premium nos Elementos
+    (function() {
+        if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Animar elementos com classe reveal
+            gsap.utils.toArray('.reveal').forEach((el) => {
+                gsap.fromTo(el, 
+                    { opacity: 0, y: 30 },
+                    { 
+                        opacity: 1, 
+                        y: 0, 
+                        duration: 0.8, 
+                        ease: "power2.out",
+                        scrollTrigger: {
+                            trigger: el,
+                            start: "top 88%",
+                            toggleActions: "play none none none"
+                        }
+                    }
+                );
+            });
+
+            // Animação de hover 3D em cards flutuantes (depoimentos, serviços e produtos)
+            const floatCards = document.querySelectorAll('.product-card, .testimonial-card-hover, .service-card');
+            floatCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    gsap.to(card, { y: -8, scale: 1.01, boxShadow: "0 20px 40px rgba(0,0,0,0.12)", duration: 0.4, ease: "power2.out" });
+                });
+                card.addEventListener('mouseleave', () => {
+                    gsap.to(card, { y: 0, scale: 1, boxShadow: "0 4px 15px rgba(0,0,0,0.05)", duration: 0.4, ease: "power2.out" });
+                });
+            });
+        } else {
+            // Fallback clássico caso as CDNs falhem por algum bloqueio
+            const revealElements = document.querySelectorAll('.reveal');
+            if (revealElements.length > 0) {
+                const checkReveal = () => {
+                    const triggerBottom = window.innerHeight * 0.85;
+                    revealElements.forEach(el => {
+                        const elTop = el.getBoundingClientRect().top;
+                        if (elTop < triggerBottom) {
+                            el.classList.add('active');
+                        }
+                    });
+                };
+                window.addEventListener('scroll', checkReveal);
+                window.addEventListener('resize', checkReveal);
+                checkReveal();
+                setTimeout(checkReveal, 300);
+            }
+        }
+    })();
+</script>
+  </body>
+</html>

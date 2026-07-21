@@ -53,7 +53,7 @@ const formatHighlight = (text: string, highlightColor: string) => {
     return text;
 };
 
-const SlidePreview = ({ slide, image, index, onClick, small = false, id, selectedModel }: any) => {
+const SlidePreview = ({ slide, image, index, onClick, small = false, id, selectedModel, imageCredit }: any) => {
     const isCover = index === 0;
     const isLast = slide.isLast;
     const isSlide4 = slide.slide === 4;
@@ -133,6 +133,11 @@ const SlidePreview = ({ slide, image, index, onClick, small = false, id, selecte
             ) : (
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/80 to-transparent z-10 pointer-events-none"></div>
             ))}
+            {image && imageCredit && !isSlide4 && selectedModel === 1 && (
+                <div className={`absolute bottom-1 right-2 z-30 ${small ? 'text-[4px]' : 'text-[6px]'} text-white/50 font-sans pointer-events-none`}>
+                    📷 {imageCredit.photographer}
+                </div>
+            )}
 
             <div className={`flex-1 flex flex-col h-full w-full relative z-20 ${contentAlignment}`}>
                 {isSlide4 ? (
@@ -282,9 +287,16 @@ export default function InstagramGEM() {
     const [selectedModel, setSelectedModel] = useState<number>(1);
     const [jsonInput, setJsonInput] = useState('');
     const [slides, setSlides] = useState<any[]>([]);
+    const [legendaTitulo, setLegendaTitulo] = useState("");
+    const [legendaTexto, setLegendaTexto] = useState("");
     const [error, setError] = useState('');
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
     const [uploadedImages, setUploadedImages] = useState<any>({});
+    const [imageCredits, setImageCredits] = useState<any>({});
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [showSearch, setShowSearch] = useState(false);
 
     const [viewMode, setViewMode] = useState('focus');
     const [fullscreenPreview, setFullscreenPreview] = useState(false);
@@ -335,20 +347,51 @@ export default function InstagramGEM() {
         setLoadingPautas(false);
     };
 
-    const approvePauta = (pauta: any) => {
-        const json = {
-            titulo01: pauta.titulo,
-            texto01: pauta.descricao,
-            titulo02: pauta.ideias_chave?.[0] || "Ideia principal",
-            texto02: pauta.ideias_chave?.slice(1).join(", ") || "Detalhes da pauta",
-            titulo03: "Como aplicar",
-            texto03: `Estratégia visual: ${pauta.ideias_chave?.join(", ") || "Crie uma estética alinhada ao conceito"}`,
-            textofinal: `Produza esse conteúdo e publique na sua rede — ESCOM STUDIO`
-        };
-        setJsonInput(JSON.stringify(json, null, 2));
-        setSection("carrossel");
-        setStep("model-select");
-        setSelectedModel(1);
+    const approvePauta = async (pauta: any) => {
+        setLoadingPautas(true);
+        try {
+            const res = await fetch("/api/generate-carrossel-slides", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ pauta }),
+            });
+            const data = await res.json();
+            if (data.success && data.slides) {
+                const jsonStr = JSON.stringify(data.slides, null, 2);
+                setJsonInput(jsonStr);
+                const { slides: processedSlides, legendaTitulo: lt, legendaTexto: le } = parseSlides(data.slides);
+                setSlides(processedSlides);
+                setLegendaTitulo(lt || "");
+                setLegendaTexto(le || "");
+                setSection("carrossel");
+                setStep("model-select");
+                setSelectedModel(1);
+                const imgObj: any = {};
+                const creditObj: any = {};
+                for (let i = 1; i <= 10; i++) {
+                    const slideAny = processedSlides[i] as any;
+                    const q = slideAny ? (slideAny.visual || slideAny.prompt || slideAny.titulo) : "";
+                    if (q) {
+                        try {
+                            const ir = await fetch("/api/search-images", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ query: q }) });
+                            const idata = await ir.json();
+                            if (idata.success && idata.results?.length > 0) {
+                                imgObj[i] = idata.results[0].url;
+                                creditObj[i] = { photographer: idata.results[0].photographer, link: idata.results[0].unsplashLink || idata.results[0].photographerLink };
+                            } else { imgObj[i] = ""; creditObj[i] = null; }
+                        } catch { imgObj[i] = ""; creditObj[i] = null; }
+                    } else { imgObj[i] = ""; creditObj[i] = null; }
+                }
+                setUploadedImages(imgObj);
+                setImageCredits(creditObj);
+            } else {
+                alert("Erro ao gerar slides: " + (data.error || "Resposta inválida"));
+            }
+        } catch (e: any) {
+            console.error(e);
+            alert("Erro de conexão ao gerar slides do carrossel");
+        }
+        setLoadingPautas(false);
         window.scrollTo(0, 0);
     };
 
@@ -522,17 +565,21 @@ export default function InstagramGEM() {
         
         const textFinal = data.textofinal || data.texto_final || data.textoFinal || data.text_final;
         if (textFinal) slidesArray.push({ slide: slidesArray.length + 1, titulo: 'CONCLUSÃO', texto: textFinal, isLast: true, imgX: 50, imgY: 50, imgScale: 1 });
-        
-        return slidesArray;
+
+        const legendaTitulo = data.legenda_titulo || data.legendaTitulo || "";
+        const legendaTexto = data.legenda_texto || data.legendaTexto || "";
+        return { slides: slidesArray, legendaTitulo, legendaTexto };
     };
 
     const handleStart = () => {
         try {
             if (!jsonInput.trim()) { setError('Insira o JSON.'); return; }
             const parsed = JSON.parse(jsonInput);
-            const processedSlides = parseSlides(parsed);
+            const { slides: processedSlides, legendaTitulo: lt, legendaTexto: le } = parseSlides(parsed);
             if (processedSlides.length === 0) { setError('Formato inválido.'); return; }
             setSlides(processedSlides);
+            setLegendaTitulo(lt || "");
+            setLegendaTexto(le || "");
             setStep('model-select');
             setError('');
         } catch(e) { setError('JSON inválido.'); }
@@ -542,9 +589,35 @@ export default function InstagramGEM() {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => setUploadedImages((prev: any) => ({ ...prev, [index]: reader.result }));
+            reader.onloadend = () => {
+                setUploadedImages((prev: any) => ({ ...prev, [index]: reader.result }));
+                setImageCredits((prev: any) => ({ ...prev, [index]: null }));
+            };
             reader.readAsDataURL(file);
         }
+    };
+
+    const searchImages = async () => {
+        if (!searchQuery.trim()) return;
+        setIsSearching(true);
+        try {
+            const res = await fetch("/api/search-images", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: searchQuery }),
+            });
+            const data = await res.json();
+            setSearchResults(data.results || []);
+        } catch (err) {
+            console.error("Image search error:", err);
+        }
+        setIsSearching(false);
+    };
+
+    const selectSearchImage = async (img: any, index: number) => {
+        setUploadedImages((prev: any) => ({ ...prev, [index]: img.url }));
+        setImageCredits((prev: any) => ({ ...prev, [index]: { photographer: img.photographer, link: img.unsplashLink } }));
+        setShowSearch(false);
     };
 
     const updateSlideContent = (index: number, field: string, value: any) => {
@@ -580,7 +653,7 @@ export default function InstagramGEM() {
                 <div className="flex gap-4 overflow-hidden pointer-events-none justify-center px-2">
                     {previewSlides.map((s, i) => (
                         <div key={i} className="flex-1 max-w-[150px] min-w-0">
-                            <SlidePreview slide={s} image={null} index={i} small={true} selectedModel={modelForPreview} />
+                            <SlidePreview slide={s} image={null} index={i} small={true} selectedModel={modelForPreview} imageCredit={null} />
                         </div>
                     ))}
                 </div>
@@ -711,52 +784,105 @@ export default function InstagramGEM() {
                     {/* Pauta detail modal */}
                     {pautaDetail && (
                         <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setPautaDetail(null)}>
-                            <div className="bg-[#0a0a0a] border border-[#333] rounded-2xl max-w-lg w-full max-h-[85vh] overflow-y-auto p-8 shadow-2xl" onClick={e => e.stopPropagation()}>
+                            <div className="bg-[#0a0a0a] border border-[#333] rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8 shadow-2xl" onClick={e => e.stopPropagation()}>
                                 <div className="flex justify-between items-start mb-6">
-                                    <div>
+                                    <div className="flex-1 pr-4">
                                         <div className="text-[10px] text-[#00d1ff] font-bold uppercase tracking-widest mb-1">Detalhes da Pauta</div>
                                         <h3 className="text-white font-black text-xl leading-tight">{pautaDetail.titulo}</h3>
                                     </div>
-                                    <button onClick={() => setPautaDetail(null)} className="text-gray-500 hover:text-white p-1 transition-colors"><X className="w-5 h-5" /></button>
+                                    <button onClick={() => setPautaDetail(null)} className="text-gray-500 hover:text-white p-1 transition-colors shrink-0"><X className="w-5 h-5" /></button>
                                 </div>
-                                <div className="space-y-5">
+                                <div className="space-y-6">
                                     <div>
-                                        <h4 className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Descrição</h4>
+                                        <h4 className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Resumo</h4>
                                         <p className="text-gray-300 text-sm leading-relaxed">{pautaDetail.descricao}</p>
                                     </div>
-                                    <div>
-                                        <h4 className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2">Palavras-chave</h4>
-                                        <div className="flex flex-wrap gap-1.5">
-                                            {pautaDetail.ideias_chave?.map((tag: string, i: number) => (
-                                                <span key={i} className="text-[10px] bg-[#111] border border-[#333] text-gray-300 px-2.5 py-1 rounded-full uppercase tracking-wider font-bold">{tag}</span>
-                                            ))}
-                                        </div>
+                                    <div className="flex flex-wrap items-center gap-3">
+                                        {pautaDetail.ideias_chave?.length > 0 && (
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {pautaDetail.ideias_chave?.map((tag: string, i: number) => (
+                                                    <span key={i} className="text-[9px] bg-[#111] border border-[#333] text-gray-300 px-2 py-1 rounded-full uppercase tracking-wider font-bold">{tag}</span>
+                                                ))}
+                                            </div>
+                                        )}
+                                        {pautaDetail.publico_alvo && (
+                                            <span className="text-[10px] bg-[#00d1ff]/10 border border-[#00d1ff]/30 text-[#00d1ff] px-2.5 py-1 rounded-full uppercase tracking-wider font-bold">{pautaDetail.publico_alvo}</span>
+                                        )}
                                     </div>
-                                    {pautaDetail.data_contexto && (
-                                        <div>
-                                            <h4 className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Período / Contexto</h4>
-                                            <p className="text-[#00d1ff] text-sm font-bold">{pautaDetail.data_contexto}</p>
+                                    {pautaDetail.contexto_noticia && (
+                                        <div className="bg-[#111] border-l-2 border-[#00d1ff] rounded-r-lg p-4">
+                                            <h4 className="text-[10px] text-[#00d1ff] font-bold uppercase tracking-widest mb-2">📰 Contexto da Notícia</h4>
+                                            <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">{pautaDetail.contexto_noticia}</p>
                                         </div>
                                     )}
+                                    {pautaDetail.foco_pauta && (
+                                        <div>
+                                            <h4 className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">🎯 Foco da Pauta</h4>
+                                            <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">{pautaDetail.foco_pauta}</p>
+                                        </div>
+                                    )}
+                                    {pautaDetail.porque_postar && (
+                                        <div>
+                                            <h4 className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">⚡ Por que postar agora?</h4>
+                                            <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">{pautaDetail.porque_postar}</p>
+                                        </div>
+                                    )}
+                                    {pautaDetail.chamada_principal && (
+                                        <div className="bg-[#111] border border-[#333] rounded-xl p-4">
+                                            <h4 className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2">💬 Sugestão de Legenda</h4>
+                                            <p className="text-white text-sm italic leading-relaxed">"{pautaDetail.chamada_principal}"</p>
+                                        </div>
+                                    )}
+                                    {pautaDetail.dicas_visuais && (
+                                        <div>
+                                            <h4 className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">🎨 Dicas Visuais</h4>
+                                            {typeof pautaDetail.dicas_visuais === "object" ? (
+                                                <div className="text-gray-300 text-sm space-y-2 bg-[#111] border border-[#333] rounded-xl p-4">
+                                                    {pautaDetail.dicas_visuais.estilo_visual && <p><strong>Estilo:</strong> {pautaDetail.dicas_visuais.estilo_visual}</p>}
+                                                    {pautaDetail.dicas_visuais.cores && <p><strong>Cores:</strong> {pautaDetail.dicas_visuais.cores}</p>}
+                                                    {pautaDetail.dicas_visuais.elementos && <p><strong>Elementos:</strong> {pautaDetail.dicas_visuais.elementos}</p>}
+                                                </div>
+                                            ) : (
+                                                <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">{pautaDetail.dicas_visuais}</p>
+                                            )}
+                                        </div>
+                                    )}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {pautaDetail.data_referencia && (
+                                            <div>
+                                                <h4 className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">📰 Data da Notícia</h4>
+                                                <p className="text-[#00d1ff] text-sm font-bold">{pautaDetail.data_referencia}</p>
+                                            </div>
+                                        )}
+                                        {pautaDetail.data_contexto && (
+                                            <div>
+                                                <h4 className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">📅 Período / Contexto</h4>
+                                                <p className="text-[#00d1ff] text-sm font-bold">{pautaDetail.data_contexto}</p>
+                                            </div>
+                                        )}
+                                    </div>
                                     {pautaDetail.referencias && pautaDetail.referencias.length > 0 && (
                                         <div>
-                                            <h4 className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2">Referências</h4>
+                                            <h4 className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2">🔗 Referências</h4>
                                             <div className="space-y-2">
                                                 {pautaDetail.referencias.map((ref: string, i: number) => (
                                                     <a key={i} href={ref} target="_blank" rel="noopener noreferrer" className="block bg-[#111] border border-[#333] hover:border-[#00d1ff] rounded-lg p-3 text-xs text-gray-300 hover:text-white transition-all truncate">
-                                                        <span className="text-[#00d1ff] font-bold mr-2">🔗</span> {ref}
+                                                        {ref}
                                                     </a>
                                                 ))}
                                             </div>
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex gap-3 mt-8 pt-6 border-t border-[#1a1a1a]">
-                                    <button onClick={() => { approvePauta(pautaDetail); setPautaDetail(null); }} className="flex-1 bg-[#00d1ff] hover:bg-[#00b8e6] text-black text-xs font-bold py-3 rounded-lg uppercase tracking-wider transition-all flex items-center justify-center gap-1.5">
-                                        <ThumbsUp className="w-3.5 h-3.5" /> Aprovar Pauta
+                                <div className="flex items-center gap-4 mt-8 pt-6 border-t border-[#1a1a1a]">
+                                    <button onClick={() => { approvePauta(pautaDetail); setPautaDetail(null); }} className="text-[#00d1ff] hover:text-white text-xs font-bold uppercase tracking-wider transition-colors">
+                                        Aprovar
                                     </button>
-                                    <button onClick={() => { savePauta(pautaDetail); setPautaDetail(null); }} className="bg-[#111] hover:bg-[#222] border border-[#333] text-gray-300 text-xs font-bold py-3 px-4 rounded-lg uppercase tracking-wider transition-all flex items-center justify-center gap-1.5">
-                                        <Calendar className="w-3.5 h-3.5" /> Agendar
+                                    <button onClick={() => { savePauta(pautaDetail); setPautaDetail(null); }} className="text-gray-500 hover:text-[#00d1ff] text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1">
+                                        <Calendar className="w-3 h-3" /> Agendar
+                                    </button>
+                                    <button onClick={() => setPautaDetail(null)} className="ml-auto text-gray-500 hover:text-white text-xs uppercase tracking-wider transition-colors">
+                                        Fechar
                                     </button>
                                 </div>
                             </div>
@@ -773,7 +899,12 @@ export default function InstagramGEM() {
                                 {pautas.map((pauta, idx) => (
                                     <div key={idx} className="bg-[#0a0a0a] border border-[#1a1a1a] hover:border-[#333] rounded-2xl p-6 transition-all flex flex-col">
                                         <div className="flex-1">
-                                            <div className="text-[10px] text-[#00d1ff] font-bold uppercase tracking-widest mb-2">Pauta #{idx + 1}</div>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <div className="text-[10px] text-[#00d1ff] font-bold uppercase tracking-widest">Pauta #{idx + 1}</div>
+                                                {pauta.data_referencia && (
+                                                    <span className="text-[8px] text-gray-500 font-medium">📰 {pauta.data_referencia}</span>
+                                                )}
+                                            </div>
                                             <h4 className="text-white font-black text-base mb-2 leading-tight">{pauta.titulo}</h4>
                                             <p className="text-gray-400 text-xs leading-relaxed mb-4 line-clamp-3">{pauta.descricao}</p>
                                             <div className="flex flex-wrap gap-1.5 mb-4">
@@ -782,21 +913,21 @@ export default function InstagramGEM() {
                                                 ))}
                                             </div>
                                         </div>
-                                        <div className="flex gap-2 mt-auto pt-4 border-t border-[#1a1a1a]">
+                                        <div className="flex items-center gap-3 mt-auto pt-4 border-t border-[#1a1a1a]">
                                             <button onClick={() => setPautaDetail(pauta)} className="text-gray-500 hover:text-[#00d1ff] text-[10px] font-bold uppercase tracking-wider transition-colors shrink-0">
                                                 Ver mais
                                             </button>
                                             <button
                                                 onClick={() => approvePauta(pauta)}
-                                                className="flex-1 bg-[#00d1ff] hover:bg-[#00b8e6] text-black text-xs font-bold py-3 rounded-lg uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
+                                                className="text-[#00d1ff] hover:text-white text-[10px] font-bold uppercase tracking-wider transition-colors"
                                             >
-                                                <ThumbsUp className="w-3.5 h-3.5" /> Aprovar
+                                                Aprovar
                                             </button>
                                             <button
                                                 onClick={() => savePauta(pauta)}
-                                                className="bg-[#111] hover:bg-[#222] border border-[#333] text-gray-300 text-xs font-bold py-3 px-4 rounded-lg uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
+                                                className="ml-auto text-gray-500 hover:text-[#00d1ff] text-[10px] font-bold uppercase tracking-wider transition-colors flex items-center gap-1"
                                             >
-                                                <Calendar className="w-3.5 h-3.5" />
+                                                <Calendar className="w-3 h-3" /> Agendar
                                             </button>
                                         </div>
                                     </div>
@@ -881,7 +1012,7 @@ export default function InstagramGEM() {
             <div id="capture-container-wrapper" className="fixed z-[-100] opacity-0" style={{ left: 0, top: 0, pointerEvents: 'none' }}>
                 {slides.map((s, idx) => (
                     <div key={`capture-${idx}`} style={{ width: '400px', height: '500px' }}>
-                        <SlidePreview id={`capture-slide-${idx}`} slide={s} image={uploadedImages[idx]} index={idx} selectedModel={selectedModel} />
+                        <SlidePreview id={`capture-slide-${idx}`} slide={s} image={uploadedImages[idx]} index={idx} selectedModel={selectedModel} imageCredit={imageCredits[idx]} />
                     </div>
                 ))}
             </div>
@@ -889,7 +1020,7 @@ export default function InstagramGEM() {
             {fullscreenPreview && (
                 <div className="fixed inset-0 z-[100] bg-black/98 flex items-center justify-center p-8">
                     <button onClick={() => setFullscreenPreview(false)} className="absolute top-6 right-6 text-white bg-[#111] p-2 rounded-full transition-transform hover:scale-110 border border-[#333]"><X className="w-6 h-6" /></button>
-                    <div className="h-full max-h-[90vh] aspect-[4/5]"><SlidePreview slide={slides[currentSlideIndex]} image={uploadedImages[currentSlideIndex]} index={currentSlideIndex} selectedModel={selectedModel} /></div>
+                    <div className="h-full max-h-[90vh] aspect-[4/5]"><SlidePreview slide={slides[currentSlideIndex]} image={uploadedImages[currentSlideIndex]} index={currentSlideIndex} selectedModel={selectedModel} imageCredit={imageCredits[currentSlideIndex]} /></div>
                 </div>
             )}
             
@@ -934,7 +1065,7 @@ export default function InstagramGEM() {
                 <section className="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col items-center bg-[#0a0a0a]">
                     {viewMode === 'grid' ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full max-w-7xl pb-12">
-                            {slides.map((s, idx) => <SlidePreview key={idx} slide={s} image={uploadedImages[idx]} index={idx} onClick={() => { setCurrentSlideIndex(idx); setViewMode('focus'); }} small selectedModel={selectedModel} />)}
+                            {slides.map((s, idx) => <SlidePreview key={idx} slide={s} image={uploadedImages[idx]} index={idx} onClick={() => { setCurrentSlideIndex(idx); setViewMode('focus'); }} small selectedModel={selectedModel} imageCredit={imageCredits[idx]} />)}
                         </div>
                     ) : (
                         <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-8 lg:gap-12 justify-center items-start pb-12">
@@ -943,7 +1074,7 @@ export default function InstagramGEM() {
                                     <span className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em]">Preview ao Vivo</span>
                                     <button onClick={() => setFullscreenPreview(true)} className="p-1.5 rounded-full text-gray-500 hover:text-white hover:bg-[#111] border border-transparent hover:border-[#333] transition-all"><Eye className="w-4 h-4" /></button>
                                 </div>
-                                <SlidePreview id="slide-preview-capture" slide={slides[currentSlideIndex]} image={uploadedImages[currentSlideIndex]} index={currentSlideIndex} selectedModel={selectedModel} />
+                                <SlidePreview id="slide-preview-capture" slide={slides[currentSlideIndex]} image={uploadedImages[currentSlideIndex]} index={currentSlideIndex} selectedModel={selectedModel} imageCredit={imageCredits[currentSlideIndex]} />
                                 <div className="flex gap-4 mt-8 items-center bg-[#050505] p-1.5 pl-6 pr-1.5 rounded-full border border-[#1a1a1a] shadow-lg">
                                     <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mr-2">Slide {(currentSlideIndex + 1).toString().padStart(2, '0')} / {slides.length.toString().padStart(2, '0')}</span>
                                     <div className="flex gap-1">
@@ -973,11 +1104,43 @@ export default function InstagramGEM() {
                                         <textarea value={slides[currentSlideIndex].texto} onChange={e => updateSlideContent(currentSlideIndex, 'texto', e.target.value)} rows={5} className="w-full bg-[#111] border border-[#333] p-4 rounded-lg text-white font-sans text-xs focus:border-[#00d1ff] outline-none transition-all leading-relaxed resize-y placeholder-gray-600" placeholder="Insira o texto complementar aqui" />
                                     </div>
                                     
-                                    <div className="pt-6 border-t border-[#1a1a1a] space-y-6">
-                                        <label className="block w-full p-4 border border-dashed border-[#333] rounded-lg cursor-pointer hover:border-[#00d1ff] hover:bg-[#00d1ff]/5 transition-all text-center group">
-                                            <span className="text-[10px] text-gray-400 group-hover:text-[#00d1ff] font-bold uppercase flex items-center justify-center gap-2 transition-colors"><Upload className="w-4 h-4" /> Alterar Fotografia</span>
-                                            <input type="file" accept="image/*" className="hidden" onChange={e => handleImageUpload(e, currentSlideIndex)} />
-                                        </label>
+                                    <div className="pt-6 border-t border-[#1a1a1a] space-y-3">
+                                        <div className="flex gap-2">
+                                            <label className="flex-1 p-3 border border-dashed border-[#333] rounded-lg cursor-pointer hover:border-[#00d1ff] hover:bg-[#00d1ff]/5 transition-all text-center group">
+                                                <span className="text-[9px] text-gray-400 group-hover:text-[#00d1ff] font-bold uppercase flex items-center justify-center gap-1.5 transition-colors"><Upload className="w-3.5 h-3.5" /> Upload</span>
+                                                <input type="file" accept="image/*" className="hidden" onChange={e => handleImageUpload(e, currentSlideIndex)} />
+                                            </label>
+                                            <button onClick={() => setShowSearch(!showSearch)} className={`flex-1 p-3 border border-dashed rounded-lg transition-all text-center group ${showSearch ? 'border-[#00d1ff] bg-[#00d1ff]/5' : 'border-[#333] hover:border-[#00d1ff] hover:bg-[#00d1ff]/5'}`}>
+                                                <span className={`text-[9px] font-bold uppercase flex items-center justify-center gap-1.5 transition-colors ${showSearch ? 'text-[#00d1ff]' : 'text-gray-400 group-hover:text-[#00d1ff]'}`}><Globe className="w-3.5 h-3.5" /> Unsplash</span>
+                                            </button>
+                                        </div>
+                                        {showSearch && (
+                                            <div className="bg-[#0a0a0a] border border-[#333] rounded-lg overflow-hidden">
+                                                <div className="flex gap-2 p-2">
+                                                    <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && searchImages()} placeholder="Buscar imagens..." className="flex-1 bg-[#111] border border-[#333] rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-[#00d1ff] transition-colors placeholder-gray-600" />
+                                                    <button onClick={searchImages} disabled={isSearching} className="bg-[#00d1ff] hover:bg-[#00b8e6] text-black text-[10px] font-bold px-4 rounded-lg uppercase tracking-wider transition-all flex items-center gap-1">
+                                                        {isSearching ? <span className="animate-spin w-3 h-3 border-2 border-black border-t-transparent rounded-full" /> : "Buscar"}
+                                                    </button>
+                                                </div>
+                                                {searchResults.length > 0 && (
+                                                    <div className="grid grid-cols-3 gap-1.5 p-2 max-h-48 overflow-y-auto">
+                                                        {searchResults.map((img: any) => (
+                                                            <button key={img.id} onClick={() => selectSearchImage(img, currentSlideIndex)} className="aspect-[4/5] rounded-lg overflow-hidden border border-[#333] hover:border-[#00d1ff] transition-all group relative">
+                                                                <img src={img.thumb} alt={img.alt} className="w-full h-full object-cover" />
+                                                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex items-end">
+                                                                    <span className="text-[6px] text-white/0 group-hover:text-white/80 px-1 pb-1 truncate w-full transition-all">{img.photographer}</span>
+                                                                </div>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                        {imageCredits[currentSlideIndex] && (
+                                            <div className="text-[7px] text-gray-500 text-center">
+                                                Photo by <a href={imageCredits[currentSlideIndex].link} target="_blank" rel="noopener noreferrer" className="text-[#00d1ff] hover:underline">{imageCredits[currentSlideIndex].photographer}</a> on Unsplash
+                                            </div>
+                                        )}
                                         
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="bg-[#111] p-4 rounded-lg border border-[#222] flex flex-col items-center">
@@ -1020,6 +1183,20 @@ export default function InstagramGEM() {
                                                     <div className="flex justify-between text-[8px] text-gray-600 font-mono tracking-widest"><span>ESCALA</span><span>x{slides[currentSlideIndex].imgScale || 1}</span></div>
                                                     <input type="range" min="1" max="2" step="0.05" value={slides[currentSlideIndex].imgScale || 1} onChange={e => updateSlideContent(currentSlideIndex, 'imgScale', e.target.value)} className="w-full accent-[#00d1ff] h-1 bg-[#333] outline-none rounded-full" />
                                                 </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="pt-6 border-t border-[#1a1a1a]">
+                                        <h4 className="font-black text-[#00d1ff] uppercase text-[10px] tracking-[0.2em] mb-4">Legenda do Post</h4>
+                                        <div className="space-y-3">
+                                            <div>
+                                                <label className="text-[10px] text-gray-500 font-bold mb-2 block uppercase tracking-widest">Título do Post</label>
+                                                <input type="text" value={legendaTitulo} onChange={e => setLegendaTitulo(e.target.value)} className="w-full bg-[#111] border border-[#333] p-4 rounded-lg text-white font-black text-sm focus:border-[#00d1ff] outline-none transition-all placeholder-gray-600" placeholder="Título para o post no Instagram" />
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] text-gray-500 font-bold mb-2 block uppercase tracking-widest">Texto do Post</label>
+                                                <textarea value={legendaTexto} onChange={e => setLegendaTexto(e.target.value)} rows={6} className="w-full bg-[#111] border border-[#333] p-4 rounded-lg text-white font-sans text-xs focus:border-[#00d1ff] outline-none transition-all leading-relaxed resize-y placeholder-gray-600" placeholder="Legenda humanizada para o post" />
                                             </div>
                                         </div>
                                     </div>

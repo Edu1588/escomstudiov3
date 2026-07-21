@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const INTRO_VIDEO_URL =
   "https://res.cloudinary.com/djw0tqmiw/video/upload/v1781727174/kaued2arj9spvxx0h7yi.mp4";

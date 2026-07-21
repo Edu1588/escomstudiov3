@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Clínica Odontológica de Alto Padrão. Especialistas em Lentes de Contato Dental, Implantes e Estética Orofacial.">
+    <meta name="keywords" content="Odontologia Estética, Lentes de Contato Dental, Implantes, Invisalign, Harmonização Orofacial, Clínica Premium">
+    <title>Aura Odontologia Boutique | Estética & Saúde</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- GSAP Core & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        heading: ['Cormorant Garamond', 'serif'],
+                        sans: ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        primaryDark: '#0F172A',
+                        primaryLight: '#F8FAFC',
+                        accentGold: '#C5A880',
+                        accentGoldLight: '#E6D5B8',
+                        textMuted: '#64748B'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Estilos Customizados -->
+    <style>
+        body {
+            background-color: #F8FAFC;
+            color: #0F172A;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .glass-light {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        }
+
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .hover-card {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hover-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(197, 168, 128, 0.15);
+            border-color: rgba(197, 168, 128, 0.5);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #F8FAFC; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #C5A880; }
+
+        .text-gradient-gold {
+            background: linear-gradient(135deg, #C5A880, #8C7355);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        section { position: relative; z-index: 10; }
+
+        img { background-color: #E2E8F0; position: relative; }
+        img::before {
+            content: "Aura Premium";
+            display: flex; align-items: center; justify-content: center;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #F1F5F9; color: #C5A880;
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;
+            text-align: center; border: 1px solid rgba(197, 168, 128, 0.2);
+        }
+        img[src] { z-index: 1; }
+
+        .bg-ken-burns {
+            animation: kenburns-pan 30s infinite alternate linear;
+            transform-origin: center center;
+        }
+        @keyframes kenburns-pan {
+            0% { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.08) translate(-1%, 1%); }
+        }
+
+        .btn-shine {
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn-shine::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-20deg);
+            animation: shine-sweep 4s infinite cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+        @keyframes shine-sweep {
+            0% { left: -100%; }
+            20% { left: 200%; }
+            100% { left: 200%; }
+        }
+
+        .fixed-btn-container {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-floating {
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-top {
+            width: 45px; height: 45px;
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            color: #0F172A;
+            opacity: 0; pointer-events: none;
+            transform: translateY(20px);
+        }
+        .btn-top.is-visible {
+            opacity: 1; pointer-events: auto; transform: translateY(0);
+        }
+        .btn-top:hover {
+            background-color: #C5A880; color: white; border-color: #C5A880;
+        }
+
+        .btn-wpp {
+            width: 60px; height: 60px;
+            background-color: #25D366;
+            color: white;
+        }
+        .btn-wpp:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
+        }
+        @media (max-width: 768px) {
+            .fixed-btn-container { right: 16px; bottom: 16px; }
+            .btn-top { width: 40px; height: 40px; }
+            .btn-wpp { width: 55px; height: 55px; }
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
+            opacity: 0;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+            opacity: 1;
+        }
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+        }
+    </style>
+</head>
+<body class="selection:bg-accentGold selection:text-white">
+
+    <!-- 1. Header / Navbar -->
+    <header class="fixed w-full z-50 transition-all duration-500 py-5" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+            
+            <a href="#" class="text-2xl font-heading font-bold text-primaryDark flex items-center gap-2" id="logo-text">
+                <i class="ph-fill ph-tooth text-accentGold text-3xl"></i>
+                <span id="nav-brand">AURA BOUTIQUE</span>
+            </a>
+            
+            <nav class="hidden lg:flex gap-8 text-[11px] uppercase tracking-[0.15em] font-semibold text-primaryDark/70" id="nav-links">
+                <a href="#conceito" class="hover:text-accentGold transition-colors">Conceito</a>
+                <a href="#tratamentos" class="hover:text-accentGold transition-colors">Especialidades</a>
+                <a href="#tecnologia" class="hover:text-accentGold transition-colors">Tecnologia</a>
+                <a href="#corpo-clinico" class="hover:text-accentGold transition-colors">Corpo Clínico</a>
+            </nav>
+
+            <a href="#contato" class="hidden lg:inline-flex items-center gap-2 btn-shine px-6 py-3 bg-primaryDark text-white hover:bg-accentGold transition-all duration-300 rounded-sm uppercase tracking-widest text-[10px] font-bold">
+                Agendar Avaliação
+            </a>
+
+            <button class="lg:hidden text-2xl text-primaryDark hover:text-accentGold transition-colors">
+                <i class="ph ph-list"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Botões Flutuantes -->
+    <div class="fixed-btn-container">
+        <button id="btnScrollToTop" class="btn-floating btn-top" aria-label="Voltar ao topo">
+            <i class="ph ph-caret-up text-lg"></i>
+        </button>
+        <a href="https://wa.me/5511999999999?text=Olá, gostaria de agendar uma avaliação na Aura Boutique." target="_blank" rel="noopener noreferrer" class="btn-floating btn-wpp btn-shine" aria-label="Fale conosco pelo WhatsApp">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
+                <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.964 9.964 0 001.333 4.993L2 22l5.233-1.237a9.994 9.994 0 004.779 1.216h.004c5.502 0 9.985-4.48 9.985-9.984C22.001 6.489 17.518 2 12.012 2zm0 16.974h-.003a8.354 8.354 0 01-4.255-1.156l-.305-.181-3.165.748.761-3.08-.2-.317a8.312 8.312 0 01-1.272-4.471c.002-4.622 3.767-8.384 8.4-8.384 4.634 0 8.396 3.762 8.396 8.386 0 4.624-3.762 8.439-8.357 8.439zm4.606-6.289c-.252-.127-1.496-.739-1.728-.823-.232-.085-.401-.127-.57.127-.168.254-.652.823-.799.991-.148.169-.296.19-.548.064-.252-.127-1.069-.395-2.037-1.258-.753-.674-1.261-1.506-1.41-1.76-.148-.254-.016-.391.11-.518.113-.114.252-.296.378-.444.126-.148.168-.254.252-.423.084-.169.042-.317-.021-.444-.063-.127-.57-1.375-.78-1.884-.206-.496-.416-.428-.57-.436-.148-.007-.317-.007-.486-.007-.168 0-.442.063-.674.317-.231.254-.884.866-.884 2.114 0 1.248.905 2.454 1.031 2.623.126.169 1.789 2.73 4.331 3.826 2.034.877 2.399.704 2.82.662.421-.042 1.353-.553 1.543-1.088.189-.535.189-.992.133-1.088-.057-.095-.226-.148-.478-.275z"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- 2. Hero Section -->
+    <section id="hero" class="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
+        <div class="absolute inset-0 z-0 overflow-hidden bg-primaryLight">
+            <img src="https://picsum.photos/id/1012/2500/1200" alt="Ambiente Odontológico Premium" class="w-full h-full object-cover object-center bg-ken-burns opacity-90">
+        </div>
+        
+        <div class="absolute inset-0 z-0 bg-gradient-to-r from-primaryDark via-primaryDark/70 to-transparent"></div>
+
+        <div class="relative z-10 w-full max-w-7xl mx-auto px-6">
+            <div class="max-w-2xl gs-hero-content">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-[1px] bg-accentGold"></div>
+                    <span class="text-accentGold tracking-[0.2em] text-[10px] uppercase font-bold">Odontologia de Excelência</span>
+                </div>
+                
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-heading font-medium mb-8 leading-[1.1] text-white">
+                    A Arte de Criar <br>
+                    <span class="text-gradient-gold italic font-bold">Sorrisos Perfeitos</span>
+                </h1>
+                
+                <p class="text-lg text-gray-300 mb-10 font-light leading-relaxed">
+                    Elevamos a odontologia a uma experiência de luxo. Design do sorriso, implantes de alta performance e harmonização facial num ambiente pensado para o seu conforto.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-5">
+                    <a href="#contato" class="btn-shine px-8 py-4 bg-accentGold text-white font-bold uppercase tracking-[0.15em] rounded-sm hover:bg-accentGoldLight transition-colors duration-300 text-center text-xs shadow-lg shadow-accentGold/20">
+                        Agendar Avaliação
+                    </a>
+                    <a href="#tratamentos" class="px-8 py-4 glass-dark text-white font-semibold uppercase tracking-[0.15em] rounded-sm hover:bg-white/10 transition-colors duration-300 text-center flex items-center justify-center gap-3 text-xs border-white/20">
+                        Conhecer Tratamentos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Conceito -->
+    <section id="conceito" class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col lg:flex-row gap-16 items-center">
+                <div class="lg:w-1/2 relative gs-reveal-left">
+                    <div class="relative rounded-t-full overflow-hidden border-8 border-primaryLight shadow-2xl">
+                        <img src="https://picsum.photos/id/64/800/1000" alt="Conceito Aura" class="w-full h-auto object-cover hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <div class="absolute -bottom-8 -right-8 w-40 h-40 bg-accentGold rounded-full opacity-10 z-[-1]"></div>
+                </div>
+                
+                <div class="lg:w-1/2">
+                    <span class="text-accentGold tracking-[0.2em] text-[10px] uppercase font-bold mb-4 block gs-reveal-up">A Nossa Filosofia</span>
+                    <h2 class="text-3xl md:text-5xl font-heading font-bold mb-8 text-primaryDark gs-reveal-up">Muito Além de um <br><span class="italic text-accentGold font-normal">Consultório Comum</span></h2>
+                    
+                    <p class="text-textMuted mb-6 text-base leading-relaxed font-light gs-reveal-up">
+                        Acreditamos que cuidar da sua saúde oral não deve ser um processo mecânico, mas sim uma experiência transformadora. O "Spa Odontológico" foi desenhado para eliminar a ansiedade.
+                    </p>
+                    <p class="text-textMuted mb-10 text-base leading-relaxed font-light gs-reveal-up">
+                        Utilizamos protocolos digitais 3D, materiais importados e uma abordagem minimamente invasiva para garantir que o seu novo sorriso seja impecável e duradouro.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-6 gs-stagger">
+                        <div class="flex items-start gap-4">
+                            <i class="ph-fill ph-plant text-3xl text-accentGold"></i>
+                            <div>
+                                <h4 class="text-primaryDark font-bold text-sm mb-1">Spa Odontológico</h4>
+                                <p class="text-xs text-textMuted font-light">Aromaterapia e ambiente relaxante.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <i class="ph-fill ph-diamond text-3xl text-accentGold"></i>
+                            <div>
+                                <h4 class="text-primaryDark font-bold text-sm mb-1">Materiais Premium</h4>
+                                <p class="text-xs text-textMuted font-light">Porcelanas importadas.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Tratamentos -->
+    <section id="tratamentos" class="py-24 bg-primaryLight relative">
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16 gs-reveal-up">
+                <span class="text-accentGold tracking-[0.2em] text-[10px] uppercase font-bold">Portfólio Clínico</span>
+                <h2 class="text-4xl md:text-5xl font-heading font-bold mt-4 mb-6 text-primaryDark">Tratamentos <span class="italic font-normal">Exclusivos</span></h2>
+                <p class="text-textMuted font-light">Técnicas avançadas e personalizadas para realçar a harmonia natural do seu rosto.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 gs-stagger">
+                <div class="bg-white p-8 rounded-sm hover-card border border-gray-100 shadow-sm flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-primaryLight rounded-full flex items-center justify-center mb-6 text-accentGold">
+                        <i class="ph-fill ph-sparkle text-3xl"></i>
+                    </div>
+                    <h3 class="text-lg font-heading font-bold mb-3 text-primaryDark">Lentes de Contato Dental</h3>
+                    <p class="text-textMuted text-sm font-light leading-relaxed mb-6">Facetas ultrafinas em porcelana para correção de cor, formato e alinhamento em poucos dias.</p>
+                </div>
+                
+                <div class="bg-white p-8 rounded-sm hover-card border border-gray-100 shadow-sm flex flex-col items-center text-center border-b-2 border-b-accentGold">
+                    <div class="w-16 h-16 bg-accentGold/10 rounded-full flex items-center justify-center mb-6 text-accentGold">
+                        <i class="ph-fill ph-anchor-simple text-3xl"></i>
+                    </div>
+                    <h3 class="text-lg font-heading font-bold mb-3 text-primaryDark">Implantes de Alta Performance</h3>
+                    <p class="text-textMuted text-sm font-light leading-relaxed mb-6">Reabilitação oral completa com implantes suíços importados. Segurança e estética.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-sm hover-card border border-gray-100 shadow-sm flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-primaryLight rounded-full flex items-center justify-center mb-6 text-accentGold">
+                        <i class="ph-fill ph-magic-wand text-3xl"></i>
+                    </div>
+                    <h3 class="text-lg font-heading font-bold mb-3 text-primaryDark">Harmonização Orofacial</h3>
+                    <p class="text-textMuted text-sm font-light leading-relaxed mb-6">Preenchimento labial, toxina botulínica e bioestimuladores de colágeno para um rosto harmónico.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-sm hover-card border border-gray-100 shadow-sm flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-primaryLight rounded-full flex items-center justify-center mb-6 text-accentGold">
+                        <i class="ph-fill ph-smiley text-3xl"></i>
+                    </div>
+                    <h3 class="text-lg font-heading font-bold mb-3 text-primaryDark">Alinhadores Invisíveis</h3>
+                    <p class="text-textMuted text-sm font-light leading-relaxed mb-6">Tratamento ortodôntico digital, discreto e rápido, sem aparelhos metálicos tradicionais.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Tecnologia -->
+    <section id="tecnologia" class="py-24 bg-primaryDark relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="flex flex-col lg:flex-row gap-16 items-center">
+                <div class="lg:w-1/2 gs-reveal-left">
+                    <span class="text-accentGold tracking-[0.2em] text-[10px] uppercase font-bold block mb-4">Fluxo 100% Digital</span>
+                    <h2 class="text-3xl md:text-5xl font-heading font-bold mb-6 text-white">Previsibilidade & <span class="italic font-normal">Precisão Absoluta</span></h2>
+                    
+                    <p class="text-gray-300 font-light mb-8 leading-relaxed">
+                        A nossa clínica é equipada com scanners intraorais 3D de última geração que mapeiam a sua boca em segundos com precisão micrométrica.
+                    </p>
+                    
+                    <ul class="space-y-4 text-gray-300 font-light text-sm">
+                        <li class="flex items-center gap-3"><i class="ph-bold ph-check text-accentGold"></i> Planeamento virtual do seu novo sorriso (Test-Drive).</li>
+                        <li class="flex items-center gap-3"><i class="ph-bold ph-check text-accentGold"></i> Cirurgias guiadas por computador.</li>
+                        <li class="flex items-center gap-3"><i class="ph-bold ph-check text-accentGold"></i> Laboratório Protético in-house.</li>
+                    </ul>
+                </div>
+
+                <div class="lg:w-1/2 relative gs-reveal-right">
+                    <img src="https://picsum.photos/id/175/800/600" alt="Tecnologia 3D" class="rounded-sm shadow-2xl opacity-80 hover:opacity-100 transition-opacity duration-500">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Corpo Clínico -->
+    <section id="corpo-clinico" class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <span class="text-accentGold tracking-[0.2em] text-[10px] uppercase font-bold">Especialistas</span>
+            <h2 class="text-4xl md:text-5xl font-heading font-bold mt-4 mb-16 text-primaryDark gs-reveal-up">Liderança Clínica</h2>
+
+            <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto gs-stagger">
+                <div class="bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300">
+                    <img src="https://picsum.photos/id/1027/600/700" alt="Dra. Mariana Costa" class="w-full h-80 object-cover grayscale hover:grayscale-0 transition-all duration-500">
+                    <div class="p-6 border-t border-gray-100">
+                        <h4 class="text-xl font-bold font-heading text-primaryDark">Dra. Mariana Costa</h4>
+                        <p class="text-accentGold text-xs uppercase tracking-widest font-bold mb-3 mt-1">Reabilitação Oral & Estética</p>
+                        <p class="text-textMuted text-sm font-light mb-4">Especialista em reconstrução de sorrisos com facetas cerâmicas.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300">
+                    <img src="https://picsum.photos/id/338/600/700" alt="Dr. Ricardo Alves" class="w-full h-80 object-cover grayscale hover:grayscale-0 transition-all duration-500">
+                    <div class="p-6 border-t border-gray-100">
+                        <h4 class="text-xl font-bold font-heading text-primaryDark">Dr. Ricardo Alves</h4>
+                        <p class="text-accentGold text-xs uppercase tracking-widest font-bold mb-3 mt-1">Implantodontista Especialista</p>
+                        <p class="text-textMuted text-sm font-light mb-4">Referência em cirurgias guiadas e carga imediata.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-sm overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300">
+                    <img src="https://picsum.photos/id/342/600/700" alt="Dra. Helena Mendes" class="w-full h-80 object-cover grayscale hover:grayscale-0 transition-all duration-500">
+                    <div class="p-6 border-t border-gray-100">
+                        <h4 class="text-xl font-bold font-heading text-primaryDark">Dra. Helena Mendes</h4>
+                        <p class="text-accentGold text-xs uppercase tracking-widest font-bold mb-3 mt-1">Harmonização Orofacial</p>
+                        <p class="text-textMuted text-sm font-light mb-4">Especialista em bioestimuladores e anatomia facial.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Depoimentos -->
+    <section class="py-24 bg-primaryLight relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 text-center gs-reveal-up">
+            <h2 class="text-3xl md:text-4xl font-heading font-bold mb-12 text-primaryDark">Histórias Reais, <span class="italic text-accentGold font-normal">Sorrisos Reais</span></h2>
+            
+            <div class="grid md:grid-cols-3 gap-6 gs-stagger text-left">
+                <div class="glass-light p-8 rounded-sm">
+                    <p class="text-textMuted font-light italic leading-relaxed mb-6 text-sm">
+                        "O ambiente parece um spa e as minhas facetas de porcelana ficaram incrivelmente naturais."
+                    </p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-white text-primaryDark flex items-center justify-center font-bold text-xs">CS</div>
+                        <div>
+                            <p class="text-primaryDark text-xs font-bold uppercase tracking-wider">Camila Silva</p>
+                            <p class="text-textMuted text-[10px] uppercase">Lentes de Contato</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-light p-8 rounded-sm">
+                    <p class="text-textMuted font-light italic leading-relaxed mb-6 text-sm">
+                        "Fiz meu tratamento de implantes sem dor. O fluxo digital deles é impressionante."
+                    </p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-white text-primaryDark flex items-center justify-center font-bold text-xs">MA</div>
+                        <div>
+                            <p class="text-primaryDark text-xs font-bold uppercase tracking-wider">Marcos Assis</p>
+                            <p class="text-textMuted text-[10px] uppercase">Implantes Guiados</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-light p-8 rounded-sm">
+                    <p class="text-textMuted font-light italic leading-relaxed mb-6 text-sm">
+                        "Harmonização facial sutil e elegante. Atendimento exclusivo de alto nível."
+                    </p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-white text-primaryDark flex items-center justify-center font-bold text-xs">JF</div>
+                        <div>
+                            <p class="text-primaryDark text-xs font-bold uppercase tracking-wider">Juliana Ferraz</p>
+                            <p class="text-textMuted text-[10px] uppercase">Harmonização Orofacial</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. FAQ -->
+    <section id="faq" class="py-24 bg-white relative">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-16 gs-reveal-up">
+                <h2 class="text-3xl md:text-4xl font-heading font-bold text-primaryDark">Dúvidas <span class="italic text-accentGold font-normal">Frequentes</span></h2>
+            </div>
+
+            <div class="space-y-4 gs-stagger">
+                <div class="faq-item bg-primaryLight border border-gray-200 rounded-sm overflow-hidden cursor-pointer">
+                    <div class="px-6 py-5 flex justify-between items-center text-primaryDark" onclick="toggleFaq(this)">
+                        <h4 class="font-bold text-sm md:text-base">Colocar facetas em porcelana desgasta muito os dentes naturais?</h4>
+                        <i class="ph ph-plus text-xl text-accentGold faq-icon"></i>
+                    </div>
+                    <div class="faq-answer px-6">
+                        <p class="text-textMuted text-sm font-light leading-relaxed pb-5">
+                            Não. Utilizamos lentes ultrafinas que exigem preparos minimamente invasivos, preservando a estrutura dental.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-primaryLight border border-gray-200 rounded-sm overflow-hidden cursor-pointer">
+                    <div class="px-6 py-5 flex justify-between items-center text-primaryDark" onclick="toggleFaq(this)">
+                        <h4 class="font-bold text-sm md:text-base">Os tratamentos com implantes são dolorosos?</h4>
+                        <i class="ph ph-plus text-xl text-accentGold faq-icon"></i>
+                    </div>
+                    <div class="faq-answer px-6">
+                        <p class="text-textMuted text-sm font-light leading-relaxed pb-5">
+                            Utilizamos cirurgias guiadas digitalmente com precisão milimétrica, resultando em procedimentos indolores e rápida recuperação.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. Contato / Agendamento -->
+    <section id="contato" class="py-24 bg-primaryDark relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="bg-white rounded-sm overflow-hidden shadow-2xl flex flex-col md:flex-row gs-reveal-up">
+                <div class="md:w-5/12 bg-primaryLight p-10 lg:p-14 flex flex-col justify-between border-r border-gray-200">
+                    <div>
+                        <span class="text-accentGold tracking-[0.2em] text-[10px] uppercase font-bold mb-4 block">Dê o Primeiro Passo</span>
+                        <h3 class="text-3xl lg:text-4xl font-heading font-bold text-primaryDark mb-6">Agende a Sua <span class="italic font-normal text-accentGold">Avaliação</span></h3>
+                        <p class="text-textMuted text-sm mb-10 font-light leading-relaxed">
+                            Nossa equipe de concierges entrará em contato para agendar o melhor horário.
+                        </p>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 flex items-center justify-start text-accentGold shrink-0">
+                                    <i class="ph-fill ph-map-pin text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-primaryDark font-bold text-sm">Endereço</h5>
+                                    <p class="text-textMuted text-xs font-light mt-1" id="client-address">Rua Oscar Freire, 1000 - São Paulo, SP</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 flex items-center justify-start text-accentGold shrink-0">
+                                    <i class="ph-fill ph-envelope-simple text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-primaryDark font-bold text-sm">Email</h5>
+                                    <p class="text-textMuted text-xs font-light mt-1" id="client-email">contato@empresa.com.br</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="md:w-7/12 p-10 lg:p-14 bg-white">
+                    <form onsubmit="event.preventDefault();" class="space-y-8">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Nome Completo</label>
+                                <input type="text" class="w-full bg-transparent border-b border-gray-300 rounded-none px-0 py-2 text-primaryDark focus:outline-none focus:border-accentGold transition-colors font-light text-sm" placeholder="Seu nome">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Telefone</label>
+                                <input type="tel" class="w-full bg-transparent border-b border-gray-300 rounded-none px-0 py-2 text-primaryDark focus:outline-none focus:border-accentGold transition-colors font-light text-sm" placeholder="(11) 90000-0000">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Tratamento de Interesse</label>
+                            <select class="w-full bg-transparent border-b border-gray-300 rounded-none px-0 py-2 text-primaryDark focus:outline-none focus:border-accentGold transition-colors appearance-none font-light text-sm cursor-pointer">
+                                <option>Lentes de Contato Dental</option>
+                                <option>Implantes Dentários</option>
+                                <option>Harmonização Facial</option>
+                                <option>Invisalign (Ortodontia)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Mensagem</label>
+                            <textarea rows="3" class="w-full bg-transparent border-b border-gray-300 rounded-none px-0 py-2 text-primaryDark focus:outline-none focus:border-accentGold transition-colors font-light text-sm resize-none" placeholder="Qual o seu principal desejo para o seu sorriso?"></textarea>
+                        </div>
+                        <button class="btn-shine w-full py-4 mt-4 bg-primaryDark text-white font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-accentGold transition-colors duration-300 rounded-sm">
+                            Solicitar Agendamento de Consulta
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10. Footer -->
+    <footer class="bg-primaryDark pt-16 pb-8 border-t border-gray-800 text-gray-400">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="md:col-span-2">
+                    <a href="#" class="text-xl font-heading font-bold text-white flex items-center gap-2 mb-6">
+                        <i class="ph-fill ph-tooth text-accentGold"></i>
+                        <span id="footer-brand">AURA BOUTIQUE</span>
+                    </a>
+                    <p class="text-sm font-light max-w-sm mb-6 leading-relaxed">Odontologia estética de alto padrão, implantes e harmonização facial.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase tracking-widest text-[10px]">Tratamentos</h4>
+                    <ul class="space-y-3 text-sm font-light">
+                        <li><a href="#tratamentos" class="hover:text-accentGold">Lentes de Contato</a></li>
+                        <li><a href="#tratamentos" class="hover:text-accentGold">Implantes 3D</a></li>
+                        <li><a href="#tratamentos" class="hover:text-accentGold">Harmonização</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase tracking-widest text-[10px]">Contato</h4>
+                    <p class="text-sm font-light">São Paulo, SP</p>
+                    <p class="text-sm font-light">contato@empresa.com.br</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row justify-between items-center text-[10px] uppercase tracking-wider font-semibold border-t border-gray-800 pt-8 opacity-70">
+                <p>&copy; <span id="current-year"></span> Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        const nav = document.getElementById('navbar');
+        const btnScrollToTop = document.getElementById('btnScrollToTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('glass-light', 'shadow-md');
+                nav.classList.remove('py-5');
+                nav.classList.add('py-3');
+            } else {
+                nav.classList.remove('glass-light', 'shadow-md');
+                nav.classList.add('py-5');
+                nav.classList.remove('py-3');
+            }
+
+            if (window.scrollY > 300) {
+                btnScrollToTop.classList.add('is-visible');
+            } else {
+                btnScrollToTop.classList.remove('is-visible');
+            }
+        });
+
+        btnScrollToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        function toggleFaq(element) {
+            const item = element.parentElement;
+            item.classList.toggle('active');
+        }
+
+        function initGSAP() {
+            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+            gsap.registerPlugin(ScrollTrigger);
+
+            gsap.fromTo('.gs-hero-content', 
+                { y: 40, opacity: 0 },
+                { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" }
+            );
+
+            gsap.utils.toArray('.gs-reveal-up').forEach(function(elem) {
+                gsap.fromTo(elem,
+                    { y: 30, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 1, ease: "power2.out", scrollTrigger: { trigger: elem, start: "top 85%" } }
+                );
+            });
+
+            gsap.utils.toArray('.gs-reveal-left').forEach(function(elem) {
+                gsap.fromTo(elem,
+                    { x: -40, opacity: 0 },
+                    { x: 0, opacity: 1, duration: 1.2, ease: "power3.out", scrollTrigger: { trigger: elem, start: "top 85%" } }
+                );
+            });
+
+            gsap.utils.toArray('.gs-stagger').forEach(function(elem) {
+                const children = elem.children;
+                gsap.fromTo(children,
+                    { y: 30, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.8, stagger: 0.15, ease: "power2.out", scrollTrigger: { trigger: elem, start: "top 85%" } }
+                );
+            });
+        }
+
+        window.onload = () => {
+            initGSAP();
+        };
+    </script>
+</body>
+</html>

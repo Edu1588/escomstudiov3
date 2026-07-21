@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Engenharia em Energia Solar. Reduza sua conta de luz em até 95% com tecnologia de ponta e instalação premium.">
+    <meta name="keywords" content="Energia Solar, Placas Solares, Instalação Fotovoltaica, Economia de Energia, Engenharia Solar">
+    <title>Lumina Solar Engenharia | Energia Inteligente</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- GSAP Core & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        heading: ['Montserrat', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primaryDark: '#0B192C',
+                        primaryLight: '#F8FAFC',
+                        accentSun: '#FF9100',
+                        accentSunHover: '#FFB200',
+                        textMuted: '#64748B'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Estilos Customizados -->
+    <style>
+        body {
+            background-color: #F8FAFC;
+            color: #0B192C;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .glass-light {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        }
+
+        .glass-dark {
+            background: rgba(11, 25, 44, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .hover-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hover-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(255, 145, 0, 0.1); 
+            border-color: rgba(255, 145, 0, 0.3);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #F8FAFC; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FF9100; }
+
+        section { position: relative; z-index: 10; }
+
+        img { background-color: #E2E8F0; position: relative; }
+        img::before {
+            content: "Lumina Solar";
+            display: flex; align-items: center; justify-content: center;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #F1F5F9; color: #FF9100;
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;
+            text-align: center; border: 1px solid rgba(255, 145, 0, 0.2);
+        }
+        img[src] { z-index: 1; }
+
+        .btn-shine {
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn-shine::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-20deg);
+            animation: shine-sweep 3s infinite cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+        @keyframes shine-sweep {
+            0% { left: -100%; }
+            20% { left: 200%; }
+            100% { left: 200%; }
+        }
+
+        .fixed-btn-container {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-floating {
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-top {
+            width: 45px; height: 45px;
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            color: #0B192C;
+            opacity: 0; pointer-events: none;
+            transform: translateY(20px);
+        }
+        .btn-top.is-visible {
+            opacity: 1; pointer-events: auto; transform: translateY(0);
+        }
+        .btn-top:hover {
+            background-color: #FF9100; color: white; border-color: #FF9100;
+        }
+
+        .btn-wpp {
+            width: 60px; height: 60px;
+            background-color: #25D366;
+            color: white;
+        }
+        .btn-wpp:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
+        }
+        @media (max-width: 768px) {
+            .fixed-btn-container { right: 16px; bottom: 16px; }
+            .btn-top { width: 40px; height: 40px; }
+            .btn-wpp { width: 55px; height: 55px; }
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #FF9100;
+            cursor: pointer;
+            margin-top: -10px;
+            box-shadow: 0 0 10px rgba(255, 145, 0, 0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #334155;
+            border-radius: 3px;
+        }
+        
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease;
+            opacity: 0;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+            opacity: 1;
+        }
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+        }
+    </style>
+</head>
+<body class="selection:bg-accentSun selection:text-white">
+
+    <!-- 1. Header / Navbar -->
+    <header class="fixed w-full z-50 transition-all duration-500 py-5" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+            
+            <a href="#" class="text-2xl font-heading font-black text-white flex items-center gap-2" id="logo-text">
+                <i class="ph-fill ph-sun text-accentSun text-3xl animate-[spin_10s_linear_infinite]"></i>
+                <span id="nav-brand">LUMINA SOLAR</span>
+            </a>
+            
+            <nav class="hidden lg:flex gap-8 text-[11px] uppercase tracking-[0.15em] font-bold text-white" id="nav-links">
+                <a href="#calculadora" class="hover:text-accentSun transition-colors">Calculadora</a>
+                <a href="#beneficios" class="hover:text-accentSun transition-colors">Vantagens</a>
+                <a href="#solucoes" class="hover:text-accentSun transition-colors">Soluções</a>
+                <a href="#tecnologia" class="hover:text-accentSun transition-colors">Engenharia</a>
+            </nav>
+
+            <a href="#contato" class="hidden lg:inline-flex items-center gap-2 btn-shine px-6 py-3 bg-accentSun text-white hover:bg-accentSunHover transition-all duration-300 rounded-sm uppercase tracking-widest text-[10px] font-bold shadow-lg shadow-accentSun/20">
+                Simular Projeto
+            </a>
+
+            <button class="lg:hidden text-2xl text-white hover:text-accentSun transition-colors">
+                <i class="ph ph-list"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Botões Flutuantes -->
+    <div class="fixed-btn-container">
+        <button id="btnScrollToTop" class="btn-floating btn-top" aria-label="Voltar ao topo">
+            <i class="ph ph-caret-up text-lg"></i>
+        </button>
+        <a href="https://wa.me/5511999999999?text=Olá, gostaria de fazer uma simulação de energia solar." target="_blank" rel="noopener noreferrer" class="btn-floating btn-wpp btn-shine" aria-label="Fale conosco pelo WhatsApp">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
+                <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.964 9.964 0 001.333 4.993L2 22l5.233-1.237a9.994 9.994 0 004.779 1.216h.004c5.502 0 9.985-4.48 9.985-9.984C22.001 6.489 17.518 2 12.012 2zm0 16.974h-.003a8.354 8.354 0 01-4.255-1.156l-.305-.181-3.165.748.761-3.08-.2-.317a8.312 8.312 0 01-1.272-4.471c.002-4.622 3.767-8.384 8.4-8.384 4.634 0 8.396 3.762 8.396 8.386 0 4.624-3.762 8.439-8.357 8.439zm4.606-6.289c-.252-.127-1.496-.739-1.728-.823-.232-.085-.401-.127-.57.127-.168.254-.652.823-.799.991-.148.169-.296.19-.548.064-.252-.127-1.069-.395-2.037-1.258-.753-.674-1.261-1.506-1.41-1.76-.148-.254-.016-.391.11-.518.113-.114.252-.296.378-.444.126-.148.168-.254.252-.423.084-.169.042-.317-.021-.444-.063-.127-.57-1.375-.78-1.884-.206-.496-.416-.428-.57-.436-.148-.007-.317-.007-.486-.007-.168 0-.442.063-.674.317-.231.254-.884.866-.884 2.114 0 1.248.905 2.454 1.031 2.623.126.169 1.789 2.73 4.331 3.826 2.034.877 2.399.704 2.82.662.421-.042 1.353-.553 1.543-1.088.189-.535.189-.992.133-1.088-.057-.095-.226-.148-.478-.275z"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- 2. Hero Section -->
+    <section id="hero" class="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden bg-primaryDark">
+        <div class="absolute inset-0 z-0 overflow-hidden">
+            <img src="https://picsum.photos/id/240/2500/1200" alt="Painéis Solares Lumina" class="w-full h-full object-cover object-center opacity-60 scale-105" id="hero-bg">
+        </div>
+        
+        <div class="absolute inset-0 z-0 bg-gradient-to-r from-primaryDark via-primaryDark/80 to-transparent"></div>
+
+        <div class="relative z-10 w-full max-w-7xl mx-auto px-6">
+            <div class="max-w-2xl gs-hero-content">
+                <div class="flex items-center gap-4 mb-6">
+                    <span class="px-3 py-1 bg-accentSun/20 text-accentSun border border-accentSun/30 rounded text-[10px] uppercase tracking-widest font-bold">Livre-se da Inflação Energética</span>
+                </div>
+                
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-heading font-black mb-6 leading-[1.1] text-white">
+                    Você Aluga ou <br>
+                    <span class="text-accentSun">É Dono</span> da sua Energia?
+                </h1>
+                
+                <p class="text-lg text-gray-300 mb-10 font-light leading-relaxed">
+                    Instale tecnologia fotovoltaica de nível de engenharia na sua propriedade. Reduza sua conta de luz em até 95% e tenha um retorno sobre o investimento garantido.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-5">
+                    <a href="#calculadora" class="btn-shine px-8 py-4 bg-accentSun text-white font-bold uppercase tracking-[0.15em] rounded-sm hover:bg-accentSunHover transition-colors duration-300 text-center text-xs shadow-lg shadow-accentSun/20 flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-calculator text-lg"></i> Calcule sua Economia
+                    </a>
+                    <a href="#contato" class="px-8 py-4 glass-dark text-white font-bold uppercase tracking-[0.15em] rounded-sm hover:bg-white/10 transition-colors duration-300 text-center flex items-center justify-center gap-2 text-xs border border-white/20">
+                        Falar com Engenheiro
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. O Problema -->
+    <section id="problema" class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col lg:flex-row gap-16 items-center">
+                <div class="lg:w-1/2 relative gs-reveal-left">
+                    <div class="grid grid-cols-2 gap-4 relative z-10">
+                        <img src="https://picsum.photos/id/175/400/500" alt="Conta de luz cara" class="rounded shadow-xl mt-8">
+                        <img src="https://picsum.photos/id/30/400/500" alt="Instalação Solar" class="rounded shadow-xl">
+                    </div>
+                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-accentSun rounded-full opacity-10 z-0"></div>
+                </div>
+                
+                <div class="lg:w-1/2 gs-reveal-right">
+                    <span class="text-accentSun tracking-[0.2em] text-[10px] uppercase font-bold mb-4 block">A Realidade do Mercado</span>
+                    <h2 class="text-3xl md:text-5xl font-heading font-bold mb-6 text-primaryDark">Chega de Trabalhar para Pagar a <span class="text-accentSun">Conta de Luz</span></h2>
+                    
+                    <p class="text-textMuted mb-6 text-base leading-relaxed font-light">
+                        As tarifas de energia elétrica no Brasil sobem muito acima da inflação todos os anos. Continuar pagando contas altíssimas é equivalente a pagar aluguel de algo que nunca será seu.
+                    </p>
+                    <p class="text-textMuted mb-10 text-base leading-relaxed font-light">
+                        Com a Lumina Solar, você transforma um passivo financeiro em um ativo rentável, blindando-se contra as bandeiras tarifárias.
+                    </p>
+                    
+                    <div class="bg-primaryLight p-6 rounded border-l-4 border-accentSun">
+                        <h4 class="text-primaryDark font-bold text-sm mb-2">Sabia que?</h4>
+                        <p class="text-sm text-textMuted font-light">A valorização imediata do imóvel após a instalação de um sistema solar pode chegar a até 8%.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. CALCULADORA DE ECONOMIA -->
+    <section id="calculadora" class="py-24 bg-primaryDark relative overflow-hidden">
+        <div class="max-w-4xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-12 gs-reveal-up">
+                <h2 class="text-3xl md:text-5xl font-heading font-black text-white mb-4">Simule sua <span class="text-accentSun">Economia</span></h2>
+                <p class="text-gray-400 font-light text-lg">Descubra quanto dinheiro você pode economizar todos os anos.</p>
+            </div>
+
+            <div class="glass-dark p-8 md:p-12 rounded-xl border border-accentSun/20 shadow-2xl gs-reveal-up">
+                <div class="mb-10">
+                    <label class="block text-sm font-bold text-gray-300 uppercase tracking-widest mb-6 text-center">Valor Médio da sua Conta Mensal</label>
+                    <div class="flex justify-center items-end gap-2 mb-6 text-accentSun">
+                        <span class="text-2xl font-bold">R$</span>
+                        <span id="valorConta" class="text-6xl font-black font-heading leading-none">500</span>
+                    </div>
+                    
+                    <input type="range" id="contaSlider" min="200" max="5000" step="50" value="500" class="w-full">
+                    <div class="flex justify-between text-xs text-gray-500 mt-2 font-bold">
+                        <span>R$ 200</span>
+                        <span>R$ 5.000+</span>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 bg-primaryDark/50 p-6 rounded-lg border border-white/5">
+                    <div class="text-center md:text-left">
+                        <p class="text-xs text-gray-400 uppercase tracking-wider font-bold mb-1">Economia Estimada no 1º Ano</p>
+                        <p class="text-3xl font-black text-white" id="economiaAnual">R$ 5.700</p>
+                    </div>
+                    <div class="text-center md:text-left border-t md:border-t-0 md:border-l border-white/10 pt-4 md:pt-0 md:pl-6">
+                        <p class="text-xs text-gray-400 uppercase tracking-wider font-bold mb-1">Economia em 25 anos (Vida útil)</p>
+                        <p class="text-3xl font-black text-[#25D366]" id="economiaVidaUtil">R$ 142.500</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-center">
+                    <a href="#contato" class="btn-shine px-10 py-4 bg-accentSun text-white font-bold uppercase tracking-[0.15em] rounded-sm hover:bg-accentSunHover transition-colors duration-300 shadow-lg shadow-accentSun/20 inline-block w-full md:w-auto">
+                        Quero um Projeto Personalizado
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Benefícios -->
+    <section id="beneficios" class="py-24 bg-primaryLight relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto mb-16 gs-reveal-up">
+                <span class="text-accentSun tracking-[0.2em] text-[10px] uppercase font-bold">Porquê Energia Solar?</span>
+                <h2 class="text-4xl md:text-5xl font-heading font-bold mt-4 mb-6 text-primaryDark">Investimento com <span class="text-accentSun">Retorno Garantido</span></h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 gs-stagger">
+                <div class="bg-white p-8 rounded hover-card border border-gray-100 shadow-sm flex flex-col items-start">
+                    <div class="w-14 h-14 bg-accentSun/10 rounded flex items-center justify-center mb-6 text-accentSun">
+                        <i class="ph-fill ph-piggy-bank text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-heading font-bold mb-3 text-primaryDark">Retorno Rápido (ROI)</h3>
+                    <p class="text-textMuted text-sm font-light leading-relaxed">Em média, o sistema se paga entre 3 a 5 anos. Depois disso, são décadas de energia praticamente gratuita.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded hover-card border border-gray-100 shadow-sm flex flex-col items-start border-b-4 border-b-accentSun">
+                    <div class="w-14 h-14 bg-accentSun rounded flex items-center justify-center mb-6 text-white">
+                        <i class="ph-fill ph-house-line text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-heading font-bold mb-3 text-primaryDark">Valorização do Imóvel</h3>
+                    <p class="text-textMuted text-sm font-light leading-relaxed">Casas e galpões com energia solar instalada valorizam imediatamente no mercado imobiliário.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded hover-card border border-gray-100 shadow-sm flex flex-col items-start">
+                    <div class="w-14 h-14 bg-accentSun/10 rounded flex items-center justify-center mb-6 text-accentSun">
+                        <i class="ph-fill ph-leaf text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-heading font-bold mb-3 text-primaryDark">Sustentabilidade</h3>
+                    <p class="text-textMuted text-sm font-light leading-relaxed">Energia 100% limpa e renovável. Reduza drasticamente sua pegada de carbono.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Soluções -->
+    <section id="solucoes" class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-end mb-12 gs-reveal-up">
+                <div>
+                    <span class="text-accentSun tracking-[0.2em] text-[10px] uppercase font-bold">As Nossas Soluções</span>
+                    <h2 class="text-4xl md:text-5xl font-heading font-bold mt-4 text-primaryDark">Projetos de Alta Performance</h2>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 gs-stagger">
+                <div class="group relative overflow-hidden rounded shadow-lg h-80">
+                    <img src="https://picsum.photos/id/1040/800/600" alt="Residencial" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-primaryDark/90 via-primaryDark/40 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 w-full p-8">
+                        <i class="ph-fill ph-house text-accentSun text-3xl mb-2"></i>
+                        <h3 class="text-2xl font-heading font-bold text-white mb-2">Sistemas Residenciais</h3>
+                        <p class="text-gray-300 text-sm font-light opacity-0 group-hover:opacity-100 transition-all duration-300">Conforto para a sua família sem preocupação no fim do mês.</p>
+                    </div>
+                </div>
+
+                <div class="group relative overflow-hidden rounded shadow-lg h-80">
+                    <img src="https://picsum.photos/id/1075/800/600" alt="Comercial" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-primaryDark/90 via-primaryDark/40 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 w-full p-8">
+                        <i class="ph-fill ph-buildings text-accentSun text-3xl mb-2"></i>
+                        <h3 class="text-2xl font-heading font-bold text-white mb-2">Comércio e Indústria</h3>
+                        <p class="text-gray-300 text-sm font-light opacity-0 group-hover:opacity-100 transition-all duration-300">Aumente sua margem de lucro cortando custos fixos.</p>
+                    </div>
+                </div>
+
+                <div class="group relative overflow-hidden rounded shadow-lg h-80">
+                    <img src="https://picsum.photos/id/295/800/600" alt="Agronegócio" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-primaryDark/90 via-primaryDark/40 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 w-full p-8">
+                        <i class="ph-fill ph-tractor text-accentSun text-3xl mb-2"></i>
+                        <h3 class="text-2xl font-heading font-bold text-white mb-2">Agronegócio</h3>
+                        <p class="text-gray-300 text-sm font-light opacity-0 group-hover:opacity-100 transition-all duration-300">Sistemas para irrigação, ordenha e infraestrutura rural.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Tecnologia -->
+    <section id="tecnologia" class="py-24 bg-primaryDark relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="flex flex-col lg:flex-row gap-16 items-center">
+                <div class="lg:w-1/2 gs-reveal-left">
+                    <span class="text-accentSun tracking-[0.2em] text-[10px] uppercase font-bold block mb-4">A Diferença Lumina</span>
+                    <h2 class="text-3xl md:text-5xl font-heading font-bold mb-6 text-white">Engenharia de <span class="text-accentSun">Precisão</span></h2>
+                    
+                    <p class="text-gray-300 font-light mb-8 leading-relaxed">
+                        Somos uma empresa de engenharia focada na máxima eficiência energética. Utilizamos painéis Tier 1 e microinversores de ponta.
+                    </p>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 rounded-full bg-accentSun/20 text-accentSun flex items-center justify-center font-bold text-xs shrink-0 mt-1">1</div>
+                            <div>
+                                <h4 class="text-white font-bold text-sm">Vistoria e Projeto Técnico</h4>
+                                <p class="text-gray-400 text-xs font-light mt-1">Análise de sombreamento e dimensionamento exato.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 rounded-full bg-accentSun/20 text-accentSun flex items-center justify-center font-bold text-xs shrink-0 mt-1">2</div>
+                            <div>
+                                <h4 class="text-white font-bold text-sm">Aprovação na Concessionária</h4>
+                                <p class="text-gray-400 text-xs font-light mt-1">Cuidamos de toda a burocracia do início ao fim.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-8 h-8 rounded-full bg-accentSun/20 text-accentSun flex items-center justify-center font-bold text-xs shrink-0 mt-1">3</div>
+                            <div>
+                                <h4 class="text-white font-bold text-sm">Instalação Premium</h4>
+                                <p class="text-gray-400 text-xs font-light mt-1">Equipe própria certificada (NR10 e NR35).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:w-1/2 relative gs-reveal-right">
+                    <img src="https://picsum.photos/id/534/800/800" alt="Tecnologia Solar" class="rounded shadow-2xl opacity-90 border border-white/10">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. Depoimentos -->
+    <section class="py-24 bg-primaryLight relative">
+        <div class="max-w-7xl mx-auto px-6 text-center gs-reveal-up">
+            <h2 class="text-3xl md:text-4xl font-heading font-bold mb-12 text-primaryDark">Clientes que já estão <span class="text-accentSun">Economizando</span></h2>
+            
+            <div class="grid md:grid-cols-3 gap-6 gs-stagger text-left">
+                <div class="bg-white p-8 rounded shadow-sm border border-gray-100">
+                    <p class="text-textMuted font-light italic leading-relaxed mb-6 text-sm">
+                        "Minha conta passava dos R$ 4.000 mensais. Hoje pago a taxa mínima. O investimento se pagou em menos de 3 anos."
+                    </p>
+                    <div class="flex items-center gap-3 border-t border-gray-100 pt-4">
+                        <div class="w-10 h-10 rounded-full bg-primaryDark text-white flex items-center justify-center font-bold text-xs">RM</div>
+                        <div>
+                            <p class="text-primaryDark text-xs font-bold uppercase tracking-wider">Roberto Moreira</p>
+                            <p class="text-accentSun text-[10px] uppercase font-bold">Comercial</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded shadow-sm border border-gray-100">
+                    <p class="text-textMuted font-light italic leading-relaxed mb-6 text-sm">
+                        "Transparência total e equipe técnica excelente. Instalação limpa e rápida."
+                    </p>
+                    <div class="flex items-center gap-3 border-t border-gray-100 pt-4">
+                        <div class="w-10 h-10 rounded-full bg-primaryDark text-white flex items-center justify-center font-bold text-xs">AS</div>
+                        <div>
+                            <p class="text-primaryDark text-xs font-bold uppercase tracking-wider">Ana Silva</p>
+                            <p class="text-accentSun text-[10px] uppercase font-bold">Residencial</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded shadow-sm border border-gray-100">
+                    <p class="text-textMuted font-light italic leading-relaxed mb-6 text-sm">
+                        "Projeto de bombeamento solar para irrigação rural a custo zero de energia."
+                    </p>
+                    <div class="flex items-center gap-3 border-t border-gray-100 pt-4">
+                        <div class="w-10 h-10 rounded-full bg-primaryDark text-white flex items-center justify-center font-bold text-xs">JC</div>
+                        <div>
+                            <p class="text-primaryDark text-xs font-bold uppercase tracking-wider">José Carlos</p>
+                            <p class="text-accentSun text-[10px] uppercase font-bold">Agronegócio</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. FAQ -->
+    <section id="faq" class="py-24 bg-white relative">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-16 gs-reveal-up">
+                <h2 class="text-3xl md:text-4xl font-heading font-bold text-primaryDark">Dúvidas <span class="text-accentSun">Frequentes</span></h2>
+            </div>
+
+            <div class="space-y-4 gs-stagger">
+                <div class="faq-item bg-primaryLight border border-gray-200 rounded overflow-hidden cursor-pointer">
+                    <div class="px-6 py-5 flex justify-between items-center text-primaryDark" onclick="toggleFaq(this)">
+                        <h4 class="font-bold text-sm md:text-base">O sistema funciona em dias nublados ou chuvosos?</h4>
+                        <i class="ph ph-plus text-xl text-accentSun faq-icon"></i>
+                    </div>
+                    <div class="faq-answer px-6">
+                        <p class="text-textMuted text-sm font-light leading-relaxed pb-5">
+                            Sim! Os painéis captam radiação ultravioleta que atravessa as nuvens, mantendo a geração contínua.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-primaryLight border border-gray-200 rounded overflow-hidden cursor-pointer">
+                    <div class="px-6 py-5 flex justify-between items-center text-primaryDark" onclick="toggleFaq(this)">
+                        <h4 class="font-bold text-sm md:text-base">O que acontece à noite? Fico sem energia?</h4>
+                        <i class="ph ph-plus text-xl text-accentSun faq-icon"></i>
+                    </div>
+                    <div class="faq-answer px-6">
+                        <p class="text-textMuted text-sm font-light leading-relaxed pb-5">
+                            Você usa a energia gerada durante o dia na forma de créditos junto à concessionária.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10. Contato -->
+    <section id="contato" class="py-24 bg-primaryDark relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="bg-white rounded overflow-hidden shadow-2xl flex flex-col md:flex-row gs-reveal-up">
+                <div class="md:w-5/12 bg-gray-100 p-10 lg:p-14 flex flex-col justify-between border-r border-gray-200">
+                    <div>
+                        <span class="text-accentSun tracking-[0.2em] text-[10px] uppercase font-bold mb-4 block">Estudo de Viabilidade</span>
+                        <h3 class="text-3xl font-heading font-bold text-primaryDark mb-6">Solicite um Orçamento <span class="text-accentSun">Gratuito</span></h3>
+                        <p class="text-textMuted text-sm mb-10 font-light leading-relaxed">
+                            Enviaremos uma proposta comercial completa com simulação de geração e tempo de retorno (ROI).
+                        </p>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 flex items-center justify-start text-accentSun shrink-0">
+                                    <i class="ph-fill ph-map-pin text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-primaryDark font-bold text-sm">Endereço</h5>
+                                    <p class="text-textMuted text-xs font-light mt-1" id="client-address">Av. das Indústrias, 500 - São Paulo, SP</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 flex items-center justify-start text-accentSun shrink-0">
+                                    <i class="ph-fill ph-envelope-simple text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-primaryDark font-bold text-sm">Email</h5>
+                                    <p class="text-textMuted text-xs font-light mt-1" id="client-email">comercial@empresa.com.br</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="md:w-7/12 p-10 lg:p-14 bg-white">
+                    <form onsubmit="event.preventDefault();" class="space-y-8">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Nome Completo</label>
+                                <input type="text" class="w-full bg-transparent border-b border-gray-300 rounded-none px-0 py-2 text-primaryDark focus:outline-none focus:border-accentSun transition-colors font-light text-sm" placeholder="Seu nome">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Telefone</label>
+                                <input type="tel" class="w-full bg-transparent border-b border-gray-300 rounded-none px-0 py-2 text-primaryDark focus:outline-none focus:border-accentSun transition-colors font-light text-sm" placeholder="(11) 90000-0000">
+                            </div>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Tipo de Imóvel</label>
+                                <select class="w-full bg-transparent border-b border-gray-300 rounded-none px-0 py-2 text-primaryDark focus:outline-none focus:border-accentSun transition-colors appearance-none font-light text-sm cursor-pointer">
+                                    <option>Residencial</option>
+                                    <option>Comercial / Empresarial</option>
+                                    <option>Indústria / Galpão</option>
+                                    <option>Propriedade Rural</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Valor Médio da Conta</label>
+                                <input type="text" class="w-full bg-transparent border-b border-gray-300 rounded-none px-0 py-2 text-primaryDark focus:outline-none focus:border-accentSun transition-colors font-light text-sm" placeholder="Ex: R$ 800,00">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-shine w-full py-4 mt-4 bg-primaryDark text-white font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-accentSun transition-colors duration-300 rounded-sm">
+                            Receber Estudo de Viabilidade Grátis
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 11. Footer -->
+    <footer class="bg-[#050B14] pt-16 pb-8 border-t border-white/5 text-gray-400">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="md:col-span-2">
+                    <a href="#" class="text-2xl font-heading font-black text-white flex items-center gap-2 mb-6">
+                        <i class="ph-fill ph-sun text-accentSun text-3xl"></i>
+                        <span id="footer-brand">LUMINA SOLAR</span>
+                    </a>
+                    <p class="text-sm font-light max-w-sm mb-6 leading-relaxed">Engenharia em sistemas fotovoltaicos. Eficiência, economia e energia limpa.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase tracking-widest text-[10px]">Soluções</h4>
+                    <ul class="space-y-3 text-sm font-light">
+                        <li><a href="#solucoes" class="hover:text-accentSun">Residencial</a></li>
+                        <li><a href="#solucoes" class="hover:text-accentSun">Comercial</a></li>
+                        <li><a href="#solucoes" class="hover:text-accentSun">Agronegócio</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase tracking-widest text-[10px]">Contato</h4>
+                    <p class="text-sm font-light">São Paulo, SP</p>
+                    <p class="text-sm font-light">comercial@empresa.com.br</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row justify-between items-center text-[10px] uppercase tracking-wider font-bold border-t border-gray-800 pt-8 opacity-70">
+                <p>&copy; <span id="current-year"></span> Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        const slider = document.getElementById('contaSlider');
+        const displayConta = document.getElementById('valorConta');
+        const displayAnual = document.getElementById('economiaAnual');
+        const displayVidaUtil = document.getElementById('economiaVidaUtil');
+
+        function atualizarCalculadora() {
+            if (!slider) return;
+            const valorMensal = parseInt(slider.value);
+            displayConta.innerText = valorMensal.toLocaleString('pt-BR');
+            const economiaMensal = valorMensal * 0.95;
+            const economiaAnual = economiaMensal * 12;
+            displayAnual.innerText = `R$ ${Math.round(economiaAnual).toLocaleString('pt-BR')}`;
+            const economiaVidaUtil = economiaAnual * 25;
+            displayVidaUtil.innerText = `R$ ${Math.round(economiaVidaUtil).toLocaleString('pt-BR')}`;
+        }
+
+        if (slider) {
+            slider.addEventListener('input', atualizarCalculadora);
+            atualizarCalculadora();
+        }
+
+        function toggleFaq(element) {
+            const faqItem = element.parentElement;
+            faqItem.classList.toggle('active');
+        }
+
+        const nav = document.getElementById('navbar');
+        const btnScrollToTop = document.getElementById('btnScrollToTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('glass-dark', 'bg-[#0B192C]/90', 'shadow-md');
+                nav.classList.remove('py-5');
+                nav.classList.add('py-3');
+            } else {
+                nav.classList.remove('glass-dark', 'bg-[#0B192C]/90', 'shadow-md');
+                nav.classList.add('py-5');
+                nav.classList.remove('py-3');
+            }
+
+            if (window.scrollY > 300) {
+                btnScrollToTop.classList.add('is-visible');
+            } else {
+                btnScrollToTop.classList.remove('is-visible');
+            }
+        });
+
+        btnScrollToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        function initGSAP() {
+            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+            gsap.registerPlugin(ScrollTrigger);
+
+            gsap.fromTo('.gs-hero-content', 
+                { y: 40, opacity: 0 },
+                { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" }
+            );
+
+            gsap.utils.toArray('.gs-reveal-up').forEach(function(elem) {
+                gsap.fromTo(elem,
+                    { y: 30, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 1, ease: "power2.out", scrollTrigger: { trigger: elem, start: "top 85%" } }
+                );
+            });
+
+            gsap.utils.toArray('.gs-reveal-left').forEach(function(elem) {
+                gsap.fromTo(elem,
+                    { x: -40, opacity: 0 },
+                    { x: 0, opacity: 1, duration: 1.2, ease: "power3.out", scrollTrigger: { trigger: elem, start: "top 85%" } }
+                );
+            });
+
+            gsap.utils.toArray('.gs-stagger').forEach(function(elem) {
+                const children = elem.children;
+                gsap.fromTo(children,
+                    { y: 30, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.8, stagger: 0.15, ease: "power2.out", scrollTrigger: { trigger: elem, start: "top 85%" } }
+                );
+            });
+        }
+
+        window.onload = () => {
+            initGSAP();
+        };
+    </script>
+</body>
+</html>

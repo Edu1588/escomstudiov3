@@ -189,18 +189,71 @@ export const VoicePoweredOrb: FC<VoicePoweredOrbProps> = ({
     }
   `;
 
-  // Voice/Audio activity detection function (detects browser audios playing)
   const analyzeAudio = () => {
-    return 0;
+    if (!analyserRef.current || !dataArrayRef.current) return 0;
+    analyserRef.current.getByteFrequencyData(dataArrayRef.current);
+    let sum = 0;
+    for (let i = 0; i < dataArrayRef.current.length; i++) {
+      const value = dataArrayRef.current[i] / 255;
+      sum += value * value;
+    }
+    const rms = Math.sqrt(sum / dataArrayRef.current.length);
+    return Math.min(rms * voiceSensitivity * 3.0, 1);
   };
 
   const stopMicrophone = () => {
-    // Microphone logic completely disabled
+    try {
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getTracks().forEach(track => track.stop());
+        mediaStreamRef.current = null;
+      }
+      if (microphoneRef.current) {
+        microphoneRef.current.disconnect();
+        microphoneRef.current = null;
+      }
+      if (analyserRef.current) {
+        analyserRef.current.disconnect();
+        analyserRef.current = null;
+      }
+      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+        audioContextRef.current.close();
+        audioContextRef.current = null;
+      }
+      dataArrayRef.current = null;
+    } catch (error) {
+      console.warn('Error stopping microphone:', error);
+    }
   };
 
   const initMicrophone = async () => {
-    // Microphone logic completely disabled
-    return false;
+    try {
+      stopMicrophone();
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+          sampleRate: 44100,
+        },
+      });
+      mediaStreamRef.current = stream;
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      if (audioContextRef.current.state === 'suspended') {
+        await audioContextRef.current.resume();
+      }
+      analyserRef.current = audioContextRef.current.createAnalyser();
+      microphoneRef.current = audioContextRef.current.createMediaStreamSource(stream);
+      analyserRef.current.fftSize = 512;
+      analyserRef.current.smoothingTimeConstant = 0.3;
+      analyserRef.current.minDecibels = -90;
+      analyserRef.current.maxDecibels = -10;
+      microphoneRef.current.connect(analyserRef.current);
+      dataArrayRef.current = new Uint8Array(analyserRef.current.frequencyBinCount);
+      return true;
+    } catch (error) {
+      console.warn("Microphone access denied or not available:", error);
+      return false;
+    }
   };
 
   useEffect(() => {
@@ -282,14 +335,39 @@ export const VoicePoweredOrb: FC<VoicePoweredOrbProps> = ({
       let lastTime = 0;
       let currentRot = 0;
       let voiceLevel = 0;
+      let idlePhase = 0;
       const baseRotationSpeed = 0.3;
       let isMicrophoneInitialized = false;
+      let audioActiveUntil = 0;
 
-      // Escuta eventos customizados de ativação de áudio na aplicação
+      // Intercepta qualquer Audio.play() disparado na página
+      const originalAudioPlay = Audio.prototype.play;
+      Audio.prototype.play = function () {
+        const audio = this;
+        const duration = audio.duration || 2;
+        const endedAt = performance.now() + duration * 1000;
+        window.dispatchEvent(new CustomEvent('app-audio-active', { detail: { endedAt, duration } }));
+        audio.addEventListener('ended', () => {
+          window.dispatchEvent(new CustomEvent('app-audio-end', { detail: { endedAt: performance.now() } }));
+        }, { once: true });
+        return originalAudioPlay.apply(this, arguments as any);
+      };
+
       const handleAudioActive = (e: Event) => {
-        voiceLevel = 0.85; // Simula ativação de voz forte ao tocar áudio
+        const detail = (e as CustomEvent).detail;
+        if (detail?.endedAt) {
+          audioActiveUntil = Math.max(audioActiveUntil, detail.endedAt);
+        }
+        voiceLevel = Math.min(voiceLevel + 0.6, 1);
+      };
+      const handleAudioEnd = (e: Event) => {
+        const detail = (e as CustomEvent).detail;
+        if (detail?.endedAt && detail.endedAt >= audioActiveUntil - 100) {
+          audioActiveUntil = 0;
+        }
       };
       window.addEventListener('app-audio-active', handleAudioActive);
+      window.addEventListener('app-audio-end', handleAudioEnd);
 
       if (enableVoiceControl) {
         initMicrophone().then((success) => {
@@ -304,29 +382,39 @@ export const VoicePoweredOrb: FC<VoicePoweredOrbProps> = ({
 
           const dt = (t - lastTime) * 0.001;
           lastTime = t;
+          idlePhase += dt * 0.5;
           program.uniforms.iTime.value = t * 0.001;
           program.uniforms.hue.value = hue;
 
-          // Se houver voz ativa local
           if (enableVoiceControl && isMicrophoneInitialized) {
             const micLevel = analyzeAudio();
-            if (micLevel > 0.05) voiceLevel = micLevel;
+            if (micLevel > 0.05) voiceLevel = Math.max(voiceLevel, micLevel);
           }
 
-          // Suaviza a queda da onda de voz/áudio
-          voiceLevel = Math.max(0, voiceLevel - dt * 1.5);
+          // Áudio ativo enquanto duration do áudio não expirar
+          const now = performance.now();
+          if (audioActiveUntil > now) {
+            voiceLevel = Math.min(voiceLevel + dt * 3, 1);
+          } else {
+            voiceLevel = Math.max(0, voiceLevel - dt * 3);
+          }
 
           if (onVoiceDetected) {
             onVoiceDetected(voiceLevel > 0.1);
           }
 
-          // A velocidade de rotação sempre existirá (mantendo o Orb girando esteticamente)
-          const voiceRotationSpeed = baseRotationSpeed + (voiceLevel * maxRotationSpeed * 2.0);
-          currentRot += dt * voiceRotationSpeed;
+          // Idle animation: orb sempre se move suavemente (respiração)
+          const idleHover = 0.15 + Math.sin(idlePhase) * 0.08;
+          const idleHoverIntensity = 0.3 + Math.sin(idlePhase * 0.7) * 0.15;
 
-          // Atualiza os shaders com o nível de atividade de voz/evento
-          program.uniforms.hover.value = Math.min(voiceLevel * 2.0, 1.0);
-          program.uniforms.hoverIntensity.value = Math.min(voiceLevel * maxHoverIntensity * 0.8, maxHoverIntensity);
+          const voiceRotationSpeed = baseRotationSpeed + (voiceLevel * maxRotationSpeed * 2.0);
+          currentRot += dt * (voiceRotationSpeed + Math.sin(idlePhase * 0.3) * 0.1);
+
+          const activeHover = Math.min(voiceLevel * 2.0, 1.0);
+          const activeIntensity = Math.min(voiceLevel * maxHoverIntensity * 0.8, maxHoverIntensity);
+
+          program.uniforms.hover.value = Math.max(idleHover, activeHover);
+          program.uniforms.hoverIntensity.value = Math.max(idleHoverIntensity, activeIntensity);
           program.uniforms.rot.value = currentRot;
 
           if (rendererInstance && glContext) {
@@ -344,7 +432,9 @@ export const VoicePoweredOrb: FC<VoicePoweredOrbProps> = ({
       return () => {
         cancelAnimationFrame(rafId);
         resizeObserver.disconnect();
+        Audio.prototype.play = originalAudioPlay;
         window.removeEventListener('app-audio-active', handleAudioActive);
+        window.removeEventListener('app-audio-end', handleAudioEnd);
 
         if (container && glContext && glContext.canvas) {
           try {
@@ -364,6 +454,19 @@ export const VoicePoweredOrb: FC<VoicePoweredOrbProps> = ({
       return () => {};
     }
   }, [hue, enableVoiceControl, voiceSensitivity, maxRotationSpeed, maxHoverIntensity, vert, frag]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const handleMicrophoneState = async () => {
+      if (enableVoiceControl) {
+        await initMicrophone();
+      } else {
+        stopMicrophone();
+      }
+    };
+    handleMicrophoneState();
+    return () => { isMounted = false; };
+  }, [enableVoiceControl]);
 
   return (
     <div ref={ctnDom} className={cn("w-full h-full relative", className)} />

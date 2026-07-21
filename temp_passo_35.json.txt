@@ -1,0 +1,766 @@
+Created At: 2026-06-11T21:46:19Z
+Completed At: 2026-06-11T21:46:19Z
+File Path: `file:///E:/ANTIGRAVITY/ESCOM_STUDIO/src/baseproposta/BaseProposta.tsx`
+Total Lines: 760
+Total Bytes: 45120
+Showing lines 1 to 760
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: import React, { useEffect, useState, useRef } from "react";
+2: import { ArrowDown, Users, Globe, Award, ArrowUpRight, CheckCircle2, Clock, Wallet, CreditCard, ChevronRight } from "lucide-react";
+3: import { TextRotateEntrance } from "../components/ui/text-rotate-entrance";
+4: import { InteractiveTiltCard } from "../components/ui/tilt-card";
+5: import { getPortfolioProjects, PortfolioProject } from "../firebase";
+6: import { toJpeg } from 'html-to-image';
+7: import { jsPDF } from "jspdf";
+8: import { DotLottiePlayer } from '@dotlottie/react-player';
+9: import '@dotlottie/react-player/dist/index.css';
+10: 
+11: const ScrambleTag = ({ text }: { text: string }) => {
+12:   const textRef = useRef<HTMLSpanElement>(null);
+13:   const originalText = useRef(text);
+14:   const isAnimating = useRef(false);
+15: 
+16:   const handleHover = () => {
+17:     if (isAnimating.current || !textRef.current) return;
+18:     isAnimating.current = true;
+19:     let step = 0;
+20:     const steps = 15;
+21:     const chars = '!<>-_\\/[]{}—=+*^?#________';
+22:     
+23:     const interval = setInterval(() => {
+24:       let scrambled = '';
+25:       for (let i = 0; i < originalText.current.length; i++) {
+26:         if (originalText.current[i] === ' ') {
+27:           scrambled += ' ';
+28:         } else {
+29:           scrambled += chars[Math.floor(Math.random() * chars.length)];
+30:         }
+31:       }
+32:       if (textRef.current) textRef.current.innerText = scrambled;
+33:       step++;
+34:       if (step > steps) { 
+35:         clearInterval(interval); 
+36:         if(textRef.current) textRef.current.innerText = originalText.current; 
+37:         isAnimating.current = false; 
+38:       }
+39:     }, 40);
+40:   };
+41: 
+42:   return (
+43:     <div 
+44:       className="system-tag relative z-20 mb-6 inline-flex items-center gap-2 font-mono text-sm tracking-widest uppercase cursor-default group"
+45:       onMouseEnter={handleHover}
+46:     >
+47:       <span className="text-[#2EFF00] font-bold">&gt;_</span> 
+48:       <span className="text-[#2EFF00] text-lg leading-none">●</span> 
+49:       <span className="text-[#2EFF00] group-hover:opacity-80 transition-opacity" ref={textRef}>{text}</span>
+50:     </div>
+51:   );
+52: };
+53: 
+54: export default function BaseProposta() {
+55:   const [proposal, setProposal] = useState<any>(null);
+56:   const [loading, setLoading] = useState(true);
+57:   const [error, setError] = useState(false);
+58:   const [projectsList, setProjectsList] = useState<PortfolioProject[]>([]);
+59:   const [isAccepting, setIsAccepting] = useState(false);
+60:   const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
+61:   const [shouldDownloadPDF, setShouldDownloadPDF] = useState(false);
+62: 
+63:   const handleAcceptProposal = async () => {
+64:     if (!proposal || !proposal.id) return;
+65:     setIsAccepting(true);
+66:     try {
+67:       await fetch(`/api/proposals/${proposal.id}/accept`, { method: "POST" });
+68:     } catch (err) {
+69:       console.error(err);
+70:     }
+71:     // Redirect regardless of API success to not block user flow
+72:     const wppText = encodeURIComponent(`Olá, sou da empresa ${proposal.company}. Acabamos de aceitar a proposta!`);
+73:     window.location.href = `https://wa.me/5548998065099?text=${wppText}`;
+74:   };
+75: 
+76:   useEffect(() => {
+77:     if (proposal && shouldDownloadPDF) {
+78:       setShouldDownloadPDF(false); // Evita loop
+79:       setTimeout(() => {
+80:         handleDownloadPDF();
+81:       }, 1500);
+82:     }
+83:   }, [proposal, shouldDownloadPDF]);
+84: 
+85:   useEffect(() => {
+86:     document.title = "Proposta - ESCOM STUDIO";
+87:     const path = window.location.pathname;
+88:     const slug = path.split('/').pop();
+89:     
+90:     getPortfolioProjects().then(data => {
+91:       const destaques = data.filter(p => p.destaque).slice(0, 3);
+92:       if(destaques.length > 0) {
+93:         setProjectsList(destaques);
+94:       } else {
+95:         // Fallback for visual
+96:         setProjectsList([
+97:           { id: "1", name: "Projeto 1", category: "WEB", desc: "", image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop", score: "", destaque: true },
+98:           { id: "2", name: "Projeto 2", category: "WEB", desc: "", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop", score: "", destaque: true },
+99:           { id: "3", name: "Projeto 3", category: "WEB", desc: "", image: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=2070&auto=format&fit=crop", score: "", destaque: true }
+100:         ]);
+101:       }
+102:     });
+103: 
+104:     if (slug && slug.startsWith("proposta-escom-")) {
+105:       fetch(`/api/proposals/${slug}`)
+106:         .then(res => res.json())
+107:         .then(data => {
+108:           if (data.success) {
+109:             setProposal(data.proposal);
+110:             const urlParams = new URLSearchParams(window.location.search);
+111:             if (urlParams.get('download') === 'pdf' || urlParams.get('pdf') === 'true') {
+112:               setShouldDownloadPDF(true);
+113:             }
+114:           } else {
+115:             setError(true);
+116:           }
+117:           setLoading(false);
+118:         })
+119:         .catch(() => {
+120:           setError(true);
+121:           setLoading(false);
+122:         });
+123:     } else {
+124:       // Just a preview state if accessed via /baseproposta directly
+125:       setLoading(false);
+126:     }
+127:   }, []);
+128: 
+129:   if (loading) {
+130:     return <div className="bg-black min-h-screen text-[#2EFF00] flex items-center justify-center font-mono text-sm">CARREGANDO PROPOSTA...</div>;
+131:   }
+132: 
+133:   if (error) {
+134:     return <div className="bg-black min-h-screen text-red-500 flex items-center justify-center font-mono text-sm">PROPOSTA NÃO ENCONTRADA OU EXPIRADA.</div>;
+135:   }
+136: 
+137:   // Calculate generic total if not dynamic
+138:   const calculateTotal = (servicesItems: any[], customBudget: string) => {
+139:     if (customBudget) return `R$ ${customBudget}`;
+140:     if (!servicesItems || servicesItems.length === 0) return "R$ 4.500,00";
+141:     const total = servicesItems.reduce((acc, curr) => acc + parseFloat(curr.price.replace(".", "")), 0);
+142:     return `R$ ${(total).toLocaleString('pt-BR')},00`;
+143:   };
+144: 
+145:   const clientName = proposal?.clientName || "Sua Empresa";
+146:   const company = proposal?.company || "Sua Empresa";
+147:   const dateSent = proposal?.createdAt ? new Date(proposal.createdAt).toLocaleDateString('pt-BR') : "06/05/2026";
+148:   const totalValueSplit = calculateTotal(proposal?.selectedServices, proposal?.budget).replace("R$ ", "").split(",");
+149:   const phone = proposal?.phone ? `55${proposal.phone.replace(/\D/g, '')}` : "5548988626785";
+150:   const wppText = encodeURIComponent(`Olá ESCOM STUDIO, vi a proposta da ${company} e gostaria de fechar o projeto!`);
+151: 
+152:   const handleDownloadPDF = async () => {
+153:     setIsDownloadingPDF(true);
+154:     try {
+155:       const element = document.getElementById("pdf-capture-container");
+156:       if (element) {
+157:         // Temporarily modify element to allow capture if it's placed off-screen
+158:         element.classList.add('pdf-exporting');
+159:         
+160:         // Wait for CSS to apply and layout to calculate width/height
+161:         await new Promise(resolve => setTimeout(resolve, 200));
+162: 
+163:         const filter = (node: HTMLElement) => {
+164:           return node.getAttribute ? node.getAttribute('data-html2canvas-ignore') !== 'true' : true;
+165:         };
+166: 
+167:         const imgData = await toJpeg(element, { 
+168:           pixelRatio: 2, 
+169:           backgroundColor: '#050505',
+170:           filter: filter
+171:         });
+172:         
+173:         const width = element.offsetWidth;
+174:         const height = element.offsetHeight;
+175: 
+176:         const pdf = new jsPDF({
+177:           orientation: 'portrait',
+178:           unit: 'px',
+179:           format: [width, height] // Use original element pixels
+180:         });
+181:         
+182:         pdf.addImage(imgData, 'JPEG', 0, 0, width, height);
+183:         pdf.save(`proposta-escom-${company.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.pdf`);
+184:         
+185:         element.classList.remove('pdf-exporting');
+186:       }
+187:     } catch (err: any) {
+188:       console.error(err);
+189:       alert('Erro ao exportar PDF: ' + err.message);
+190:     }
+191:     setIsDownloadingPDF(false);
+192:   };
+193: 
+194:   return (
+195:     <div className="bg-[#050505] text-white min-h-screen font-sans selection:bg-[#2EFF00] selection:text-black">
+196:       <style>{`
+197:         @media print {
+198:           .screen-only { display: none !important; }
+199:           .print-only { display: block !important; }
+200:           html, body, #root, .print-only-bg {
+201:             -webkit-print-color-adjust: exact !important;
+202:             print-color-adjust: exact !important;
+203:             background-color: #050505 !important;
+204:             color: #ffffff !important;
+205:           }
+206:           @page { margin: 0; }
+207:           * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+208:         }
+209:         @media screen {
+210:           .print-only { 
+211:             position: absolute !important;
+212:             left: -9999px !important;
+213:             top: -9999px !important;
+214:             width: 800px !important;
+215:             opacity: 0;
+216:             pointer-events: none !important;
+217:           }
+218:           .pdf-exporting {
+219:             opacity: 1 !important;
+220:             left: 0 !important;
+221:             top: 0 !important;
+222:             z-index: -100 !important;
+223:           }
+224:         }
+225:       `}</style>
+226:       <div className="screen-only">
+227:         {/* Top Bar */}
+228:       <div className="w-full py-2 flex justify-center items-center text-xs font-mono text-gray-400 border-b border-white/5 bg-[#0a0a0a] z-50 relative">
+229:         <span className="text-[#2EFF00]">Data de Envio: {dateSent}</span>
+230:         <span className="mx-4">|</span>
+231:         <span className="text-red-500 font-bold">Proposta válida por 3 dias</span>
+232:       </div>
+233: 
+234:       {/* Header */}
+235:       <header className="fixed top-12 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl bg-black/80 backdrop-blur-md border border-white/10 rounded-full px-8 py-4 flex items-center justify-between z-[60]">
+236:         <div className="font-bold text-xl tracking-tight">
+237:           ESCOM <span className="text-[#2EFF00] drop-shadow-[0_0_10px_rgba(46,255,0,0.5)]">STUDIO</span>
+238:         </div>
+239:         <div className="flex items-center gap-6">
+240:           <button onClick={handleDownloadPDF} disabled={isDownloadingPDF} className="text-sm font-medium hover:text-white text-gray-300 transition-colors disabled:opacity-50">
+241:             {isDownloadingPDF ? 'Gerando...' : 'Baixar PDF'}
+242:           </button>
+243:           <a href="#investimento" className="bg-[#2EFF00] text-black px-6 py-2 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(46,255,0,0.3)] hover:bg-[#2EFF00]/90 transition-colors">
+244:             Ver Investimento
+245:           </a>
+246:         </div>
+247:       </header>
+248: 
+249:       {/* Hero */}
+250:       <section className="pt-48 pb-24 px-6 min-h-[90vh] flex flex-col items-center justify-center text-center relative">
+251:         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(46,255,0,0.05),transparent_50%)] pointer-events-none"></div>
+252:         
+253:         <h1 className="text-[60px] md:text-[100px] leading-none font-black tracking-tighter mb-8 font-tech bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-500 max-w-4xl">
+254:           PROJETO<br/><span className="text-[#2EFF00] uppercase">{company}</span>
+255:         </h1>
+256:         
+257:         <p className="text-xl md:text-2xl text-gray-400 max-w-3xl mb-12 leading-relaxed">
+258:           Olá {clientName}, aqui você vai conhecer um pouco do meu trabalho e as informações para o projeto da sua empresa, como prazo, formas de pagamento e o valor do investimento.
+259:         </p>
+260:         
+261:         <a href="#informacoes" className="inline-flex items-center gap-2 bg-[#2EFF00] text-black px-8 py-4 rounded-full font-bold text-sm tracking-wide shadow-[0_0_20px_rgba(46,255,0,0.3)] hover:scale-105 transition-transform mb-24">
+262:           VER AS INFORMAÇÕES <ArrowDown size={18} />
+263:         </a>
+264: 
+265:         {/* Stats */}
+266:         <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 py-6 px-12 border border-white/10 rounded-full bg-black/50 backdrop-blur-sm mx-auto max-w-fit">
+267:           <div className="flex items-center gap-4">
+268:             <div className="w-10 h-10 rounded-full bg-[#2EFF00]/10 flex items-center justify-center text-[#2EFF00]">
+269:               <Users size={18} />
+270:             </div>
+271:             <span className="text-sm text-gray-300">+200 Clientes Atendidos</span>
+272:           </div>
+273:           <div className="w-px h-8 bg-white/10 hidden md:block"></div>
+274:           <div className="flex items-center gap-4">
+275:             <div className="w-10 h-10 rounded-full bg-[#2EFF00]/10 flex items-center justify-center text-[#2EFF00]">
+276:               <Globe size={18} />
+277:             </div>
+278:             <span className="text-sm text-gray-300">Clientes em mais de 5 Países</span>
+279:           </div>
+280:           <div className="w-px h-8 bg-white/10 hidden md:block"></div>
+281:           <div className="flex items-center gap-4">
+282:             <div className="w-10 h-10 rounded-full bg-[#2EFF00]/10 flex items-center justify-center text-[#2EFF00]">
+283:               <Award size={18} />
+284:             </div>
+285:             <span className="text-sm text-gray-300">+15 Anos de experiência</span>
+286:           </div>
+287:         </div>
+288:       </section>
+289: 
+290:       {/* Portfolio Section */}
+291:       <section className="py-24 px-6 bg-[#0a0a0a]">
+292:         <div className="max-w-6xl mx-auto">
+293:           <ScrambleTag text="[ PORTFOLIO ]" />
+294:           <h2 className="text-5xl md:text-7xl font-black mb-8 tracking-tight font-tech group cursor-default">
+295:             <span className="group-hover:text-[#2EFF00] transition-colors duration-500">Trabalhos que</span> <span className="text-gray-600 group-hover:text-white transition-colors duration-500">falam por si.</span>
+296:           </h2>
+297:           <p className="text-xl text-gray-400 max-w-2xl mb-16 leading-relaxed">
+298:             Alguns dos projetos mais recentes onde aplicamos design estratégico para gerar resultados reais.
+299:           </p>
+300: 
+301:           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+302:             {projectsList.map((proj, i) => (
+303:               <div key={i} className="group rounded-2xl overflow-hidden border border-white/5 relative aspect-[4/3] bg-[#111]">
+304:                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+305:                 <img src={proj.image} alt={proj.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+306:               </div>
+307:             ))}
+308:           </div>
+309:         </div>
+310:       </section>
+311: 
+312:       {/* About the Maker */}
+313:       <section className="py-24 px-6 relative overflow-hidden">
+314:         <style>{`
+315:           @keyframes floatImage {
+316:             0% { transform: translateY(0px) rotate(0deg); }
+317:             50% { transform: translateY(-20px) rotate(2deg); }
+318:             100% { transform: translateY(0px) rotate(0deg); }
+319:           }
+320:         `}</style>
+321:         <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-16 relative z-10">
+322:           <div className="flex-[0.6] relative min-h-[500px]">
+323:             <ScrambleTag text="[ BASTIDORES ]" />
+324:             <div className="relative mb-12 flex justify-center md:justify-start">
+325:               <div style={{ width: "100%", maxWidth: "350px", height: "450px" }} className="w-[300px] md:w-[350px] shadow-[0_0_30px_rgba(46,255,0,0.15)]">
+326:                   <InteractiveTiltCard
+327:                     image={{
+328:                       src: "https://eionstudio.com.br/wp-content/uploads/2026/02/about-slide-2.jpg",
+329:                       alt: "ESCOM STUDIO",
+330:                     }}
+331:                     tiltFactor={20}
+332:                     hoverScale={1.05}
+333:                     shadowIntensity={0.6}
+334:                     glareEffect={true}
+335:                     glareIntensity={0.4}
+336:                   />
+337:               </div>
+338:             </div>
+339:             <h2 className="text-5xl md:text-7xl font-black mb-6 tracking-tight relative z-20 mix-blend-difference text-white pointer-events-none">
+340:               <TextRotateEntrance text="Muito além" /><br /><span className="text-[#2EFF00]"><TextRotateEntrance text="do pixel." /></span>
+341:             </h2>
+342:           </div>
+343:           
+344:           <div className="flex-1 mt-12 md:mt-24 relative z-30">
+345:             <p className="text-xl text-gray-400 leading-relaxed mb-6 max-w-lg">
+346:               A senioridade não é sobre o tempo, mas sobre a capacidade de prever o que o mercado precisa antes mesmo de ser solicitado. Com 15 anos no ativo, a minha missão é eliminar o "ruído" visual para deixar apenas o que importa: a mensagem e a conversão.
+347:             </p>
+348:             <blockquote className="border-l-2 border-[#2EFF00] pl-6 py-3 my-8 text-gray-300 italic bg-[#2EFF00]/5 rounded-r-lg pr-6 max-w-lg leading-relaxed">
+349:               "Sou casado com a melhor psicóloga do mundo, meu amor Ingrid. Temos um gatinho persa, o Oreo, e alguns peixinhos. Quando não estou criando designs, estou aproveitando a vida ao lado da minha família."
+350:             </blockquote>
+351:             <p className="text-lg text-gray-400 leading-relaxed mb-12 max-w-lg">
+352:               Atualmente, como Diretor de Arte, integro tecnologia e emoção para criar jornadas digitais que ficam gravadas na memória — e no extrato bancário dos meus clientes.
+353:             </p>
+354:           </div>
+355:         </div>
+356:       </section>
+357: 
+358:       {/* Process Section */}
+359:       <section className="py-24 px-6 bg-[#0a0a0a]">
+360:         <div className="max-w-4xl mx-auto flex flex-col gap-16">
+361:           <div className="w-full text-center mb-16">
+362:             <ScrambleTag text="[ TIMELINE ]" />
+363:             <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white leading-[1.1] group cursor-default">
+364:               <span className="group-hover:text-[#2EFF00] transition-colors duration-500">Entenda um pouco</span><br />
+365:               <span className="group-hover:text-white transition-colors duration-500">do processo de</span><br />
+366:               <span className="text-[#2EFF00] group-hover:text-white transition-colors duration-500">Criação</span>
+367:             </h2>
+368:           </div>
+369:           
+370:           <div className="relative w-full max-w-2xl mx-auto">
+371:             <style>{`
+372:               @keyframes timelineFlow {
+373:                 0% { top: -50px; opacity: 0; }
+374:                 10% { opacity: 1; }
+375:                 90% { opacity: 1; }
+376:                 100% { top: 100%; opacity: 0; }
+377:               }
+378:               .timeline-anim {
+379:                 animation: timelineFlow 5s linear infinite;
+380:               }
+381:             `}</style>
+382:             {/* Timeline base track */}
+383:             <div className="absolute left-[5px] top-0 bottom-0 w-px bg-[#2EFF00]/20"></div>
+384:             
+385:             {/* Flowing animated particle based on scroll */}
+386:             <div className="absolute left-[4px] top-0 w-[3px] h-[150px] bg-gradient-to-b from-transparent via-[#2EFF00] to-transparent z-10 timeline-anim hidden md:block"></div>
+387: 
+388:             <div className="space-y-16 pt-4 pb-4 w-full">
+389:               {/* Step 1 */}
+390:               <div className="relative grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 pb-16 group">
+391:                 <div className="absolute left-0 top-1 w-[11px] h-[11px] rounded-full bg-black border-2 border-[#2EFF00] z-20 group-hover:bg-[#2EFF00] transition-colors duration-300"></div>
+392:                 <div className="pl-6 md:pl-8">
+393:                   <div className="font-mono text-sm text-[#2EFF00] tracking-[0.2em] mb-2 font-bold">ETAPA 01</div>
+394:                   <div className="font-mono text-xs text-gray-500 uppercase tracking-widest">Mapeamento</div>
+395:                 </div>
+396:                 <div className="pl-6 md:pl-0">
+397:                   <h3 className="text-2xl font-bold mb-3 text-white group-hover:text-[#2EFF00] transition-colors duration-300">Aplicação do Briefing</h3>
+398:                   <p className="text-gray-400 text-[1.05rem] leading-relaxed max-w-2xl">
+399:                     O primeiro passo é entender exatamente o que você quer e coletar as informações necessárias, como: Copy, arquivos de imagem, identidade visual, referências, etc...
+400:                   </p>
+401:                 </div>
+402:               </div>
+403: 
+404:               {/* Step 2 */}
+405:               <div className="relative grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 pb-16 group">
+406:                 <div className="absolute left-0 top-1 w-[11px] h-[11px] rounded-full bg-black border-2 border-[#2EFF00] z-20 group-hover:bg-[#2EFF00] transition-colors duration-300"></div>
+407:                 <div className="pl-6 md:pl-8">
+408:                   <div className="font-mono text-sm text-[#2EFF00] tracking-[0.2em] mb-2 font-bold">ETAPA 02</div>
+409:                   <div className="font-mono text-xs text-gray-500 uppercase tracking-widest">Análise</div>
+410:                 </div>
+411:                 <div className="pl-6 md:pl-0">
+412:                   <h3 className="text-2xl font-bold mb-3 text-white group-hover:text-[#2EFF00] transition-colors duration-300">Pesquisa & Estratégia</h3>
+413:                   <p className="text-gray-400 text-[1.05rem] leading-relaxed max-w-2xl">
+414:                     Realizo uma análise do nicho para compreender profundamente as estratégias dos concorrentes, identificando as melhores práticas e referências do setor. Esse processo me permite absorver ideias inovadoras e eficazes.
+415:                   </p>
+416:                 </div>
+417:               </div>
+418: 
+419:               {/* Step 3 */}
+420:               <div className="relative grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 pb-16 group">
+421:                 <div className="absolute left-0 top-1 w-[11px] h-[11px] rounded-full bg-black border-2 border-[#2EFF00] z-20 group-hover:bg-[#2EFF00] transition-colors duration-300"></div>
+422:                 <div className="pl-6 md:pl-8">
+423:                   <div className="font-mono text-sm text-[#2EFF00] tracking-[0.2em] mb-2 font-bold">ETAPA 03</div>
+424:                   <div className="font-mono text-xs text-gray-500 uppercase tracking-widest">Direção</div>
+425:                 </div>
+426:                 <div className="pl-6 md:pl-0">
+427:                   <h3 className="text-2xl font-bold mb-3 text-white group-hover:text-[#2EFF00] transition-colors duration-300">Criação do Design</h3>
+428:                   <p className="text-gray-400 text-[1.05rem] leading-relaxed max-w-2xl">
+429:                     A partir disso, iniciarei o desenvolvimento da parte visual, garantindo que o resultado final seja não apenas atrativo, mas também altamente competitivo e alinhado com as tendências de mercado.
+430:                   </p>
+431:                 </div>
+432:               </div>
+433: 
+434:               {/* Step 4 */}
+435:               <div className="relative grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 pb-16 group">
+436:                 <div className="absolute left-0 top-1 w-[11px] h-[11px] rounded-full bg-black border-2 border-[#2EFF00] z-20 group-hover:bg-[#2EFF00] transition-colors duration-300"></div>
+437:                 <div className="pl-6 md:pl-8">
+438:                   <div className="font-mono text-sm text-[#2EFF00] tracking-[0.2em] mb-2 font-bold">ETAPA 04</div>
+439:                   <div className="font-mono text-xs text-gray-500 uppercase tracking-widest">Front-end</div>
+440:                 </div>
+441:                 <div className="pl-6 md:pl-0">
+442:                   <h3 className="text-2xl font-bold mb-3 text-white group-hover:text-[#2EFF00] transition-colors duration-300">Implementação</h3>
+443:                   <p className="text-gray-400 text-[1.05rem] leading-relaxed max-w-2xl">
+444:                     Após a completa aprovação do design pelo cliente, procedo com a implementação da página, assegurando a plena responsividade em todos os dispositivos e garantindo uma experiência de usuário fluida.
+445:                   </p>
+446:                 </div>
+447:               </div>
+448: 
+449:               {/* Step 5 */}
+450:               <div className="relative grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 group">
+451:                 <div className="absolute left-0 top-1 w-[11px] h-[11px] rounded-full bg-black border-2 border-[#2EFF00] z-20 group-hover:bg-[#2EFF00] transition-colors duration-300"></div>
+452:                 <div className="pl-6 md:pl-8">
+453:                   <div className="font-mono text-sm text-[#2EFF00] tracking-[0.2em] mb-2 font-bold">ETAPA 05</div>
+454:                   <div className="font-mono text-xs text-gray-500 uppercase tracking-widest">Performance</div>
+455:                 </div>
+456:                 <div className="pl-6 md:pl-0">
+457:                   <h3 className="text-2xl font-bold mb-3 text-white group-hover:text-[#2EFF00] transition-colors duration-300">Otimização Extrema</h3>
+458:                   <p className="text-gray-400 text-[1.05rem] leading-relaxed max-w-2xl mb-8">
+459:                     Durante esta fase, dedico-me à otimização integral da página, visando assegurar um carregamento rápido e eficiente. Velocidade é crucial para as conversões e para evitar abandonos.
+460:                   </p>
+461:                   
+462:                   <div className="bg-white border border-gray-200 p-6 md:p-8 md:pb-6 w-full max-w-[550px] relative overflow-hidden group-hover:border-[#2EFF00]/50 transition-colors duration-500 rounded-lg shadow-lg">
+463:                      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#2EFF00] to-transparent opacity-100"></div>
+464:                      <div className="flex justify-between items-center mb-6">
+465:                        <span className="text-sm font-mono text-gray-400 tracking-[0.15em] uppercase leading-none">Performance Report</span>
+466:                        <div className="flex gap-[6px] items-center">
+467:                          <div className="w-1.5 h-1.5 rounded-full bg-gray-200"></div>
+468:                          <div className="w-1.5 h-1.5 rounded-full bg-gray-200"></div>
+469:                          <div className="w-1.5 h-1.5 rounded-full bg-[#2EFF00]"></div>
+470:                        </div>
+471:                      </div>
+472:                      <div className="grid grid-cols-3 gap-6 mb-6 pt-2">
+473:                        <div className="flex flex-col">
+474:                          <div className="text-5xl font-black text-[#2EFF00]">A</div>
+475:                          <div className="text-xs text-gray-400 font-mono tracking-wider mt-2 uppercase">Grade</div>
+476:                        </div>
+477:                        <div className="flex flex-col">
+478:                          <div className="text-5xl font-black text-black">100%</div>
+479:                          <div className="text-xs text-gray-400 font-mono tracking-wider mt-2 uppercase">Perf.</div>
+480:                        </div>
+481:                        <div className="flex flex-col">
+482:                          <div className="text-5xl font-black text-black">99%</div>
+483:                          <div className="text-xs text-gray-400 font-mono tracking-wider mt-2 uppercase">Struct.</div>
+484:                        </div>
+485:                      </div>
+486:                      <div className="text-sm text-gray-500 font-mono flex gap-6 pt-4 border-t border-gray-100">
+487:                        <span>LCP: <strong className="text-[#2EFF00] font-bold">450ms</strong></span>
+488:                        <span>TBT: <strong className="text-[#2EFF00] font-bold">12ms</strong></span>
+489:                        <span>CLS: <strong className="text-[#2EFF00] font-bold">0.01</strong></span>
+490:                      </div>
+491:                   </div>
+492:                 </div>
+493:               </div>
+494:             </div>
+495:           </div>
+496:         </div>
+497:       </section>
+498: 
+499:       {/* Info Section */}
+500:       <section id="informacoes" className="py-24 px-6">
+501:         <div className="max-w-4xl mx-auto">
+502:           <div className="flex items-center justify-between border-b border-white/10 pb-6 mb-12">
+503:              <h2 className="text-3xl md:text-5xl font-black">Informações sobre a Proposta</h2>
+504:              <span className="text-[10px] border border-[#2EFF00]/50 bg-[#2EFF00]/10 px-3 py-1 rounded font-mono text-[#2EFF00] shadow-[0_0_10px_rgba(46,255,0,0.2)]">AVISOS IMPORTANTES</span>
+505:           </div>
+506: 
+507:           <div className="space-y-6">
+508:             <div className="bg-[#111] border border-white/5 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row gap-6 items-start md:items-center">
+509:               <div className="flex items-center gap-6 w-full md:w-[40%] shrink-0">
+510:                 <span className="text-4xl font-black text-white/50">01</span>
+511:                 <div className="w-20 h-20 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+512:                   <div style={{ width: 80, height: 80 }}>
+513:                     <DotLottiePlayer
+514:                       src="https://fonts.gstatic.com/s/e/notoemoji/latest/23f0/lottie.json"
+515:                       autoplay
+516:                       loop
+517:                     />
+518:                   </div>
+519:                 </div>
+520:                 <h3 className="text-xl font-bold leading-tight">Prazo de<br />Entrega</h3>
+521:               </div>
+522:               <p className="text-gray-400 text-sm leading-relaxed border-l border-white/10 pl-6 border-l-0 md:border-l-solid">
+523:                 O prazo de entrega de uma página é de <strong className="text-white">10 a 15 dias úteis</strong>, podendo ser entregue antes dependendo do fluxo de demandas ou da necessidade do cliente.
+524:               </p>
+525:             </div>
+526: 
+527:             <div className="bg-[#111] border border-white/5 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row gap-6 items-start md:items-center">
+528:               <div className="flex items-center gap-6 w-full md:w-[40%] shrink-0">
+529:                 <span className="text-4xl font-black text-white/50">02</span>
+530:                 <div className="w-12 h-12 rounded-xl bg-[#2EFF00]/10 flex items-center justify-center text-[#2EFF00] shrink-0">
+531:                    <Wallet size={20} />
+532:                 </div>
+533:                 <h3 className="text-xl font-bold leading-tight">Formas de<br />Pagamento</h3>
+534:               </div>
+535:               <p className="text-gray-400 text-sm leading-relaxed border-l border-white/10 pl-6 border-l-0 md:border-l-solid">
+536:                 A partir do pagamento de <strong className="text-white">50% do valor</strong> começamos o projeto e depois que o serviço for entregue e aprovado, os outros 50%.
+537:               </p>
+538:             </div>
+539: 
+540:             <div className="bg-[#111] border border-white/5 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row gap-6 items-start md:items-center">
+541:               <div className="flex items-center gap-6 w-full md:w-[40%] shrink-0">
+542:                 <span className="text-4xl font-black text-white/50">03</span>
+543:                 <div className="w-12 h-12 rounded-xl bg-[#2EFF00]/10 flex items-center justify-center text-[#2EFF00] shrink-0">
+544:                    <CreditCard size={20} />
+545:                 </div>
+546:                 <h3 className="text-xl font-bold leading-tight">Meios de<br />Pagamento</h3>
+547:               </div>
+548:               <p className="text-gray-400 text-sm leading-relaxed border-l border-white/10 pl-6 border-l-0 md:border-l-solid">
+549:                 Você pode pagar através de PIX ou transferência bancária internacional. Se preferir, pode parcelar no cartão de crédito <span className="text-[10px] text-gray-500">(plataforma com taxas aplicáveis).</span>
+550:               </p>
+551:             </div>
+552: 
+553:             {proposal?.observations && (
+554:               <div className="bg-[#111] border border-[#2EFF00]/20 rounded-2xl p-6 md:p-8 flex flex-col gap-4 items-start">
+555:                 <h3 className="text-xl font-bold leading-tight text-[#2EFF00]">Observações</h3>
+556:                 <p className="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap">
+557:                   {proposal.observations}
+558:                 </p>
+559:               </div>
+560:             )}
+561:           </div>
+562:         </div>
+563:       </section>
+564: 
+565:       {/* Pricing / Investment */}
+566:       <section id="investimento" className="py-24 px-6 relative overflow-hidden">
+567:         <div className="absolute inset-0 bg-[#2EFF00]/5 pointer-events-none" style={{ maskImage: 'radial-gradient(ellipse at bottom, black, transparent)' }}></div>
+568:         <div className="max-w-3xl mx-auto border border-white/10 bg-[#050505] rounded-[40px] p-12 md:p-20 text-center relative z-10 shadow-2xl">
+569:           <h2 className="text-4xl font-black text-[#2EFF00] mb-8">Investimento</h2>
+570:           
+571:           {proposal?.selectedServices?.length > 0 && (
+572:             <div className="flex flex-col items-center mb-8 w-full max-w-sm mx-auto border border-[#333] bg-[#111] rounded-2xl p-6">
+573:                <h4 className="text-[10px] text-gray-500 font-mono tracking-widest border-b border-[#333] pb-4 mb-4 w-full text-center">SERVIÇOS INCLUSOS</h4>
+574:                {proposal.selectedServices.map((s: any) => (
+575:                  <div key={s.id} className="flex justify-between w-full text-sm mb-3 font-mono last:mb-0">
+576:                     <span className="text-gray-300">{s.name}</span>
+577:                  </div>
+578:                ))}
+579:             </div>
+580:           )}
+581: 
+582:           <div className="flex items-start justify-center gap-2 mb-8 mt-4">
+583:             <span className="text-xl font-bold mt-2">R$</span>
+584:             <span className="text-6xl md:text-8xl font-black tracking-tighter">{totalValueSplit[0]}</span>
+585:             <span className="text-xl font-bold mt-2">,{totalValueSplit[1] || '00'}</span>
+586:           </div>
+587: 
+588:           <p className="text-gray-400 text-sm mb-12">
+589:             Essa Proposta com esse valor promocional é válida por <strong className="text-red-500 font-bold">3 dias</strong>.
+590:           </p>
+591: 
+592:           <button onClick={handleAcceptProposal} disabled={isAccepting} className="inline-flex items-center justify-center gap-2 bg-[#2EFF00] text-black w-full md:w-auto px-12 py-5 rounded-full font-bold text-lg hover:bg-[#2EFF00]/90 transition-colors shadow-[0_0_30px_rgba(46,255,0,0.3)] hover:scale-105 transform duration-300 disabled:opacity-50">
+593:             {isAccepting ? "AGUARDE..." : "QUERO FECHAR COM VOCÊ"} <ArrowUpRight size={20} />
+594:           </button>
+595: 
+596:           <div className="mt-12 text-sm text-gray-500">
+597:             Ainda Ficou com alguma dúvida?<br/>
+598:             <a href={`https://wa.me/${phone}?text=${encodeURIComponent("Olá ESCOM STUDIO, tive uma dúvida sobre a proposta.")}`} target="_blank" rel="noreferrer" className="text-[#2EFF00] underline hover:text-white transition-colors mt-2 inline-block">Clique aqui para me chamar no WhatsApp</a>
+599:           </div>
+600:         </div>
+601:       </section>
+602: 
+603:       {/* Footer */}
+604:       <footer className="border-t border-white/5 py-12 px-6 bg-black">
+605:         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+606:           <div className="text-xs text-gray-600 font-mono">
+607:             © 2026 Todos os direitos reservados.
+608:           </div>
+609:           
+610:           <div className="font-bold text-xl tracking-tight">
+611:              ESCOM <span className="text-[#2EFF00]">STUDIO</span>
+612:           </div>
+613: 
+614:           <div className="text-xs text-gray-600 font-mono flex gap-4">
+615:             <a href="#" className="hover:text-white transition-colors">Políticas de Privacidade</a>
+616:             <span>|</span>
+617:             <a href="#" className="hover:text-white transition-colors">Termos de Uso</a>
+618:           </div>
+619:         </div>
+620:         <div className="text-center mt-8 text-[10px] text-gray-700 font-mono uppercase tracking-widest">
+621:            ESCOM STUDIO LTDA | CNPJ: 48.298.795/0001-92
+622:         </div>
+623:       </footer>
+624: 
+625:       {/* Scroll to Top */}
+626:       <button 
+627:         onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
+628:         className="fixed bottom-8 right-8 w-12 h-12 bg-[#2EFF00] text-black rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-[0_0_15px_rgba(46,255,0,0.3)] z-50">
+629:         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+630:       </button>
+631:       </div>
+632: 
+633:       {/* Print View */}
+634:       <div id="pdf-capture-container" className="print-only print-only-bg" style={{ padding: '20mm', backgroundColor: '#050505', color: '#fff', fontSize: '14px', lineHeight: '1.6', minHeight: '100vh' }}>
+635:         <h1 className="text-center font-bold text-[#2EFF00] text-3xl mb-4" style={{ marginTop: '0' }}>Proposta Comercial - ESCOM STUDIO</h1>
+636:         <div className="text-center mb-6 text-sm text-gray-400">
+637:             Data de Envio: {dateSent} | <span className="text-red-500 font-bold">Proposta válida por 3 dias</span>
+638:         </div>
+639: 
+640:         <p className="mb-4">OLÁ {clientName?.toUpperCase() || ''},</p>
+641:         <p className="mb-6">Aqui você vai conhecer um pouco do meu trabalho e as informações para o projeto da sua empresa, como prazo, formas de pagamento e o valor do investimento.</p>
+642: 
+643:         <div className="mb-6 p-4 rounded" style={{ backgroundColor: '#111', borderLeft: '5px solid #2EFF00' }}>
+644:             <p className="font-bold">+200 Clientes Atendidos</p>
+645:             <p className="font-bold">Clientes em mais de 5 Países</p>
+646:             <p className="font-bold">+15 Anos de experiência</p>
+647:         </div>
+648: 
+649:         <h2 className="text-[#2EFF00] text-2xl font-bold mb-4">Trabalhos que falam por si.</h2>
+650:         <p className="mb-6">Alguns dos projetos mais recentes onde aplicamos design estratégico para gerar resultados reais.</p>
+651: 
+652:         <h3 className="text-[#2EFF00] text-xl font-bold mb-4">Muito além do pixel.</h3>
+653:         <p className="mb-4">A senioridade não é sobre o tempo, mas sobre a capacidade de prever o que o mercado precisa antes mesmo de ser solicitado. Com 15 anos no ativo, a minha missão é eliminar o "ruído" visual para deixar apenas o que importa: a mensagem e a conversão.</p>
+654:         <p className="mb-4 italic">"Sou casado com a melhor psicóloga do mundo, meu amor Ingrid. Temos um gatinho persa, o Oreo, e alguns peixinhos. Quando não estou criando designs, estou aproveitando a vida ao lado da minha família."</p>
+655:         <p className="mb-8">Atualmente, como Diretor de Arte, integro tecnologia e emoção para criar jornadas digitais que ficam gravadas na memória — e no extrato bancário dos meus clientes.</p>
+656: 
+657:         <h2 className="text-[#2EFF00] text-2xl font-bold mb-4" style={{ pageBreakBefore: 'always', margintop: '20px' }}>Entenda um pouco do processo de Criação</h2>
+658:         <div className="mb-8 p-6 rounded" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
+659:             <div className="flex items-start mb-4">
+660:                 <span className="text-[#2EFF00] font-bold text-2xl mr-4 leading-none">01</span>
+661:                 <div>
+662:                     <h4 className="text-[#2EFF00] font-bold mb-1">Aplicação do Briefing</h4>
+663:                     <p className="text-sm">O primeiro passo é entender exatamente o que você quer e coletar as informações necessárias, como: Copy, arquivos de imagem, identidade visual, referências, etc...</p>
+664:                 </div>
+665:             </div>
+666:             <div className="flex items-start mb-4">
+667:                 <span className="text-[#2EFF00] font-bold text-2xl mr-4 leading-none">02</span>
+668:                 <div>
+669:                     <h4 className="text-[#2EFF00] font-bold mb-1">Pesquisa & Estratégia</h4>
+670:                     <p className="text-sm">Realizo uma análise do nicho para compreender profundamente as estratégias dos concorrentes, identificando as melhores práticas e referências do setor. Esse processo me permite absorver ideias inovadoras e eficazes.</p>
+671:                 </div>
+672:             </div>
+673:             <div className="flex items-start mb-4">
+674:                 <span className="text-[#2EFF00] font-bold text-2xl mr-4 leading-none">03</span>
+675:                 <div>
+676:                     <h4 className="text-[#2EFF00] font-bold mb-1">Criação do Design</h4>
+677:                     <p className="text-sm">A partir disso, iniciarei o desenvolvimento da parte visual, garantindo que o resultado final seja não apenas atrativo, mas também altamente competitivo e alinhado com as tendências de mercado.</p>
+678:                 </div>
+679:             </div>
+680:             <div className="flex items-start mb-4">
+681:                 <span className="text-[#2EFF00] font-bold text-2xl mr-4 leading-none">04</span>
+682:                 <div>
+683:                     <h4 className="text-[#2EFF00] font-bold mb-1">Implementação</h4>
+684:                     <p className="text-sm">Após a completa aprovação do design pelo cliente, procedo com a implementação da página, assegurando a plena responsividade em todos os dispositivos e garantindo uma experiência de usuário fluida.</p>
+685:                 </div>
+686:             </div>
+687:             <div className="flex items-start">
+688:                 <span className="text-[#2EFF00] font-bold text-2xl mr-4 leading-none">05</span>
+689:                 <div>
+690:                     <h4 className="text-[#2EFF00] font-bold mb-1">Otimização Extrema da Página</h4>
+691:                     <p className="text-sm">Durante esta fase, dedico-me à otimização integral da página, visando assegurar um carregamento rápido e eficiente. Velocidade é crucial para as conversões e para evitar abandonos.</p>
+692:                 </div>
+693:             </div>
+694:         </div>
+695: 
+696:         <h2 className="text-[#2EFF00] text-2xl font-bold mb-4">Performance Report</h2>
+697:         <div className="mb-8 p-6 rounded" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
+698:             <p className="mb-1">Grade: <strong>A</strong></p>
+699:             <p className="mb-1">Performance: <strong>100%</strong></p>
+700:             <p className="mb-1">Structure: <strong>99%</strong></p>
+701:             <p className="mb-1">LCP: <strong>450ms</strong></p>
+702:             <p className="mb-1">TBT: <strong>12ms</strong></p>
+703:             <p>CLS: <strong>0.01</strong></p>
+704:         </div>
+705: 
+706:         <h2 className="text-[#2EFF00] text-2xl font-bold mb-4" style={{ pageBreakBefore: 'always', margintop: '20px' }}>Informações sobre a Proposta</h2>
+707:         <div className="mb-8 p-6 rounded" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
+708:             <h4 className="text-[#2EFF00] font-bold mb-1">01 Prazo de Entrega</h4>
+709:             <p className="text-sm mb-4">O prazo de entrega de uma página é de <strong>10 a 15 dias úteis</strong>, podendo ser entregue antes dependendo do fluxo de demandas ou da necessidade do cliente.</p>
+710: 
+711:             <h4 className="text-[#2EFF00] font-bold mb-1">02 Formas de Pagamento</h4>
+712:             <p className="text-sm mb-4">A partir do pagamento de <strong>50% do valor</strong> começamos o projeto e depois que o serviço for entregue e aprovado, os outros 50%.</p>
+713: 
+714:             <h4 className="text-[#2EFF00] font-bold mb-1">03 Meios de Pagamento</h4>
+715:             <p className="text-sm">Você pode pagar através de PIX ou transferência bancária internacional. Se preferir, pode parcelar no cartão de crédito (plataforma com taxas aplicáveis).</p>
+716:             
+717:             {proposal?.observations && (
+718:               <div className="mt-6 pt-6" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+719:                 <h4 className="text-[#2EFF00] font-bold mb-2">Observações</h4>
+720:                 <p className="text-sm whitespace-pre-wrap">{proposal.observations}</p>
+721:               </div>
+722:             )}
+723:         </div>
+724: 
+725:         <div className="text-center rounded-xl p-8 mb-8" style={{ backgroundColor: 'rgba(46,255,0,0.1)', border: '1px solid #2EFF00' }}>
+726:             <h3 className="text-2xl font-bold text-white mb-4">Investimento</h3>
+727:             
+728:             {proposal?.selectedServices?.length > 0 && (
+729:               <div className="mb-6">
+730:                  <h4 className="text-gray-400 font-bold mb-2 font-mono text-xs">SERVIÇOS INCLUSOS</h4>
+731:                  {proposal.selectedServices.map((s: any) => (
+732:                    <p key={s.id} className="text-sm text-gray-300 font-mono mb-1">{s.name}</p>
+733:                  ))}
+734:                  <div style={{ width: '40px', height: '1px', backgroundColor: 'rgba(255,255,255,0.2)', margin: '16px auto' }}></div>
+735:               </div>
+736:             )}
+737:             
+738:             <p className="text-4xl text-[#2EFF00] font-black leading-none mb-2">R$ {totalValueSplit[0]},{totalValueSplit[1] || '00'}</p>
+739:             <p className="text-sm text-gray-400 mt-2">Essa Proposta com esse valor promocional é válida por 3 dias.</p>
+740:         </div>
+741: 
+742:         {/* Since it's a PDF, links might still be clickable on digital viewers */}
+743:         <p className="text-center font-bold mb-4">Gostou? Clique abaixo para começarmos!</p>
+744:         <a href={`https://wa.me/${phone}?text=${wppText}`} target="_blank" rel="noreferrer" className="block w-full text-center p-4 bg-[#2EFF00] text-black font-bold mb-4" style={{ textDecoration: 'none', borderRadius: '5px' }}>
+745:             QUERO FECHAR COM VOCÊ
+746:         </a>
+747:         <p className="text-center mt-6 text-sm text-gray-400">Ainda Ficou com alguma dúvida?</p>
+748:         <a href={`https://wa.me/${phone}?text=${encodeURIComponent("Olá ESCOM STUDIO, tive uma dúvida sobre a proposta.")}`} target="_blank" rel="noreferrer" className="block w-full text-center p-4 bg-[#111] text-[#2EFF00] font-bold" style={{ border: '1px solid #2EFF00', textDecoration: 'none', borderRadius: '5px' }}>
+749:             Clique aqui para me chamar no WhatsApp
+750:         </a>
+751: 
+752:         <div className="text-center mt-12 text-xs text-gray-500 pt-8" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+753:             <p>© 2026 Todos os direitos reservados.</p>
+754:             <p className="mt-2">ESCOM STUDIO LTDA | CNPJ: 48.298.795/0001-92</p>
+755:         </div>
+756:       <
+<truncated 127 bytes>
+
+NOTE: The output was truncated because it was too long. Use a more targeted query or a smaller range to get the information you need.

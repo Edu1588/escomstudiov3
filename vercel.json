@@ -1,6 +1,10 @@
 {
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/site-aventis-ma", "destination": "/site-aventis-ma/index.html" },
+    { "source": "/site-aventis-ma/analise", "destination": "/site-aventis-ma/analise.html" },
+    { "source": "/site-aventis-ma/analise.pdf", "destination": "/site-aventis-ma/analise.html" },
+    { "source": "/aventis-ma", "destination": "/site-aventis-ma/index.html" },
     { "source": "/:slug(proposta-escom-[a-zA-Z0-9-]+)", "destination": "/baseproposta" },
     { "source": "/template-silva-autocenter/silva-autocenter.pdf", "destination": "/template-silva-autocenter/dossie" },
     { "source": "/api/:path*", "destination": "/api" },

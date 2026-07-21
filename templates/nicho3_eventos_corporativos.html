@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Produtora boutique de Eventos Corporativos Premium e Imersões para Alta Liderança (C-Level). Desenhamos experiências que transformam culturas.">
+    <meta name="keywords" content="Eventos Corporativos, Imersões de Liderança, Kick-off, Convenções, Team Building C-Level, Produtora de Eventos, Experiências Corporativas">
+    <title>LUMINA Experiences | Eventos Corporativos & Imersões para Liderança</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- GSAP Core & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        heading: ['Playfair Display', 'serif'],
+                        sans: ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        darkBase: '#080808',
+                        darkPanel: '#121212',
+                        accentCopper: '#D97736',
+                        accentCopperLight: '#F0995D',
+                        textMuted: '#9CA3AF'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Estilos Customizados -->
+    <style>
+        body {
+            background-color: #080808;
+            color: #F9FAFB;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .glass-dark {
+            background: rgba(18, 18, 18, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-card-hover {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card-hover:hover {
+            transform: translateY(-8px);
+            background: rgba(25, 25, 25, 0.6);
+            border-color: rgba(217, 119, 54, 0.3);
+            box-shadow: 0 20px 40px rgba(217, 119, 54, 0.05);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #080808; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #D97736; }
+
+        .text-gradient-copper {
+            background: linear-gradient(135deg, #FFF, #D97736);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        section { position: relative; z-index: 10; }
+
+        img {
+            background-color: #1a1a1a;
+            position: relative;
+        }
+        img::before {
+            content: "Lumina Experience Visual";
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #121212;
+            color: #D97736;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            text-align: center;
+            padding: 1rem;
+            border: 1px solid rgba(217, 119, 54, 0.2);
+        }
+        img[src] {
+            z-index: 1; 
+        }
+
+        .bg-ken-burns {
+            animation: kenburns-pan 30s infinite alternate linear;
+            transform-origin: center center;
+        }
+
+        @keyframes kenburns-pan {
+            0% { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.1) translate(-2%, 2%); }
+        }
+
+        .btn-glow {
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn-glow::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: skewX(-20deg);
+            animation: sweep-glow 4s infinite cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+        }
+
+        @keyframes sweep-glow {
+            0% { left: -100%; }
+            20% { left: 200%; }
+            100% { left: 200%; }
+        }
+
+        .fixed-btn-container {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-floating {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-top {
+            width: 45px;
+            height: 45px;
+            background-color: rgba(18, 18, 18, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #FFF;
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+        }
+
+        .btn-top.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .btn-top:hover {
+            background-color: #D97736;
+            border-color: #D97736;
+        }
+
+        .btn-wpp {
+            width: 55px;
+            height: 55px;
+            background-color: #25D366;
+            color: white;
+        }
+
+        .btn-wpp:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 20px rgba(37, 211, 102, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .fixed-btn-container { right: 16px; bottom: 16px; }
+            .btn-top { width: 40px; height: 40px; }
+            .btn-wpp { width: 50px; height: 50px; }
+        }
+    </style>
+</head>
+<body class="selection:bg-accentCopper selection:text-white">
+
+    <!-- 1. Header / Navbar -->
+    <header class="fixed w-full z-50 transition-all duration-500 py-5" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+            
+            <a href="#" class="text-xl md:text-2xl font-sans font-bold tracking-widest text-white flex items-center gap-2">
+                <i class="ph ph-sparkle text-accentCopper text-2xl"></i>
+                <span id="nav-brand">LUMINA EXP</span>
+            </a>
+            
+            <nav class="hidden lg:flex gap-8 text-[11px] uppercase tracking-[0.2em] font-semibold text-gray-400">
+                <a href="#essencia" class="hover:text-accentCopper transition-colors">Essência</a>
+                <a href="#solucoes" class="hover:text-accentCopper transition-colors">Soluções</a>
+                <a href="#metodologia" class="hover:text-accentCopper transition-colors">Metodologia</a>
+                <a href="#portfolio" class="hover:text-accentCopper transition-colors">Portfólio</a>
+            </nav>
+
+            <a href="#contato" class="hidden lg:inline-flex items-center gap-2 btn-glow px-6 py-2.5 bg-transparent border border-accentCopper text-accentCopper hover:bg-accentCopper hover:text-white transition-all duration-300 rounded-sm uppercase tracking-widest text-[10px] font-bold">
+                Criar Projeto <i class="ph ph-arrow-right"></i>
+            </a>
+
+            <button class="lg:hidden text-2xl text-white hover:text-accentCopper transition-colors">
+                <i class="ph ph-list"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="fixed-btn-container">
+        <button id="btnScrollToTop" class="btn-floating btn-top" aria-label="Voltar ao topo da página">
+            <i class="ph ph-caret-up text-lg"></i>
+        </button>
+        <a href="https://wa.me/5511999999999?text=Olá, gostaria de desenhar um evento corporativo com a Lumina." target="_blank" rel="noopener noreferrer" class="btn-floating btn-wpp btn-glow" aria-label="Fale conosco pelo WhatsApp">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7">
+                <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.964 9.964 0 001.333 4.993L2 22l5.233-1.237a9.994 9.994 0 004.779 1.216h.004c5.502 0 9.985-4.48 9.985-9.984C22.001 6.489 17.518 2 12.012 2zm0 16.974h-.003a8.354 8.354 0 01-4.255-1.156l-.305-.181-3.165.748.761-3.08-.2-.317a8.312 8.312 0 01-1.272-4.471c.002-4.622 3.767-8.384 8.4-8.384 4.634 0 8.396 3.762 8.396 8.386 0 4.624-3.762 8.439-8.357 8.439zm4.606-6.289c-.252-.127-1.496-.739-1.728-.823-.232-.085-.401-.127-.57.127-.168.254-.652.823-.799.991-.148.169-.296.19-.548.064-.252-.127-1.069-.395-2.037-1.258-.753-.674-1.261-1.506-1.41-1.76-.148-.254-.016-.391.11-.518.113-.114.252-.296.378-.444.126-.148.168-.254.252-.423.084-.169.042-.317-.021-.444-.063-.127-.57-1.375-.78-1.884-.206-.496-.416-.428-.57-.436-.148-.007-.317-.007-.486-.007-.168 0-.442.063-.674.317-.231.254-.884.866-.884 2.114 0 1.248.905 2.454 1.031 2.623.126.169 1.789 2.73 4.331 3.826 2.034.877 2.399.704 2.82.662.421-.042 1.353-.553 1.543-1.088.189-.535.189-.992.133-1.088-.057-.095-.226-.148-.478-.275z"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- 2. Hero Section -->
+    <section id="hero" class="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
+        <div class="absolute inset-0 z-0 overflow-hidden bg-darkBase">
+            <img src="https://picsum.photos/id/296/2500/1200" alt="Corporate Event Stage" class="w-full h-full object-cover object-center bg-ken-burns opacity-70 mix-blend-luminosity">
+        </div>
+        
+        <div class="absolute inset-0 z-0 bg-gradient-to-r from-darkBase via-darkBase/90 to-transparent"></div>
+        <div class="absolute inset-0 z-0 bg-gradient-to-t from-darkBase via-darkBase/20 to-transparent"></div>
+
+        <div class="relative z-10 w-full max-w-7xl mx-auto px-6">
+            <div class="max-w-3xl gs-hero-content">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-8 h-[1px] bg-accentCopper"></div>
+                    <span class="text-accentCopper tracking-[0.3em] text-[10px] uppercase font-bold">Produtora de Elite</span>
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl lg:text-8xl font-heading font-normal mb-8 leading-[1.05] text-white drop-shadow-2xl">
+                    Experiências que <br> <span class="font-bold text-gradient-copper italic">Transformam</span> Líderes.
+                </h1>
+                
+                <p class="text-lg md:text-xl text-gray-300 mb-12 max-w-2xl font-light leading-relaxed border-l-2 border-accentCopper/30 pl-6">
+                    Produção impecável de <strong class="text-white font-medium">Eventos Corporativos</strong>, Kick-offs e <strong class="text-white font-medium">Imersões C-Level</strong>. 
+                    Desenhamos ambientes onde a cultura respira e a inovação acontece.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-5">
+                    <a href="#solucoes" class="btn-glow px-8 py-4 bg-accentCopper text-white font-bold uppercase tracking-[0.15em] rounded-sm hover:bg-accentCopperLight transition-colors duration-300 text-center text-xs shadow-lg shadow-accentCopper/20">
+                        Descobrir Projetos
+                    </a>
+                    <a href="#contato" class="px-8 py-4 glass-dark text-white font-semibold uppercase tracking-[0.15em] rounded-sm hover:bg-white/10 transition-colors duration-300 text-center flex items-center justify-center gap-3 group text-xs">
+                        Solicitar Curadoria <i class="ph ph-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Essência / Manifesto -->
+    <section id="essencia" class="py-24 bg-darkBase relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col lg:flex-row gap-16 items-center">
+                <div class="lg:w-1/2 order-2 lg:order-1 relative gs-reveal-left">
+                    <div class="relative rounded-sm overflow-hidden border border-white/5 shadow-2xl">
+                        <img src="https://picsum.photos/id/447/1000/800" alt="Liderança e Imersão" class="w-full h-auto grayscale-[50%] brightness-75 hover:grayscale-0 hover:brightness-100 transition-all duration-700">
+                    </div>
+                    <div class="absolute -top-4 -left-4 w-24 h-24 border-l-2 border-t-2 border-accentCopper/40 z-[-1]"></div>
+                    <div class="absolute -bottom-4 -right-4 w-24 h-24 border-r-2 border-b-2 border-accentCopper/40 z-[-1]"></div>
+                </div>
+                
+                <div class="lg:w-1/2 order-1 lg:order-2">
+                    <span class="text-accentCopper tracking-[0.2em] text-[10px] uppercase font-bold mb-4 block gs-reveal-up">O Fim da Palestra Tradicional</span>
+                    <h2 class="text-3xl md:text-5xl font-heading font-bold mb-8 text-white gs-reveal-up">Eventos com <span class="text-accentCopper italic font-normal">Intenção & Profundidade</span></h2>
+                    
+                    <p class="text-textMuted mb-6 text-base md:text-lg font-light leading-relaxed gs-reveal-up">
+                        Não organizamos festas. Arquitetamos jornadas de aprendizagem e conexão. Num mundo onde a atenção é o recurso mais escasso, reunir a liderança de uma empresa exige muito mais do que um auditório e um ecrã.
+                    </p>
+                    <p class="text-textMuted mb-10 text-base md:text-lg font-light leading-relaxed gs-reveal-up">
+                        Desenhamos a cenografia, a curadoria de conteúdo, a iluminação sensorial e a hospitalidade premium para garantir que a sua mensagem estratégica ressoa.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-6 gs-stagger">
+                        <div class="border-l border-accentCopper/30 pl-4">
+                            <h4 class="text-white font-semibold mb-2">Hospitalidade C-Level</h4>
+                            <p class="text-sm text-textMuted font-light">Serviço de concierge e atenção aos mínimos detalhes para executivos exigentes.</p>
+                        </div>
+                        <div class="border-l border-accentCopper/30 pl-4">
+                            <h4 class="text-white font-semibold mb-2">Design Sensorial</h4>
+                            <p class="text-sm text-textMuted font-light">Uso de som, luz e arquitetura efémera para prender a atenção.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Números -->
+    <section class="py-16 border-y border-white/5 bg-darkPanel relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center gs-stagger">
+                <div>
+                    <h3 class="text-4xl md:text-5xl font-heading text-accentCopper font-normal mb-2">350+</h3>
+                    <p class="text-gray-400 text-[10px] uppercase tracking-[0.2em] font-semibold">Eventos Produzidos</p>
+                </div>
+                <div>
+                    <h3 class="text-4xl md:text-5xl font-heading text-accentCopper font-normal mb-2">50k</h3>
+                    <p class="text-gray-400 text-[10px] uppercase tracking-[0.2em] font-semibold">Líderes Impactados</p>
+                </div>
+                <div>
+                    <h3 class="text-4xl md:text-5xl font-heading text-accentCopper font-normal mb-2">98%</h3>
+                    <p class="text-gray-400 text-[10px] uppercase tracking-[0.2em] font-semibold">NPS Médio</p>
+                </div>
+                <div>
+                    <h3 class="text-4xl md:text-5xl font-heading text-accentCopper font-normal mb-2">12</h3>
+                    <p class="text-gray-400 text-[10px] uppercase tracking-[0.2em] font-semibold">Cidades Atendidas</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Soluções -->
+    <section id="solucoes" class="py-24 bg-darkBase relative">
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16 gs-reveal">
+                <span class="text-accentCopper tracking-[0.2em] text-[10px] uppercase font-bold">O Nosso Portfólio</span>
+                <h2 class="text-4xl md:text-5xl font-heading font-bold mt-4 mb-6 text-white">Produções <span class="font-normal italic">Assinadas</span></h2>
+                <p class="text-textMuted font-light text-lg">Formatos desenvolvidos sob medida para os objetivos estratégicos da sua empresa.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 gs-stagger">
+                <div class="glass-dark p-10 rounded-sm glass-card-hover group relative overflow-hidden">
+                    <div class="w-14 h-14 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mb-8 text-accentCopper group-hover:scale-110 transition-transform duration-500">
+                        <i class="ph ph-flag-banner text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-heading font-bold mb-4 text-white">Kick-offs & Convenções</h3>
+                    <p class="text-textMuted text-sm font-light leading-relaxed mb-8">
+                        Produção end-to-end de grandes plenárias para alinhamento estratégico anual. Cenografia de alto impacto e painéis LED.
+                    </p>
+                    <a href="#contato" class="text-accentCopper hover:text-white uppercase text-[10px] tracking-[0.2em] font-bold flex items-center gap-2 transition-colors">
+                        Ver Detalhes <i class="ph ph-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <div class="glass-dark p-10 rounded-sm glass-card-hover group relative overflow-hidden border-t-2 border-t-accentCopper bg-[#111]">
+                    <div class="w-14 h-14 bg-accentCopper/10 border border-accentCopper/20 rounded-full flex items-center justify-center mb-8 text-accentCopper group-hover:scale-110 transition-transform duration-500">
+                        <i class="ph ph-compass-rose text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-heading font-bold mb-4 text-white">Imersões de Liderança</h3>
+                    <p class="text-gray-300 text-sm font-light leading-relaxed mb-8">
+                        Retiros corporativos em locais exclusivos. Formato boutique focado em Diretores e C-Levels.
+                    </p>
+                    <a href="#contato" class="text-accentCopper hover:text-white uppercase text-[10px] tracking-[0.2em] font-bold flex items-center gap-2 transition-colors">
+                        Ver Detalhes <i class="ph ph-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="glass-dark p-10 rounded-sm glass-card-hover group relative overflow-hidden">
+                    <div class="w-14 h-14 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mb-8 text-accentCopper group-hover:scale-110 transition-transform duration-500">
+                        <i class="ph ph-martini text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-heading font-bold mb-4 text-white">Jantares & Premiações</h3>
+                    <p class="text-textMuted text-sm font-light leading-relaxed mb-8">
+                        Gala events para reconhecimento de talentos e encerramento de ano. Experiências gastronômicas e entretenimento.
+                    </p>
+                    <a href="#contato" class="text-accentCopper hover:text-white uppercase text-[10px] tracking-[0.2em] font-bold flex items-center gap-2 transition-colors">
+                        Ver Detalhes <i class="ph ph-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Metodologia -->
+    <section id="metodologia" class="py-24 bg-darkPanel relative border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col lg:flex-row gap-16">
+                <div class="lg:w-1/3 lg:sticky lg:top-32 h-fit gs-reveal-left">
+                    <span class="text-accentCopper tracking-[0.2em] text-[10px] uppercase font-bold">Arquitetura de Eventos</span>
+                    <h2 class="text-4xl font-heading font-bold mt-4 mb-6 text-white">A Nossa <br>Metodologia</h2>
+                    <p class="text-textMuted font-light mb-8 leading-relaxed">
+                        Nosso método engloba todas as fases para a entrega de um evento perfeito.
+                    </p>
+                </div>
+                
+                <div class="lg:w-2/3 space-y-8 gs-stagger">
+                    <div class="glass-dark p-8 md:p-10 rounded-sm flex gap-6 md:gap-8 items-start">
+                        <div class="text-4xl font-heading font-light text-white/20">01</div>
+                        <div>
+                            <h4 class="text-xl font-bold mb-3 text-white">Diagnóstico & Curadoria</h4>
+                            <p class="text-textMuted text-sm font-light leading-relaxed">
+                                Entendemos o momento da empresa, indicamos os Keynote Speakers e definimos a espinha dorsal do conteúdo.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="glass-dark p-8 md:p-10 rounded-sm flex gap-6 md:gap-8 items-start">
+                        <div class="text-4xl font-heading font-light text-white/20">02</div>
+                        <div>
+                            <h4 class="text-xl font-bold mb-3 text-white">Cenografia & Design Sensorial</h4>
+                            <p class="text-textMuted text-sm font-light leading-relaxed">
+                                Projetamos palcos em 3D, iluminação imersiva e telas de formato especial.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="glass-dark p-8 md:p-10 rounded-sm flex gap-6 md:gap-8 items-start">
+                        <div class="text-4xl font-heading font-light text-white/20">03</div>
+                        <div>
+                            <h4 class="text-xl font-bold mb-3 text-white">Execução Impecável</h4>
+                            <p class="text-textMuted text-sm font-light leading-relaxed">
+                                Direção de palco (Show caller), equipe técnica de áudio e vídeo de broadcast e gestão de crise em tempo real.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Portfólio -->
+    <section id="portfolio" class="py-24 bg-darkBase relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 gs-reveal">
+                <div class="max-w-2xl">
+                    <span class="text-accentCopper tracking-[0.2em] text-[10px] uppercase font-bold">Últimas Produções</span>
+                    <h2 class="text-4xl md:text-5xl font-heading font-bold mt-4 text-white">Experiências <span class="italic font-normal">Arquitetadas</span></h2>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 gs-stagger">
+                <div class="group relative overflow-hidden rounded-sm h-[400px] cursor-pointer">
+                    <img src="https://picsum.photos/id/160/800/1000" alt="Tech Convention" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 brightness-75 group-hover:brightness-50">
+                    <div class="absolute inset-0 flex flex-col justify-end p-8 bg-gradient-to-t from-darkBase via-darkBase/50 to-transparent">
+                        <span class="text-accentCopper text-[10px] uppercase font-bold tracking-widest mb-2">São Paulo</span>
+                        <h3 class="text-2xl font-heading font-bold text-white mb-2">TechFin Summit</h3>
+                        <p class="text-textMuted text-sm font-light opacity-0 group-hover:opacity-100 transition-all duration-500">
+                            Palco 360º com projeção mapeada para 1.500 colaboradores.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="group relative overflow-hidden rounded-sm h-[400px] cursor-pointer">
+                    <img src="https://picsum.photos/id/1039/800/1000" alt="Leadership Retreat" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 brightness-75 group-hover:brightness-50">
+                    <div class="absolute inset-0 flex flex-col justify-end p-8 bg-gradient-to-t from-darkBase via-darkBase/50 to-transparent">
+                        <span class="text-accentCopper text-[10px] uppercase font-bold tracking-widest mb-2">Campos do Jordão</span>
+                        <h3 class="text-2xl font-heading font-bold text-white mb-2">Board Immersive</h3>
+                        <p class="text-textMuted text-sm font-light opacity-0 group-hover:opacity-100 transition-all duration-500">
+                            Imersão de 3 dias para o Conselho de Administração.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="group relative overflow-hidden rounded-sm h-[400px] cursor-pointer">
+                    <img src="https://picsum.photos/id/42/800/1000" alt="Gala Dinner" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 brightness-75 group-hover:brightness-50">
+                    <div class="absolute inset-0 flex flex-col justify-end p-8 bg-gradient-to-t from-darkBase via-darkBase/50 to-transparent">
+                        <span class="text-accentCopper text-[10px] uppercase font-bold tracking-widest mb-2">Rio de Janeiro</span>
+                        <h3 class="text-2xl font-heading font-bold text-white mb-2">Awards Gala Night</h3>
+                        <p class="text-textMuted text-sm font-light opacity-0 group-hover:opacity-100 transition-all duration-500">
+                            Premiação de encerramento de ano para força de vendas.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. Depoimentos -->
+    <section class="py-24 bg-darkPanel relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 gs-reveal">
+            <div class="text-center mb-16">
+                <span class="text-accentCopper tracking-[0.2em] text-[10px] uppercase font-bold">Depoimentos</span>
+                <h2 class="text-3xl md:text-4xl font-heading font-bold mt-4 text-white">A Palavra dos <span class="italic font-normal">Diretores</span></h2>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6 gs-stagger">
+                <div class="glass-dark p-8 rounded-sm relative border-t border-t-white/10">
+                    <p class="text-gray-300 font-light italic leading-relaxed mb-8 text-sm">
+                        "Elevou o padrão da nossa convenção anual com excelente cenografia e clareza estratégica."
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-darkBase border border-white/10 flex items-center justify-center text-white font-bold font-heading text-xs">M.A.</div>
+                        <div>
+                            <p class="text-white text-xs font-bold uppercase tracking-wider">Diretora de RH</p>
+                            <p class="text-textMuted text-[10px] uppercase">Tecnologia</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-dark p-8 rounded-sm relative border-t border-t-white/10">
+                    <p class="text-gray-300 font-light italic leading-relaxed mb-8 text-sm">
+                        "A imersão para o C-Level foi transformadora e intimista, fugindo do modelo tradicional."
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-darkBase border border-white/10 flex items-center justify-center text-white font-bold font-heading text-xs">J.P.</div>
+                        <div>
+                            <p class="text-white text-xs font-bold uppercase tracking-wider">CEO</p>
+                            <p class="text-textMuted text-[10px] uppercase">Farmacêutica</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-dark p-8 rounded-sm relative border-t border-t-white/10">
+                    <p class="text-gray-300 font-light italic leading-relaxed mb-8 text-sm">
+                        "Execução impecável e equipe técnica perfeita. O design do palco foi memorável."
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-darkBase border border-white/10 flex items-center justify-center text-white font-bold font-heading text-xs">C.S.</div>
+                        <div>
+                            <p class="text-white text-xs font-bold uppercase tracking-wider">Head de Marketing</p>
+                            <p class="text-textMuted text-[10px] uppercase">Investimentos</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. Contato -->
+    <section id="contato" class="py-24 bg-darkBase relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="glass-dark rounded-sm overflow-hidden shadow-2xl flex flex-col md:flex-row gs-reveal border-0">
+                <div class="md:w-5/12 bg-darkPanel p-10 lg:p-14 flex flex-col justify-between border-r border-white/5">
+                    <div>
+                        <span class="text-accentCopper tracking-[0.2em] text-[10px] uppercase font-bold mb-4 block">Contato</span>
+                        <h3 class="text-3xl lg:text-4xl font-heading font-bold text-white mb-6">Vamos criar algo <span class="italic font-normal">Memorável?</span></h3>
+                        <p class="text-textMuted text-sm mb-10 font-light leading-relaxed">
+                            Preencha o briefing preliminar para iniciarmos o projeto.
+                        </p>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 flex items-center justify-start text-accentCopper shrink-0">
+                                    <i class="ph-fill ph-map-pin text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-white font-semibold text-sm">Endereço</h5>
+                                    <p class="text-textMuted text-xs font-light mt-1" id="client-address">Av. Faria Lima, 3500 - São Paulo, SP</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 flex items-center justify-start text-accentCopper shrink-0">
+                                    <i class="ph-fill ph-envelope-simple text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-white font-semibold text-sm">Email</h5>
+                                    <p class="text-textMuted text-xs font-light mt-1" id="client-email">contato@empresa.com.br</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="md:w-7/12 p-10 lg:p-14 bg-darkBase/50 backdrop-blur-md">
+                    <form onsubmit="event.preventDefault();" class="space-y-8">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Nome Completo</label>
+                                <input type="text" class="w-full bg-transparent border-b border-white/10 rounded-none px-0 py-2 text-white focus:outline-none focus:border-accentCopper transition-colors font-light text-sm" placeholder="Seu nome">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Empresa</label>
+                                <input type="text" class="w-full bg-transparent border-b border-white/10 rounded-none px-0 py-2 text-white focus:outline-none focus:border-accentCopper transition-colors font-light text-sm" placeholder="Nome da Empresa">
+                            </div>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Email Corporativo</label>
+                                <input type="email" class="w-full bg-transparent border-b border-white/10 rounded-none px-0 py-2 text-white focus:outline-none focus:border-accentCopper transition-colors font-light text-sm" placeholder="email@empresa.com">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Telefone</label>
+                                <input type="tel" class="w-full bg-transparent border-b border-white/10 rounded-none px-0 py-2 text-white focus:outline-none focus:border-accentCopper transition-colors font-light text-sm" placeholder="(11) 90000-0000">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Briefing Resumido</label>
+                            <textarea rows="3" class="w-full bg-transparent border-b border-white/10 rounded-none px-0 py-2 text-white focus:outline-none focus:border-accentCopper transition-colors font-light text-sm resize-none" placeholder="Conte-nos sobre a visão para o evento..."></textarea>
+                        </div>
+                        <button class="btn-glow w-full py-4 mt-4 bg-accentCopper text-white font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-accentCopperLight transition-colors duration-300 rounded-sm">
+                            Enviar Briefing Confidencial
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10. Footer -->
+    <footer class="bg-[#050505] pt-16 pb-8 border-t border-white/5 text-textMuted relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="md:col-span-2">
+                    <a href="#" class="text-xl font-sans font-bold tracking-widest text-white flex items-center gap-2 mb-6">
+                        <i class="ph-fill ph-sparkle text-accentCopper"></i>
+                        <span id="footer-brand">LUMINA EXP</span>
+                    </a>
+                    <p class="text-sm font-light max-w-sm mb-6 leading-relaxed">Produção de eventos corporativos de alto padrão e imersões estratégicas para a alta liderança.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase tracking-widest text-[10px]">Experiências</h4>
+                    <ul class="space-y-3 text-sm font-light">
+                        <li><a href="#solucoes" class="hover:text-accentCopper transition-colors">C-Level Retreats</a></li>
+                        <li><a href="#solucoes" class="hover:text-accentCopper transition-colors">Sales Kick-offs</a></li>
+                        <li><a href="#solucoes" class="hover:text-accentCopper transition-colors">Gala & Awards</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase tracking-widest text-[10px]">Empresa</h4>
+                    <p class="text-sm font-light">São Paulo, SP</p>
+                    <p class="text-sm font-light">atendimento@empresa.com.br</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row justify-between items-center text-[10px] uppercase tracking-wider font-semibold border-t border-white/5 pt-8 opacity-70">
+                <p class="mb-2 md:mb-0">&copy; <span id="current-year"></span> Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        const nav = document.getElementById('navbar');
+        const btnScrollToTop = document.getElementById('btnScrollToTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('glass-dark', 'bg-[#080808]/90', 'border-b', 'border-white/10');
+                nav.classList.remove('py-5');
+                nav.classList.add('py-3');
+            } else {
+                nav.classList.remove('glass-dark', 'bg-[#080808]/90', 'border-b', 'border-white/10');
+                nav.classList.add('py-5');
+                nav.classList.remove('py-3');
+            }
+
+            if (window.scrollY > 300) {
+                btnScrollToTop.classList.add('is-visible');
+            } else {
+                btnScrollToTop.classList.remove('is-visible');
+            }
+        });
+
+        btnScrollToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        function initGSAP() {
+            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+            gsap.registerPlugin(ScrollTrigger);
+
+            gsap.fromTo('.gs-hero-content', 
+                { y: 40, opacity: 0 },
+                { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" }
+            );
+
+            gsap.utils.toArray('.gs-reveal-up').forEach(function(elem) {
+                gsap.fromTo(elem,
+                    { y: 30, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 1, ease: "power2.out", scrollTrigger: { trigger: elem, start: "top 85%" } }
+                );
+            });
+
+            gsap.utils.toArray('.gs-reveal').forEach(function(elem) {
+                gsap.fromTo(elem,
+                    { y: 40, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 1, ease: "power2.out", scrollTrigger: { trigger: elem, start: "top 85%" } }
+                );
+            });
+
+            gsap.utils.toArray('.gs-reveal-left').forEach(function(elem) {
+                gsap.fromTo(elem,
+                    { x: -40, opacity: 0 },
+                    { x: 0, opacity: 1, duration: 1.2, ease: "power3.out", scrollTrigger: { trigger: elem, start: "top 85%" } }
+                );
+            });
+
+            gsap.utils.toArray('.gs-stagger').forEach(function(elem) {
+                const children = elem.children;
+                gsap.fromTo(children,
+                    { y: 30, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.8, stagger: 0.15, ease: "power2.out", scrollTrigger: { trigger: elem, start: "top 85%" } }
+                );
+            });
+        }
+
+        window.onload = () => {
+            initGSAP();
+        };
+    </script>
+</body>
+</html>

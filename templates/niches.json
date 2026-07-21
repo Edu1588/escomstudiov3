@@ -1,0 +1,54 @@
+{
+  "rotation_rule": "1 nicho por dia (do 1 ao 8, retornando ao 1 no 9º dia)",
+  "leads_per_day": 10,
+  "niches": [
+    {
+      "id": 1,
+      "name": "Consultorias de Gestão Empresarial e M&A (Fusões e Aquisições)",
+      "template_file": "nicho1_consultoria_ma.html",
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "name": "Academias",
+      "template_file": "nicho2_academias.html",
+      "status": "active"
+    },
+    {
+      "id": 3,
+      "name": "Produtoras de Eventos Corporativos e Imersões para Liderança",
+      "template_file": "nicho3_eventos_corporativos.html",
+      "status": "active"
+    },
+    {
+      "id": 4,
+      "name": "Clínicas Odontológicas (Foco em Implantes e Lentes de Contato)",
+      "template_file": "nicho4_clinicas_odontologicas.html",
+      "status": "active"
+    },
+    {
+      "id": 5,
+      "name": "Energia Solar (Integradores e Instaladores Regionais)",
+      "template_file": "nicho5_energia_solar.html",
+      "status": "active"
+    },
+    {
+      "id": 6,
+      "name": "Escritórios de Advocacia Tributária e Empresarial",
+      "template_file": "nicho6_advocacia_tributaria.html",
+      "status": "active"
+    },
+    {
+      "id": 7,
+      "name": "Clínicas de Estética Avançada e Harmonização",
+      "template_file": "nicho7_estetica_avancada.html",
+      "status": "active"
+    },
+    {
+      "id": 8,
+      "name": "Construtoras de Alto Padrão (Casas em Condomínios Fechados)",
+      "template_file": "nicho8_construtoras_alto_padrao.html",
+      "status": "active"
+    }
+  ]
+}

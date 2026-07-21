@@ -1,0 +1,780 @@
+Created At: 2026-06-12T19:05:51Z
+Completed At: 2026-06-12T19:05:51Z
+File Path: `file:///E:/ANTIGRAVITY/ESCOM_STUDIO/src/baseproposta/BaseProposta.tsx`
+Total Lines: 872
+Total Bytes: 50960
+Showing lines 1 to 800
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: import React, { useEffect, useState, useRef } from "react";
+2: import { ArrowDown, Users, Globe, Award, ArrowUpRight, CheckCircle2, Clock, Wallet, CreditCard, ChevronRight } from "lucide-react";
+3: import { TextRotateEntrance } from "../components/ui/text-rotate-entrance";
+4: import { InteractiveTiltCard } from "../components/ui/tilt-card";
+5: import { getPortfolioProjects, PortfolioProject } from "../firebase";
+6: import { toJpeg } from 'html-to-image';
+7: import { jsPDF } from "jspdf";
+8: import { DotLottiePlayer } from '@dotlottie/react-player';
+9: import '@dotlottie/react-player/dist/index.css';
+10: 
+11: const ScrambleTag = ({ text }: { text: string }) => {
+12:   const textRef = useRef<HTMLSpanElement>(null);
+13:   const originalText = useRef(text);
+14:   const isAnimating = useRef(false);
+15: 
+16:   const handleHover = () => {
+17:     if (isAnimating.current || !textRef.current) return;
+18:     isAnimating.current = true;
+19:     let step = 0;
+20:     const steps = 15;
+21:     const chars = '!<>-_\\/[]{}—=+*^?#________';
+22:     
+23:     const interval = setInterval(() => {
+24:       let scrambled = '';
+25:       for (let i = 0; i < originalText.current.length; i++) {
+26:         if (originalText.current[i] === ' ') {
+27:           scrambled += ' ';
+28:         } else {
+29:           scrambled += chars[Math.floor(Math.random() * chars.length)];
+30:         }
+31:       }
+32:       if (textRef.current) textRef.current.innerText = scrambled;
+33:       step++;
+34:       if (step > steps) { 
+35:         clearInterval(interval); 
+36:         if(textRef.current) textRef.current.innerText = originalText.current; 
+37:         isAnimating.current = false; 
+38:       }
+39:     }, 40);
+40:   };
+41: 
+42:   return (
+43:     <div 
+44:       className="system-tag relative z-20 mb-6 inline-flex items-center gap-2 font-mono text-sm tracking-widest uppercase cursor-default group"
+45:       onMouseEnter={handleHover}
+46:     >
+47:       <span className="text-[#2EFF00] font-bold">&gt;_</span> 
+48:       <span className="text-[#2EFF00] text-lg leading-none">●</span> 
+49:       <span className="text-[#2EFF00] group-hover:opacity-80 transition-opacity" ref={textRef}>{text}</span>
+50:     </div>
+51:   );
+52: };
+53: 
+54: export default function BaseProposta() {
+55:   const [proposal, setProposal] = useState<any>(null);
+56:   const [loading, setLoading] = useState(true);
+57:   const [error, setError] = useState(false);
+58:   const [projectsList, setProjectsList] = useState<PortfolioProject[]>([]);
+59:   const [isAccepting, setIsAccepting] = useState(false);
+60:   const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
+61:   const [shouldDownloadPDF, setShouldDownloadPDF] = useState(false);
+62: 
+63:   const handleAcceptProposal = async () => {
+64:     if (!proposal || !proposal.id) return;
+65:     setIsAccepting(true);
+66:     try {
+67:       await fetch(`/api/proposals/${proposal.id}/accept`, { method: "POST" });
+68:     } catch (err) {
+69:       console.error(err);
+70:     }
+71:     // Redirect regardless of API success to not block user flow
+72:     const wppText = encodeURIComponent(`Olá, sou da empresa ${proposal.company}. Acabamos de aceitar a proposta!`);
+73:     window.location.href = `https://wa.me/5548998065099?text=${wppText}`;
+74:   };
+75: 
+76:   useEffect(() => {
+77:     if (proposal && shouldDownloadPDF) {
+78:       setShouldDownloadPDF(false); // Evita loop
+79:       setTimeout(() => {
+80:         handleDownloadPDF();
+81:       }, 1500);
+82:     }
+83:   }, [proposal, shouldDownloadPDF]);
+84: 
+85:   useEffect(() => {
+86:     document.title = "Proposta - ESCOM STUDIO";
+87:     const path = window.location.pathname;
+88:     const slug = path.split('/').pop();
+89:     
+90:     getPortfolioProjects().then(data => {
+91:       const destaques = data.filter(p => p.destaque).slice(0, 3);
+92:       if(destaques.length > 0) {
+93:         setProjectsList(destaques);
+94:       } else {
+95:         // Fallback for visual
+96:         setProjectsList([
+97:           { id: "1", name: "Projeto 1", category: "WEB", desc: "", image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop", score: "", destaque: true },
+98:           { id: "2", name: "Projeto 2", category: "WEB", desc: "", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop", score: "", destaque: true },
+99:           { id: "3", name: "Projeto 3", category: "WEB", desc: "", image: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=2070&auto=format&fit=crop", score: "", destaque: true }
+100:         ]);
+101:       }
+102:     });
+103: 
+104:     if (slug && slug.startsWith("proposta-escom-")) {
+105:       fetch(`/api/proposals/${slug}`)
+106:         .then(res => res.json())
+107:         .then(data => {
+108:           if (data.success) {
+109:             setProposal(data.proposal);
+110:             const urlParams = new URLSearchParams(window.location.search);
+111:             if (urlParams.get('download') === 'pdf' || urlParams.get('pdf') === 'true') {
+112:               setShouldDownloadPDF(true);
+113:             }
+114:           } else {
+115:             setError(true);
+116:           }
+117:           setLoading(false);
+118:         })
+119:         .catch(() => {
+120:           setError(true);
+121:           setLoading(false);
+122:         });
+123:     } else {
+124:       // Just a preview state if accessed via /baseproposta directly
+125:       setLoading(false);
+126:     }
+127:   }, []);
+128: 
+129:   if (loading) {
+130:     return <div className="bg-black min-h-screen text-[#2EFF00] flex items-center justify-center font-mono text-sm">CARREGANDO PROPOSTA... / LOADING PROPOSAL...</div>;
+131:   }
+132: 
+133:   if (error) {
+134:     return <div className="bg-black min-h-screen text-red-500 flex items-center justify-center font-mono text-sm">PROPOSTA NÃO ENCONTRADA OU EXPIRADA. / PROPOSAL NOT FOUND OR EXPIRED.</div>;
+135:   }
+136: 
+137:   const isEn = proposal?.isAmerican || proposal?.currency === 'USD';
+138: 
+139:   // Calculate generic total if not dynamic
+140:   const calculateTotal = (servicesItems: any[], customBudget: string) => {
+141:     if (isEn) return "$ 990,00";
+142:     if (customBudget) return `R$ ${customBudget}`;
+143:     if (!servicesItems || servicesItems.length === 0) return "R$ 4.500,00";
+144:     const total = servicesItems.reduce((acc, curr) => {
+145:       const p = typeof curr.price === 'string' ? parseFloat(curr.price.replace(/\./g, "").replace(",", ".")) : curr.price;
+146:       return acc + (isNaN(p) ? 0 : p);
+147:     }, 0);
+148:     return `R$ ${(total).toLocaleString('pt-BR')},00`;
+149:   };
+150: 
+151:   const clientName = proposal?.clientName || "Sua Empresa";
+152:   const company = proposal?.company || "Sua Empresa";
+153:   const dateSent = proposal?.createdAt ? new Date(proposal.createdAt).toLocaleDateString(isEn ? 'en-US' : 'pt-BR') : "06/05/2026";
+154:   const totalValue = calculateTotal(proposal?.selectedServices, proposal?.budget);
+155:   const totalValueSplit = totalValue.replace("R$ ", "").replace("$ ", "").split(",");
+156:   const phone = proposal?.phone ? (proposal.phone.replace(/\D/g, '').startsWith('1') ? proposal.phone.replace(/\D/g, '') : `55${proposal.phone.replace(/\D/g, '')}`) : "5548988626785";
+157:   const wppText = encodeURIComponent(isEn ? `Hello ESCOM STUDIO, I saw the proposal for ${company} and would like to proceed with the project!` : `Olá ESCOM STUDIO, vi a proposta da ${company} e gostaria de fechar o projeto!`);
+158: 
+159:   const t = {
+160:     dateSent: isEn ? "Sent Date:" : "Data de Envio:",
+161:     validFor3Days: isEn ? "Proposal valid for 3 days" : "Proposta válida por 3 dias",
+162:     viewInvestment: isEn ? "View Investment" : "Ver Investimento",
+163:     downloadPdf: isEn ? "Download PDF" : "Baixar PDF",
+164:     generating: isEn ? "Generating..." : "Gerando...",
+165:     project: isEn ? "PROJECT" : "PROJETO",
+166:     heroSubtitle: (name: string) => isEn 
+167:       ? `Hello ${name}, here you will get to know a little bit about my work and the information for your company's project, such as deadline, payment methods, and investment value.`
+168:       : `Olá ${name}, aqui você vai conhecer um pouco do meu trabalho e as informações para o projeto da sua empresa, como prazo, formas de pagamento e o valor do investimento.`,
+169:     viewDetails: isEn ? "VIEW DETAILS" : "VER AS INFORMAÇÕES",
+170:     clientsServed: isEn ? "+200 Clients Served" : "+200 Clientes Atendidos",
+171:     countriesServed: isEn ? "Clients in over 5 Countries" : "Clientes em mais de 5 Países",
+172:     yearsExp: isEn ? "+15 Years of experience" : "+15 Anos de experiência",
+173:     worksSpeak: isEn ? "Works that speak for themselves." : "Trabalhos que falam por si.",
+174:     recentProjectsDesc: isEn 
+175:       ? "Some of our most recent projects where we applied strategic design to generate real results."
+176:       : "Alguns dos projetos mais recentes onde aplicamos design estratégico para gerar resultados reais.",
+177:     farBeyond: isEn ? "Far beyond" : "Muito além",
+178:     thePixel: isEn ? "the pixel." : "do pixel.",
+179:     aboutDesc1: isEn
+180:       ? "Seniority is not about time, but about the ability to predict what the market needs before it is even requested. Active for 15 years, my mission is to eliminate visual noise to leave only what matters: the message and the conversion."
+181:       : "A senioridade não é sobre o tempo, mas sobre a capacidade de prever o que o mercado precisa antes mesmo de ser solicitado. Com 15 anos no ativo, a minha missão é eliminar o \"ruído\" visual para deixar apenas o que importa: a mensagem e a conversão.",
+182:     aboutQuote: isEn
+183:       ? "I am married to the best psychologist in the world, my love Ingrid. We have a Persian cat, Oreo, and some little fish. When I'm not creating designs, I'm enjoying life alongside my family."
+184:       : "Sou casado com a melhor psicóloga do mundo, meu amor Ingrid. Temos um gatinho persa, o Oreo, e alguns peixinhos. Quando não estou criando designs, estou aproveitando a vida ao lado da minha família.",
+185:     aboutDesc2: isEn
+186:       ? "Currently, as an Art Director, I integrate technology and emotion to create digital journeys that stick in the memory — and on my clients' bank statements."
+187:       : "Atualmente, como Diretor de Arte, integro tecnologia e emoção para criar jornadas digitais que ficam gravadas na memória — e no extrato bancário dos meus clientes.",
+188:     creationProcess: isEn ? "Understand a bit of our Creation process" : "Entenda um pouco do processo de Criação",
+189:     step1: isEn ? "STEP 01" : "ETAPA 01",
+190:     mapping: isEn ? "Mapping" : "Mapeamento",
+191:     briefingTitle: isEn ? "Briefing Application" : "Aplicação do Briefing",
+192:     briefingDesc: isEn
+193:       ? "The first step is to understand exactly what you want and collect the necessary information, such as: Copy, image files, visual identity, references, etc..."
+194:       : "O primeiro passo é entender exatamente o que você want e coletar as informações necessárias, como: Copy, arquivos de imagem, identidade visual, referências, etc...",
+195:     step2: isEn ? "STEP 02" : "ETAPA 02",
+196:     analysis: isEn ? "Analysis" : "Análise",
+197:     strategyTitle: isEn ? "Research & Strategy" : "Pesquisa & Estratégia",
+198:     strategyDesc: isEn
+199:       ? "I analyze the niche to deeply understand competitors' strategies, identifying the best practices and references in the sector. This process allows me to absorb innovative and effective ideas."
+200:       : "Realizo uma análise do nicho para compreender profundamente as estratégias dos concorrentes, identificando as melhores práticas e referências do setor. Esse processo me permite absorver ideias inovadoras e eficazes.",
+201:     step3: isEn ? "STEP 03" : "ETAPA 03",
+202:     direction: isEn ? "Direction" : "Direção",
+203:     designTitle: isEn ? "Design Creation" : "Criação do Design",
+204:     designDesc: isEn
+205:       ? "From there, I will start developing the visual part, ensuring that the final result is not only attractive, but also highly competitive and aligned with market trends."
+206:       : "A partir disso, iniciarei o desenvolvimento da parte visual, garantindo que o resultado final seja não apenas atrativo, mas também altamente competitivo e alinhado com as tendências de mercado.",
+207:     step4: isEn ? "STEP 04" : "ETAPA 04",
+208:     frontend: isEn ? "Development" : "Front-end",
+209:     implTitle: isEn ? "Implementation" : "Implementação",
+210:     implDesc: isEn
+211:       ? "After the complete approval of the design by the client, I proceed with the implementation of the page, ensuring full responsiveness across all devices and guaranteeing a fluid user experience."
+212:       : "Após a completa aprovação do design pelo cliente, procedo com a implementação da página, assegurando a plena responsividade em todos os dispositivos e garantindo uma experiência de usuário fluida.",
+213:     step5: isEn ? "STEP 05" : "ETAPA 05",
+214:     performance: isEn ? "Performance" : "Performance",
+215:     optTitle: isEn ? "Extreme Optimization" : "Otimização Extrema",
+216:     optDesc: isEn
+217:       ? "During this phase, I dedicate myself to the complete optimization of the page, aiming to ensure fast and efficient loading. Speed is crucial for conversions and to prevent bounce rate."
+218:       : "Durante esta fase, dedico-me à otimização integral da página, visando assegurar um carregamento rápido e eficiente. Velocidade é crucial para as conversões e para evitar abandonos.",
+219:     perfReport: isEn ? "Performance Report" : "Performance Report",
+220:     grade: isEn ? "Grade" : "Grade",
+221:     perf: isEn ? "Perf." : "Perf.",
+222:     struct: isEn ? "Struct." : "Struct.",
+223:     proposalInfo: isEn ? "Proposal Information" : "Informações sobre a Proposta",
+224:     importantNotice: isEn ? "IMPORTANT NOTICE" : "AVISOS IMPORTANTES",
+225:     delivDeadline: isEn ? "Delivery Deadline" : "Prazo de Entrega",
+226:     delivDesc: isEn
+227:       ? "The delivery timeframe for a page is 10 to 15 business days, which may be delivered earlier depending on the workflow or the client's needs."
+228:       : "O prazo de entrega de uma página é de <strong class=\"text-white\">10 a 15 dias úteis</strong>, podendo ser entregue antes dependendo do fluxo de demandas ou da necessidade do cliente.",
+229:     paymentTerms: isEn ? "Payment Terms" : "Formas de Pagamento",
+230:     paymentTermsDesc: isEn
+231:       ? "With a payment of 50% upfront we start the project, and after the service is delivered and approved, the remaining 50%."
+232:       : "A partir do pagamento de <strong class=\"text-white\">50% do valor</strong> começamos o projeto e depois que o serviço for entregue e aprovado, os outros 50%.",
+233:     paymentMethods: isEn ? "Payment Methods" : "Meios de Pagamento",
+234:     paymentMethodsDesc: isEn
+235:       ? "You can pay via bank transfer or international wire. If you prefer, you can pay in installments by credit card (platform fees apply)."
+236:       : "Você pode pagar através de PIX ou transferência bancária internacional. Se preferir, pode parcelar no cartão de crédito <span class=\"text-[10px] text-gray-500\">(plataforma com taxas aplicáveis).</span>",
+237:     obs: isEn ? "Observations" : "Observações",
+238:     investment: isEn ? "Investment" : "Investimento",
+239:     servicesInc: isEn ? "SERVICES INCLUDED" : "SERVIÇOS INCLUSOS",
+240:     validDesc: isEn ? "This Proposal with this promotional value is valid for 3 days." : "Essa Proposta com esse valor promocional é válida por 3 dias.",
+241:     closeCta: isEn ? "I WANT TO WORK WITH YOU" : "QUERO FECHAR COM VOCÊ",
+242:     wait: isEn ? "PLEASE WAIT..." : "AGUARDE...",
+243:     questions: isEn ? "Still have any questions?" : "Ainda Ficou com alguma dúvida?",
+244:     chatWpp: isEn ? "Click here to chat with me on WhatsApp" : "Clique aqui para me chamar no WhatsApp",
+245:     allRights: isEn ? "© 2026 All rights reserved." : "© 2026 Todos os direitos reservados.",
+246:     privPol: isEn ? "Privacy Policy" : "Políticas de Privacidade",
+247:     termsUse: isEn ? "Terms of Use" : "Termos de Uso"
+248:   };
+249: 
+250:   const handleDownloadPDF = async () => {
+251:     setIsDownloadingPDF(true);
+252:     try {
+253:       const element = document.getElementById("pdf-capture-container");
+254:       if (element) {
+255:         // Temporarily modify element to allow capture if it's placed off-screen
+256:         element.classList.add('pdf-exporting');
+257:         
+258:         // Wait for CSS to apply and layout to calculate width/height
+259:         await new Promise(resolve => setTimeout(resolve, 200));
+260: 
+261:         const filter = (node: HTMLElement) => {
+262:           return node.getAttribute ? node.getAttribute('data-html2canvas-ignore') !== 'true' : true;
+263:         };
+264: 
+265:         const imgData = await toJpeg(element, { 
+266:           pixelRatio: 2, 
+267:           backgroundColor: '#050505',
+268:           filter: filter
+269:         });
+270:         
+271:         const width = element.offsetWidth;
+272:         const height = element.offsetHeight;
+273: 
+274:         const pdf = new jsPDF({
+275:           orientation: 'portrait',
+276:           unit: 'px',
+277:           format: [width, height] // Use original element pixels
+278:         });
+279:         
+280:         pdf.addImage(imgData, 'JPEG', 0, 0, width, height);
+281:         pdf.save(`proposta-escom-${company.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.pdf`);
+282:         
+283:         element.classList.remove('pdf-exporting');
+284:       }
+285:     } catch (err: any) {
+286:       console.error(err);
+287:       alert('Erro ao exportar PDF: ' + err.message);
+288:     }
+289:     setIsDownloadingPDF(false);
+290:   };
+291: 
+292:   return (
+293:     <div className="bg-[#050505] text-white min-h-screen font-sans selection:bg-[#2EFF00] selection:text-black">
+294:       <style>{`
+295:         @media print {
+296:           .screen-only { display: none !important; }
+297:           .print-only { display: block !important; }
+298:           html, body, #root, .print-only-bg {
+299:             -webkit-print-color-adjust: exact !important;
+300:             print-color-adjust: exact !important;
+301:             background-color: #050505 !important;
+302:             color: #ffffff !important;
+303:           }
+304:           @page { margin: 0; }
+305:           * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+306:         }
+307:         @media screen {
+308:           .print-only { 
+309:             position: absolute !important;
+310:             left: -9999px !important;
+311:             top: -9999px !important;
+312:             width: 800px !important;
+313:             opacity: 0;
+314:             pointer-events: none !important;
+315:           }
+316:           .pdf-exporting {
+317:             opacity: 1 !important;
+318:             left: 0 !important;
+319:             top: 0 !important;
+320:             z-index: -100 !important;
+321:           }
+322:         }
+323:       `}</style>
+324:       <div className="screen-only">
+325:         {/* Top Bar */}
+326:       <div className="w-full py-2 flex justify-center items-center text-xs font-mono text-gray-400 border-b border-white/5 bg-[#0a0a0a] z-50 relative">
+327:         <span className="text-[#2EFF00]">{t.dateSent} {dateSent}</span>
+328:         <span className="mx-4">|</span>
+329:         <span className="text-red-500 font-bold">{t.validFor3Days}</span>
+330:       </div>
+331: 
+332:       {/* Header */}
+333:       <header className="fixed top-12 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl bg-black/80 backdrop-blur-md border border-white/10 rounded-full px-8 py-4 flex items-center justify-between z-[60]">
+334:         <div className="font-bold text-xl tracking-tight">
+335:           ESCOM <span className="text-[#2EFF00] drop-shadow-[0_0_10px_rgba(46,255,0,0.5)]">STUDIO</span>
+336:         </div>
+337:         <div className="flex items-center gap-6">
+338:           <button onClick={handleDownloadPDF} disabled={isDownloadingPDF} className="text-sm font-medium hover:text-white text-gray-300 transition-colors disabled:opacity-50">
+339:             {isDownloadingPDF ? t.generating : t.downloadPdf}
+340:           </button>
+341:           <a href="#investimento" className="bg-[#2EFF00] text-black px-6 py-2 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(46,255,0,0.3)] hover:bg-[#2EFF00]/90 transition-colors">
+342:             {t.viewInvestment}
+343:           </a>
+344:         </div>
+345:       </header>
+346: 
+347:       {/* Hero */}
+348:       <section className="pt-48 pb-24 px-6 min-h-[90vh] flex flex-col items-center justify-center text-center relative">
+349:         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(46,255,0,0.05),transparent_50%)] pointer-events-none"></div>
+350:         
+351:         <h1 className="text-[60px] md:text-[100px] leading-none font-black tracking-tighter mb-8 font-tech bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-500 max-w-4xl">
+352:           {t.project}<br/><span className="text-[#2EFF00] uppercase">{company}</span>
+353:         </h1>
+354:         
+355:         <p className="text-xl md:text-2xl text-gray-400 max-w-3xl mb-12 leading-relaxed">
+356:           {t.heroSubtitle(clientName)}
+357:         </p>
+358:         
+359:         <a href="#informacoes" className="inline-flex items-center gap-2 bg-[#2EFF00] text-black px-8 py-4 rounded-full font-bold text-sm tracking-wide shadow-[0_0_20px_rgba(46,255,0,0.3)] hover:scale-105 transition-transform mb-24">
+360:           {t.viewDetails} <ArrowDown size={18} />
+361:         </a>
+362: 
+363:         {/* Stats */}
+364:         <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 py-6 px-12 border border-white/10 rounded-full bg-black/50 backdrop-blur-sm mx-auto max-w-fit">
+365:           <div className="flex items-center gap-4">
+366:             <div className="w-10 h-10 rounded-full bg-[#2EFF00]/10 flex items-center justify-center text-[#2EFF00]">
+367:               <Users size={18} />
+368:             </div>
+369:             <span className="text-sm text-gray-300">{t.clientsServed}</span>
+370:           </div>
+371:           <div className="w-px h-8 bg-white/10 hidden md:block"></div>
+372:           <div className="flex items-center gap-4">
+373:             <div className="w-10 h-10 rounded-full bg-[#2EFF00]/10 flex items-center justify-center text-[#2EFF00]">
+374:               <Globe size={18} />
+375:             </div>
+376:             <span className="text-sm text-gray-300">{t.countriesServed}</span>
+377:           </div>
+378:           <div className="w-px h-8 bg-white/10 hidden md:block"></div>
+379:           <div className="flex items-center gap-4">
+380:             <div className="w-10 h-10 rounded-full bg-[#2EFF00]/10 flex items-center justify-center text-[#2EFF00]">
+381:               <Award size={18} />
+382:             </div>
+383:             <span className="text-sm text-gray-300">{t.yearsExp}</span>
+384:           </div>
+385:         </div>
+386:       </section>
+387: 
+388:       {/* Portfolio Section */}
+389:       <section className="py-24 px-6 bg-[#0a0a0a]">
+390:         <div className="max-w-6xl mx-auto">
+391:           <ScrambleTag text={isEn ? "[ PORTFOLIO ]" : "[ PORTFÓLIO ]"} />
+392:           <h2 className="text-5xl md:text-7xl font-black mb-8 tracking-tight font-tech group cursor-default">
+393:             {isEn ? (
+394:               <>
+395:                 <span className="group-hover:text-[#2EFF00] transition-colors duration-500">Works that</span> <span className="text-gray-600 group-hover:text-white transition-colors duration-500">speak for themselves.</span>
+396:               </>
+397:             ) : (
+398:               <>
+399:                 <span className="group-hover:text-[#2EFF00] transition-colors duration-500">Trabalhos que</span> <span className="text-gray-600 group-hover:text-white transition-colors duration-500">falam por si.</span>
+400:               </>
+401:             )}
+402:           </h2>
+403:           <p className="text-xl text-gray-400 max-w-2xl mb-16 leading-relaxed">
+404:             {t.recentProjectsDesc}
+405:           </p>
+406: 
+407:           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+408:             {projectsList.map((proj, i) => (
+409:               <div key={i} className="group rounded-2xl overflow-hidden border border-white/5 relative aspect-[4/3] bg-[#111]">
+410:                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+411:                 <img src={proj.image} alt={proj.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+412:               </div>
+413:             ))}
+414:           </div>
+415:         </div>
+416:       </section>
+417: 
+418:       {/* About the Maker */}
+419:       <section className="py-24 px-6 relative overflow-hidden">
+420:         <style>{`
+421:           @keyframes floatImage {
+422:             0% { transform: translateY(0px) rotate(0deg); }
+423:             50% { transform: translateY(-20px) rotate(        <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-16 relative z-10">
+424:           <div className="flex-[0.6] relative min-h-[500px]">
+425:             <ScrambleTag text={isEn ? "[ BEHIND THE SCENES ]" : "[ BASTIDORES ]"} />
+426:             <div className="relative mb-12 flex justify-center md:justify-start">
+427:               <div style={{ width: "100%", maxWidth: "350px", height: "450px" }} className="w-[300px] md:w-[350px] shadow-[0_0_30px_rgba(46,255,0,0.15)]">
+428:                   <InteractiveTiltCard
+429:                     image={{
+430:                       src: "https://eionstudio.com.br/wp-content/uploads/2026/02/about-slide-2.jpg",
+431:                       alt: "ESCOM STUDIO",
+432:                     }}
+433:                     tiltFactor={20}
+434:                     hoverScale={1.05}
+435:                     shadowIntensity={0.6}
+436:                     glareEffect={true}
+437:                     glareIntensity={0.4}
+438:                   />
+439:               </div>
+440:             </div>
+441:             <h2 className="text-5xl md:text-7xl font-black mb-6 tracking-tight relative z-20 mix-blend-difference text-white pointer-events-none">
+442:               <TextRotateEntrance text={t.farBeyond} /><br /><span className="text-[#2EFF00]"><TextRotateEntrance text={t.thePixel} /></span>
+443:             </h2>
+444:           </div>
+445:           
+446:           <div className="flex-1 mt-12 md:mt-24 relative z-30">
+447:             <p className="text-xl text-gray-400 leading-relaxed mb-6 max-w-lg">
+448:               {t.aboutDesc1}
+449:             </p>
+450:             <blockquote className="border-l-2 border-[#2EFF00] pl-6 py-3 my-8 text-gray-300 italic bg-[#2EFF00]/5 rounded-r-lg pr-6 max-w-lg leading-relaxed">
+451:               "{t.aboutQuote}"
+452:             </blockquote>
+453:             <p className="text-lg text-gray-400 leading-relaxed mb-12 max-w-lg">
+454:               {t.aboutDesc2}
+455:             </p>
+456:           </div>
+457:         </div>
+458:       </section>
+459: 
+460:       {/* Process Section */}
+461:       <section className="py-24 px-6 bg-[#0a0a0a]">
+462:         <div className="max-w-4xl mx-auto flex flex-col gap-16">
+463:           <div className="w-full text-center mb-16">
+464:             <ScrambleTag text={isEn ? "[ TIMELINE ]" : "[ LINHA DO TEMPO ]"} />
+465:             <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white leading-[1.1] group cursor-default">
+466:               {isEn ? (
+467:                 <>
+468:                   <span className="group-hover:text-[#2EFF00] transition-colors duration-500">Understand a bit</span><br />
+469:                   <span className="group-hover:text-white transition-colors duration-500">of our process of</span><br />
+470:                   <span className="text-[#2EFF00] group-hover:text-white transition-colors duration-500">Creation</span>
+471:                 </>
+472:               ) : (
+473:                 <>
+474:                   <span className="group-hover:text-[#2EFF00] transition-colors duration-500">Entenda um pouco</span><br />
+475:                   <span className="group-hover:text-white transition-colors duration-500">do processo de</span><br />
+476:                   <span className="text-[#2EFF00] group-hover:text-white transition-colors duration-500">Criação</span>
+477:                 </>
+478:               )}
+479:             </h2>
+480:           </div>
+481:           
+482:           <div className="relative w-full max-w-2xl mx-auto">
+483:             <style>{`
+484:               @keyframes timelineFlow {
+485:                 0% { top: -50px; opacity: 0; }
+486:                 10% { opacity: 1; }
+487:                 90% { opacity: 1; }
+488:                 100% { top: 100%; opacity: 0; }
+489:               }
+490:               .timeline-anim {
+491:                 animation: timelineFlow 5s linear infinite;
+492:               }
+493:             `}</style>
+494:             {/* Timeline base track */}
+495:             <div className="absolute left-[5px] top-0 bottom-0 w-px bg-[#2EFF00]/20"></div>
+496:             
+497:             {/* Flowing animated particle based on scroll */}
+498:             <div className="absolute left-[4px] top-0 w-[3px] h-[150px] bg-gradient-to-b from-transparent via-[#2EFF00] to-transparent z-10 timeline-anim hidden md:block"></div>
+499:  
+500:             <div className="space-y-16 pt-4 pb-4 w-full">
+501:               {/* Step 1 */}
+502:               <div className="relative grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 pb-16 group">
+503:                 <div className="absolute left-0 top-1 w-[11px] h-[11px] rounded-full bg-black border-2 border-[#2EFF00] z-20 group-hover:bg-[#2EFF00] transition-colors duration-300"></div>
+504:                 <div className="pl-6 md:pl-8">
+505:                   <div className="font-mono text-sm text-[#2EFF00] tracking-[0.2em] mb-2 font-bold">{t.step1}</div>
+506:                   <div className="font-mono text-xs text-gray-500 uppercase tracking-widest">{t.mapping}</div>
+507:                 </div>
+508:                 <div className="pl-6 md:pl-0">
+509:                   <h3 className="text-2xl font-bold mb-3 text-white group-hover:text-[#2EFF00] transition-colors duration-300">{t.briefingTitle}</h3>
+510:                   <p className="text-gray-400 text-[1.05rem] leading-relaxed max-w-2xl">
+511:                     {t.briefingDesc}
+512:                   </p>
+513:                 </div>
+514:               </div>
+515: 
+516:               {/* Step 2 */}
+517:               <div className="relative grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 pb-16 group">
+518:                 <div className="absolute left-0 top-1 w-[11px] h-[11px] rounded-full bg-black border-2 border-[#2EFF00] z-20 group-hover:bg-[#2EFF00] transition-colors duration-300"></div>
+519:                 <div className="pl-6 md:pl-8">
+520:                   <div className="font-mono text-sm text-[#2EFF00] tracking-[0.2em] mb-2 font-bold">{t.step2}</div>
+521:                   <div className="font-mono text-xs text-gray-500 uppercase tracking-widest">{t.analysis}</div>
+522:                 </div>
+523:                 <div className="pl-6 md:pl-0">
+524:                   <h3 className="text-2xl font-bold mb-3 text-white group-hover:text-[#2EFF00] transition-colors duration-300">{t.strategyTitle}</h3>
+525:                   <p className="text-gray-400 text-[1.05rem] leading-relaxed max-w-2xl">
+526:                     {t.strategyDesc}
+527:                   </p>
+528:                 </div>
+529:               </div>
+530: 
+531:               {/* Step 3 */}
+532:               <div className="relative grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 pb-16 group">
+533:                 <div className="absolute left-0 top-1 w-[11px] h-[11px] rounded-full bg-black border-2 border-[#2EFF00] z-20 group-hover:bg-[#2EFF00] transition-colors duration-300"></div>
+534:                 <div className="pl-6 md:pl-8">
+535:                   <div className="font-mono text-sm text-[#2EFF00] tracking-[0.2em] mb-2 font-bold">{t.step3}</div>
+536:                   <div className="font-mono text-xs text-gray-500 uppercase tracking-widest">{t.direction}</div>
+537:                 </div>
+538:                 <div className="pl-6 md:pl-0">
+539:                   <h3 className="text-2xl font-bold mb-3 text-white group-hover:text-[#2EFF00] transition-colors duration-300">{t.designTitle}</h3>
+540:                   <p className="text-gray-400 text-[1.05rem] leading-relaxed max-w-2xl">
+541:                     {t.designDesc}
+542:                   </p>
+543:                 </div>
+544:               </div>
+545: 
+546:               {/* Step 4 */}
+547:               <div className="relative grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 pb-16 group">
+548:                 <div className="absolute left-0 top-1 w-[11px] h-[11px] rounded-full bg-black border-2 border-[#2EFF00] z-20 group-hover:bg-[#2EFF00] transition-colors duration-300"></div>
+549:                 <div className="pl-6 md:pl-8">
+550:                   <div className="font-mono text-sm text-[#2EFF00] tracking-[0.2em] mb-2 font-bold">{t.step4}</div>
+551:                   <div className="font-mono text-xs text-gray-500 uppercase tracking-widest">{t.frontend}</div>
+552:                 </div>
+553:                 <div className="pl-6 md:pl-0">
+554:                   <h3 className="text-2xl font-bold mb-3 text-white group-hover:text-[#2EFF00] transition-colors duration-300">{t.implTitle}</h3>
+555:                   <p className="text-gray-400 text-[1.05rem] leading-relaxed max-w-2xl">
+556:                     {t.implDesc}
+557:                   </p>
+558:                 </div>
+559:               </div>
+560: 
+561:               {/* Step 5 */}
+562:               <div className="relative grid grid-cols-1 md:grid-cols-[200px_1fr] gap-4 md:gap-8 group">
+563:                 <div className="absolute left-0 top-1 w-[11px] h-[11px] rounded-full bg-black border-2 border-[#2EFF00] z-20 group-hover:bg-[#2EFF00] transition-colors duration-300"></div>
+564:                 <div className="pl-6 md:pl-8">
+565:                   <div className="font-mono text-sm text-[#2EFF00] tracking-[0.2em] mb-2 font-bold">{t.step5}</div>
+566:                   <div className="font-mono text-xs text-gray-500 uppercase tracking-widest">{t.performance}</div>
+567:                 </div>
+568:                 <div className="pl-6 md:pl-0">
+569:                   <h3 className="text-2xl font-bold mb-3 text-white group-hover:text-[#2EFF00] transition-colors duration-300">{t.optTitle}</h3>
+570:                   <p className="text-gray-400 text-[1.05rem] leading-relaxed max-w-2xl mb-8">
+571:                     {t.optDesc}
+572:                   </p>
+573:                   
+574:                   <div className="bg-white border border-gray-200 p-6 md:p-8 md:pb-6 w-full max-w-[550px] relative overflow-hidden group-hover:border-[#2EFF00]/50 transition-colors duration-500 rounded-lg shadow-lg">
+575:                      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#2EFF00] to-transparent opacity-100"></div>
+576:                      <div className="flex justify-between items-center mb-6">
+577:                        <span className="text-sm font-mono text-gray-400 tracking-[0.15em] uppercase leading-none">{t.perfReport}</span>
+578:                        <div className="flex gap-[6px] items-center">
+579:                          <div className="w-1.5 h-1.5 rounded-full bg-gray-200"></div>
+580:                          <div className="w-1.5 h-1.5 rounded-full bg-gray-200"></div>
+581:                          <div className="w-1.5 h-1.5 rounded-full bg-[#2EFF00]"></div>
+582:                        </div>
+583:                      </div>
+584:                      <div className="grid grid-cols-3 gap-6 mb-6 pt-2">
+585:                        <div className="flex flex-col">
+586:                          <div className="text-5xl font-black text-[#2EFF00]">A</div>
+587: -3 gap-6 mb-6 pt-2">
+588:                        <div className="flex flex-col">
+589:                          <div className="text-5xl font-black text-[#2EFF00]">A</div>
+590:                          <div className="text-xs text-gray-400 font-mono tracking-wider mt-2 uppercase">Grade</div>
+591:                        </div>
+592:                        <div className="flex flex-col">
+593:                          <div className="text-5xl font-black text-black">100%</div>
+594:                          <div className="text-xs text-gray-400 font-mono tracking-wider mt-2 uppercase">Perf.</div>
+595:                        </div>
+596:                        <div className="flex flex-col">
+597:                          <div className="text-5xl font-black text-black">99%</div>
+598:                          <div className="text-xs text-gray-400 font-mono tracking-wider mt-2 uppercase">Struct.</div>
+599:                        </div>
+600:                      </div>
+601:                      <div className="text-sm text-gray-500 font-mono flex gap-6 pt-4 border-t border-gray-100">
+602:                        <span>LCP: <strong className="text-[#2EFF00] font-bold">450ms</strong></span>
+603:                        <span>TBT: <strong className="text-[#2EFF00] font-bold">12ms</strong></span>
+604:                        <span>CLS: <strong className="text-[#2EFF00] font-bold">0.01</strong></span>
+605:                      </div>
+606:                   </div>
+607:                 </div>
+608:               </div>
+609:             </div>
+610:           </div>
+611:         </div>
+612:       </section>
+613: 
+614:       {/* Info Section */}
+615:       <section id="informacoes" className="py-24 px-6">
+616:         <div className="max-w-4xl mx-auto">
+617:           <div className="flex items-center justify-between border-b border-white/10 pb-6 mb-12">
+618:              <h2 className="text-3xl md:text-5xl font-black">{t.proposalInfo}</h2>
+619:              <span className="text-[10px] border border-[#2EFF00]/50 bg-[#2EFF00]/10 px-3 py-1 rounded font-mono text-[#2EFF00] shadow-[0_0_10px_rgba(46,255,0,0.2)]">{t.importantNotice}</span>
+620:           </div>
+621: 
+622:           <div className="space-y-6">
+623:             <div className="bg-[#111] border border-white/5 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row gap-6 items-start md:items-center">
+624:               <div className="flex items-center gap-6 w-full md:w-[40%] shrink-0">
+625:                 <span className="text-4xl font-black text-white/50">01</span>
+626:                 <div className="w-20 h-20 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+627:                   <div style={{ width: 80, height: 80 }}>
+628:                     <DotLottiePlayer
+629:                       src="https://fonts.gstatic.com/s/e/notoemoji/latest/23f0/lottie.json"
+630:                       autoplay
+631:                       loop
+632:                     />
+633:                   </div>
+634:                 </div>
+635:                 <h3 className="text-xl font-bold leading-tight" dangerouslySetInnerHTML={{ __html: isEn ? "Delivery<br />Timeframe" : "Prazo de<br />Entrega" }}></h3>
+636:               </div>
+637:               <p className="text-gray-400 text-sm leading-relaxed border-l border-white/10 pl-6 border-l-0 md:border-l-solid" dangerouslySetInnerHTML={{ __html: t.delivDesc }}>
+638:               </p>
+639:             </div>
+640: 
+641:             <div className="bg-[#111] border border-white/5 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row gap-6 items-start md:items-center">
+642:               <div className="flex items-center gap-6 w-full md:w-[40%] shrink-0">
+643:                 <span className="text-4xl font-black text-white/50">02</span>
+644:                 <div className="w-12 h-12 rounded-xl bg-[#2EFF00]/10 flex items-center justify-center text-[#2EFF00] shrink-0">
+645:                    <Wallet size={20} />
+646:                 </div>
+647:                 <h3 className="text-xl font-bold leading-tight" dangerouslySetInnerHTML={{ __html: isEn ? "Payment<br />Terms" : "Formas de<br />Pagamento" }}></h3>
+648:               </div>
+649:               <p className="text-gray-400 text-sm leading-relaxed border-l border-white/10 pl-6 border-l-0 md:border-l-solid" dangerouslySetInnerHTML={{ __html: t.paymentTermsDesc }}>
+650:               </p>
+651:             </div>
+652: 
+653:             <div className="bg-[#111] border border-white/5 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row gap-6 items-start md:items-center">
+654:               <div className="flex items-center gap-6 w-full md:w-[40%] shrink-0">
+655:                 <span className="text-4xl font-black text-white/50">03</span>
+656:                 <div className="w-12 h-12 rounded-xl bg-[#2EFF00]/10 flex items-center justify-center text-[#2EFF00] shrink-0">
+657:                    <CreditCard size={20} />
+658:                 </div>
+659:                 <h3 className="text-xl font-bold leading-tight" dangerouslySetInnerHTML={{ __html: isEn ? "Payment<br />Methods" : "Meios de<br />Pagamento" }}></h3>
+660:               </div>
+661:               <p className="text-gray-400 text-sm leading-relaxed border-l border-white/10 pl-6 border-l-0 md:border-l-solid" dangerouslySetInnerHTML={{ __html: t.paymentMethodsDesc }}>
+662:               </p>
+663:             </div>
+664: 
+665:             {proposal?.observations && (
+666:               <div className="bg-[#111] border border-[#2EFF00]/20 rounded-2xl p-6 md:p-8 flex flex-col gap-4 items-start">
+667:                 <h3 className="text-xl font-bold leading-tight text-[#2EFF00]">{t.obs}</h3>
+668:                 <p className="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap">
+669:                   {proposal.observations}
+670:                 </p>
+671:               </div>
+672:             )}
+673:           </div>
+674:         </div>
+675:       </section>
+676: 
+677:       {/* Pricing / Investment */}
+678:       <section id="investimento" className="py-24 px-6 relative overflow-hidden">
+679:         <div className="absolute inset-0 bg-[#2EFF00]/5 pointer-events-none" style={{ maskImage: 'radial-gradient(ellipse at bottom, black, transparent)' }}></div>
+680:         <div className="max-w-3xl mx-auto border border-white/10 bg-[#050505] rounded-[40px] p-12 md:p-20 text-center relative z-10 shadow-2xl">
+681:           <h2 className="text-4xl font-black text-[#2EFF00] mb-8">{t.investment}</h2>
+682:           
+683:           {proposal?.selectedServices?.length > 0 && (
+684:             <div className="flex flex-col items-center mb-8 w-full max-w-sm mx-auto border border-[#333] bg-[#111] rounded-2xl p-6">
+685:                <h4 className="text-[10px] text-gray-500 font-mono tracking-widest border-b border-[#333] pb-4 mb-4 w-full text-center">{t.servicesInc}</h4>
+686:                {proposal.selectedServices.map((s: any) => (
+687:                  <div key={s.id} className="flex justify-between w-full text-sm mb-3 font-mono last:mb-0">
+688:                     <span className="text-gray-300">{s.name}</span>
+689:                  </div>
+690:                ))}
+691:             </div>
+692:           )}
+693: 
+694:           <div className="flex items-start justify-center gap-2 mb-8 mt-4">
+695:             <span className="text-xl font-bold mt-2">{isEn ? "$" : "R$"}</span>
+696:             <span className="text-6xl md:text-8xl font-black tracking-tighter">{totalValueSplit[0]}</span>
+697:             <span className="text-xl font-bold mt-2">,{totalValueSplit[1] || '00'}</span>
+698:           </div>
+699: 
+700:           <p className="text-gray-400 text-sm mb-12">
+701:             {t.validDesc}
+702:           </p>
+703: 
+704:           <button onClick={handleAcceptProposal} disabled={isAccepting} className="inline-flex items-center justify-center gap-2 bg-[#2EFF00] text-black w-full md:w-auto px-12 py-5 rounded-full font-bold text-lg hover:bg-[#2EFF00]/90 transition-colors shadow-[0_0_30px_rgba(46,255,0,0.3)] hover:scale-105 transform duration-300 disabled:opacity-50">
+705:             {isAccepting ? t.wait : t.closeCta} <ArrowUpRight size={20} />
+706:           </button>
+707: 
+708:           <div className="mt-12 text-sm text-gray-500">
+709:             {t.questions}<br/>
+710:             <a href={`https://wa.me/${phone}?text=${encodeURIComponent(isEn ? "Hello ESCOM STUDIO, I had a question about the proposal." : "Olá ESCOM STUDIO, tive uma dúvida sobre a proposta.")}`} target="_blank" rel="noreferrer" className="text-[#2EFF00] underline hover:text-white transition-colors mt-2 inline-block">{t.chatWpp}</a>
+711:           </div>
+712:         </div>
+713:       </section>
+714: 
+715:       {/* Footer */}
+716:       <footer className="border-t border-white/5 py-12 px-6 bg-black">
+717:         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+718:           <div className="text-xs text-gray-600 font-mono">
+719:             {t.allRights}
+720:           </div>
+721:           
+722:           <div className="font-bold text-xl tracking-tight">
+723:              ESCOM <span className="text-[#2EFF00]">STUDIO</span>
+724:           </div>
+725: 
+726:           <div className="text-xs text-gray-600 font-mono flex gap-4">
+727:             <a href="#" className="hover:text-white transition-colors">{t.privPol}</a>
+728:             <span>|</span>
+729:             <a href="#" className="hover:text-white transition-colors">{t.termsUse}</a>
+730:           </div>
+731:         </div>
+732:         <div className="text-center mt-8 text-[10px] text-gray-700 font-mono uppercase tracking-widest">
+733:            ESCOM STUDIO LTDA | CNPJ: 48.298.795/0001-92
+734:         </div>
+735:       </footer>
+736: 
+737:       {/* Scroll to Top */}
+738:       <button 
+739:         onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
+740:         className="fixed bottom-8 right-8 w-12 h-12 bg-[#2EFF00] text-black rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-[0_0_15px_rgba(46,255,0,0.3)] z-50">
+741:         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+742:       </button>
+743:       </div>
+744: 
+745:       {/* Print View */}
+746:       <div id="pdf-capture-container" className="print-only print-only-bg" style={{ padding: '20mm', backgroundColor: '#050505', color: '#fff', fontSize: '14px', lineHeight: '1.6', minHeight: '100vh' }}>
+747:         <h1 className="text-center font-bold text-[#2EFF00] text-3xl mb-4" style={{ marginTop: '0' }}>{isEn ? "Commercial Proposal - ESCOM STUDIO" : "Proposta Comercial - ESCOM STUDIO"}</h1>
+748:         <div className="text-center mb-6 text-sm text-gray-400">
+749:             {t.dateSent} {dateSent} | <span className="text-red-500 font-bold">{t.validFor3Days}</span>
+750:         </div>
+751: 
+752:         <p className="mb-4">{isEn ? "HELLO" : "OLÁ"} {clientName?.toUpperCase() || ''},</p>
+753:         <p className="mb-6">{t.heroSubtitle(clientName)}</p>
+754: 
+755:         <div className="mb-6 p-4 rounded" style={{ backgroundColor: '#111', borderLeft: '5px solid #2EFF00' }}>
+756:             <p className="font-bold">{t.clientsServed}</p>
+757:             <p className="font-bold">{t.countriesServed}</p>
+758:             <p className="font-bold">{t.yearsExp}</p>
+759:         </div>
+760: 
+761:         <h2 className="text-[#2EFF00] text-2xl font-bold mb-4">{t.worksSpeak}</h2>
+762:         <p className="mb-6">{t.recentProjectsDesc}</p>
+763: 
+764:         <h3 className="text-[#2EFF00] text-xl font-bold mb-4">{t.farBeyond} {t.thePixel}</h3>
+765:         <p className="mb-4">{t.aboutDesc1}</p>
+766:         <p className="mb-4 italic">"{t.aboutQuote}"</p>
+767:         <p className="mb-8">{t.aboutDesc2}</p>
+768: 
+769:         <h2 className="text-[#2EFF00] text-2xl font-bold mb-4" style={{ pageBreakBefore: 'always', marginTop: '20px' }}>{t.creationProcess}</h2>
+770:         <div className="mb-8 p-6 rounded" style={{ border: '1px solid rgba(255,255
+<truncated 1942 bytes>
+
+NOTE: The output was truncated because it was too long. Use a more targeted query or a smaller range to get the information you need.

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {
   Briefcase, Loader2, Globe, Bookmark, FileText, Lock, ArrowLeft,
-  Clock, Trash2, CheckCircle, XCircle, AlertTriangle, Sun, Moon, RefreshCw, DollarSign
+  Clock, Trash2, CheckCircle, XCircle, AlertTriangle, Sun, Moon, RefreshCw, DollarSign,
+  LayoutGrid, List
 } from "lucide-react";
 import { db } from "../lib/firebase";
 import { collection, getDocs, deleteDoc, doc, query, orderBy, updateDoc } from "firebase/firestore";
@@ -17,6 +18,7 @@ export default function Piassa() {
   const [shake, setShake] = useState(false);
 
   const [dark, setDark] = useState(true);
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [savedJobs, setSavedJobs] = useState<any[]>([]);
   const [savedLoading, setSavedLoading] = useState(false);
   const [filterRole, setFilterRole] = useState("Todas");
@@ -142,6 +144,18 @@ export default function Piassa() {
           <div className="flex items-center gap-4">
             <Clock size={20} className="text-[#00d1ff]" />
             <h2 className="text-sm sm:text-xl font-mono tracking-widest uppercase">VAGAS ENCONTRADAS</h2>
+            
+            {/* Seletor Lista / Grade */}
+            <div className={`flex rounded-lg p-0.5 border ${dark ? 'bg-[#1a1a1a] border-[#333]' : 'bg-gray-100 border-gray-200'}`}>
+              <button onClick={() => setViewMode("list")} title="Ver como Lista"
+                className={`p-1.5 rounded transition-all ${viewMode === "list" ? (dark ? 'bg-[#00d1ff] text-black shadow' : 'bg-white text-gray-900 shadow') : 'text-gray-500 hover:text-gray-300'}`}>
+                <List size={14} />
+              </button>
+              <button onClick={() => setViewMode("grid")} title="Ver como Grade"
+                className={`p-1.5 rounded transition-all ${viewMode === "grid" ? (dark ? 'bg-[#00d1ff] text-black shadow' : 'bg-white text-gray-900 shadow') : 'text-gray-500 hover:text-gray-300'}`}>
+                <LayoutGrid size={14} />
+              </button>
+            </div>
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full scrollbar-thin">
             {ROLES.map(r => (
@@ -171,57 +185,69 @@ export default function Piassa() {
           </div>
         )}
 
-        {!savedLoading && filteredJobs.map(job => (
-          <div key={job.id} className={`border rounded-lg p-5 relative flex flex-col mb-4 ${dark ? 'border-[#1a1a1a] bg-[#0a0a0a]' : 'border-gray-200 bg-white'}`}>
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#00d1ff] rounded-l-lg"></div>
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 pl-2 gap-2">
-              <h3 className={`text-base sm:text-lg font-bold break-words ${dark ? 'text-white' : 'text-gray-900'}`}>{job.title}</h3>
-              <div className="flex items-center gap-2 shrink-0 flex-wrap">
-                {job.role && <div className="border border-[#00d1ff]/30 text-[#00d1ff] px-2 py-0.5 text-[10px] font-mono rounded bg-[#00d1ff]/5 whitespace-nowrap">{job.role}</div>}
-                <div className="border border-[#00d1ff]/30 text-[#00d1ff] px-2 py-0.5 text-[10px] font-mono rounded bg-[#00d1ff]/5 whitespace-nowrap">{job.company}</div>
-                {job.salary && <div className="border border-yellow-500/30 text-yellow-500 px-2 py-0.5 text-[10px] font-mono rounded bg-yellow-500/5 whitespace-nowrap flex items-center gap-1"><DollarSign size={10} />{job.salary}</div>}
-              </div>
-            </div>
-            <p className={`font-mono text-xs mb-4 pl-2 leading-relaxed break-words ${dark ? 'text-gray-400' : 'text-gray-600'}`}>{job.snippet}</p>
-            <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] font-mono mb-4 pl-2 pb-4 border-b ${dark ? 'border-[#1a1a1a]' : 'border-gray-200'}`}>
-              <div className="flex items-center gap-1 text-gray-500 whitespace-nowrap">
-                <Clock size={11} />
-                Salva em {formatDate(job.createdAt)} · {daysSincePost(job.createdAt)}d
-              </div>
-              <div className="flex items-center gap-1 text-orange-500 whitespace-nowrap">
-                <AlertTriangle size={11} />
-                Expira {daysRemaining(job.createdAt)}d
-              </div>
-              {job.link && job.link !== "#" && (
-                <a href={job.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[#00d1ff] hover:underline whitespace-nowrap"><FileText size={11} /> Acessar Vaga</a>
-              )}
-            </div>
-            <div className="flex items-center justify-between pl-2 flex-wrap gap-2">
-              <div className="flex items-center gap-3 flex-wrap">
-                <select value={job.status || "Pendente"} onChange={(e) => handleUpdateStatus(job.id, e.target.value)}
-                  className={`px-2.5 py-1 text-[10px] font-mono rounded outline-none border cursor-pointer ${
-                    job.status === "Inscrito" ? "bg-[#00d1ff]/10 border-[#00d1ff]/30 text-[#00d1ff]" :
-                    job.status === "Descartado" ? "bg-red-500/10 border-red-500/30 text-red-500" :
-                    "bg-orange-500/10 border-orange-500/30 text-orange-500"
-                  }`}
-                >
-                  <option value="Pendente" className={dark ? 'bg-[#0a0a0a] text-orange-500' : 'bg-white text-orange-500'}>Pendente</option>
-                  <option value="Inscrito" className={dark ? 'bg-[#0a0a0a] text-[#00d1ff]' : 'bg-white text-[#00d1ff]'}>Inscrito</option>
-                  <option value="Descartado" className={dark ? 'bg-[#0a0a0a] text-red-500' : 'bg-white text-red-500'}>Descartado</option>
-                </select>
-                <div className={`flex items-center gap-1 ${
-                  job.status === "Inscrito" ? "text-[#00d1ff]" :
-                  job.status === "Descartado" ? "text-red-500" : "text-orange-500"
-                }`}>
-                  {job.status === "Inscrito" ? <CheckCircle size={12} /> :
-                   job.status === "Descartado" ? <XCircle size={12} /> : <Clock size={12} />}
-                  <span className="text-[10px] font-mono">{job.status || "Pendente"}</span>
+        {!savedLoading && (
+          <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "flex flex-col gap-4"}>
+            {filteredJobs.map(job => (
+              <div key={job.id} 
+                className={`border rounded-lg p-5 relative flex flex-col justify-between ${
+                  dark ? 'border-[#1a1a1a] bg-[#0a0a0a]' : 'border-gray-200 bg-white'
+                } ${viewMode === "list" ? "mb-0" : "h-full"}`}
+              >
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#00d1ff] rounded-l-lg"></div>
+                <div>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 pl-2 gap-2">
+                    <h3 className={`text-base sm:text-lg font-bold break-words line-clamp-2 ${dark ? 'text-white' : 'text-gray-900'}`}>{job.title}</h3>
+                    <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                      {job.role && <div className="border border-[#00d1ff]/30 text-[#00d1ff] px-2 py-0.5 text-[10px] font-mono rounded bg-[#00d1ff]/5 whitespace-nowrap">{job.role}</div>}
+                      <div className="border border-[#00d1ff]/30 text-[#00d1ff] px-2 py-0.5 text-[10px] font-mono rounded bg-[#00d1ff]/5 whitespace-nowrap">{job.company}</div>
+                      {job.salary && <div className="border border-yellow-500/30 text-yellow-500 px-2 py-0.5 text-[10px] font-mono rounded bg-yellow-500/5 whitespace-nowrap flex items-center gap-1"><DollarSign size={10} />{job.salary}</div>}
+                    </div>
+                  </div>
+                  <p className={`font-mono text-xs mb-4 pl-2 leading-relaxed break-words ${viewMode === "grid" ? "line-clamp-3" : ""} ${dark ? 'text-gray-400' : 'text-gray-600'}`}>{job.snippet}</p>
+                </div>
+                <div>
+                  <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] font-mono mb-4 pl-2 pb-4 border-b ${dark ? 'border-[#1a1a1a]' : 'border-gray-200'}`}>
+                    <div className="flex items-center gap-1 text-gray-500 whitespace-nowrap">
+                      <Clock size={11} />
+                      Salva em {formatDate(job.createdAt)} · {daysSincePost(job.createdAt)}d
+                    </div>
+                    <div className="flex items-center gap-1 text-orange-500 whitespace-nowrap">
+                      <AlertTriangle size={11} />
+                      Expira {daysRemaining(job.createdAt)}d
+                    </div>
+                    {job.link && job.link !== "#" && (
+                      <a href={job.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[#00d1ff] hover:underline whitespace-nowrap"><FileText size={11} /> Acessar Vaga</a>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between pl-2 flex-wrap gap-2">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <select value={job.status || "Pendente"} onChange={(e) => handleUpdateStatus(job.id, e.target.value)}
+                        className={`px-2.5 py-1 text-[10px] font-mono rounded outline-none border cursor-pointer ${
+                          job.status === "Inscrito" ? "bg-[#00d1ff]/10 border-[#00d1ff]/30 text-[#00d1ff]" :
+                          job.status === "Descartado" ? "bg-red-500/10 border-red-500/30 text-red-500" :
+                          "bg-orange-500/10 border-orange-500/30 text-orange-500"
+                        }`}
+                      >
+                        <option value="Pendente" className={dark ? 'bg-[#0a0a0a] text-orange-500' : 'bg-white text-orange-500'}>Pendente</option>
+                        <option value="Inscrito" className={dark ? 'bg-[#0a0a0a] text-[#00d1ff]' : 'bg-white text-[#00d1ff]'}>Inscrito</option>
+                        <option value="Descartado" className={dark ? 'bg-[#0a0a0a] text-red-500' : 'bg-white text-red-500'}>Descartado</option>
+                      </select>
+                      <div className={`flex items-center gap-1 ${
+                        job.status === "Inscrito" ? "text-[#00d1ff]" :
+                        job.status === "Descartado" ? "text-red-500" : "text-orange-500"
+                      }`}>
+                        {job.status === "Inscrito" ? <CheckCircle size={12} /> :
+                         job.status === "Descartado" ? <XCircle size={12} /> : <Clock size={12} />}
+                        <span className="text-[10px] font-mono">{job.status || "Pendente"}</span>
+                      </div>
+                    </div>
+                    <button onClick={() => handleDeleteJob(job.id)} className="text-gray-500 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
+                  </div>
                 </div>
               </div>
-              <button onClick={() => handleDeleteJob(job.id)} className="text-gray-500 hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
-            </div>
+            ))}
           </div>
-        ))}
+        )}
 
         {!savedLoading && filteredJobs.length > 0 && (
           <p className={`text-center font-mono text-[10px] pt-4 ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
