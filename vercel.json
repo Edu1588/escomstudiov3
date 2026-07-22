@@ -12,7 +12,13 @@
     { "source": "/sobre", "destination": "/sobre/index.html" },
     { "source": "/portfolioedu", "destination": "/portfolioedu/index.html" },
     { "source": "/portfolio-projetos", "destination": "/portfolio-projetos/index.html" },
-    { "source": "/piassa(.*)", "destination": "/piassa/index.html" }
+    { "source": "/piassa(.*)", "destination": "/piassa/index.html" },
+    { "source": "/site-onward-consultoria", "destination": "/site-onward-consultoria/index.html" },
+    { "source": "/site-onward-consultoria/analise", "destination": "/site-onward-consultoria/analise.html" },
+    { "source": "/site-onward-consultoria/analise.pdf", "destination": "/site-onward-consultoria/analise.html" },
+    { "source": "/onward-consultoria", "destination": "/site-onward-consultoria/index.html" },
+    { "source": "/onward", "destination": "/site-onward-consultoria/index.html" },
+    { "source": "/onward/analise", "destination": "/site-onward-consultoria/analise.html" }
   ],
   "crons": [
     {

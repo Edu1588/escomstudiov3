@@ -18,7 +18,8 @@ import {
   ChevronRight,
   HeartPulse,
   DollarSign,
-  Building
+  Building,
+  ExternalLink
 } from "lucide-react";
 
 import Dashboard from "./pages/Dashboard";
@@ -87,6 +88,7 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
         { name: "WhatsApp CRM ↗", path: "https://escom-crm.vercel.app", isExternal: true }
       ]
     },
+    { name: "Onward Consultoria", path: "/onward", icon: <Briefcase size={18} />, isExternal: true, url: "/onward" },
     { name: "Contratos", path: "/contratos", icon: <FileSignature size={18} /> },
     { name: "Projetos do Portfolio", path: "/portfolio", icon: <Briefcase size={18} /> },
     { name: "Trajetória Profissional", path: "/trajetoria", icon: <Briefcase size={18} /> },
@@ -162,6 +164,19 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
                       </ul>
                     )}
                   </div>
+                ) : item.isExternal ? (
+                  <a 
+                    href={item.url || item.path}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-gray-400 hover:text-white hover:bg-white/5"
+                  >
+                    <div className="flex items-center gap-3">
+                      {item.icon}
+                      <span>{item.name}</span>
+                    </div>
+                    <ExternalLink size={12} className="text-gray-600" />
+                  </a>
                 ) : (
                   <Link 
                     to={item.path!} 

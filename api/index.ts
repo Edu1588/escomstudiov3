@@ -795,17 +795,16 @@ app.get("/api/proposals/:id", async (req, res) => {
 });
 
 // --- Build & Deploy ---
-async function buildSiteHtml(payload) {
+export async function generateMandatory15SectionsHtml(payload) {
   const { formData, siteData, reports, projectId } = payload;
   const pid = projectId || "site_" + Date.now();
+  const name = formData?.companyName || "Empresa";
+  const niche = formData?.niche || "";
+  const comp = formData?.primaryHex || "#ff5a00";
+  const escomColor = "#00d1ff";
+  const phone = formData?.phone || "";
+  const address = formData?.address || "";
   const esc = s => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-  const name = formData.companyName || "Empresa";
-  const niche = formData.niche || "";
-  const primaryHex = formData.primaryHex || "#ff5a00";
-  const comp = primaryHex;
-  const escomColor = "#00d1ff"; // ciano oficial
-  const phone = formData.phone || "";
-  const address = formData.address || "";
 
   // Selecionar imagens do Unsplash dinâmicas baseadas no nicho
   const nicheLower = niche.toLowerCase();
@@ -980,7 +979,7 @@ Retorne APENAS o código HTML completo. Comece com <!DOCTYPE html>. Sem markdown
            <div class="gs-card fade-up"><div class="gs-icon"><i class="fa-solid fa-bolt" style="color:${comp}"></i></div><h3>Agilidade</h3><p>Processo otimizado para entregar resultados rápidos e consistentes.</p></div>
            <div class="gs-card fade-up"><div class="gs-icon"><i class="fa-solid fa-heart" style="color:${comp}"></i></div><h3>Dedicação</h3><p>Suporte personalizado focado no sucesso e na satisfação do cliente.</p></div>`);
 
-  return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>${esc(name)} | ${esc(niche)}</title>
 <meta name="description" content="${esc(hero.subheadline || ('Excelência em ' + niche + '. ' + name))}">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1291,7 +1290,6 @@ document.querySelectorAll('.fade-up').forEach(el => {
   // QA Estrito: Remover travessões ou meia-riscas residuais de todo o HTML gerado
   return html.replace(/—/g, ",").replace(/–/g, ",").replace(/\s+-\s+/g, ", ");
 }
-
 app.post("/api/build-and-deploy-site", async (req, res) => {
   try {
     const payload = req.body;
