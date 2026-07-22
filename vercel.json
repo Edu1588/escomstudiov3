@@ -16,9 +16,9 @@
     { "source": "/site-onward-consultoria", "destination": "/site-onward-consultoria.html" },
     { "source": "/site-onward-consultoria/analise", "destination": "/site-onward-consultoria/analise.html" },
     { "source": "/site-onward-consultoria/analise.pdf", "destination": "/site-onward-consultoria/analise.html" },
-    { "source": "/onward-consultoria", "destination": "/site-onward-consultoria.html" },
-    { "source": "/onward", "destination": "/site-onward-consultoria.html" },
-    { "source": "/onward/analise", "destination": "/site-onward-consultoria/analise.html" }
+    { "source": "/onward-modelo-site", "destination": "/site-onward-consultoria.html" },
+    { "source": "/onward-modelo-site/analise", "destination": "/site-onward-consultoria/analise.html" },
+    { "source": "/onward-modelo-site/analise.pdf", "destination": "/site-onward-consultoria/analise.html" }
   ],
   "crons": [
     {

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-function AnimatedWord({ text, className }) {
+function AnimatedWord({ text, className = '' }: { text: string; className?: string }) {
   return (
-    <span className={`${className || ''} flex flex-nowrap`}>
+    <span className={`${className} flex flex-nowrap`}>
       {text.split('').map((char, i) => (
         <motion.span
           key={i}

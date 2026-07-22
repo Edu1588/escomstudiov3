@@ -89,7 +89,7 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
         { name: "WhatsApp CRM ↗", path: "https://escom-crm.vercel.app", isExternal: true }
       ]
     },
-    { name: "Onward Consultoria", path: "/onward", icon: <Briefcase size={18} />, isExternal: true, url: "/onward" },
+    { name: "Onward Consultoria", path: "/onward-modelo-site", icon: <Briefcase size={18} />, isExternal: true, url: "/onward-modelo-site" },
     { name: "Contratos", path: "/contratos", icon: <FileSignature size={18} /> },
     { name: "Projetos do Portfolio", path: "/portfolio", icon: <Briefcase size={18} /> },
     { name: "Trajetória Profissional", path: "/trajetoria", icon: <Briefcase size={18} /> },
@@ -101,10 +101,10 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
       name: "Ferramentas",
       icon: <Wrench size={18} />,
       subItems: [
-        { name: "Fooocus ↗", path: "https://github.com/lllyasviel/Fooocus.git", isExternal: true },
+        { name: "Fooocus (Cria imagens de IA) ↗", path: "https://github.com/lllyasviel/Fooocus.git", isExternal: true },
         { name: "Análise Plausível ↗", path: "https://github.com/plausible/analytics.git", isExternal: true },
-        { name: "AppFlowy (Notion) ↗", path: "https://github.com/AppFlowy-IO/AppFlowy-Cloud.git", isExternal: true },
-        { name: "Penpot (Design) ↗", path: "https://github.com/penpot/penpot.git", isExternal: true }
+        { name: "AppFlowy (Alt. Notion) ↗", path: "https://github.com/AppFlowy-IO/AppFlowy-Cloud.git", isExternal: true },
+        { name: "Penpot (Design/Prototipagem) ↗", path: "https://github.com/penpot/penpot.git", isExternal: true }
       ]
     },
   ];
