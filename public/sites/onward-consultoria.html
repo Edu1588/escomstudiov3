@@ -1,662 +1,614 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="scroll-smooth">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Onward Consultoria | CFO sob Demanda &amp; Assessoria M&amp;A em São Paulo</title>
-<meta name="description" content="Gestão financeira estratégica e assessoria de fusões e aquisições para PMEs. CFO sob demanda com 25+ anos de experiência.">
-<link rel="icon" href="https://static.wixstatic.com/media/0ec144_f4c9c1c073084682b46a0f1cb09fb5f1~mv2.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
-<script>
-tailwind.config={theme:{extend:{colors:{
-redbrand:'oklch(0.57 0.21 27)',
-'redbrand-light':'oklch(0.70 0.16 35)',
-'redbrand-pale':'oklch(0.82 0.09 35)',
-ink:'oklch(1.000 0.000 0)',
-muted:'oklch(0.67 0.005 0)',
-bg:'#fafaf9',
-surface:'oklch(0.14 0.005 30)',
-},fontFamily:{heading:['Bricolage Grotesque','sans-serif'],body:['Source Serif 4','Georgia','serif']}}}}
-</script>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'Source Serif 4',Georgia,serif;background:#fafaf9;color:oklch(0.15 0.005 260);overflow-x:hidden;line-height:1.65}
-h1,h2,h3,h4,h5,h6{font-family:'Bricolage Grotesque',sans-serif;line-height:1.15;text-wrap:balance}
-#hero-canvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0}
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.25) 0%,rgba(0,0,0,0.5) 50%,rgba(0,0,0,0.85) 100%);z-index:1}
-.counter-num{font-variant-numeric:tabular-nums}
-.section-divider{width:0;height:2px;background:oklch(0.57 0.21 27)}
-.section-divider.revealed{width:48px}
-.faq-item{border-bottom:1px solid oklch(1 0 0/0.08)}
-.faq-answer{max-height:0;overflow:hidden;transition:max-height 0.5s cubic-bezier(0.4,0,0.2,1),padding 0.5s cubic-bezier(0.4,0,0.2,1)}
-.faq-item.active .faq-answer{max-height:300px;padding-top:16px}
-.faq-item.active .faq-icon{transform:rotate(45deg)}
-.whatsapp-float{position:fixed;bottom:24px;right:24px;z-index:50;width:56px;height:56px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,0.35);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1)}
-.whatsapp-float:hover{transform:scale(1.12)}
-footer{background:#27272a;border-top:1px solid oklch(1 0 0/0.06)}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onward Consultoria & M&A | Gestão Estratégica, Valuation e Fusões e Aquisições</title>
+  <meta name="description" content="Boutique de alta performance em Gestão Empresarial, Valuation preciso e assessoria em M&A (Fusões e Aquisições) na Av. Faria Lima, SP.">
 
-/* Text split animation */
-.split-char{display:inline-block;opacity:0;transform:translateY(100%) rotateX(-80deg);transform-origin:bottom center}
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-/* Magnetic button */
-.mag-btn{position:relative;display:inline-block;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1)}
-.mag-btn::after{content:'';position:absolute;inset:-4px;border-radius:inherit;background:oklch(0.57 0.21 27/0.15);opacity:0;transition:opacity 0.3s;z-index:-1}
-.mag-btn:hover::after{opacity:1}
+  <!-- Google Fonts: Playfair Display + Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-/* Card hover */
-.hover-lift{transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.4s ease}
-.hover-lift:hover{transform:translateY(-6px);box-shadow:0 20px 40px oklch(0 0 0/0.15)}
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-/* Service item hover */
-.svc-item{transition:background 0.3s ease,transform 0.3s cubic-bezier(0.34,1.56,0.64,1)}
-.svc-item:hover{background:oklch(0.57 0.21 27/0.06);transform:translateX(4px)}
+  <!-- GSAP & ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
-/* Image scale on scroll */
-.img-zoom{overflow:hidden}
-.img-zoom img{transition:transform 0.6s cubic-bezier(0.4,0,0.2,1)}
-.img-zoom:hover img{transform:scale(1.04)}
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-/* Nav scroll state */
-.nav-scrolled{background:rgba(255,255,255,0.95)!important;backdrop-filter:blur(20px)!important;border-bottom:1px solid oklch(0.15 0.005 260/0.08)!important}
+  <!-- Lenis Smooth Scroll -->
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
 
-/* Gradient border animation */
-@keyframes borderGlow{0%,100%{border-color:oklch(0.57 0.21 27/0.2)}50%{border-color:oklch(0.57 0.21 27/0.5)}}
-.glow-border{animation:borderGlow 3s ease-in-out infinite}
-
-@media(prefers-reduced-motion:reduce){
-.split-char{opacity:1;transform:none}
-*{animation:none!important;transition:none!important}
-}
-</style>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #030712;
+      color: #f3f4f6;
+      overflow-x: hidden;
+    }
+    .font-serif-title {
+      font-family: 'Playfair Display', serif;
+    }
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #ffffff 0%, #facc15 50%, #ca8a04 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(234, 179, 8, 0.25);
+    }
+  </style>
 </head>
-<body>
+<body class="antialiased selection:bg-yellow-400 selection:text-black">
 
-<!-- NAVBAR -->
-<nav id="main-nav" class="fixed top-0 left-0 right-0 z-40 px-6 py-5 transition-all duration-500" style="backdrop-filter:blur(16px);background:rgba(255,255,255,0.85);border-bottom:1px solid oklch(0.15 0.005 260/0.06)">
-<div class="max-w-7xl mx-auto flex items-center justify-between">
-<a href="#hero" class="flex items-center gap-3">
-<img src="https://static.wixstatic.com/media/0ec144_7cc13d8a244f4b388f49c244b574590e~mv2.jpg/v1/fill/w_180,h_65,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/Onward%20-%20Logo.jpg" alt="Onward Consultoria" class="h-8" loading="eager">
-</a>
-<div class="hidden md:flex items-center gap-8 text-sm" style="color:oklch(0.35 0.005 260)">
-<a href="#servicos" class="hover:opacity-70 transition-opacity">Serviços</a>
-<a href="#processo" class="hover:opacity-70 transition-opacity">Processo</a>
-<a href="#sobre" class="hover:opacity-70 transition-opacity">Sobre</a>
-<a href="#faq" class="hover:opacity-70 transition-opacity">FAQ</a>
-<a href="#contato" class="mag-btn px-5 py-2.5 rounded-lg font-heading font-semibold text-sm text-white transition-opacity hover:opacity-90" style="background:oklch(0.57 0.21 27)">Fale Conosco</a>
-</div>
-<button id="mobile-menu-btn" class="md:hidden text-xl" style="color:oklch(0.57 0.21 27)"><i class="fas fa-bars"></i></button>
-</div>
-<div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 flex flex-col gap-4 text-sm" style="border-top:1px solid oklch(0.15 0.005 260/0.08);color:oklch(0.35 0.005 260)">
-<a href="#servicos" class="hover:opacity-70">Serviços</a>
-<a href="#processo" class="hover:opacity-70">Processo</a>
-<a href="#sobre" class="hover:opacity-70">Sobre</a>
-<a href="#faq" class="hover:opacity-70">FAQ</a>
-<a href="#contato" class="px-5 py-2.5 rounded-lg font-heading font-semibold text-sm text-white text-center" style="background:oklch(0.57 0.21 27)">Fale Conosco</a>
-</div>
-</nav>
+  <!-- ==========================================
+       1. TARJA DE URGÊNCIA (TOPO FIXO)
+       ========================================== -->
+  <div id="sec-1-urgencia" class="bg-gradient-to-r from-gray-950 via-yellow-950 to-gray-950 text-yellow-300 py-2.5 px-4 text-center text-xs font-bold tracking-wider border-b border-yellow-500/30 sticky top-0 z-50 flex items-center justify-center gap-2">
+    <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+    PROPOSTA EXCLUSIVA ESCOM STUDIO · PRAZO DE APROVAÇÃO TÉCNICA: EXPIRA EM 3 DIAS · VALOR ÚNICO R$ 990,00
+  </div>
 
-<!-- HERO -->
-<section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden">
-<img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1920&q=80" alt="Skyline de São Paulo ao entardecer, distrito financeiro" class="absolute inset-0 w-full h-full object-cover" loading="eager">
-<div class="hero-overlay"></div>
-<canvas id="hero-canvas"></canvas>
-<div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
-<p class="text-sm font-semibold tracking-widest uppercase mb-6" style="color:oklch(0.57 0.21 27);font-family:'Bricolage Grotesque',sans-serif" id="hero-badge">CFO sob Demanda &amp; Assessoria M&amp;A</p>
-<h1 class="text-5xl md:text-7xl font-extrabold leading-none mb-8 text-white" id="hero-title" style="letter-spacing:-0.03em">
-<span class="split-text">Gestão Estratégica Financeira</span><br><span class="split-text" style="color:oklch(0.70 0.16 35)">para Gerar ou Realizar Valor do seu Negócio</span>
-</h1>
-<p class="text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed" style="color:oklch(0.85 0.003 0)" id="hero-sub">
-Estruturando o financeiro de pequenas e médias empresas desde 2012, apoiando sócios e gestores em decisões estratégicas, captação de recursos, planejamento financeiro e condução de processos de fusões e aquisições (M&amp;A).
-</p>
-<div class="flex flex-col sm:flex-row gap-4 justify-center" id="hero-cta">
-<a href="#contato" class="mag-btn px-8 py-4 rounded-lg font-heading font-bold text-base text-white transition-opacity hover:opacity-90" style="background:oklch(0.57 0.21 27)">Fale com um Especialista</a>
-<a href="#servicos" class="mag-btn px-8 py-4 rounded-lg font-heading font-semibold text-base transition-colors hover:bg-white/10" style="border:2px solid rgba(255,255,255,0.7);color:#fff">Conhecer Serviços</a>
-</div>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-8 mt-20" id="hero-stats">
-<div class="text-center"><div class="text-3xl font-heading font-extrabold counter-num" style="color:oklch(0.70 0.16 35)" data-target="13">0</div><div class="text-xs mt-1" style="color:oklch(0.85 0.003 0)">Anos de Mercado</div></div>
-<div class="text-center"><div class="text-3xl font-heading font-extrabold counter-num" style="color:oklch(0.70 0.16 35)" data-target="25">0</div><div class="text-xs mt-1" style="color:oklch(0.85 0.003 0)">Anos Exp. M&amp;A</div></div>
-<div class="text-center"><div class="text-3xl font-heading font-extrabold counter-num" style="color:oklch(0.70 0.16 35)" data-target="16">0</div><div class="text-xs mt-1" style="color:oklch(0.85 0.003 0)">Setores</div></div>
-<div class="text-center"><div class="text-3xl font-heading font-extrabold counter-num" style="color:oklch(0.70 0.16 35)" data-target="5">0</div><div class="text-xs mt-1" style="color:oklch(0.85 0.003 0)">Idiomas</div></div>
-</div>
-</div>
-<div class="absolute bottom-10 left-1/2 -translate-x-1/2 text-sm z-10" style="color:oklch(1 0 0/0.3)">
-<i class="fas fa-chevron-down animate-bounce"></i>
-</div>
-</section>
+  <!-- HEADER NAVEGAÇÃO DA EMPRESA -->
+  <header class="bg-gray-950/90 backdrop-blur-md border-b border-gray-800/80 sticky top-[33px] z-40">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-yellow-500/10 border border-yellow-500/40 flex items-center justify-center text-yellow-400 font-serif-title font-bold text-xl">
+          ON
+        </div>
+        <div>
+          <span class="font-serif-title font-bold text-lg text-white tracking-wide block">ONWARD CONSULTORIA</span>
+          <span class="text-[10px] text-yellow-400/90 uppercase tracking-widest block font-semibold">GESTÃO & M&A · FARIA LIMA SP</span>
+        </div>
+      </div>
 
-<!-- PROBLEMA -->
-<section class="relative py-32 px-6 overflow-hidden" style="background:#f5f5f4">
-<div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-<div>
-<div class="section-divider mb-8"></div>
-<h2 class="text-4xl md:text-5xl font-extrabold mb-6" style="letter-spacing:-0.02em;color:oklch(0.15 0.005 260)">
-Sua empresa está <span style="color:oklch(0.57 0.21 27)">perdendo dinheiro</span> por falta de gestão financeira?
-</h2>
-<div class="space-y-6 mt-10">
-<div class="flex gap-4 svc-item rounded-xl p-3 -m-3">
-<div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center text-base" style="background:oklch(0.57 0.21 27/0.08);color:oklch(0.57 0.21 27)"><i class="fas fa-chart-line-down"></i></div>
-<div><h4 class="font-heading font-bold text-base mb-1" style="color:oklch(0.15 0.005 260)">Caixa Imprevisível</h4><p class="text-sm leading-relaxed" style="color:oklch(0.40 0.005 260)">Sem previsões confiáveis, decisões são tomadas no escuro. Um mês de folga, dois meses de crise.</p></div>
-</div>
-<div class="flex gap-4 svc-item rounded-xl p-3 -m-3">
-<div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center text-base" style="background:oklch(0.57 0.21 27/0.08);color:oklch(0.57 0.21 27)"><i class="fas fa-handshake-slash"></i></div>
-<div><h4 class="font-heading font-bold text-base mb-1" style="color:oklch(0.15 0.005 260)">M&amp;A Sem Preparo</h4><p class="text-sm leading-relaxed" style="color:oklch(0.40 0.005 260)">Quando a oportunidade de vender ou comprar surge, a empresa não tem dados, valuation ou estrutura para negociar.</p></div>
-</div>
-<div class="flex gap-4 svc-item rounded-xl p-3 -m-3">
-<div class="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center text-base" style="background:oklch(0.57 0.21 27/0.08);color:oklch(0.57 0.21 27)"><i class="fas fa-building-circle-xmark"></i></div>
-<div><h4 class="font-heading font-bold text-base mb-1" style="color:oklch(0.15 0.005 260)">Custo de um CFO CLT</h4><p class="text-sm leading-relaxed" style="color:oklch(0.40 0.005 260)">Um CFO efetivo custa R$ 34.000 a R$ 96.000/mês. Para PMEs, esse custo é proibitivo, mas a necessidade é real.</p></div>
-</div>
-</div>
-</div>
-<div class="relative">
-<div class="absolute -inset-6 rounded-2xl" style="background:oklch(0.57 0.21 27/0.04)"></div>
-<div class="img-zoom relative rounded-xl overflow-hidden">
-<img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80" alt="Planilha financeira com gráficos de fluxo de caixa em análise" class="w-full object-cover" style="height:420px" loading="lazy">
-</div>
-</div>
-</div>
-</section>
+      <nav class="hidden md:flex items-center gap-8 text-sm text-gray-300 font-medium">
+        <a href="#sec-hero" class="hover:text-yellow-400 transition">Início</a>
+        <a href="#sec-solucao" class="hover:text-yellow-400 transition">Serviços</a>
+        <a href="#sec-diferenciais" class="hover:text-yellow-400 transition">Diferenciais</a>
+        <a href="#sec-prova-social" class="hover:text-yellow-400 transition">Resultados</a>
+        <a href="#sec-faq" class="hover:text-yellow-400 transition">FAQ</a>
+      </nav>
 
-<!-- CFO SOB DEMANDA — conteúdo real do site -->
-<section id="servicos" class="py-32 px-6" style="background:#fafaf9">
-<div class="max-w-6xl mx-auto">
-<div class="max-w-2xl mb-16">
-<div class="section-divider mb-8"></div>
-<h2 class="text-4xl md:text-5xl font-extrabold mb-4" style="letter-spacing:-0.02em">CFO sob Demanda: Estrutura, Controle e Crescimento</h2>
-<p class="text-lg leading-relaxed" style="color:oklch(0.40 0.005 260)">Gestão financeira estruturada para empresas que precisam ganhar clareza, previsibilidade e controle para sustentar o próximo passo, com a experiência de quem já liderou finanças, FP&amp;A e M&amp;A em diversos setores.</p>
-</div>
+      <a href="https://wa.me/5511937774820" target="_blank" class="bg-yellow-500 hover:bg-yellow-400 text-gray-950 font-bold px-5 py-2.5 rounded-lg text-xs uppercase tracking-wider transition shadow-lg shadow-yellow-500/20 flex items-center gap-2">
+        <i class="fa-brands fa-whatsapp text-sm"></i> Falar com Sócio
+      </a>
+    </div>
+  </header>
 
-<!-- FP&A -->
-<div class="mb-16 hover-lift rounded-2xl p-8" style="background:#fff;border:1px solid oklch(0.15 0.005 260/0.08)">
-<div class="flex items-start gap-4 mb-6">
-<div class="w-12 h-12 rounded-xl flex items-center justify-center text-lg" style="background:oklch(0.57 0.21 27/0.12);color:oklch(0.70 0.16 35)"><i class="fas fa-chart-bar"></i></div>
-<div>
-<h3 class="font-heading font-extrabold text-xl" style="letter-spacing:-0.01em">Planejamento e Análise Financeira (FP&amp;A)</h3>
-</div>
-</div>
-<div class="grid md:grid-cols-2 gap-4">
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Projeções financeiras e construção de cenários</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Análise de resultados e definição de KPIs</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Demonstrações financeiras padronizadas conforme normas contábeis</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Base analítica sólida para decisões estratégicas</div>
-</div>
-</div>
+  <!-- ==========================================
+       2. HERO SECTION COM THREE.JS 3D (ONWARD CONSULTORIA)
+       ========================================== -->
+  <section id="sec-hero" class="relative min-h-[90vh] flex items-center justify-center py-20 px-6 border-b border-gray-800 overflow-hidden">
+    <!-- Canvas Three.js 3D Grid Wave -->
+    <canvas id="three-hero-canvas" class="absolute inset-0 w-full h-full opacity-40 pointer-events-none"></canvas>
 
-<!-- Fluxo de Caixa -->
-<div class="mb-16 hover-lift rounded-2xl p-8" style="background:#fff;border:1px solid oklch(0.15 0.005 260/0.08)">
-<div class="flex items-start gap-4 mb-6">
-<div class="w-12 h-12 rounded-xl flex items-center justify-center text-lg" style="background:oklch(0.57 0.21 27/0.12);color:oklch(0.70 0.16 35)"><i class="fas fa-coins"></i></div>
-<div>
-<h3 class="font-heading font-extrabold text-xl" style="letter-spacing:-0.01em">Gestão de Fluxo de Caixa e Capital de Giro</h3>
-</div>
-</div>
-<div class="grid md:grid-cols-2 gap-4">
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Controle e previsões de caixa com visibilidade real</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Estratégias para otimização do capital de giro</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Redução de custos financeiros e aumento da liquidez</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Estabilidade operacional para crescimento seguro</div>
-</div>
-</div>
+    <div class="relative z-10 max-w-5xl mx-auto text-center">
+      <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-300 text-xs font-bold tracking-widest uppercase mb-6">
+        <i class="fa-solid fa-chart-line"></i> BOUTIQUE ESTRATÉGICA · FARIA LIMA SÃO PAULO
+      </span>
 
-<!-- Captação -->
-<div class="mb-16 hover-lift rounded-2xl p-8" style="background:#fff;border:1px solid oklch(0.15 0.005 260/0.08)">
-<div class="flex items-start gap-4 mb-6">
-<div class="w-12 h-12 rounded-xl flex items-center justify-center text-lg" style="background:oklch(0.57 0.21 27/0.12);color:oklch(0.70 0.16 35)"><i class="fas fa-university"></i></div>
-<div>
-<h3 class="font-heading font-extrabold text-xl" style="letter-spacing:-0.01em">Captação de Recursos e Relacionamento com Instituições</h3>
-</div>
-</div>
-<div class="grid md:grid-cols-2 gap-4">
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Materiais financeiros completos e tecnicamente consistentes</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Estruturação de operações de crédito e financiamento</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Negociação de condições mais favoráveis com instituições</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Suporte completo para atrair investidores e parceiros estratégicos</div>
-</div>
-</div>
+      <h1 class="text-4xl md:text-6xl font-serif-title font-bold text-white leading-tight mb-6">
+        Acelere a Expansão e Valor Patrimonial com a <span class="gold-gradient-text">Onward Consultoria & M&A</span>
+      </h1>
 
-<!-- Governança -->
-<div class="hover-lift rounded-2xl p-8" style="background:#fff;border:1px solid oklch(0.15 0.005 260/0.08)">
-<div class="flex items-start gap-4 mb-6">
-<div class="w-12 h-12 rounded-xl flex items-center justify-center text-lg" style="background:oklch(0.57 0.21 27/0.12);color:oklch(0.70 0.16 35)"><i class="fas fa-cogs"></i></div>
-<div>
-<h3 class="font-heading font-extrabold text-xl" style="letter-spacing:-0.01em">Governança, Automação e Controles</h3>
-</div>
-</div>
-<div class="grid md:grid-cols-2 gap-4">
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Implementação de ERP, BI e ferramentas de gestão</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Automação de processos financeiros e operacionais</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Controles internos robustos e redução de riscos</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Dados confiáveis para decisões rápidas e bem fundamentadas</div>
-</div>
-</div>
+      <p class="text-gray-300 text-base md:text-xl max-w-3xl mx-auto font-normal leading-relaxed mb-10">
+        Assessoramos empresários e grupos corporativos na estruturação de governança, precificação rigorosa de empresas e condução estratégica de fusões e aquisições.
+      </p>
 
-</div>
-</section>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="https://wa.me/5511937774820" target="_blank" class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-400 text-gray-950 font-bold px-8 py-4 rounded-xl text-sm uppercase tracking-wider transition shadow-xl shadow-yellow-500/20 flex items-center justify-center gap-3">
+          <i class="fa-brands fa-whatsapp text-lg"></i> Agendar Reunião Confidencial
+        </a>
+        <a href="#sec-solucao" class="w-full sm:w-auto bg-gray-900 hover:bg-gray-800 text-gray-200 font-semibold px-8 py-4 rounded-xl border border-gray-700 text-sm transition">
+          Conhecer Serviços Estratégicos
+        </a>
+      </div>
 
-<!-- M&A — conteúdo real do site -->
-<section id="ma" class="py-32 px-6" style="background:#eeede9">
-<div class="max-w-6xl mx-auto">
-<div class="max-w-2xl mb-16">
-<div class="section-divider mb-8"></div>
-<h2 class="text-4xl md:text-5xl font-extrabold mb-4" style="letter-spacing:-0.02em">Consultoria em M&amp;A: Estratégia, Valuation e Negociação Completa</h2>
-<p class="text-lg leading-relaxed" style="color:oklch(0.40 0.005 260)">Condução integral de processos de M&amp;A em momentos decisivos de crescimento, investimento, reorganização ou saída, com experiência prática em modelagem financeira, negociação, diligência e alinhamento entre stakeholders.</p>
-</div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 pt-12 border-t border-gray-800/80">
+        <div>
+          <span class="text-3xl font-serif-title font-bold text-yellow-400 block">+R$ 2.4 Bi</span>
+          <span class="text-xs text-gray-400">Transações Assessoradas</span>
+        </div>
+        <div>
+          <span class="text-3xl font-serif-title font-bold text-yellow-400 block">140+</span>
+          <span class="text-xs text-gray-400">Projetos de Valuation</span>
+        </div>
+        <div>
+          <span class="text-3xl font-serif-title font-bold text-yellow-400 block">100%</span>
+          <span class="text-xs text-gray-400">Sigilo Absoluto (NDA)</span>
+        </div>
+        <div>
+          <span class="text-3xl font-serif-title font-bold text-yellow-400 block">Big Four</span>
+          <span class="text-xs text-gray-400">Rigor Metodológico</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<!-- Modelagem e Valuation -->
-<div class="mb-16 hover-lift rounded-2xl p-8" style="background:#fff;border:1px solid oklch(0.15 0.005 260/0.08)">
-<div class="flex items-start gap-4 mb-6">
-<div class="w-12 h-12 rounded-xl flex items-center justify-center text-lg" style="background:oklch(0.57 0.21 27/0.12);color:oklch(0.70 0.16 35)"><i class="fas fa-calculator"></i></div>
-<div>
-<h3 class="font-heading font-extrabold text-xl" style="letter-spacing:-0.01em">Modelagem Financeira e Valuation</h3>
-</div>
-</div>
-<div class="grid md:grid-cols-2 gap-4">
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Modelagem econômico-financeira (DCF, múltiplos e análise comparativa)</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Avaliação detalhada da situação financeira e dos drivers de valor</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Construção de cenários e projeções para decisões de investimento</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Determinação do valor justo para suportar negociações</div>
-</div>
-</div>
+  <!-- ==========================================
+       3. AGITAÇÃO DO PROBLEMA
+       ========================================== -->
+  <section id="sec-problema" class="py-20 px-6 bg-gray-950 border-b border-gray-800">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs font-bold text-yellow-400 uppercase tracking-widest">DESAFIOS DE GESTÃO & DEALS</span>
+        <h2 class="text-3xl md:text-4xl font-serif-title font-bold text-white mt-2">
+          Obstáculos que Reduzem o Valor de Mercado da Sua Empresa
+        </h2>
+        <p class="text-gray-400 text-sm mt-3">
+          Sem diagnósticos precisos e teses estruturadas, companhias perdem poder de barganha e margem de negociação.
+        </p>
+      </div>
 
-<!-- Originação -->
-<div class="mb-16 hover-lift rounded-2xl p-8" style="background:#fff;border:1px solid oklch(0.15 0.005 260/0.08)">
-<div class="flex items-start gap-4 mb-6">
-<div class="w-12 h-12 rounded-xl flex items-center justify-center text-lg" style="background:oklch(0.57 0.21 27/0.12);color:oklch(0.70 0.16 35)"><i class="fas fa-handshake"></i></div>
-<div>
-<h3 class="font-heading font-extrabold text-xl" style="letter-spacing:-0.01em">Originação e Abordagem de Investidores</h3>
-</div>
-</div>
-<div class="grid md:grid-cols-2 gap-4">
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Identificação e acesso a investidores estratégicos e financeiros</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Negociação inicial e alinhamento dos principais termos da oferta</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Condução da carta-processo e coordenação do fluxo de informações</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Recomendação da proposta mais adequada com base em valor, condições e sinergias</div>
-</div>
-</div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="glass-card p-8 rounded-2xl">
+          <div class="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 text-xl mb-6">
+            <i class="fa-solid fa-chart-line-down"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-3">Valuation Incorreto do Negócio</h3>
+          <p class="text-sm text-gray-400 leading-relaxed">
+            Avaliações superficiais baseadas em múltiplos genéricos subestimam intangíveis e fluxos de caixa futuros descontados.
+          </p>
+        </div>
 
-<!-- Material Marketing -->
-<div class="mb-16 hover-lift rounded-2xl p-8" style="background:#fff;border:1px solid oklch(0.15 0.005 260/0.08)">
-<div class="flex items-start gap-4 mb-6">
-<div class="w-12 h-12 rounded-xl flex items-center justify-center text-lg" style="background:oklch(0.57 0.21 27/0.12);color:oklch(0.70 0.16 35)"><i class="fas fa-file-alt"></i></div>
-<div>
-<h3 class="font-heading font-extrabold text-xl" style="letter-spacing:-0.01em">Material de Marketing e Preparação da Transação</h3>
-</div>
-</div>
-<div class="grid md:grid-cols-2 gap-4">
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Entendimento aprofundado do negócio, mercado e concorrência</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Elaboração de teaser e memorando de informações (CIM)</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Estruturação dos principais diferenciais e oportunidades de crescimento</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Preparação da empresa para atrair investidores e maximizar valor</div>
-</div>
-</div>
+        <div class="glass-card p-8 rounded-2xl">
+          <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xl mb-6">
+            <i class="fa-solid fa-shield-cat"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-3">Vulnerabilidade no Due Diligence</h3>
+          <p class="text-sm text-gray-400 leading-relaxed">
+            Inconsistências fiscais, trabalhistas ou contábeis paralisam rodadas de investimento e reduzem o valuation pactuado.
+          </p>
+        </div>
 
-<!-- Diligência -->
-<div class="hover-lift rounded-2xl p-8" style="background:#fff;border:1px solid oklch(0.15 0.005 260/0.08)">
-<div class="flex items-start gap-4 mb-6">
-<div class="w-12 h-12 rounded-xl flex items-center justify-center text-lg" style="background:oklch(0.57 0.21 27/0.12);color:oklch(0.70 0.16 35)"><i class="fas fa-search-dollar"></i></div>
-<div>
-<h3 class="font-heading font-extrabold text-xl" style="letter-spacing:-0.01em">Diligência, Estruturação e Negociação Final</h3>
-</div>
-</div>
-<div class="grid md:grid-cols-2 gap-4">
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Organização e gestão completa do data room</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Coordenação das diligências com assessores jurídicos e financeiros</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Definição da melhor estrutura para a transação</div>
-<div class="flex items-start gap-3 text-sm svc-item rounded-lg p-3 -m-3" style="color:oklch(0.25 0.005 260)"><i class="fas fa-check mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i>Negociação dos documentos finais e acompanhamento até o fechamento</div>
-</div>
-</div>
+        <div class="glass-card p-8 rounded-2xl">
+          <div class="w-12 h-12 rounded-xl bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-yellow-400 text-xl mb-6">
+            <i class="fa-solid fa-user-secret"></i>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-3">Vazamento de Informações</h3>
+          <p class="text-sm text-gray-400 leading-relaxed">
+            Condução sem governança de sigilo compromete a operação perante concorrentes, clientes e colaboradores.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-</div>
-</section>
+  <!-- ==========================================
+       4. A SOLUÇÃO ONWARD CONSULTORIA
+       ========================================== -->
+  <section id="sec-solucao" class="py-20 px-6 bg-gray-900/40 border-b border-gray-800">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs font-bold text-yellow-400 uppercase tracking-widest">NOSSO ESCOPO DE ATUAÇÃO</span>
+        <h2 class="text-3xl md:text-4xl font-serif-title font-bold text-white mt-2">
+          Soluções Estratégicas para Alta Performance
+        </h2>
+      </div>
 
-<!-- DIFERENCIAIS -->
-<section class="py-32 px-6" style="background:#f5f5f4">
-<div class="max-w-6xl mx-auto grid md:grid-cols-5 gap-16 items-center">
-<div class="md:col-span-2">
-<div class="section-divider mb-8"></div>
-<h2 class="text-4xl md:text-5xl font-extrabold mb-6" style="letter-spacing:-0.02em;color:oklch(0.15 0.005 260)">Por que a Onward?</h2>
-<p class="leading-relaxed mb-8" style="color:oklch(0.40 0.005 260)">Quatro razões pelas quais empresas escolhem a Onward para decisões financeiras e estratégicas.</p>
-<a href="#contato" class="mag-btn inline-block px-6 py-3 rounded-lg font-heading font-semibold text-sm text-white transition-opacity hover:opacity-90" style="background:oklch(0.57 0.21 27)">Conversar com um especialista</a>
-</div>
-<div class="md:col-span-3">
-<div class="grid grid-cols-2 gap-8">
-<div class="hover-lift rounded-xl p-6" style="background:#f5f5f4">
-<div class="w-10 h-10 rounded-lg flex items-center justify-center text-sm mb-4" style="background:oklch(0.57 0.21 27/0.12);color:oklch(0.70 0.16 35)"><i class="fas fa-university"></i></div>
-<h4 class="font-heading font-bold text-base mb-2">DNA de Banco</h4>
-<p class="text-sm leading-relaxed" style="color:oklch(0.40 0.005 260)">Fundador ex-Portfolio Manager do Credit Suisse. Trabalha com a mesma lógica de instituições financeiras, adaptada a PMEs.</p>
-</div>
-<div class="hover-lift rounded-xl p-6" style="background:#f5f5f4">
-<div class="w-10 h-10 rounded-lg flex items-center justify-center text-sm mb-4" style="background:oklch(0.57 0.21 27/0.12);color:oklch(0.70 0.16 35)"><i class="fas fa-globe"></i></div>
-<h4 class="font-heading font-bold text-base mb-2">Cross-Border</h4>
-<p class="text-sm leading-relaxed" style="color:oklch(0.40 0.005 260)">Cidadania dupla Brasil/Itália. 5 idiomas. Conexão entre capitais europeus e oportunidades brasileiras.</p>
-</div>
-<div class="hover-lift rounded-xl p-6" style="background:#f5f5f4">
-<div class="w-10 h-10 rounded-lg flex items-center justify-center text-sm mb-4" style="background:oklch(0.57 0.21 27/0.15);color:oklch(0.57 0.21 27)"><i class="fas fa-layer-group"></i></div>
-<h4 class="font-heading font-bold text-base mb-2">Modelo Dual</h4>
-<p class="text-sm leading-relaxed" style="color:oklch(0.40 0.005 260)">Única consultoria que junta CFO sob Demanda e Assessoria M&amp;A. Do planejamento do dia a dia até a venda da empresa.</p>
-</div>
-<div class="hover-lift rounded-xl p-6" style="background:#f5f5f4">
-<div class="w-10 h-10 rounded-lg flex items-center justify-center text-sm mb-4" style="background:oklch(0.57 0.21 27/0.12);color:oklch(0.70 0.16 35)"><i class="fas fa-industry"></i></div>
-<h4 class="font-heading font-bold text-base mb-2">16+ Setores</h4>
-<p class="text-sm leading-relaxed" style="color:oklch(0.40 0.005 260)">Agro, tech, saúde, energia, logística, varejo e mais. Cada setor tem suas próprias regras financeiras.</p>
-</div>
-</div>
-</div>
-</div>
-</section>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="glass-card p-8 rounded-2xl">
+          <div class="w-12 h-12 rounded-xl bg-yellow-500/10 border border-yellow-500/40 flex items-center justify-center text-yellow-400 text-xl mb-4">
+            <i class="fa-solid fa-scale-balanced"></i>
+          </div>
+          <h3 class="text-2xl font-serif-title font-bold text-white mb-2">Valuation Econômico-Financeiro</h3>
+          <p class="text-gray-300 text-sm leading-relaxed mb-4">
+            Laudo técnico completo utilizando o Fluxo de Caixa Descontado (FCD), Múltiplos de Mercado e Avaliação de Ativos Intangíveis.
+          </p>
+          <ul class="text-xs text-gray-400 space-y-2 border-t border-gray-800 pt-4">
+            <li><i class="fa-solid fa-check text-yellow-400 mr-2"></i> Relatórios completos aceitos por fundos e auditorias.</li>
+            <li><i class="fa-solid fa-check text-yellow-400 mr-2"></i> Análise detalhada de WACC, EBITDA e margens.</li>
+          </ul>
+        </div>
 
-<!-- PROCESSO -->
-<section id="processo" class="py-32 px-6" style="background:#fafaf9">
-<div class="max-w-6xl mx-auto">
-<div class="max-w-2xl mb-16">
-<div class="section-divider mb-8"></div>
-<h2 class="text-4xl md:text-5xl font-extrabold mb-4" style="letter-spacing:-0.02em">Como trabalhamos</h2>
-<p class="text-lg leading-relaxed" style="color:oklch(0.40 0.005 260)">Do primeiro contato aos resultados, o fluxo é o mesmo sempre.</p>
-</div>
-<div class="relative">
-<div class="hidden md:block absolute top-8 left-0 right-0 h-px" style="background:oklch(1 0 0/0.06)"></div>
-<div class="grid md:grid-cols-4 gap-10">
-<div class="relative">
-<div class="w-16 h-16 rounded-full flex items-center justify-center font-heading font-extrabold text-lg mb-6 relative z-10 glow-border" style="background:#fff;color:oklch(0.57 0.21 27);border:2px solid oklch(0.57 0.21 27/0.3)">01</div>
-<h4 class="font-heading font-bold text-lg mb-2">Diagnóstico</h4>
-<p class="text-sm leading-relaxed" style="color:oklch(0.40 0.005 260)">Análise gratuita do momento financeiro e estratégico da empresa.</p>
-</div>
-<div class="relative">
-<div class="w-16 h-16 rounded-full flex items-center justify-center font-heading font-extrabold text-lg mb-6 relative z-10" style="background:#fff;color:oklch(0.57 0.21 27);border:2px solid oklch(0.57 0.21 27/0.3)">02</div>
-<h4 class="font-heading font-bold text-lg mb-2">Estratégia</h4>
-<p class="text-sm leading-relaxed" style="color:oklch(0.40 0.005 260)">Plano personalizado com metas claras, KPIs e cronograma de execução.</p>
-</div>
-<div class="relative">
-<div class="w-16 h-16 rounded-full flex items-center justify-center font-heading font-extrabold text-lg mb-6 relative z-10" style="background:oklch(0.57 0.21 27);color:#fff;border:2px solid oklch(0.57 0.21 27)">03</div>
-<h4 class="font-heading font-bold text-lg mb-2">Execução</h4>
-<p class="text-sm leading-relaxed" style="color:oklch(0.40 0.005 260)">Implementação hands-on com reporte semanal e controle de resultados.</p>
-</div>
-<div class="relative">
-<div class="w-16 h-16 rounded-full flex items-center justify-center font-heading font-extrabold text-lg mb-6 relative z-10" style="background:#fff;color:oklch(0.72 0.17 155);border:2px solid oklch(0.72 0.17 155/0.3)">04</div>
-<h4 class="font-heading font-bold text-lg mb-2">Resultado</h4>
-<p class="text-sm leading-relaxed" style="color:oklch(0.40 0.005 260)">Empresa com gestão estruturada, pronta para crescer ou transacionar.</p>
-</div>
-</div>
-</div>
-</div>
-</section>
+        <div class="glass-card p-8 rounded-2xl">
+          <div class="w-12 h-12 rounded-xl bg-yellow-500/10 border border-yellow-500/40 flex items-center justify-center text-yellow-400 text-xl mb-4">
+            <i class="fa-solid fa-handshake-simple"></i>
+          </div>
+          <h3 class="text-2xl font-serif-title font-bold text-white mb-2">Assessoria Sell-Side & Buy-Side em M&A</h3>
+          <p class="text-gray-300 text-sm leading-relaxed mb-4">
+            Condução completa do processo de aquisição ou alienação acionária, do teaser cego à assinatura do SPA final.
+          </p>
+          <ul class="text-xs text-gray-400 space-y-2 border-t border-gray-800 pt-4">
+            <li><i class="fa-solid fa-check text-yellow-400 mr-2"></i> Prospecção qualificada de investidores estratégicos.</li>
+            <li><i class="fa-solid fa-check text-yellow-400 mr-2"></i> Coordenação técnica de Data Room e Due Diligence.</li>
+          </ul>
+        </div>
 
-<!-- SOBRE — com foto real -->
-<section id="sobre" class="py-32 px-6" style="background:#f5f5f4">
-<div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-<div>
-<div class="section-divider mb-8"></div>
-<h2 class="text-4xl md:text-5xl font-extrabold mb-2" style="letter-spacing:-0.02em">Carlos Eduardo</h2>
-<h3 class="text-3xl font-extrabold mb-6" style="color:oklch(0.57 0.21 27);letter-spacing:-0.02em">Letran Bueno</h3>
-<p class="mb-4 leading-relaxed" style="color:oklch(0.40 0.005 260)">Fundador e consultor principal. Antes de criar a Onward em 2012, trabalhou no Credit Suisse como Portfolio Manager, onde aprendeu a estruturar transações e gerir investimentos.</p>
-<p class="mb-8 leading-relaxed" style="color:oklch(0.40 0.005 260)">Trabalha com mercado de capitais, estruturação de transações e gestão de investimentos desde 1999. Cidadania dupla Brasil e Itália. Fala português, inglês, espanhol, francês e italiano.</p>
-<div class="grid grid-cols-2 gap-y-4 gap-x-8">
-<div class="flex items-center gap-3 text-sm" style="color:oklch(0.25 0.005 260)"><i class="fas fa-graduation-cap text-xs" style="color:oklch(0.57 0.21 27)"></i>Pós-graduação em Finanças</div>
-<div class="flex items-center gap-3 text-sm" style="color:oklch(0.25 0.005 260)"><i class="fas fa-graduation-cap text-xs" style="color:oklch(0.57 0.21 27)"></i>Pós-graduação em Administração</div>
-<div class="flex items-center gap-3 text-sm" style="color:oklch(0.25 0.005 260)"><i class="fas fa-flag text-xs" style="color:oklch(0.57 0.21 27)"></i>Cidadania Brasil + Itália</div>
-<div class="flex items-center gap-3 text-sm" style="color:oklch(0.25 0.005 260)"><i class="fas fa-language text-xs" style="color:oklch(0.57 0.21 27)"></i>PT, EN, ES, FR, IT</div>
-</div>
-</div>
-<div class="relative">
-<div class="img-zoom overflow-hidden rounded-xl">
-<img src="https://app.chiefsgroup.com.br/rails/active_storage/representations/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcmVnIiwiZXhwIjpudWxsLCJwdXIiOiJib2JiX2lkIn19--de77025d6e515367d106b775656da48f4f16f433/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9KWTNKdmNFa2lFakV3TWpSNE1UQXlOQ3N3S3pBR09nWkZWRG9MY21WemFYcGxTU0lNTVRVd2VERTFNQVk3QmxRPSIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--777fcc48203053e56dd629998f2687d4c8cd4674/Carlos%20-%20Linkedin.png" alt="Carlos Eduardo Letran Bueno, fundador da Onward Consultoria" class="w-full object-cover" style="height:480px" loading="lazy">
-</div>
-<div class="absolute -bottom-6 -left-6 rounded-xl p-6 max-w-xs" style="background:#fff;border:1px solid oklch(0.15 0.005 260/0.08)">
-<h4 class="font-heading font-bold text-sm mb-1">Setores de Atuação</h4>
-<p class="text-xs leading-relaxed" style="color:oklch(0.35 0.005 260)">Tecnologia, Saúde, Agronegócio, Energia, Logística, Varejo, Educação, Automotivo, Financial Services, Infraestrutura, Indústria, Retail, Telecom, Oftalmologia, Siderurgia, Hospitalidade.</p>
-</div>
-</div>
-</div>
-</section>
+        <div class="glass-card p-8 rounded-2xl">
+          <div class="w-12 h-12 rounded-xl bg-yellow-500/10 border border-yellow-500/40 flex items-center justify-center text-yellow-400 text-xl mb-4">
+            <i class="fa-solid fa-sitemap"></i>
+          </div>
+          <h3 class="text-2xl font-serif-title font-bold text-white mb-2">Reestruturação & Governança Corporativa</h3>
+          <p class="text-gray-300 text-sm leading-relaxed mb-4">
+            Reorganização operacional e financeira para maximizar rentabilidade e preparar o negócio para aportes de capital.
+          </p>
+          <ul class="text-xs text-gray-400 space-y-2 border-t border-gray-800 pt-4">
+            <li><i class="fa-solid fa-check text-yellow-400 mr-2"></i> Otimização de margem e estrutura de capital.</li>
+            <li><i class="fa-solid fa-check text-yellow-400 mr-2"></i> Implementação de conselhos e KPIs executivos.</li>
+          </ul>
+        </div>
 
-<!-- FAQ -->
-<section id="faq" class="py-32 px-6" style="background:#fafaf9">
-<div class="max-w-3xl mx-auto">
-<div class="max-w-2xl mb-16">
-<div class="section-divider mb-8"></div>
-<h2 class="text-4xl md:text-5xl font-extrabold mb-4" style="letter-spacing:-0.02em">Perguntas Frequentes</h2>
-</div>
-<div>
-<div class="faq-item py-6 cursor-pointer" onclick="toggleFaq(this)">
-<div class="flex items-center justify-between">
-<h4 class="font-heading font-bold text-base pr-8">O que é um CFO sob Demanda?</h4>
-<i class="fas fa-plus text-sm faq-icon transition-transform" style="color:oklch(0.57 0.21 27)"></i>
-</div>
-<div class="faq-answer">
-<p class="text-sm leading-relaxed" style="color:oklch(0.40 0.005 260)">É um Diretor Financeiro que atua de forma fractional, sem vínculo CLT. Você terá acesso a liderança sênior para planejamento financeiro, fluxo de caixa, captação de recursos e governança, pagando apenas pelo tempo e escopo efetivamente utilizados.</p>
-</div>
-</div>
-<div class="faq-item py-6 cursor-pointer" onclick="toggleFaq(this)">
-<div class="flex items-center justify-between">
-<h4 class="font-heading font-bold text-base pr-8">Qual a diferença entre um CFO sob Demanda e um consultor financeiro?</h4>
-<i class="fas fa-plus text-sm faq-icon transition-transform" style="color:oklch(0.57 0.21 27)"></i>
-</div>
-<div class="faq-answer">
-<p class="text-sm leading-relaxed" style="color:oklch(0.40 0.005 260)">O CFO sob Demanda atua como um executivo integrado ao negócio, liderando a área financeira de forma estratégica e operacional. Um consultor externo apenas analisa e recomenda. O diferencial é o compromisso com o resultado e a execução.</p>
-</div>
-</div>
-<div class="faq-item py-6 cursor-pointer" onclick="toggleFaq(this)">
-<div class="flex items-center justify-between">
-<h4 class="font-heading font-bold text-base pr-8">Como funciona o contrato de Assessoria M&amp;A?</h4>
-<i class="fas fa-plus text-sm faq-icon transition-transform" style="color:oklch(0.57 0.21 27)"></i>
-</div>
-<div class="faq-answer">
-<p class="text-sm leading-relaxed" style="color:oklch(0.40 0.005 260)">O contrato é firmado por projeto, com escopo e entregáveis definidos. O pagamento pode ser por retainer mensal ou success fee (comissão sobre o valor da transação), dependendo do formato acordado.</p>
-</div>
-</div>
-<div class="faq-item py-6 cursor-pointer" onclick="toggleFaq(this)">
-<div class="flex items-center justify-between">
-<h4 class="font-heading font-bold text-base pr-8">Quanto tempo leva um projeto de M&amp;A?</h4>
-<i class="fas fa-plus text-sm faq-icon transition-transform" style="color:oklch(0.57 0.21 27)"></i>
-</div>
-<div class="faq-answer">
-<p class="text-sm leading-relaxed" style="color:oklch(0.40 0.005 260)">Em média, um processo completo de M&amp;A leva de 6 a 12 meses, desde a preparação inicial até o closing. Processos mais simples podem se encerrar em 3 a 4 meses.</p>
-</div>
-</div>
-<div class="faq-item py-6 cursor-pointer" onclick="toggleFaq(this)">
-<div class="flex items-center justify-between">
-<h4 class="font-heading font-bold text-base pr-8">Atendem empresas de outros estados?</h4>
-<i class="fas fa-plus text-sm faq-icon transition-transform" style="color:oklch(0.57 0.21 27)"></i>
-</div>
-<div class="faq-answer">
-<p class="text-sm leading-relaxed" style="color:oklch(0.40 0.005 260)">Sim. Nossos serviços funcionam de forma 100% remota ou com deslocamento pontual. Atendemos empresas de todo o Brasil e também operações cross-border com investidores internacionais.</p>
-</div>
-</div>
-</div>
-</div>
-</section>
+        <div class="glass-card p-8 rounded-2xl">
+          <div class="w-12 h-12 rounded-xl bg-yellow-500/10 border border-yellow-500/40 flex items-center justify-center text-yellow-400 text-xl mb-4">
+            <i class="fa-solid fa-chess-knight"></i>
+          </div>
+          <h3 class="text-2xl font-serif-title font-bold text-white mb-2">Consultoria Estratégica de Gestão</h3>
+          <p class="text-gray-300 text-sm leading-relaxed mb-4">
+            Planejamento estratégico de longo prazo, alocação de capital e modelos de monetização sustentável.
+          </p>
+          <ul class="text-xs text-gray-400 space-y-2 border-t border-gray-800 pt-4">
+            <li><i class="fa-solid fa-check text-yellow-400 mr-2"></i> Alinhamento entre sócios e conselhos familiares.</li>
+            <li><i class="fa-solid fa-check text-yellow-400 mr-2"></i> Mapeamento contínuo de oportunidades de mercado.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<!-- CTA + CONTATO — dados reais do site -->
-<section id="contato" class="py-32 px-6 relative overflow-hidden" style="background:#eeede9">
-<div class="absolute inset-0 opacity-10">
-<img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=80" alt="Espaço de trabalho moderno com iluminação natural" class="w-full h-full object-cover" loading="lazy">
-</div>
-<div class="max-w-5xl mx-auto relative z-10">
-<div class="max-w-2xl mb-16">
-<div class="section-divider mb-8"></div>
-<h2 class="text-4xl md:text-5xl font-extrabold mb-4" style="letter-spacing:-0.02em">Entre em Contato</h2>
-<p class="text-lg leading-relaxed" style="color:oklch(0.40 0.005 260)">Agende uma conversa gratuita para a gente entender a situação da sua empresa.</p>
-</div>
-<div class="grid md:grid-cols-2 gap-16">
-<div>
-<h3 class="font-heading font-bold text-xl mb-6">Envie sua mensagem</h3>
-<form class="space-y-4" action="mailto:contato@onward.com.br" method="POST" enctype="text/plain">
-<div><label class="text-xs font-heading font-semibold mb-1.5 block" style="color:oklch(0.35 0.005 260)">Nome</label><input type="text" name="nome" required class="w-full px-4 py-3 rounded-lg text-sm focus:outline-none transition-colors" style="background:#fff;border:1px solid oklch(0.15 0.005 260/0.12);color:oklch(0.15 0.005 260)"></div>
-<div><label class="text-xs font-heading font-semibold mb-1.5 block" style="color:oklch(0.35 0.005 260)">Email</label><input type="email" name="email" required class="w-full px-4 py-3 rounded-lg text-sm focus:outline-none transition-colors" style="background:#fff;border:1px solid oklch(0.15 0.005 260/0.12);color:oklch(0.15 0.005 260)"></div>
-<div><label class="text-xs font-heading font-semibold mb-1.5 block" style="color:oklch(0.35 0.005 260)">Telefone</label><input type="tel" name="telefone" class="w-full px-4 py-3 rounded-lg text-sm focus:outline-none transition-colors" style="background:#fff;border:1px solid oklch(0.15 0.005 260/0.12);color:oklch(0.15 0.005 260)"></div>
-<div><label class="text-xs font-heading font-semibold mb-1.5 block" style="color:oklch(0.35 0.005 260)">Empresa</label><input type="text" name="empresa" class="w-full px-4 py-3 rounded-lg text-sm focus:outline-none transition-colors" style="background:#fff;border:1px solid oklch(0.15 0.005 260/0.12);color:oklch(0.15 0.005 260)"></div>
-<div><label class="text-xs font-heading font-semibold mb-1.5 block" style="color:oklch(0.35 0.005 260)">Mensagem</label><textarea name="mensagem" rows="4" required class="w-full px-4 py-3 rounded-lg text-sm focus:outline-none transition-colors resize-none" style="background:#fff;border:1px solid oklch(0.15 0.005 260/0.12);color:oklch(0.15 0.005 260)"></textarea></div>
-<button type="submit" class="mag-btn w-full px-8 py-4 rounded-lg font-heading font-bold text-base text-white transition-opacity hover:opacity-90 mt-2" style="background:oklch(0.57 0.21 27)">Enviar Mensagem</button>
-</form>
-</div>
-<div class="flex flex-col justify-center">
-<div>
-<h4 class="font-heading font-bold text-base mb-4">Escritório</h4>
-<div class="space-y-3 text-sm" style="color:oklch(0.35 0.005 260)">
-<div class="flex items-start gap-3"><i class="fas fa-map-marker-alt mt-1 text-xs" style="color:oklch(0.57 0.21 27)"></i><span>Rua Olimpíadas 205, 4° Andar, Vila Olímpia<br>São Paulo-SP, CEP 04551-000</span></div>
-<a href="mailto:contato@onward.com.br" class="flex items-center gap-3 hover:opacity-70 transition-opacity"><i class="fas fa-envelope text-xs" style="color:oklch(0.57 0.21 27)"></i><span>contato@onward.com.br</span></a>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
+  <!-- ==========================================
+       5. DIFERENCIAIS ONWARD
+       ========================================== -->
+  <section id="sec-diferenciais" class="py-20 px-6 bg-gray-950 border-b border-gray-800">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs font-bold text-yellow-400 uppercase tracking-widest">POR QUE A ONWARD</span>
+        <h2 class="text-3xl md:text-4xl font-serif-title font-bold text-white mt-2">
+          Diferenciais Exclusivos de Nossa Atuação
+        </h2>
+      </div>
 
-<!-- FOOTER -->
-<footer class="py-12 px-6">
-<div class="max-w-6xl mx-auto">
-<div class="flex flex-col md:flex-row items-center justify-between gap-6">
-<div>
-<img src="https://static.wixstatic.com/media/0ec144_7cc13d8a244f4b388f49c244b574590e~mv2.jpg/v1/fill/w_140,h_50,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/Onward%20-%20Logo.jpg" alt="Onward Consultoria" class="h-6">
-</div>
-<div class="flex items-center gap-6 text-sm" style="color:oklch(0.80 0.003 0)">
-<a href="#servicos" class="hover:opacity-70 transition-opacity">Serviços</a>
-<a href="#processo" class="hover:opacity-70 transition-opacity">Processo</a>
-<a href="#sobre" class="hover:opacity-70 transition-opacity">Sobre</a>
-<a href="#faq" class="hover:opacity-70 transition-opacity">FAQ</a>
-<a href="#contato" class="hover:opacity-70 transition-opacity">Contato</a>
-</div>
-<div class="flex items-center gap-4" style="color:oklch(0.80 0.003 0)">
-<a href="mailto:contato@onward.com.br" class="hover:opacity-70 transition-opacity"><i class="fas fa-envelope text-lg"></i></a>
-</div>
-</div>
-<div class="mt-8 pt-8 text-center" style="border-top:1px solid oklch(1 0 0/0.04)">
-<p class="text-xs" style="color:oklch(0.65 0.003 0)">&copy; 2026 Onward Consultoria. Todos os direitos reservados. CNPJ 17.198.935/0001-27</p>
-</div>
-</div>
-</footer>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-gray-900/60 p-8 rounded-2xl border border-gray-800">
+          <span class="text-3xl font-serif-title font-bold text-yellow-400 block mb-2">01</span>
+          <h3 class="text-lg font-bold text-white mb-2">Presença na Faria Lima</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Localização privilegiada no principal centro financeiro da América Latina, conectados aos maiores fundos de Private Equity.
+          </p>
+        </div>
 
-<script>
-// Lenis Smooth Scroll
-const lenis=new Lenis({duration:1.2,easing:function(t){return Math.min(1,1.001-Math.pow(2,-10*t))}});
-lenis.on('scroll',ScrollTrigger.update);
-gsap.ticker.add(function(time){lenis.raf(time*1000)});
-gsap.ticker.lagSmoothing(0);
+        <div class="bg-gray-900/60 p-8 rounded-2xl border border-gray-800">
+          <span class="text-3xl font-serif-title font-bold text-yellow-400 block mb-2">02</span>
+          <h3 class="text-lg font-bold text-white mb-2">Atendimento Direto por Sócios</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Sem delegação a analistas juniores. Seu projeto é conduzido pessoalmente por especialistas sêniores com experiência comprovada.
+          </p>
+        </div>
 
-// Nav scroll state
-ScrollTrigger.create({start:'top -80',end:99999,toggleClass:{className:'nav-scrolled',targets:'#main-nav'}});
+        <div class="bg-gray-900/60 p-8 rounded-2xl border border-gray-800">
+          <span class="text-3xl font-serif-title font-bold text-yellow-400 block mb-2">03</span>
+          <h3 class="text-lg font-bold text-white mb-2">Blindagem de Confidencialidade</h3>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Ambiente Data Room seguro, assinatura digital criptografada e protocolo rigoroso de NDAs antes de qualquer revelação.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-// Mobile menu
-document.getElementById('mobile-menu-btn').addEventListener('click',function(){document.getElementById('mobile-menu').classList.toggle('hidden')});
+  <!-- ==========================================
+       6. METODOLOGIA EM 4 PASSOS
+       ========================================== -->
+  <section id="sec-metodologia" class="py-20 px-6 bg-gray-900/30 border-b border-gray-800">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs font-bold text-yellow-400 uppercase tracking-widest">PASSO A PASSO</span>
+        <h2 class="text-3xl md:text-4xl font-serif-title font-bold text-white mt-2">
+          Como Conduzimos Sua Operação
+        </h2>
+      </div>
 
-// FAQ
-function toggleFaq(el){
-var isActive=el.classList.contains('active');
-document.querySelectorAll('.faq-item').forEach(function(item){item.classList.remove('active')});
-if(!isActive)el.classList.add('active');
-}
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-gray-950 p-6 rounded-2xl border border-gray-800 text-center">
+          <div class="w-10 h-10 rounded-full bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-yellow-400 font-bold mx-auto mb-4">1</div>
+          <h3 class="font-bold text-white text-sm mb-2">Diagnóstico Inicial</h3>
+          <p class="text-xs text-gray-400">Análise de demonstrativos contábeis e alinhamento dos objetivos acionários.</p>
+        </div>
 
-// Magnetic Buttons
-document.querySelectorAll('.mag-btn').forEach(function(btn){
-btn.addEventListener('mousemove',function(e){
-var rect=btn.getBoundingClientRect();
-var x=e.clientX-rect.left-rect.width/2;
-var y=e.clientY-rect.top-rect.height/2;
-gsap.to(btn,{x:x*0.3,y:y*0.3,duration:0.3,ease:'power2.out'});
-});
-btn.addEventListener('mouseleave',function(){
-gsap.to(btn,{x:0,y:0,duration:0.5,ease:'elastic.out(1,0.3)'});
-});
-});
+        <div class="bg-gray-950 p-6 rounded-2xl border border-gray-800 text-center">
+          <div class="w-10 h-10 rounded-full bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-yellow-400 font-bold mx-auto mb-4">2</div>
+          <h3 class="font-bold text-white text-sm mb-2">Modelagem & Valuation</h3>
+          <p class="text-xs text-gray-400">Elaboração do laudo técnico e tese de investimento personalizada.</p>
+        </div>
 
-// Three.js Hero Canvas
-(function(){
-var canvas=document.getElementById('hero-canvas');
-var renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});
-renderer.setSize(window.innerWidth,window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-var scene=new THREE.Scene();
-var camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
-camera.position.z=50;
-var particles=[];var particleCount=80;
-var geometry=new THREE.BufferGeometry();
-var positions=new Float32Array(particleCount*3);
-for(var i=0;i<particleCount;i++){
-positions[i*3]=(Math.random()-0.5)*120;
-positions[i*3+1]=(Math.random()-0.5)*120;
-positions[i*3+2]=(Math.random()-0.5)*60;
-particles.push({x:positions[i*3],y:positions[i*3+1],vx:(Math.random()-0.5)*0.025,vy:(Math.random()-0.5)*0.025});
-}
-geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));
-var material=new THREE.PointsMaterial({color:0xF63304,size:0.9,transparent:true,opacity:0.4});
-var points=new THREE.Points(geometry,material);
-scene.add(points);
-var linesMaterial=new THREE.LineBasicMaterial({color:0xF63304,transparent:true,opacity:0.04});
-var linesGeometry=new THREE.BufferGeometry();
-var linesPositions=new Float32Array(particleCount*particleCount*6);
-linesGeometry.setAttribute('position',new THREE.BufferAttribute(linesPositions,3));
-var lines=new THREE.LineSegments(linesGeometry,linesMaterial);
-scene.add(lines);
-var mouseX=0,mouseY=0;
-document.addEventListener('mousemove',function(e){mouseX=(e.clientX/window.innerWidth-0.5)*2;mouseY=(e.clientY/window.innerHeight-0.5)*2});
-function animate(){
-requestAnimationFrame(animate);
-var pos=points.geometry.attributes.position.array;
-for(var i=0;i<particleCount;i++){pos[i*3]+=particles[i].vx;pos[i*3+1]+=particles[i].vy;if(Math.abs(pos[i*3])>65)particles[i].vx*=-1;if(Math.abs(pos[i*3+1])>65)particles[i].vy*=-1}
-points.geometry.attributes.position.needsUpdate=true;
-var lp=lines.geometry.attributes.position.array;var li=0;
-for(var a=0;a<particleCount;a++){for(var b=a+1;b<particleCount;b++){var dx=pos[a*3]-pos[b*3];var dy=pos[a*3+1]-pos[b*3+1];var dist=Math.sqrt(dx*dx+dy*dy);if(dist<20){lp[li++]=pos[a*3];lp[li++]=pos[a*3+1];lp[li++]=pos[a*3+2];lp[li++]=pos[b*3];lp[li++]=pos[b*3+1];lp[li++]=pos[b*3+2]}}}
-lines.geometry.attributes.position.needsUpdate=true;
-camera.position.x+=(mouseX*3-camera.position.x)*0.02;
-camera.position.y+=(-mouseY*3-camera.position.y)*0.02;
-camera.lookAt(scene.position);
-renderer.render(scene,camera);
-}
-animate();
-window.addEventListener('resize',function(){camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight)});
-})();
+        <div class="bg-gray-950 p-6 rounded-2xl border border-gray-800 text-center">
+          <div class="w-10 h-10 rounded-full bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-yellow-400 font-bold mx-auto mb-4">3</div>
+          <h3 class="font-bold text-white text-sm mb-2">Prospecção Confidencial</h3>
+          <p class="text-xs text-gray-400">Envio de Teaser Cego a investidores qualificados com protocolo NDA.</p>
+        </div>
 
-// GSAP Animations
-gsap.registerPlugin(ScrollTrigger);
+        <div class="bg-gray-950 p-6 rounded-2xl border border-gray-800 text-center">
+          <div class="w-10 h-10 rounded-full bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-yellow-400 font-bold mx-auto mb-4">4</div>
+          <h3 class="font-bold text-white text-sm mb-2">Fechamento do Deal</h3>
+          <p class="text-xs text-gray-400">Acompanhamento do Due Diligence e negociação final do contrato definitivo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-// Hero entrance cascade
-var heroTl=new gsap.timeline({delay:0.3});
-heroTl.from('#hero-badge',{opacity:0,y:20,duration:0.6,ease:'power3.out'});
-heroTl.from('#hero-title .split-text',{opacity:0,y:60,rotateX:-40,duration:0.8,stagger:0.15,ease:'power3.out'},'-=0.2');
-heroTl.from('#hero-sub',{opacity:0,y:20,duration:0.6,ease:'power3.out'},'-=0.3');
-heroTl.from('#hero-cta a',{opacity:0,y:20,scale:0.9,duration:0.5,stagger:0.1,ease:'back.out(1.7)'},'-=0.2');
-heroTl.from('#hero-stats > div',{opacity:0,y:20,scale:0.8,duration:0.4,stagger:0.08,ease:'back.out(1.7)'},'-=0.1');
+  <!-- ==========================================
+       7. PROVA SOCIAL & CASES
+       ========================================== -->
+  <section id="sec-prova-social" class="py-20 px-6 bg-gray-950 border-b border-gray-800">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs font-bold text-yellow-400 uppercase tracking-widest">DEPOIMENTOS EXECUTIVOS</span>
+        <h2 class="text-3xl md:text-4xl font-serif-title font-bold text-white mt-2">
+          Reconhecido por Líderes de Mercado
+        </h2>
+      </div>
 
-// Counter animation
-document.querySelectorAll('.counter-num').forEach(function(el){
-var target=parseInt(el.getAttribute('data-target'));
-var obj={val:0};
-gsap.to(obj,{val:target,duration:2.5,ease:'power2.out',scrollTrigger:{trigger:el,start:'top 85%'},onUpdate:function(){el.textContent=Math.round(obj.val)+'+'}});
-});
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="glass-card p-8 rounded-2xl">
+          <p class="text-gray-300 text-sm italic leading-relaxed mb-6">
+            "A assessoria da Onward Consultoria foi fundamental na venda da nossa participação acionária. Conduziram o Valuation com precisão exemplar e garantiram um processo 100% sigiloso do início ao fim."
+          </p>
+          <div class="flex items-center gap-3 border-t border-gray-800 pt-4">
+            <div class="w-10 h-10 rounded-full bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-yellow-400 font-bold text-sm">
+              RM
+            </div>
+            <div>
+              <span class="font-bold text-white text-sm block">Roberto Medeiros</span>
+              <span class="text-xs text-gray-400">Ex-Presidente e Sócio Fundador</span>
+            </div>
+          </div>
+        </div>
 
-// Section divider reveal
-document.querySelectorAll('.section-divider').forEach(function(el){
-gsap.to(el,{width:48,duration:0.8,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 88%'}});
-});
+        <div class="glass-card p-8 rounded-2xl">
+          <p class="text-gray-300 text-sm italic leading-relaxed mb-6">
+            "A estruturação de governança e reorganização pré-deal realizada pela Onward aumentou significativamente a atratividade da nossa empresa perante os fundos estratégicos."
+          </p>
+          <div class="flex items-center gap-3 border-t border-gray-800 pt-4">
+            <div class="w-10 h-10 rounded-full bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-yellow-400 font-bold text-sm">
+              CL
+            </div>
+            <div>
+              <span class="font-bold text-white text-sm block">Camila Lins</span>
+              <span class="text-xs text-gray-400">Diretora de Operações e M&A</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-// Fade up with stagger for siblings
-document.querySelectorAll('.max-w-6xl > .mb-16, .max-w-6xl > .hover-lift').forEach(function(el,i){
-gsap.from(el,{opacity:0,y:40,duration:0.7,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 88%'}});
-});
+  <!-- ==========================================
+       8. FAQ DA EMPRESA
+       ========================================== -->
+  <section id="sec-faq" class="py-20 px-6 bg-gray-900/50 border-b border-gray-800">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-16">
+        <span class="text-xs font-bold text-yellow-400 uppercase tracking-widest">DÚVIDAS FREQUENTES</span>
+        <h2 class="text-3xl font-serif-title font-bold text-white mt-2">
+          Perguntas Frequentes sobre Nossos Serviços
+        </h2>
+      </div>
 
-// Service items stagger within each card
-document.querySelectorAll('.hover-lift').forEach(function(card){
-var items=card.querySelectorAll('.svc-item');
-if(items.length){
-gsap.from(items,{opacity:0,x:-20,duration:0.4,stagger:0.08,ease:'power2.out',scrollTrigger:{trigger:card,start:'top 80%'}});
-}
-});
+      <div class="space-y-4">
+        <div class="bg-gray-950 p-6 rounded-xl border border-gray-800">
+          <h4 class="font-bold text-white text-base mb-2">Qual é a duração média de uma assessoria de M&A?</h4>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Normalmente entre 5 e 9 meses, cobrindo todas as etapas desde a preparação dos materiais até a assinatura final do contrato.
+          </p>
+        </div>
 
-// Image zoom on scroll
-document.querySelectorAll('.img-zoom').forEach(function(el){
-gsap.from(el.querySelector('img'),{scale:1.15,duration:1.2,ease:'power2.out',scrollTrigger:{trigger:el,start:'top 80%'}});
-});
+        <div class="bg-gray-950 p-6 rounded-xl border border-gray-800">
+          <h4 class="font-bold text-white text-base mb-2">Como é assegurado o sigilo em relação aos concorrentes?</h4>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Utilizamos Teasers cegos sem identificação da marca e somente disponibilizamos informações detalhadas após a validação e assinatura do NDA pelo interessado.
+          </p>
+        </div>
 
-// FAQ items stagger
-gsap.from('.faq-item',{opacity:0,y:20,duration:0.5,stagger:0.1,ease:'power2.out',scrollTrigger:{trigger:'.faq-item',start:'top 88%'}});
-</script>
+        <div class="bg-gray-950 p-6 rounded-xl border border-gray-800">
+          <h4 class="font-bold text-white text-base mb-2">A Onward realiza avaliações para disputas societárias?</h4>
+          <p class="text-xs text-gray-400 leading-relaxed">
+            Sim. Elaboramos laudos independentes de Valuation com respaldo pericial e técnico para suporte em arbitragens e acordos entre sócios.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       9. CTA FINAL DO CLIENTE
+       ========================================== -->
+  <section id="sec-cta-final" class="py-20 px-6 bg-gradient-to-b from-gray-950 to-gray-900 border-b border-gray-800 text-center">
+    <div class="max-w-4xl mx-auto">
+      <span class="text-xs font-bold text-yellow-400 uppercase tracking-widest">DISCUSSÃO PRIVADA E CONFIDENCIAL</span>
+      <h2 class="text-3xl md:text-5xl font-serif-title font-bold text-white mt-2 mb-6">
+        Agende uma Reunião com Nossos Sócios na Faria Lima
+      </h2>
+      <p class="text-gray-300 text-base max-w-2xl mx-auto mb-8">
+        Converse com nossos especialistas sobre o Valuation da sua empresa ou planos de expansão acionária.
+      </p>
+      <a href="https://wa.me/5511937774820" target="_blank" class="inline-flex items-center gap-3 bg-yellow-500 hover:bg-yellow-400 text-gray-950 font-bold px-10 py-5 rounded-2xl text-base uppercase tracking-wider transition shadow-2xl shadow-yellow-500/20">
+        <i class="fa-brands fa-whatsapp text-xl"></i> Falar pelo WhatsApp VIP
+      </a>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       10. BLOCO DE PROSPECÇÃO & APROVAÇÃO TÉCNICA (POSICIONADO NO RODAPÉ DO SITE)
+       ========================================================================= -->
+  <section id="sec-prospeccao-escom" class="py-16 px-6 bg-gray-950 border-t-2 border-yellow-500/30">
+    <div class="max-w-6xl mx-auto space-y-12">
+
+      <!-- ITEM A: ANÁLISE TÉCNICA DO PROJETO -->
+      <div class="bg-gray-900/90 border border-yellow-500/30 p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-yellow-400 text-2xl">
+            <i class="fa-solid fa-file-lines"></i>
+          </div>
+          <div>
+            <span class="text-xs uppercase tracking-widest text-yellow-400 font-bold">ESCOM STUDIO · ANÁLISE TÉCNICA DO PROJETO</span>
+            <h3 class="text-white font-bold text-lg md:text-xl mt-1">Análise Técnica & Diagnóstico de Mercado</h3>
+            <p class="text-gray-400 text-xs mt-1">Relatório técnico de posicionamento digital e conversão para a Onward Consultoria & M&A.</p>
+          </div>
+        </div>
+        <a href="analise.html" target="_blank" class="bg-yellow-500 hover:bg-yellow-400 text-gray-950 font-bold px-6 py-3 rounded-xl border border-yellow-500/40 text-xs uppercase tracking-wider transition flex items-center gap-2 flex-shrink-0 shadow-lg">
+          <i class="fa-solid fa-eye"></i> Visualizar Análise Técnica
+        </a>
+      </div>
+
+      <!-- ITEM B: INVESTIMENTO ÚNICO DO PROJETO -->
+      <div class="glass-card p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+        <div>
+          <span class="text-xs font-bold text-yellow-400 uppercase tracking-widest">INFRAESTRUTURA DE ALTA PERFORMANCE</span>
+          <h3 class="text-2xl font-serif-title font-bold text-white mt-1">Investimento do Projeto de Landing Page</h3>
+          <p class="text-gray-400 text-sm mt-2 max-w-xl">
+            Design responsivo luxo, animações Three.js 3D, GSAP, copywriting persuasivo específico para M&A e otimização total de conversão.
+          </p>
+        </div>
+        <div class="text-center md:text-right border-t md:border-t-0 md:border-l border-gray-800 pt-4 md:pt-0 md:pl-8">
+          <span class="text-xs text-gray-400 uppercase tracking-wider block">INVESTIMENTO ÚNICO</span>
+          <span class="text-4xl font-serif-title font-bold text-yellow-400 block my-1">R$ 990,00</span>
+          <span class="text-[11px] text-yellow-400 font-semibold block"><i class="fa-solid fa-check-circle mr-1"></i> Sem mensalidades recorrentes</span>
+        </div>
+      </div>
+
+      <!-- ITEM C: EXPANSÕES TECNOLÓGICAS (UPSELL) -->
+      <div>
+        <div class="text-center mb-6">
+          <span class="text-xs font-bold text-yellow-400 uppercase tracking-widest">EXPANSÕES SOB DEMANDA</span>
+          <h4 class="text-lg font-serif-title font-bold text-white mt-1">Módulos Avançados de Escala</h4>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="bg-gray-900 p-5 rounded-xl border border-gray-800">
+            <i class="fa-solid fa-robot text-yellow-400 text-xl mb-2"></i>
+            <h5 class="font-bold text-white text-xs mb-1">Qualificador de IA</h5>
+            <p class="text-[11px] text-gray-400">Atendimento 24/7 filtrando ticket mínimo.</p>
+          </div>
+          <div class="bg-gray-900 p-5 rounded-xl border border-gray-800">
+            <i class="fa-solid fa-chart-pie text-yellow-400 text-xl mb-2"></i>
+            <h5 class="font-bold text-white text-xs mb-1">Dashboard Dealflow</h5>
+            <p class="text-[11px] text-gray-400">Acompanhamento de mandates ativos.</p>
+          </div>
+          <div class="bg-gray-900 p-5 rounded-xl border border-gray-800">
+            <i class="fa-solid fa-shield-halved text-yellow-400 text-xl mb-2"></i>
+            <h5 class="font-bold text-white text-xs mb-1">Portal NDA Digital</h5>
+            <p class="text-[11px] text-gray-400">Assinatura digital de termos de sigilo.</p>
+          </div>
+          <div class="bg-gray-900 p-5 rounded-xl border border-gray-800">
+            <i class="fa-brands fa-whatsapp text-yellow-400 text-xl mb-2"></i>
+            <h5 class="font-bold text-white text-xs mb-1">WhatsApp CRM Bot</h5>
+            <p class="text-[11px] text-gray-400">Follow-up automatizado de CFOs.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITEM D: APRESENTAÇÃO ESCOM STUDIO -->
+      <div class="bg-gray-900 p-6 rounded-xl border border-gray-800 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div>
+          <span class="text-[10px] font-bold text-yellow-400 uppercase tracking-widest">ENGENHARIA DE CONVERSÃO</span>
+          <h4 class="text-lg font-bold text-white mt-0.5">Desenvolvido por ESCOM Studio</h4>
+          <p class="text-gray-400 text-xs mt-1">Especialistas em design de alta performance para o setor corporativo.</p>
+        </div>
+        <a href="https://escomstudio.com.br" target="_blank" class="bg-gray-800 hover:bg-gray-700 text-white font-bold px-5 py-2.5 rounded-lg border border-gray-700 text-xs uppercase tracking-wider transition">
+          Conhecer a ESCOM Studio
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER DA EMPRESA -->
+  <footer id="sec-footer" class="py-10 px-6 bg-gray-950 text-gray-500 text-xs border-t border-gray-900">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>
+        <p>© 2026 Onward Consultoria & M&A. Todos os direitos reservados.</p>
+        <p class="text-[10px] text-gray-600 mt-1">Av. Brigadeiro Faria Lima, 3477 · Itaim Bibi · São Paulo - SP</p>
+      </div>
+      <div class="flex items-center gap-6">
+        <a href="analise.html" target="_blank" class="hover:text-yellow-400 transition">Análise Técnica</a>
+        <a href="#sec-1-urgencia" class="hover:text-yellow-400 transition">Voltar ao Topo</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT THREE.JS 3D PARTICLE WAVE GRID & GSAP -->
+  <script>
+    const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+
+    // Three.js 3D Wave Grid Particle Animation (Gold Matrix Theme)
+    const canvas = document.getElementById('three-hero-canvas');
+    if (canvas && typeof THREE !== 'undefined') {
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+      const SEPARATION = 40, AMOUNTX = 35, AMOUNTY = 35;
+      const numParticles = AMOUNTX * AMOUNTY;
+      const positions = new Float32Array(numParticles * 3);
+      let i = 0;
+      for (let ix = 0; ix < AMOUNTX; ix++) {
+        for (let iy = 0; iy < AMOUNTY; iy++) {
+          positions[i] = ix * SEPARATION - ((AMOUNTX * SEPARATION) / 2);
+          positions[i + 1] = 0;
+          positions[i + 2] = iy * SEPARATION - ((AMOUNTY * SEPARATION) / 2);
+          i += 3;
+        }
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+      const material = new THREE.PointsMaterial({
+        size: 3.8,
+        color: 0xfacc15,
+        transparent: true,
+        opacity: 0.65
+      });
+
+      const particles = new THREE.Points(geometry, material);
+      scene.add(particles);
+
+      camera.position.y = 210;
+      camera.position.z = 410;
+      camera.lookAt(scene.position);
+
+      let count = 0;
+      function animateThree() {
+        requestAnimationFrame(animateThree);
+        const posArr = particles.geometry.attributes.position.array;
+        let pIndex = 0;
+        for (let ix = 0; ix < AMOUNTX; ix++) {
+          for (let iy = 0; iy < AMOUNTY; iy++) {
+            posArr[pIndex + 1] = (Math.sin((ix + count) * 0.3) * 22) + (Math.sin((iy + count) * 0.5) * 22);
+            pIndex += 3;
+          }
+        }
+        particles.geometry.attributes.position.needsUpdate = true;
+        count += 0.05;
+        renderer.render(scene, camera);
+      }
+      animateThree();
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    }
+
+    if (typeof gsap !== 'undefined') {
+      gsap.registerPlugin(ScrollTrigger);
+      gsap.from('#sec-hero h1', { opacity: 0, y: 30, duration: 1, delay: 0.2 });
+      gsap.from('#sec-hero p', { opacity: 0, y: 20, duration: 1, delay: 0.4 });
+    }
+  </script>
 </body>
 </html>

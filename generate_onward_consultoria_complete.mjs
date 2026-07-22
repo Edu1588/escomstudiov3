@@ -759,40 +759,56 @@ const siteHtml = `<!DOCTYPE html>
 </html>`;
 
 async function run() {
-  console.log("🚀 Criando arquivos para Onward Consultoria & M&A...");
+  console.log("🚀 Criando arquivos completos em múltiplos caminhos estáticos para Onward Consultoria...");
 
-  // Criar pastas
-  const publicDir = path.join(process.cwd(), 'public', leadData.slug);
-  const rootDir = path.join(process.cwd(), leadData.slug);
-  fs.mkdirSync(publicDir, { recursive: true });
-  fs.mkdirSync(rootDir, { recursive: true });
+  // Pastas
+  const publicSubfolder = path.join(process.cwd(), 'public', leadData.slug);
+  const rootSubfolder = path.join(process.cwd(), leadData.slug);
+  fs.mkdirSync(publicSubfolder, { recursive: true });
+  fs.mkdirSync(rootSubfolder, { recursive: true });
 
-  // Escrever arquivos
-  fs.writeFileSync(path.join(publicDir, 'analise.html'), analiseHtml, 'utf-8');
-  fs.writeFileSync(path.join(publicDir, 'analise.pdf'), analiseHtml, 'utf-8');
-  fs.writeFileSync(path.join(publicDir, 'index.html'), siteHtml, 'utf-8');
+  // 1. Arquivos na subpasta public/site-onward-consultoria/
+  fs.writeFileSync(path.join(publicSubfolder, 'index.html'), siteHtml, 'utf-8');
+  fs.writeFileSync(path.join(publicSubfolder, 'analise.html'), analiseHtml, 'utf-8');
+  fs.writeFileSync(path.join(publicSubfolder, 'analise.pdf'), analiseHtml, 'utf-8');
 
-  fs.writeFileSync(path.join(rootDir, 'analise.html'), analiseHtml, 'utf-8');
-  fs.writeFileSync(path.join(rootDir, 'analise.pdf'), analiseHtml, 'utf-8');
-  fs.writeFileSync(path.join(rootDir, 'index.html'), siteHtml, 'utf-8');
+  // 2. Arquivos na subpasta site-onward-consultoria/ (raiz do projeto)
+  fs.writeFileSync(path.join(rootSubfolder, 'index.html'), siteHtml, 'utf-8');
+  fs.writeFileSync(path.join(rootSubfolder, 'analise.html'), analiseHtml, 'utf-8');
+  fs.writeFileSync(path.join(rootSubfolder, 'analise.pdf'), analiseHtml, 'utf-8');
 
-  console.log("📁 Arquivos gerados em public/site-onward-consultoria e site-onward-consultoria!");
+  // 3. Arquivos HTML standalone em public/ (para Vercel cleanUrls servir direto na raiz da URL)
+  const publicDir = path.join(process.cwd(), 'public');
+  fs.writeFileSync(path.join(publicDir, 'site-onward-consultoria.html'), siteHtml, 'utf-8');
+  fs.writeFileSync(path.join(publicDir, 'onward-consultoria.html'), siteHtml, 'utf-8');
+  fs.writeFileSync(path.join(publicDir, 'onward.html'), siteHtml, 'utf-8');
+
+  // Pasta public/sites/ (legado que estava apontado no vercel.json)
+  const sitesDir = path.join(publicDir, 'sites');
+  fs.mkdirSync(sitesDir, { recursive: true });
+  fs.writeFileSync(path.join(sitesDir, 'onward-consultoria.html'), siteHtml, 'utf-8');
+
+  console.log("📁 Todos os arquivos HTML estáticos gerados com sucesso!");
 
   // Atualizar Firestore: Limpar todos os anteriores e manter APENAS site-onward-consultoria
   console.log("🧹 Limpando Firestore mantendo exclusivamente Onward Consultoria...");
   const snap1 = await getDocs(collection(db, 'generated_sites'));
   for (const document of snap1.docs) {
-    console.log(`Deletando de generated_sites: ${document.id}`);
-    await deleteDoc(doc(db, 'generated_sites', document.id));
+    if (document.id !== 'site-onward-consultoria') {
+      console.log(`Deletando de generated_sites: ${document.id}`);
+      await deleteDoc(doc(db, 'generated_sites', document.id));
+    }
   }
 
   const snap2 = await getDocs(collection(db, 'proposals'));
   for (const document of snap2.docs) {
-    console.log(`Deletando de proposals: ${document.id}`);
-    await deleteDoc(doc(db, 'proposals', document.id));
+    if (document.id !== 'proposta-escom-site-onward-consultoria' && document.id !== 'proposta-escom-onward-consultoria') {
+      console.log(`Deletando de proposals: ${document.id}`);
+      await deleteDoc(doc(db, 'proposals', document.id));
+    }
   }
 
-  // Gravar no Firestore
+  // Gravar no Firestore com URLs estáticas limpas
   await setDoc(doc(db, 'generated_sites', leadData.slug), {
     companyName: leadData.companyName,
     niche: leadData.niche,
@@ -802,8 +818,8 @@ async function run() {
     slug: leadData.slug,
     status: 'pending',
     createdAt: serverTimestamp(),
-    siteUrl: `https://escom-studio.vercel.app/${leadData.slug}/index.html`,
-    analiseUrl: `https://escom-studio.vercel.app/${leadData.slug}/analise.html`
+    siteUrl: `https://escom-studio.vercel.app/${leadData.slug}`,
+    analiseUrl: `https://escom-studio.vercel.app/${leadData.slug}/analise`
   });
 
   await setDoc(doc(db, 'proposals', `proposta-escom-${leadData.slug}`), {
