@@ -19,7 +19,8 @@ import {
   HeartPulse,
   DollarSign,
   Building,
-  ExternalLink
+  ExternalLink,
+  Wrench
 } from "lucide-react";
 
 import Dashboard from "./pages/Dashboard";
@@ -96,6 +97,16 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
     { name: "Saúde", path: "/saude", icon: <HeartPulse size={18} /> },
     { name: "Finanças", path: "/financas", icon: <DollarSign size={18} /> },
     { name: "Escritório 3D", path: "/escritorio", icon: <Building size={18} /> },
+    {
+      name: "Ferramentas",
+      icon: <Wrench size={18} />,
+      subItems: [
+        { name: "Fooocus ↗", path: "https://github.com/lllyasviel/Fooocus.git", isExternal: true },
+        { name: "Análise Plausível ↗", path: "https://github.com/plausible/analytics.git", isExternal: true },
+        { name: "AppFlowy (Notion) ↗", path: "https://github.com/AppFlowy-IO/AppFlowy-Cloud.git", isExternal: true },
+        { name: "Penpot (Design) ↗", path: "https://github.com/penpot/penpot.git", isExternal: true }
+      ]
+    },
   ];
 
   const sistema = [
