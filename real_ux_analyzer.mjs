@@ -109,6 +109,11 @@ async function analyzeUX(filePath) {
 }
 
 async function run() {
+    if (process.env.VERCEL) {
+        console.log("⚠️ [Vercel Build] Ambiente do Vercel detectado. Ignorando a execução do UX Analyzer.");
+        process.exit(0);
+    }
+
     const templates = [
         'public/template-oralfix/index.html',
         'public/template-chiroandmovement/index.html',
