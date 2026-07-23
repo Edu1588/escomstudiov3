@@ -41,6 +41,20 @@ export async function ensureAuth() {
 }
 ensureAuth().catch(err => console.error("Initial auth failed:", err));
 
+app.get(["/template-ci-odontologia", "/template-ci-odontologia/index.html"], (req, res) => {
+  const filePath = path.join(process.cwd(), "public", "template-ci-odontologia", "index.html");
+  if (fs.existsSync(filePath)) {
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    return res.sendFile(filePath);
+  }
+  const rootPath = path.join(process.cwd(), "template-ci-odontologia", "index.html");
+  if (fs.existsSync(rootPath)) {
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    return res.sendFile(rootPath);
+  }
+  res.status(404).send("Template não encontrado.");
+});
+
 function calculateLeadScore(lead, auditData) {
   let score = 50;
   const titleLower = (lead.title || "").toLowerCase();

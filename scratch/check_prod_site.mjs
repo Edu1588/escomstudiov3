@@ -1,27 +1,30 @@
-import fs from 'fs';
-import path from 'path';
+import https from 'https';
 
-function checkLocalFile(filePath) {
-  const absPath = path.resolve(filePath);
-  if (!fs.existsSync(absPath)) {
-    console.log(`Local File: ${filePath} -> NÃO EXISTE`);
-    return;
-  }
-  const text = fs.readFileSync(absPath, 'utf8');
-  console.log(`Local File: ${filePath}`);
-  console.log(`  Tamanho: ${text.length}`);
-  console.log(`  Contem sec-1-urgencia? ${text.includes('sec-1-urgencia')}`);
-  console.log(`  Contem Bricolage Grotesque? ${text.includes('Bricolage Grotesque')}`);
+function checkUrlFollowRedirect(url) {
+  return new Promise((resolve) => {
+    https.get(url, (res) => {
+      console.log(`REQ: ${url} -> STATUS: ${res.statusCode} | LOCATION: ${res.headers.location || 'NONE'}`);
+      if ([301, 302, 307, 308].includes(res.statusCode) && res.headers.location) {
+        const nextUrl = res.headers.location.startsWith('http') 
+          ? res.headers.location 
+          : new URL(res.headers.location, url).toString();
+        checkUrlFollowRedirect(nextUrl).then(resolve);
+      } else {
+        resolve({ url, status: res.statusCode });
+      }
+    }).on('error', (err) => {
+      console.error(`REQ: ${url} -> ERROR:`, err.message);
+      resolve({ url, status: 500 });
+    });
+  });
 }
 
-console.log('=== VERIFICANDO ARQUIVOS LOCAIS EM public/ ===');
-checkLocalFile('public/site-onward-consultoria.html');
-checkLocalFile('public/onward-consultoria.html');
-checkLocalFile('public/onward.html');
-checkLocalFile('public/sites/onward-consultoria.html');
+async function testAll() {
+  console.log("=== TESTANDO URLs E SEGUINDO REDIRECTS NA VERCEL ===");
+  await checkUrlFollowRedirect('https://escom-studio.vercel.app/template-clinica/index.html');
+  await checkUrlFollowRedirect('https://escom-studio.vercel.app/template-ci-odontologia/index.html');
+  await checkUrlFollowRedirect('https://escom-studio.vercel.app/template-ci-odontologia/');
+  await checkUrlFollowRedirect('https://escom-studio.vercel.app/template-ci-odontologia');
+}
 
-console.log('\n=== VERIFICANDO ARQUIVOS LOCAIS EM dist/ ===');
-checkLocalFile('dist/site-onward-consultoria.html');
-checkLocalFile('dist/onward-consultoria.html');
-checkLocalFile('dist/onward.html');
-checkLocalFile('dist/sites/onward-consultoria.html');
+testAll();
