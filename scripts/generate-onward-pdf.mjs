@@ -15,24 +15,35 @@ const reportHTML = `<!DOCTYPE html>
   body { font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; color: #1a1a2e; background: #fff; line-height: 1.6; }
 
   /* === COVER === */
-  .cover { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 40%, #16213e 100%); color: #fff; text-align: center; position: relative; overflow: hidden; page-break-after: always; }
-  .cover::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 70%, rgba(0,209,255,0.08) 0%, transparent 50%), radial-gradient(circle at 70% 30%, rgba(255,90,0,0.06) 0%, transparent 50%); }
-  .cover-badge { background: rgba(0,209,255,0.15); border: 1px solid rgba(0,209,255,0.3); color: #00d1ff; padding: 8px 24px; border-radius: 50px; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 40px; position: relative; }
+  .cover { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, #1a1a1a 0%, #2a1a15 40%, #3d1a0a 100%); color: #fff; text-align: center; position: relative; overflow: hidden; page-break-after: always; }
+  .cover::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 30% 70%, rgba(246,51,4,0.1) 0%, transparent 50%), radial-gradient(circle at 70% 30%, rgba(252,117,84,0.08) 0%, transparent 50%); }
+  .cover-badge { background: rgba(246,51,4,0.15); border: 1px solid rgba(246,51,4,0.3); color: #F63304; padding: 8px 24px; border-radius: 50px; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 40px; position: relative; }
   .cover h1 { font-size: 48px; font-weight: 800; line-height: 1.1; margin-bottom: 16px; position: relative; }
-  .cover h1 span { color: #00d1ff; }
+  .cover h1 span { color: #F63304; }
   .cover h2 { font-size: 22px; font-weight: 300; color: rgba(255,255,255,0.7); margin-bottom: 60px; position: relative; }
   .cover-meta { position: relative; display: flex; gap: 40px; font-size: 13px; color: rgba(255,255,255,0.5); }
   .cover-meta div { display: flex; flex-direction: column; align-items: center; }
   .cover-meta strong { color: rgba(255,255,255,0.8); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
-  .cover-line { width: 60px; height: 3px; background: #ff5a00; margin: 30px auto; position: relative; border-radius: 2px; }
+  .cover-line { width: 60px; height: 3px; background: #F63304; margin: 30px auto; position: relative; border-radius: 2px; }
+  .cover-logo { width: 120px; height: 120px; border-radius: 16px; margin-bottom: 32px; position: relative; object-fit: cover; border: 2px solid rgba(246,51,4,0.3); }
 
   /* === PAGES === */
-  .page { min-height: 100vh; padding: 60px 70px; page-break-after: always; position: relative; }
-  .page::after { content: ''; position: absolute; bottom: 30px; left: 70px; right: 70px; height: 1px; background: linear-gradient(90deg, transparent, rgba(0,209,255,0.2), transparent); }
+  .page { padding: 60px 70px; position: relative; break-before: page; }
+  .page:first-of-type { break-before: auto; }
+  .page::after { content: ''; position: absolute; bottom: 30px; left: 70px; right: 70px; height: 1px; background: linear-gradient(90deg, transparent, rgba(246,51,4,0.2), transparent); }
   .page-number { position: absolute; bottom: 15px; right: 70px; font-size: 11px; color: #999; }
 
+  /* === IMAGE BLOCKS === */
+  .img-block { page-break-inside: avoid; break-inside: avoid; margin: 20px 0; border-radius: 10px; overflow: hidden; position: relative; }
+  .img-block img { width: 100%; display: block; }
+  .img-block .caption { font-size: 11px; color: #888; padding: 8px 0; text-align: center; font-style: italic; }
+  .img-hero { height: 220px; }
+  .img-hero img { height: 100%; object-fit: cover; }
+  .img-half { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .img-half .img-block { margin: 0; }
+
   /* === TYPOGRAPHY === */
-  .section-tag { display: inline-block; background: rgba(0,209,255,0.1); color: #00d1ff; padding: 4px 14px; border-radius: 50px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; border: 1px solid rgba(0,209,255,0.2); }
+  .section-tag { display: inline-block; background: rgba(246,51,4,0.1); color: #F63304; padding: 4px 14px; border-radius: 50px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; border: 1px solid rgba(246,51,4,0.2); }
   h2 { font-size: 32px; font-weight: 800; color: #0a0a0a; margin-bottom: 8px; line-height: 1.2; }
   h3 { font-size: 20px; font-weight: 700; color: #1a1a2e; margin: 24px 0 12px; }
   h4 { font-size: 15px; font-weight: 700; color: #333; margin: 16px 0 8px; }
@@ -40,8 +51,8 @@ const reportHTML = `<!DOCTYPE html>
   .subtitle { font-size: 16px; color: #666; margin-bottom: 32px; line-height: 1.5; }
 
   /* === CARDS & BREAK CONTROL === */
-  .card, .grid-2, .grid-3, .grid-4, .highlight-box, table, .bar-row, .stat-box { page-break-inside: avoid; break-inside: avoid; }
-  .card { background: #f8f9fc; border-radius: 12px; padding: 24px; margin-bottom: 16px; border-left: 4px solid #00d1ff; }
+  .card, .grid-2, .grid-3, .grid-4, .highlight-box, table, .bar-row, .stat-box, .img-block, .img-half, .cover { page-break-inside: avoid; break-inside: avoid; }
+  .card { background: #f8f9fc; border-radius: 12px; padding: 24px; margin-bottom: 16px; border-left: 4px solid #F63304; }
   .card.warn { border-left-color: #ff5a00; }
   .card.danger { border-left-color: #ef4444; }
   .card.success { border-left-color: #10b981; }
@@ -53,8 +64,8 @@ const reportHTML = `<!DOCTYPE html>
   .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
 
   /* === STAT BOXES === */
-  .stat-box { background: linear-gradient(135deg, #0a0a0a, #1a1a2e); color: #fff; border-radius: 12px; padding: 20px; text-align: center; }
-  .stat-box .number { font-size: 36px; font-weight: 800; color: #00d1ff; line-height: 1; }
+  .stat-box { background: linear-gradient(135deg, #1a1a1a, #2d1a12); color: #fff; border-radius: 12px; padding: 20px; text-align: center; }
+  .stat-box .number { font-size: 36px; font-weight: 800; color: #F63304; line-height: 1; }
   .stat-box .label { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; }
 
   /* === TABLES === */
@@ -67,14 +78,14 @@ const reportHTML = `<!DOCTYPE html>
   /* === LISTS === */
   ul { padding-left: 20px; margin-bottom: 16px; }
   li { font-size: 14px; color: #444; margin-bottom: 6px; }
-  li::marker { color: #00d1ff; }
+  li::marker { color: #F63304; }
 
   /* === BAR CHARTS === */
   .bar-row { display: flex; align-items: center; margin-bottom: 8px; }
   .bar-label { width: 160px; font-size: 12px; color: #555; text-align: right; padding-right: 12px; flex-shrink: 0; }
   .bar-track { flex: 1; height: 24px; background: #f0f0f5; border-radius: 6px; overflow: hidden; position: relative; }
   .bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 10px; font-size: 11px; color: #fff; font-weight: 600; }
-  .bar-fill.cyan { background: linear-gradient(90deg, #00d1ff, #0099cc); }
+  .bar-fill.cyan { background: linear-gradient(90deg, #F63304, #c42a03); }
   .bar-fill.orange { background: linear-gradient(90deg, #ff5a00, #cc4400); }
   .bar-fill.green { background: linear-gradient(90deg, #10b981, #059669); }
   .bar-fill.purple { background: linear-gradient(90deg, #8b5cf6, #6d28d9); }
@@ -84,19 +95,19 @@ const reportHTML = `<!DOCTYPE html>
   .score-circle .val { font-size: 32px; font-weight: 800; }
   .score-circle .lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
   .score-low { background: rgba(239,68,68,0.1); border: 3px solid #ef4444; color: #ef4444; }
-  .score-mid { background: rgba(255,90,0,0.1); border: 3px solid #ff5a00; color: #ff5a00; }
+  .score-mid { background: rgba(246,51,4,0.1); border: 3px solid #F63304; color: #F63304; }
   .score-high { background: rgba(16,185,129,0.1); border: 3px solid #10b981; color: #10b981; }
 
   /* === TOC === */
   .toc-item { display: flex; align-items: baseline; padding: 12px 0; border-bottom: 1px solid #f0f0f5; }
-  .toc-num { font-size: 28px; font-weight: 800; color: #00d1ff; width: 50px; flex-shrink: 0; }
+  .toc-num { font-size: 28px; font-weight: 800; color: #F63304; width: 50px; flex-shrink: 0; }
   .toc-text { font-size: 16px; color: #333; font-weight: 500; }
   .toc-desc { font-size: 12px; color: #888; margin-top: 2px; }
 
-  .highlight-box { background: linear-gradient(135deg, rgba(0,209,255,0.08), rgba(255,90,0,0.05)); border: 1px solid rgba(0,209,255,0.15); border-radius: 12px; padding: 24px; margin: 20px 0; }
+  .highlight-box { background: linear-gradient(135deg, rgba(246,51,4,0.06), rgba(252,117,84,0.04)); border: 1px solid rgba(246,51,4,0.15); border-radius: 12px; padding: 24px; margin: 20px 0; }
   .highlight-box h4 { color: #0a0a0a; margin-top: 0; }
 
-  .tag { display: inline-block; background: rgba(0,209,255,0.1); color: #0099cc; padding: 3px 10px; border-radius: 50px; font-size: 11px; margin: 2px 4px 2px 0; }
+  .tag { display: inline-block; background: rgba(246,51,4,0.1); color: #c42a03; padding: 3px 10px; border-radius: 50px; font-size: 11px; margin: 2px 4px 2px 0; }
   .tag.warn { background: rgba(255,90,0,0.1); color: #cc4400; }
   .tag.danger { background: rgba(239,68,68,0.1); color: #dc2626; }
   .tag.success { background: rgba(16,185,129,0.1); color: #059669; }
@@ -106,6 +117,7 @@ const reportHTML = `<!DOCTYPE html>
 
 <!-- COVER -->
 <div class="cover">
+  <img src="https://static.wixstatic.com/media/0ec144_7cc13d8a244f4b388f49c244b574590e~mv2.jpg" alt="Onward Logo" class="cover-logo">
   <div class="cover-badge">Relatório Analítico Estratégico</div>
   <h1><span>Onward</span> Consultoria</h1>
   <div class="cover-line"></div>
@@ -144,6 +156,11 @@ const reportHTML = `<!DOCTYPE html>
   <span class="section-tag">Seção 01</span>
   <h2>Visão Geral da Empresa</h2>
   <p class="subtitle">Dados corporativos, fundadores e estrutura organizacional da Onward Consultoria.</p>
+
+  <div class="img-block img-hero">
+    <img src="https://images.unsplash.com/photo-1560179707-f14e90ef3623?auto=format&fit=crop&w=1200&q=80" alt="Escritório corporativo">
+    <div class="caption">Vila Olímpia, São Paulo — sede da Onward Consultoria</div>
+  </div>
 
   <div class="grid-4">
     <div class="stat-box"><div class="number">2012</div><div class="label">Fundação</div></div>
@@ -281,6 +298,11 @@ const reportHTML = `<!DOCTYPE html>
   <h2>Análise de Mercado</h2>
   <p class="subtitle">Panorama do mercado de M&A e consultoria de gestão empresarial no Brasil.</p>
 
+  <div class="img-block img-hero">
+    <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80" alt="Torres corporativas">
+    <div class="caption">Mercado de M&A em recuperação — volume de R$ 234 bilhões em 2025</div>
+  </div>
+
   <h3>Mercado de M&A no Brasil (2025-2026)</h3>
   <div class="grid-3">
     <div class="stat-box"><div class="number">R$ 234B</div><div class="label">Valor Total M&A 2025</div></div>
@@ -344,7 +366,7 @@ const reportHTML = `<!DOCTYPE html>
     <p style="font-size:13px; margin-bottom:16px;"><strong>Eixo X:</strong> Escopo do serviço (CFO only → CFO + M&A) | <strong>Eixo Y:</strong> Tamanho da equipe (individual → institucional)</p>
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
       <div style="background:rgba(0,209,255,0.08); border-radius:8px; padding:16px; border:1px dashed rgba(0,209,255,0.3);">
-        <strong style="color:#00d1ff;">Quadrante Premium</strong>
+        <strong style="color:#F63304;">Quadrante Premium</strong>
         <p style="font-size:12px; color:#666;">CFO + M&A + Equipe<br>→ IGC, Caravel</p>
       </div>
       <div style="background:rgba(255,90,0,0.08); border-radius:8px; padding:16px; border:1px dashed rgba(255,90,0,0.3);">
@@ -376,6 +398,11 @@ const reportHTML = `<!DOCTYPE html>
   <span class="section-tag">Seção 05</span>
   <h2>Diagnóstico de Presença Digital</h2>
   <p class="subtitle">Avaliação completa da presença online da Onward Consultoria em todos os canais.</p>
+
+  <div class="img-block img-hero">
+    <img src="https://images.unsplash.com/photo-1554469384-e58fac16e23a?auto=format&fit=crop&w=1200&q=80" alt="Reunião executiva">
+    <div class="caption">Presença digital crítica — score 2.1/10 em todos os canais</div>
+  </div>
 
   <div class="grid-3" style="margin-bottom:24px;">
     <div style="text-align:center;">
@@ -521,7 +548,7 @@ const reportHTML = `<!DOCTYPE html>
     </div>
     <div class="card">
       <h4>mplrs.com — 4.0/5.0 (1 avaliação)</h4>
-      <blockquote style="border-left:3px solid #00d1ff; padding-left:12px; font-style:italic; font-size:13px; color:#555; margin-top:8px;">
+      <blockquote style="border-left:3px solid #F63304; padding-left:12px; font-style:italic; font-size:13px; color:#555; margin-top:8px;">
         "Company is concerned to employees welfare. Lovely team. Relaxed atmosphere."
       </blockquote>
       <p style="font-size:12px; color:#888; margin-top:8px;">Avaliação de funcionário, não de cliente. Pouco relevante para prospect.</p>
@@ -920,12 +947,12 @@ const reportHTML = `<!DOCTYPE html>
 
 <!-- PAGE 16: CTA FINAL ESCOM STUDIO -->
 <div class="page" style="background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%); color: #fff;">
-  <span class="section-tag" style="background: rgba(0,209,255,0.15); color: #00d1ff;">Próximo Passo</span>
+  <span class="section-tag" style="background: rgba(246,51,4,0.15); color: #F63304;">Próximo Passo</span>
   <h2 style="color: #fff; font-size: 36px; margin-bottom: 12px;">Pronto para transformar a presença da Onward Consultoria?</h2>
   <p class="subtitle" style="color: rgba(255,255,255,0.7);">Desenvolvemos a nova landing page institucional de alta conversão para a Onward Consultoria com o ecossistema completo de captação de PMEs.</p>
 
   <div class="highlight-box" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(0,209,255,0.3); padding: 32px; border-radius: 16px; margin: 32px 0;">
-    <h3 style="color: #00d1ff; font-size: 24px; margin-top: 0; margin-bottom: 16px;">Projeto Completo &amp; Proposta de Implantação</h3>
+    <h3 style="color: #F63304; font-size: 24px; margin-top: 0; margin-bottom: 16px;">Projeto Completo &amp; Proposta de Implantação</h3>
     <ul style="color: rgba(255,255,255,0.9); font-size: 15px; line-height: 1.8;">
       <li><strong>Landing Page Institucional Completa:</strong> 15 seções em Dark Mode Premium com Three.js e GSAP</li>
       <li><strong>Infraestrutura de Alta Performance:</strong> Hospedagem em Edge CDN global com tempo de carregamento &lt; 0.8s</li>
@@ -945,10 +972,10 @@ const reportHTML = `<!DOCTYPE html>
     </div>
   </div>
 
-  <div class="card" style="background: rgba(0,209,255,0.08); border-left-color: #00d1ff; color: #fff; padding: 24px; margin-top: 24px;">
-    <h4 style="color: #00d1ff; font-size: 18px; margin-bottom: 8px;">Acessar Projeto no Ar &amp; Falar com a Equipe:</h4>
+  <div class="card" style="background: rgba(246,51,4,0.08); border-left-color: #F63304; color: #fff; padding: 24px; margin-top: 24px;">
+    <h4 style="color: #F63304; font-size: 18px; margin-bottom: 8px;">Acessar Projeto no Ar &amp; Falar com a Equipe:</h4>
     <p style="color: rgba(255,255,255,0.8); font-size: 14px; margin-bottom: 12px;">Visualizar o site em execução ao vivo:</p>
-    <p style="font-size: 16px; font-weight: bold;"><a href="https://escomstudio.com.br/site-onward-consultoria" style="color: #00d1ff; text-decoration: underline;">https://escomstudio.com.br/site-onward-consultoria</a></p>
+    <p style="font-size: 16px; font-weight: bold;"><a href="https://escomstudio.com.br/site-onward-consultoria" style="color: #F63304; text-decoration: underline;">https://escomstudio.com.br/site-onward-consultoria</a></p>
   </div>
 
   <p style="font-size: 12px; color: rgba(255,255,255,0.4); text-align: center; margin-top: 40px;">ESCOM Studio &copy; 2026 | Engenharia de Conversão &amp; Tecnologia de Prospecção</p>
@@ -975,6 +1002,18 @@ const reportHTML = `<!DOCTYPE html>
     printBackground: true,
     margin: { top: '0', right: '0', bottom: '0', left: '0' }
   });
+
+  // Também salvar na pasta public/reports para deploy e acesso público direto
+  const publicReportsDir = join(process.cwd(), 'public', 'reports');
+  mkdirSync(publicReportsDir, { recursive: true });
+  const publicPdfPath = join(publicReportsDir, 'Onward_Consultoria_Analise_Estrategica.pdf');
+  await page.pdf({
+    path: publicPdfPath,
+    format: 'A4',
+    printBackground: true,
+    margin: { top: '0', right: '0', bottom: '0', left: '0' }
+  });
+  console.log(`PDF público gerado: ${publicPdfPath}`);
 
   await browser.close();
   console.log(`PDF gerado: ${pdfPath}`);

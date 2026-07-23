@@ -361,7 +361,7 @@ JSON obrigatório com TODAS estas seções:
     primaryHex = "#d946ef"; // magenta fashion
   }
 
-  const html = await buildSiteHtml({
+  const html = await generateMandatory15SectionsHtml({
     formData: { companyName:name, niche, phone, address, website, primaryHex },
     siteData: siteData || { hero:{ headline:name, subheadline:`Excelência em ${niche}`, cta:"Solicite um Orçamento" }, about:{ title:"Sobre", text:"" }, services:[], contact:{ title:"Vamos Conversar?" } },
     reports,
@@ -1297,7 +1297,7 @@ app.post("/api/build-and-deploy-site", async (req, res) => {
     const pid = projectId || "site_" + Date.now();
     const siteSlug = slug || pid;
 
-    const html = await buildSiteHtml(payload);
+    const html = await generateMandatory15SectionsHtml(payload);
     const dir = path.join(os.tmpdir(), "dist-deployed", siteSlug);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(path.join(dir, "index.html"), html, "utf-8");
