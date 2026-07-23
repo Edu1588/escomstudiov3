@@ -18,6 +18,7 @@ export default defineConfig(({mode}) => {
           sobre: path.resolve(__dirname, 'sobre/index.html'),
           baseproposta: path.resolve(__dirname, 'baseproposta/index.html'),
           piassa: path.resolve(__dirname, 'piassa/index.html'),
+          templateciodontologia: path.resolve(__dirname, 'public/template-ci-odontologia.html'),
         },
       },
     },

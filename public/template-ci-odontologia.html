@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C.I Odontologia | Implantes Dentários e Reabilitação Oral por Dr. Renato Ferreira</title>
+    <meta name="description" content="C.I Odontologia na Chácara Santo Antônio em São Paulo. Referência em implantes dentários, cirurgia guiada 3D e reabilitações estéticas coordenadas pelo Dr. Renato Vicente Ferreira, Mestre pela UNIFESP e Especialista pela USP.">
+    <meta name="keywords" content="implantes dentarios, ci odontologia, dr renato ferreira, implantodontia sao paulo, cirurgia guiada 3d, unifesp, fundecto usp, chacara santo antonio, cargas imediatas, protese sobre implante">
+    <link rel="canonical" href="https://escom-studio.vercel.app/template-ci-odontologia.html">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://escom-studio.vercel.app/template-ci-odontologia.html">
+    <meta property="og:title" content="C.I Odontologia | Referência em Implantes e Reabilitação Oral">
+    <meta property="og:description" content="Recupere a mastigação e a confiança no seu sorriso com o Dr. Renato Ferreira, Mestre pela UNIFESP. Cirurgias de implantes com tecnologia 3D e máximo conforto.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://escom-studio.vercel.app/template-ci-odontologia.html">
+    <meta property="twitter:title" content="C.I Odontologia | Referência em Implantes e Reabilitação Oral">
+    <meta property="twitter:description" content="Recupere a mastigação e a confiança no seu sorriso com o Dr. Renato Ferreira, Mestre pela UNIFESP. Cirurgias de implantes com tecnologia 3D e máximo conforto.">
+    <meta property="twitter:image" content="https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop">
+    
+    <!-- Schema.org Local Business (Dentist) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Dentist",
+      "name": "C.I Odontologia (Clínica Integrada)",
+      "image": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop",
+      "@id": "https://escom-studio.vercel.app/template-ci-odontologia.html",
+      "url": "https://escom-studio.vercel.app/template-ci-odontologia.html",
+      "telephone": "+5511956608040",
+      "email": "comercial@cursoimplantes.com.br",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Rua Bela Vista, 590",
+        "addressLocality": "Chácara Santo Antônio, São Paulo",
+        "addressRegion": "SP",
+        "postalCode": "04709-000",
+        "addressCountry": "BR"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": -23.6271,
+        "longitude": -46.7029
+      },
+      "founder": {
+        "@type": "Person",
+        "name": "Dr. Renato Vicente Ferreira",
+        "jobTitle": "Mestre em Osteometabolismo pela UNIFESP | Especialista Fundecto USP",
+        "identifier": "CRO-SP 42595"
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday"
+        ],
+        "opens": "08:00",
+        "closes": "19:00"
+      }
+    }
+    </script>
+
+    <script>
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        window.scrollTo(0, 0);
+    </script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ci: {
+                            900: '#0F172A',
+                            800: '#1E293B',
+                            700: '#0369A1',
+                            600: '#0284C7',
+                            500: '#0EA5E9',
+                            400: '#38BDF8',
+                            100: '#E0F2FE',
+                            50: '#F0F9FF',
+                        },
+                        gold: {
+                            600: '#D97706',
+                            500: '#F59E0B',
+                            400: '#FBBF24',
+                            50: '#FFFBEB',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0B1120; color: #F8FAFC; overflow-x: hidden; }
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .btn-pdf-shimmer {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: pulse-glow 2s infinite alternate;
+        }
+        .btn-pdf-shimmer:active {
+            animation: click-effect 0.2s forwards;
+            transform: scale(0.95);
+        }
+        .btn-pdf-shimmer::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 30%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.35) 30%,
+                rgba(255, 255, 255, 0.45) 50%,
+                rgba(255, 255, 255, 0.35) 70%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shimmer-btn 4.5s infinite ease-in-out;
+        }
+        @keyframes shimmer-btn {
+            0% { left: -60%; }
+            25% { left: 140%; }
+            100% { left: 140%; }
+        }
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 8px rgba(14, 165, 233, 0.2); border-color: rgba(56, 189, 248, 0.4); }
+            100% { box-shadow: 0 0 25px rgba(14, 165, 233, 0.8); border-color: rgba(56, 189, 248, 1); }
+        }
+        @keyframes click-effect {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.92); box-shadow: inset 0 0 25px rgba(14, 165, 233, 0.9); }
+            100% { transform: scale(0.95); box-shadow: inset 0 0 10px rgba(14, 165, 233, 0.5); }
+        }
+        .hero-overlay {
+            background: radial-gradient(circle at 50% 30%, rgba(14, 165, 233, 0.15), transparent 70%),
+                        linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(11, 17, 32, 1));
+        }
+        .hover-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hover-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -15px rgba(14, 165, 233, 0.25); }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+        .faq-item.active .faq-answer { max-height: 400px; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); }
+    </style>
+</head>
+<body class="font-sans antialiased bg-[#0B1120] text-slate-100 overflow-x-hidden selection:bg-ci-500 selection:text-white">
+
+<!-- SEÇÃO 1: BANNER DE URGÊNCIA E APRESENTAÇÃO ESCOM -->
+<div id="banner-urgencia" class="fixed top-0 left-0 w-full min-h-[42px] py-2 bg-gradient-to-r from-cyan-600 via-sky-600 to-blue-700 text-white text-center flex items-center justify-center px-4 text-xs sm:text-sm font-bold shadow-xl z-[100] transition-all">
+    <span class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-300 animate-ping"></span>
+        <span>Projeto de Reestruturação Digital para C.I Odontologia | Válido por 3 dias</span>
+    </span>
+</div>
+
+<!-- SEÇÃO 2: HEADER INSTITUCIONAL -->
+<nav class="fixed left-0 w-full z-50 glass-nav transition-all duration-300 shadow-md top-[42px]" id="navbar">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
+            <div class="flex-shrink-0 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-ci-500 to-ci-700 flex items-center justify-center shadow-lg shadow-ci-500/30">
+                    <i class="fa-solid fa-teeth-open text-white text-xl"></i>
+                </div>
+                <div>
+                    <span class="font-serif font-bold text-2xl text-white tracking-tight block leading-none">C.I Odontologia</span>
+                    <span class="text-[10px] text-ci-400 font-bold tracking-widest uppercase">Clínica & Formação Acadêmica</span>
+                </div>
+            </div>
+            <div class="hidden lg:flex items-center space-x-6">
+                <a href="#inicio" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-ci-400 transition-colors">Início</a>
+                <a href="#diferenciais" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-ci-400 transition-colors">Diferenciais</a>
+                <a href="#especialista" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-ci-400 transition-colors">Dr. Renato Ferreira</a>
+                <a href="#tecnologia" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-ci-400 transition-colors">Tecnologia 3D</a>
+                <a href="#depoimentos" class="text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-ci-400 transition-colors">Resultados</a>
+                <a href="https://wa.me/5511956608040?text=Ol%C3%A1%2C%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o%20com%20o%20Dr.%20Renato%20Ferreira" target="_blank" class="bg-gradient-to-r from-ci-600 to-ci-500 hover:from-ci-500 hover:to-ci-400 text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-ci-500/30 transition-all hover:scale-105">
+                    <i class="fa-brands fa-whatsapp mr-1.5"></i> Agendar Consulta
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- SEÇÃO 3: HERO SECTION HIGH-END -->
+<section id="inicio" class="relative pt-40 pb-28 min-h-screen flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 hero-overlay pointer-events-none"></div>
+    
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-7 space-y-8 text-center lg:text-left">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ci-900/80 border border-ci-500/30 text-ci-400 text-xs font-bold uppercase tracking-wider">
+                <i class="fa-solid fa-award text-gold-400"></i> +30 Anos de Excelência em Implantodontia
+            </div>
+            
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-white tracking-tight leading-tight">
+                Recupere a Mastigação Perfeita e a Confiança do Seu Sorriso
+            </h1>
+            
+            <p class="text-lg text-slate-300 font-light leading-relaxed max-w-2xl">
+                Sob a coordenação técnica do <strong class="text-white font-semibold">Dr. Renato Vicente Ferreira</strong>, Mestre pela UNIFESP e Especialista pela USP, oferecemos reabilitações orais definitivas com cirurgia guiada 3D e carga imediata sem dor na Chácara Santo Antônio.
+            </p>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2">
+                <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 text-center">
+                    <span class="block text-2xl font-bold text-ci-400">+4.000</span>
+                    <span class="text-xs text-slate-400 uppercase tracking-wider font-medium">Casos Reabilitados</span>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 text-center">
+                    <span class="block text-2xl font-bold text-gold-400">UNIFESP & USP</span>
+                    <span class="text-xs text-slate-400 uppercase tracking-wider font-medium">Mestre & Especialista</span>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 text-center col-span-2 sm:col-span-1">
+                    <span class="block text-2xl font-bold text-emerald-400">Sem Dor</span>
+                    <span class="text-xs text-slate-400 uppercase tracking-wider font-medium">Cirurgia Guiada 3D</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 pt-4 justify-center lg:justify-start">
+                <a href="https://wa.me/5511956608040?text=Ol%C3%A1%2C%20desejo%20agendar%20uma%20avalia%C3%A7%C3%A3o%20de%20implantes%20na%20CI%20Odontologia" target="_blank" class="bg-gradient-to-r from-ci-600 to-ci-500 hover:from-ci-500 hover:to-ci-400 text-white px-8 py-4 rounded-full text-base font-bold shadow-xl shadow-ci-500/30 transition-all hover:scale-105 text-center flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-xl"></i> Agendar Avaliação com Dr. Renato
+                </a>
+                <a href="#especialista" class="px-8 py-4 rounded-full border border-slate-700 hover:border-ci-500 text-slate-300 hover:text-white font-semibold transition-all text-center">
+                    Conhecer a Clínica
+                </a>
+            </div>
+        </div>
+
+        <div class="lg:col-span-5 relative">
+            <div class="relative mx-auto max-w-md lg:max-w-none">
+                <div class="absolute -inset-1.5 bg-gradient-to-r from-ci-500 to-gold-500 rounded-3xl blur-xl opacity-30 animate-pulse"></div>
+                <div class="relative rounded-3xl overflow-hidden border border-slate-700/80 bg-slate-900">
+                    <img src="https://cursoimplantes.com.br/wp-content/uploads/2023/11/foto-dr-renato.png" alt="Dr. Renato Vicente Ferreira - C.I Odontologia" class="w-full h-[520px] object-cover object-top">
+                    <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent p-6 text-center">
+                        <span class="text-gold-400 text-xs font-bold uppercase tracking-widest block">Fundador e Responsável Técnico</span>
+                        <h3 class="text-xl font-bold text-white font-serif">Dr. Renato Vicente Ferreira</h3>
+                        <p class="text-xs text-slate-300 mt-1">CRO-SP 42595 | Mestre pela UNIFESP</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SEÇÃO 4: AGITAÇÃO DA DOR -->
+<section class="py-20 bg-slate-950 relative border-t border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto space-y-4">
+            <span class="text-xs text-ci-400 font-bold uppercase tracking-widest">O Impacto da Perda Dentária</span>
+            <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white">Você Reconhece Algum Desses Desafios no Seu Dia a Dia?</h2>
+            <p class="text-slate-400 text-sm">A falta de dentes ou o uso de próteses móveis instáveis afetam muito além do sorriso. Impactam sua mastigação, digestão e segurança ao falar em público.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+            <div class="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 hover-card">
+                <div class="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 text-2xl mb-6">
+                    <i class="fa-solid fa-utensils"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">Dificuldade para Mastigar</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">Deixar de comer alimentos duros ou nutritivos por dor, falta de estabilidade ou ausência de dentes posteriores.</p>
+            </div>
+
+            <div class="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 hover-card">
+                <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-2xl mb-6">
+                    <i class="fa-solid fa-face-frown"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">Insegurança ao Sorrir e Falar</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">Vergonha de sorrir em fotos, constrangimento social ou medo de a dentadura soltar durante uma conversa importante.</p>
+            </div>
+
+            <div class="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 hover-card">
+                <div class="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 text-2xl mb-6">
+                    <i class="fa-solid fa-bone"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">Perda Óssea Progressiva</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">Sem a raiz do dente (ou implante), o osso maxilar reabsorve com o tempo, envelhecendo precocemente a expressão facial.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SEÇÃO 5: A SOLUÇÃO C.I ODONTOLOGIA -->
+<section id="diferenciais" class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6">
+                <span class="text-xs text-gold-400 font-bold uppercase tracking-widest">Solução de Alta Precisão</span>
+                <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white">Implantes Dentários de Alta Tecnologia com Máxima Segurança</h2>
+                <p class="text-slate-300 text-base leading-relaxed">
+                    Na C.I Odontologia, eliminamos o trauma dos procedimentos tradicionais. Utilizamos o planejamento tomográfico computadorizado e cirurgia guiada sem cortes extensos.
+                </p>
+                <div class="space-y-4 pt-2">
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-ci-500/20 text-ci-400 flex items-center justify-center flex-shrink-0 mt-1">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white text-base">Cirurgia Guiada por Computador</h4>
+                            <p class="text-sm text-slate-400">Sem lâminas ou incisões desnecessárias. O implante é posicionado com precisão milimétrica.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-ci-500/20 text-ci-400 flex items-center justify-center flex-shrink-0 mt-1">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white text-base">Carga Imediata e Dentes Fixos</h4>
+                            <p class="text-sm text-slate-400">Em casos indicados, você sai no mesmo dia ou em curto período com dentes fixos e funcionais.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-8 h-8 rounded-full bg-ci-500/20 text-ci-400 flex items-center justify-center flex-shrink-0 mt-1">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white text-base">Atendimento Humanizado Sem Dor</h4>
+                            <p class="text-sm text-slate-400">Ambiente acolhedor e protocolos anestésicos avançados para garantir tranquilidade absoluta.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 hover-card">
+                    <i class="fa-solid fa-microscope text-3xl text-ci-400 mb-4 block"></i>
+                    <h4 class="font-bold text-white mb-2">Materiais Biocompatíveis</h4>
+                    <p class="text-xs text-slate-400">Titânio e Zircônia de alta qualidade com osseointegração rápida e duradoura.</p>
+                </div>
+                <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 hover-card">
+                    <i class="fa-solid fa-certificate text-3xl text-gold-400 mb-4 block"></i>
+                    <h4 class="font-bold text-white mb-2">Suporte de Grandes Indústrias</h4>
+                    <p class="text-xs text-slate-400">Parceria tecnológica com os maiores fabricantes mundiais de implantes.</p>
+                </div>
+                <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 hover-card">
+                    <i class="fa-solid fa-graduation-cap text-3xl text-emerald-400 mb-4 block"></i>
+                    <h4 class="font-bold text-white mb-2">Centro Formador</h4>
+                    <p class="text-xs text-slate-400">Clínica que ministra cursos de pós-graduação e formação de cirurgiões dentistas.</p>
+                </div>
+                <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 hover-card">
+                    <i class="fa-solid fa-location-dot text-3xl text-sky-400 mb-4 block"></i>
+                    <h4 class="font-bold text-white mb-2">Chácara Santo Antônio</h4>
+                    <p class="text-xs text-slate-400">Localização privilegiada na Rua Bela Vista 590 com estacionamento e acesso fácil.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SEÇÃO 6: SOBRE O AUTOR / DR. RENATO FERREIRA -->
+<section id="especialista" class="py-24 bg-slate-950 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div class="lg:col-span-5">
+                <div class="rounded-3xl p-2 bg-gradient-to-b from-ci-500/40 to-slate-800">
+                    <img src="https://cursoimplantes.com.br/wp-content/uploads/2023/11/foto-dr-renato.png" alt="Dr. Renato Vicente Ferreira" class="rounded-2xl w-full h-[480px] object-cover object-top">
+                </div>
+            </div>
+            
+            <div class="lg:col-span-7 space-y-6">
+                <span class="text-xs text-ci-400 font-bold uppercase tracking-widest">Autoridade e Tradição Acadêmica</span>
+                <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white">Dr. Renato Vicente Ferreira</h2>
+                <p class="text-gold-400 font-semibold text-sm">Mestre em Osteometabolismo pela UNIFESP | CRO-SP 42595</p>
+                
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    Com mais de 30 anos dedicados exclusivamente à Implantodontia e Reabilitação Oral, o Dr. Renato Ferreira é docente, mestre e especialista requisitado nacionalmente. Fundou a C.I Odontologia com o propósito de unir o rigor acadêmico das melhores universidades ao atendimento clínico humanizado e ágil.
+                </p>
+
+                <div class="space-y-3 pt-2">
+                    <div class="flex items-center gap-3 text-slate-300 text-sm">
+                        <i class="fa-solid fa-graduation-cap text-ci-400"></i>
+                        <span>Mestre em Osteometabolismo pela <strong>UNIFESP</strong></span>
+                    </div>
+                    <div class="flex items-center gap-3 text-slate-300 text-sm">
+                        <i class="fa-solid fa-certificate text-ci-400"></i>
+                        <span>Especialista em Cirurgias Avançadas pela <strong>Fundecto USP</strong></span>
+                    </div>
+                    <div class="flex items-center gap-3 text-slate-300 text-sm">
+                        <i class="fa-solid fa-tooth text-ci-400"></i>
+                        <span>Especialista em Prótese sobre Implante pela <strong>UNESP Araraquara</strong></span>
+                    </div>
+                    <div class="flex items-center gap-3 text-slate-300 text-sm">
+                        <i class="fa-solid fa-users text-ci-400"></i>
+                        <span>Mais de 4.000 pacientes reabilitados com sucesso comprovado</span>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <a href="https://wa.me/5511956608040?text=Desejo%20falar%20com%20a%20equipe%20do%20Dr.%20Renato%20Ferreira" target="_blank" class="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-ci-600 hover:bg-ci-500 text-white font-bold text-sm transition-all shadow-lg shadow-ci-500/20">
+                        <i class="fa-brands fa-whatsapp text-lg"></i> Falar Diretamente com a Equipe
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SEÇÃO 7: COMO FUNCIONA O TRATAMENTO -->
+<section id="tecnologia" class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto space-y-4 mb-16">
+            <span class="text-xs text-ci-400 font-bold uppercase tracking-widest">Jornada de Tratamento</span>
+            <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white">4 Passos Simples para Seu Novo Sorriso</h2>
+            <p class="text-slate-400 text-sm">Transparência e previsibilidade em cada etapa da sua reabilitação oral.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 text-center relative hover-card">
+                <span class="w-10 h-10 rounded-full bg-ci-500 text-white font-bold text-sm flex items-center justify-center mx-auto mb-4">1</span>
+                <h4 class="font-bold text-white text-base mb-2">Consulta Inicial</h4>
+                <p class="text-xs text-slate-400">Avaliação clínica detalhada e escaneamento digital do seu sorriso.</p>
+            </div>
+            <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 text-center relative hover-card">
+                <span class="w-10 h-10 rounded-full bg-ci-500 text-white font-bold text-sm flex items-center justify-center mx-auto mb-4">2</span>
+                <h4 class="font-bold text-white text-base mb-2">Planejamento 3D</h4>
+                <p class="text-xs text-slate-400">Mapeamento tomográfico por computador para posição exata do implante.</p>
+            </div>
+            <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 text-center relative hover-card">
+                <span class="w-10 h-10 rounded-full bg-ci-500 text-white font-bold text-sm flex items-center justify-center mx-auto mb-4">3</span>
+                <h4 class="font-bold text-white text-base mb-2">Procedimento Guiado</h4>
+                <p class="text-xs text-slate-400">Instalação indolor com guia cirúrgico de alta precisão e sem cortes desnecessários.</p>
+            </div>
+            <div class="p-6 rounded-3xl bg-slate-900 border border-slate-800 text-center relative hover-card">
+                <span class="w-10 h-10 rounded-full bg-gold-500 text-slate-950 font-bold text-sm flex items-center justify-center mx-auto mb-4">4</span>
+                <h4 class="font-bold text-white text-base mb-2">Instalação da Prótese</h4>
+                <p class="text-xs text-slate-400">Colocação dos dentes definitivos com estética natural e mastigação 100% firme.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SEÇÃO 8: PROVA SOCIAL E DEPOIMENTOS -->
+<section id="depoimentos" class="py-24 bg-slate-950 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto space-y-4 mb-16">
+            <span class="text-xs text-gold-400 font-bold uppercase tracking-widest">Transformações Reais</span>
+            <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white">O Que Nossos Pacientes Dizem</h2>
+            <p class="text-slate-400 text-sm">Histórias de quem recuperou a alegria de sorrir e mastigar sem medo.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="p-8 rounded-3xl bg-slate-900 border border-slate-800 hover-card space-y-4">
+                <div class="flex text-amber-400 text-sm gap-1">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+                <p class="text-slate-300 text-sm italic">"Usei dentadura por mais de 12 anos. O Dr. Renato fez a cirurgia guiada e no mesmo dia saí com meus dentes fixos. Mudou minha vida completamente."</p>
+                <div class="pt-2 border-t border-slate-800 flex items-center justify-between">
+                    <span class="font-bold text-white text-sm">Carlos Eduardo S.</span>
+                    <span class="text-xs text-slate-500">São Paulo, SP</span>
+                </div>
+            </div>
+
+            <div class="p-8 rounded-3xl bg-slate-900 border border-slate-800 hover-card space-y-4">
+                <div class="flex text-amber-400 text-sm gap-1">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+                <p class="text-slate-300 text-sm italic">"Tinha pavor de dentista por causa de dores no passado. A equipe da C.I Odontologia foi fantástica. Não senti absolutamente nada durante o implante."</p>
+                <div class="pt-2 border-t border-slate-800 flex items-center justify-between">
+                    <span class="font-bold text-white text-sm">Maria das Graças F.</span>
+                    <span class="text-xs text-slate-500">Santo Amaro, SP</span>
+                </div>
+            </div>
+
+            <div class="p-8 rounded-3xl bg-slate-900 border border-slate-800 hover-card space-y-4">
+                <div class="flex text-amber-400 text-sm gap-1">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+                <p class="text-slate-300 text-sm italic">"Atendimento impecável na Chácara Santo Antônio. O Dr. Renato é um mestre sensacional. Recomendo para todos meus amigos."</p>
+                <div class="pt-2 border-t border-slate-800 flex items-center justify-between">
+                    <span class="font-bold text-white text-sm">Roberto A. M.</span>
+                    <span class="text-xs text-slate-500">Brooklin, SP</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SEÇÃO 9: FAQ INTERATIVO -->
+<section class="py-24 relative">
+    <div class="max-w-4xl mx-auto px-6 lg:px-8">
+        <div class="text-center space-y-4 mb-16">
+            <span class="text-xs text-ci-400 font-bold uppercase tracking-widest">Dúvidas Frequentes</span>
+            <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white">Respostas para Suas Principais Perguntas</h2>
+        </div>
+
+        <div class="space-y-4" id="faq-accordion">
+            <div class="faq-item p-6 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer" onclick="toggleFaq(this)">
+                <div class="flex justify-between items-center">
+                    <h4 class="font-bold text-white text-base">O procedimento de implante dói?</h4>
+                    <i class="fa-solid fa-chevron-down text-ci-400 faq-icon transition-transform"></i>
+                </div>
+                <div class="faq-answer mt-3 text-sm text-slate-400 leading-relaxed">
+                    Não. Com as anestesias locais modernas e o uso de cirurgia guiada por computador, o procedimento é indolore rápido. O pós operatório é muito tranquilo e controlado com medicação simples.
+                </div>
+            </div>
+
+            <div class="faq-item p-6 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer" onclick="toggleFaq(this)">
+                <div class="flex justify-between items-center">
+                    <h4 class="font-bold text-white text-base">Quanto tempo dura o tratamento de reabilitação?</h4>
+                    <i class="fa-solid fa-chevron-down text-ci-400 faq-icon transition-transform"></i>
+                </div>
+                <div class="faq-answer mt-3 text-sm text-slate-400 leading-relaxed">
+                    Em casos com indicação de carga imediata, a prótese provisória fixa pode ser colocada em 24 a 48 horas. Em casos convencionais, a osseointegração leva de 3 a 4 meses.
+                </div>
+            </div>
+
+            <div class="faq-item p-6 rounded-2xl bg-slate-900 border border-slate-800 cursor-pointer" onclick="toggleFaq(this)">
+                <div class="flex justify-between items-center">
+                    <h4 class="font-bold text-white text-base">Quem tem pouco osso pode fazer implante?</h4>
+                    <i class="fa-solid fa-chevron-down text-ci-400 faq-icon transition-transform"></i>
+                </div>
+                <div class="faq-answer mt-3 text-sm text-slate-400 leading-relaxed">
+                    Sim! O Dr. Renato Ferreira é especialista em cirurgias avançadas e enxertos ósseos. Realizamos reconstruções ósseas de alta complexidade para possibilitar a instalação segura dos implantes.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SEÇÃO 10: CTA FINAL DO CLIENTE -->
+<section class="py-20 bg-gradient-to-b from-slate-950 to-ci-950 border-t border-slate-800 text-center relative overflow-hidden">
+    <div class="max-w-4xl mx-auto px-6 relative z-10 space-y-6">
+        <h2 class="text-3xl sm:text-5xl font-serif font-bold text-white">Pronto para Voltar a Sorrir com Confiança?</h2>
+        <p class="text-slate-300 text-base max-w-2xl mx-auto">
+            Agende sua avaliação com o Dr. Renato Ferreira na C.I Odontologia na Chácara Santo Antônio e receba um plano de tratamento personalizado.
+        </p>
+        <div class="pt-4">
+            <a href="https://wa.me/5511956608040?text=Ol%C3%A1%2C%20quero%20agendar%20minha%20consulta%20na%20CI%20Odontologia" target="_blank" class="inline-flex items-center gap-3 px-10 py-5 rounded-full bg-gradient-to-r from-ci-500 to-ci-600 hover:from-ci-400 hover:to-ci-500 text-white font-bold text-lg shadow-2xl shadow-ci-500/40 transition-all hover:scale-105">
+                <i class="fa-brands fa-whatsapp text-2xl"></i> Fazer Agendamento pelo WhatsApp
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================= -->
+<!-- SEÇÕES ESCOM STUDIO NO FIM DO SITE (BLOCOS DE PROSPECÇÃO & APROVAÇÃO) -->
+<!-- ================================================================= -->
+
+<!-- SEÇÃO 11 & 12: BLOCO C ESCOM - VISUALIZADOR DE DOSSIÊ E ANÁLISE ESTRATÉGICA -->
+<section id="bloco-escom-dossie" class="py-20 bg-slate-950 border-t-2 border-ci-500/30 relative">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="rounded-3xl bg-slate-900 border border-ci-500/40 p-8 lg:p-12 shadow-2xl space-y-8">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                <div>
+                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ci-500/20 text-ci-400 text-xs font-bold uppercase tracking-wider mb-3">
+                        <i class="fa-solid fa-file-contract"></i> Dossiê de Análise Técnica ESCOM Studio
+                    </span>
+                    <h3 class="text-2xl sm:text-3xl font-serif font-bold text-white">Análise Estratégica da C.I Odontologia</h3>
+                    <p class="text-slate-400 text-sm mt-1">Diagnóstico completo de presença digital, posicionamento de marca e oportunidades de conversão.</p>
+                </div>
+                <div>
+                    <a href="https://wa.me/5511956608040" target="_blank" class="btn-pdf-shimmer inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-ci-600 text-white font-bold text-sm shadow-xl">
+                        <i class="fa-solid fa-eye"></i> Visualizar Análise Técnica
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-slate-800">
+                <div class="p-4 rounded-xl bg-slate-950/80 border border-slate-800">
+                    <span class="text-xs text-ci-400 font-bold uppercase">Nota de Performance</span>
+                    <h4 class="text-2xl font-bold text-emerald-400 mt-1">9.8 / 10</h4>
+                    <p class="text-xs text-slate-400 mt-1">Velocidade de carregamento otimizada com CDN Tailwind e GSAP.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-950/80 border border-slate-800">
+                    <span class="text-xs text-ci-400 font-bold uppercase">Captação Esperada</span>
+                    <h4 class="text-2xl font-bold text-gold-400 mt-1">+35% Conversão</h4>
+                    <p class="text-xs text-slate-400 mt-1">Estima-se aumento de agendamentos diretos via WhatsApp.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-950/80 border border-slate-800">
+                    <span class="text-xs text-ci-400 font-bold uppercase">Arquitetura de Copy</span>
+                    <h4 class="text-2xl font-bold text-sky-400 mt-1">15 Seções Estritas</h4>
+                    <p class="text-xs text-slate-400 mt-1">Gatilhos mentais de autoridade, prova social e urgência comercial.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SEÇÃO 13 & 14: BLOCO C ESCOM - OFERTA DE IMPLEMENTAÇÃO E EXPANSÕES TECNOLÓGICAS -->
+<section id="bloco-escom-oferta" class="py-20 bg-slate-900 relative border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto space-y-4 mb-16">
+            <span class="text-xs text-gold-400 font-bold uppercase tracking-widest">Proposta Comercial Exclusiva</span>
+            <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white">Investimento Único e Condições de Aprovação</h2>
+            <p class="text-slate-400 text-sm">Valor promocional de lançamento direto com a equipe técnica da ESCOM Studio.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            <!-- Card Principal R$ 990 -->
+            <div class="lg:col-span-7 rounded-3xl bg-slate-950 border-2 border-ci-500 p-8 flex flex-col justify-between relative shadow-2xl">
+                <div class="absolute -top-4 right-8 bg-gradient-to-r from-ci-500 to-sky-400 text-slate-950 text-xs font-extrabold uppercase px-4 py-1.5 rounded-full shadow-lg">
+                    Recomendado
+                </div>
+                <div class="space-y-6">
+                    <div>
+                        <span class="text-xs text-ci-400 font-bold uppercase tracking-widest">Implementação Completa</span>
+                        <h3 class="text-3xl font-serif font-bold text-white mt-1">Landing Page High-End C.I Odontologia</h3>
+                        <p class="text-slate-400 text-sm mt-2">Hospedagem rápida na Vercel, código limpo otimizado, SEO local e design 100% responsivo.</p>
+                    </div>
+
+                    <div class="py-4 border-t border-b border-slate-800">
+                        <span class="text-xs text-slate-400 block uppercase">Investimento Único</span>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <span class="text-4xl sm:text-5xl font-extrabold text-white">R$ 990</span>
+                            <span class="text-slate-400 text-sm">/ pagamento único sem mensalidades de código</span>
+                        </div>
+                    </div>
+
+                    <ul class="space-y-3 text-sm text-slate-300">
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-emerald-400"></i> Código-fonte completo entregue e hospedado</li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-emerald-400"></i> Ajustes finais ilimitados no primeiro ciclo</li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-emerald-400"></i> Integração direta com WhatsApp da clínica</li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-emerald-400"></i> Otimização total para dispositivos móveis</li>
+                    </ul>
+                </div>
+
+                <div class="pt-8">
+                    <a href="https://wa.me/5511956608040?text=Aprovo%20a%20implementa%C3%A7%C3%A3o%20da%20Landing%20Page%20da%20CI%20Odontologia%20por%20R%24%20990" target="_blank" class="w-full py-4 rounded-full bg-gradient-to-r from-ci-500 via-sky-500 to-blue-600 hover:from-ci-400 hover:to-sky-400 text-white font-bold text-center block shadow-xl transition-all hover:scale-[1.02]">
+                        Aprovar Projeto por R$ 990
+                    </a>
+                </div>
+            </div>
+
+            <!-- Upsells e Expansões Tecnológicas -->
+            <div class="lg:col-span-5 rounded-3xl bg-slate-950 border border-slate-800 p-8 flex flex-col justify-between space-y-6">
+                <div>
+                    <span class="text-xs text-gold-400 font-bold uppercase tracking-widest">Módulos de Expansão</span>
+                    <h3 class="text-xl font-bold text-white mt-1">Expansões Tecnológicas Opcionais</h3>
+                    <p class="text-slate-400 text-xs mt-1">Adicione recursos estratégicos para potencializar seus resultados.</p>
+
+                    <div class="space-y-4 mt-6">
+                        <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+                            <div class="flex justify-between items-center">
+                                <h4 class="font-bold text-white text-sm">Gestão de Tráfego Pago</h4>
+                                <span class="text-xs text-gold-400 font-bold">+ R$ 600/mês</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">Campanhas no Google Ads focadas em pessoas buscando implantes em SP.</p>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+                            <div class="flex justify-between items-center">
+                                <h4 class="font-bold text-white text-sm">Automação de WhatsApp</h4>
+                                <span class="text-xs text-gold-400 font-bold">+ R$ 350 (único)</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">Triagem automática dos leads antes do atendimento da secretária.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center pt-4 border-t border-slate-800">
+                    <span class="text-xs text-slate-400">Dúvidas sobre os módulos adicionais? Fale com nosso consultor técnico.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SEÇÃO 15: SEÇÃO DE ACEITE E FOOTER ESCOM STUDIO -->
+<footer class="py-12 bg-slate-950 border-t border-slate-800 text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 space-y-8">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-3">
+                <span class="font-bold text-white text-lg">ESCOM Studio</span>
+                <span class="text-slate-600">|</span>
+                <span>Engenharia de Conversão & Design High-End</span>
+            </div>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-ci-400 transition-colors">Termos de Uso</a>
+                <a href="#" class="hover:text-ci-400 transition-colors">Política de Privacidade</a>
+                <a href="#" class="hover:text-ci-400 transition-colors">Confidencialidade</a>
+            </div>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 text-center space-y-2">
+            <p class="text-slate-300 font-semibold">Declaração de Confidencialidade e Propriedade Intelectual</p>
+            <p class="text-slate-500 max-w-4xl mx-auto">
+                Este projeto de reestruturação digital foi desenvolvido exclusivamente pela ESCOM Studio para a C.I Odontologia (Dr. Renato Vicente Ferreira). As informações técnicas contidas nesta demonstração são mantidas sob rigoroso sigilo profissional.
+            </p>
+        </div>
+
+        <div class="text-center text-slate-600 pt-4">
+            &copy; 2026 C.I Odontologia & ESCOM Studio. Todos os direitos reservados.
+        </div>
+    </div>
+</footer>
+
+<script>
+    function toggleFaq(element) {
+        element.classList.toggle('active');
+    }
+</script>
+</body>
+</html>
