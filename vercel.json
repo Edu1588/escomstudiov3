@@ -13,6 +13,7 @@
     { "source": "/portfolioedu", "destination": "/portfolioedu/index.html" },
     { "source": "/portfolio-projetos", "destination": "/portfolio-projetos/index.html" },
     { "source": "/piassa(.*)", "destination": "/piassa/index.html" },
+    { "source": "/template-ci-odontologia", "destination": "/template-ci-odontologia/index.html" },
     { "source": "/site-onward-consultoria", "destination": "/site-onward-consultoria.html" },
     { "source": "/site-onward-consultoria/analise", "destination": "/site-onward-consultoria/analise.html" },
     { "source": "/site-onward-consultoria/analise.pdf", "destination": "/site-onward-consultoria/analise.html" },

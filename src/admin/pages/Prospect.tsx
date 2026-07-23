@@ -3,868 +3,441 @@ import { Header } from "../components/Header";
 import { 
   Search, ArrowRight, LayoutDashboard, UserCheck, Briefcase, Clock, 
   Loader2, Download, Globe, Mail, Phone, MessageSquare, Bookmark, 
-  ChevronRight, Building2, Send, Copy, Trash2, FileText, Terminal
+  ChevronRight, ChevronLeft, Building2, Send, Copy, Trash2, FileText, 
+  Terminal, Sparkles, X, Check, Calendar, DollarSign, HelpCircle, FileCheck
 } from "lucide-react";
 import { db } from "../../lib/firebase";
-import { collection, addDoc, serverTimestamp, getDocs, deleteDoc, doc, query, orderBy, updateDoc } from "firebase/firestore";
-import { toJpeg } from 'html-to-image';
-import { jsPDF } from "jspdf";
-
-enum OperationType {
-  CREATE = 'create',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  LIST = 'list',
-  GET = 'get',
-  WRITE = 'write',
-}
-
-interface FirestoreErrorInfo {
-  error: string;
-  operationType: OperationType;
-  path: string | null;
-  authInfo: any;
-}
-
-function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
-  const errInfo: FirestoreErrorInfo = {
-    error: error instanceof Error ? error.message : String(error),
-    authInfo: null,
-    operationType,
-    path
-  };
-  console.warn('Firestore Error: ', JSON.stringify(errInfo));
-  // Not throwing to avoid crashing the app when user has no permissions yet
-}
+import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, query, orderBy } from "firebase/firestore";
 
 export default function Prospect() {
-  const [activeTab, setActiveTab] = useState("UX ANALYZER");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterTag, setFilterTag] = useState("Todos");
   
-  // States specific to tabs
-  const [uxState, setUxState] = useState<"idle" | "loading" | "results">("idle");
-  const [uxActiveInnerTab, setUxActiveInnerTab] = useState("RESUMO EXECUTIVO");
-  const [uxInput, setUxInput] = useState("");
-  const [uxResults, setUxResults] = useState<any>(null);
-  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
-  const [uxStreamProgress, setUxStreamProgress] = useState(0);
+  // Lista de leads no CRM
+  const [crmLeads, setCrmLeads] = useState<any[]>([
+    {
+      id: "crm-1",
+      indexNum: 21,
+      nome: "CI Odontologia",
+      categoria: "Clínicas Odontológicas (Foco em Implantes e Lentes de Contato)",
+      cidade: "São Paulo, SP",
+      endereco: "R. Bela Vista, 590 - Chácara Santo Antônio, São Paulo - SP, 04709-001",
+      telefone: "(11) 95660-8040",
+      rating: 4.9,
+      reviewsCount: 58,
+      temSite: true,
+      temp: "Frio",
+      etapa: "Base",
+      siteUrl: "https://cursoimplantes.com.br",
+      generatedSiteUrl: "https://escom-studio.vercel.app/template-ci-odontologia/index.html"
+    },
+    {
+      id: "crm-2",
+      indexNum: 20,
+      nome: "YOKOTA & XAVIER, Dentista Zona Leste SP, Clinica Vila Matilde, Especialista, Melhor: Implante Dentario Canal BucoMaxilo Siso",
+      categoria: "Clínicas Odontológicas (Foco em Implantes e Lentes de Contato)",
+      cidade: "São Paulo, SP",
+      endereco: "Rua Demétrio Ribeiro, 1000 - Tatuapé, São Paulo - SP",
+      telefone: "(11) 98765-4321",
+      rating: 4.8,
+      reviewsCount: 120,
+      temSite: true,
+      temp: "Frio",
+      etapa: "Base",
+      siteUrl: "",
+      generatedSiteUrl: ""
+    }
+  ]);
 
-  const [leadState, setLeadState] = useState<"idle" | "loading" | "results">("idle");
-  const [leadInput, setLeadInput] = useState("");
-  const [leadResults, setLeadResults] = useState<any[]>([]);
-  const [leadGeneratingTextId, setLeadGeneratingTextId] = useState<number | null>(null);
-
-  const [jobState, setJobState] = useState<"idle" | "loading" | "results">("idle");
-  const [jobResults, setJobResults] = useState<any[]>([]);
-  const [jobCategory, setJobCategory] = useState<"design" | "ai">("design");
-
-  const [historyTab, setHistoryTab] = useState("LEADS");
-  const [savedLeads, setSavedLeads] = useState<any[]>([]);
-  const [savedJobs, setSavedJobs] = useState<any[]>([]);
-  const [historyLoading, setHistoryLoading] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<any | null>(null);
+  const [activeModalTab, setActiveModalTab] = useState<"Informações" | "Scripts" | "Objeções" | "Site" | "Venda" | "Agendar">("Informações");
+  const [isGeneratingSite, setIsGeneratingSite] = useState(false);
 
   useEffect(() => {
-    if (activeTab === "HISTÓRICO") {
-      loadHistory();
-    }
-  }, [activeTab]);
+    fetchCrmLeads();
+  }, []);
 
-  const loadHistory = async () => {
-    setHistoryLoading(true);
+  const fetchCrmLeads = async () => {
     try {
-      const leadsSnap = await getDocs(query(collection(db, "leads"), orderBy("createdAt", "desc")));
-      setSavedLeads(leadsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
-      
-      const jobsSnap = await getDocs(query(collection(db, "jobs"), orderBy("createdAt", "desc")));
-      setSavedJobs(jobsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
-    } catch (error) {
-       handleFirestoreError(error, OperationType.GET, "leads/jobs");
-    } finally {
-      setHistoryLoading(false);
-    }
-  };
-
-  const handleSaveLead = async (lead: any) => {
-    try {
-      await addDoc(collection(db, "leads"), {
-        ...lead,
-        createdAt: serverTimestamp()
-      });
-      alert('Lead salvo no histórico!');
-    } catch (error) {
-      alert('Erro ao salvar lead.');
-      handleFirestoreError(error, OperationType.CREATE, "leads");
-    }
-  };
-
-  const handleDeleteLead = async (id: string) => {
-    try {
-      await deleteDoc(doc(db, "leads", id));
-      setSavedLeads(savedLeads.filter(l => l.id !== id));
-    } catch (error) {
-      handleFirestoreError(error, OperationType.DELETE, "leads");
-    }
-  };
-
-  const handleSaveJob = async (job: any) => {
-    try {
-      await addDoc(collection(db, "jobs"), {
-        ...job,
-        status: 'Pendente',
-        createdAt: serverTimestamp()
-      });
-      alert('Vaga salva no histórico!');
-    } catch (error) {
-      alert('Erro ao salvar vaga.');
-      handleFirestoreError(error, OperationType.CREATE, "jobs");
-    }
-  };
-
-  const handleUpdateJobStatus = async (id: string, newStatus: string) => {
-    try {
-      await updateDoc(doc(db, "jobs", id), { status: newStatus });
-      setSavedJobs(savedJobs.map(j => j.id === id ? { ...j, status: newStatus } : j));
-    } catch (error) {
-      handleFirestoreError(error, OperationType.UPDATE, "jobs");
-    }
-  };
-
-  const handleDeleteJob = async (id: string) => {
-    try {
-      await deleteDoc(doc(db, "jobs", id));
-      setSavedJobs(savedJobs.filter(j => j.id !== id));
-    } catch (error) {
-       handleFirestoreError(error, OperationType.DELETE, "jobs");
-    }
-  };
-
-  const tabs = [
-    { id: "UX ANALYZER", icon: <LayoutDashboard size={18} /> },
-    { id: "LEAD FINDER", icon: <UserCheck size={18} /> },
-    { id: "JOB FINDER", icon: <Briefcase size={18} /> },
-    { id: "HISTÓRICO", icon: <Clock size={18} /> },
-  ];
-
-  const handleUxAudit = async () => {
-    if (!uxInput) return;
-    setUxState("loading");
-    setUxStreamProgress(0);
-
-    try {
-      const res = await fetch("/api/analyze-ux", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: uxInput })
-      });
-
-      let accumulated = '';
-      if (res.body) {
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          accumulated += decoder.decode(value, { stream: true });
-          setUxStreamProgress(prev => prev + value.length);
+      const res = await fetch("/api/leads");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.leads && data.leads.length > 0) {
+          setCrmLeads(data.leads);
         }
-      } else {
-        accumulated = await res.text();
-      }
-
-      let json: any = {};
-      try { json = JSON.parse(accumulated); } catch { throw new Error("Backend indisponível."); }
-      if (json && json.issues) {
-        const normalizeTabName = (tab: string) => {
-          if (!tab) return "IDENTIDADE VISUAL E UI";
-          const upper = tab.toUpperCase().trim();
-          if (upper.includes("VIES") || upper.includes("PSICOL")) return "VIESES COGNITIVOS E PSICOLOGIA";
-          if (upper.includes("ARQUIT") || upper.includes("INFORMA")) return "ARQUITETURA DA INFORMAÇÃO";
-          if (upper.includes("ACESSI") || upper.includes("INCLU")) return "ACESSIBILIDADE E INCLUSÃO";
-          if (upper.includes("HEUR") || upper.includes("NIELS")) return "HEURÍSTICAS DE NIELSEN";
-          return "IDENTIDADE VISUAL E UI";
-        };
-        const normalizedIssues = json.issues?.map((i: any) => ({
-          ...i,
-          tab: normalizeTabName(i.tab)
-        })) || [];
-        setUxResults({
-          ...json,
-          issues: normalizedIssues
-        });
-      } else {
-        alert(json.error || "Erro ao analisar");
-      }
-    } catch(err) {
-      console.error(err);
-      alert("Erro na conexão");
-    } finally {
-      setUxState("results");
-    }
-  };
-
-  const handleDownloadPdf = async () => {
-    setIsDownloadingPdf(true);
-    try {
-      const element = document.getElementById("ux-report-container");
-      if (element) {
-        // Temporarily modify element to allow capture if it's placed off-screen
-        element.classList.add('pdf-exporting');
-        
-        // Ensure all tabs are visible for the PDF
-        const originalTab = uxActiveInnerTab;
-        
-        await new Promise(resolve => setTimeout(resolve, 200));
-
-        const filter = (node: HTMLElement) => {
-          return node.getAttribute ? node.getAttribute('data-html2canvas-ignore') !== 'true' : true;
-        };
-
-        const imgData = await toJpeg(element, { 
-          pixelRatio: 2, 
-          backgroundColor: '#0a0a0a',
-          filter: filter
-        });
-        
-        const width = element.offsetWidth;
-        const height = element.offsetHeight;
-
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'px',
-          format: [width, height]
-        });
-        
-        pdf.addImage(imgData, 'JPEG', 0, 0, width, height);
-        pdf.save(`auditoria-ux.pdf`);
-        
-        element.classList.remove('pdf-exporting');
-      }
-    } catch (err: any) {
-      console.error(err);
-      alert('Erro ao exportar PDF: ' + err.message);
-    }
-    setIsDownloadingPdf(false);
-  };
-
-
-  const handleLeadSearch = async () => {
-    if (!leadInput) return;
-    setLeadState("loading");
-    try {
-      const res = await fetch("/api/find-leads", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ niche: leadInput })
-      });
-      const rawText = await res.text(); let json: any = {}; try { json = JSON.parse(rawText); } catch { throw new Error("Backend indisponível."); }
-      if (json.success) {
-        setLeadResults(json.data);
-      } else {
-        alert(json.error || "Erro ao buscar leads");
       }
     } catch (err) {
-      console.error(err);
-      alert("Erro na conexão");
-    } finally {
-      setLeadState("results");
+      console.warn("Erro ao buscar leads do Firebase", err);
     }
   };
 
-  const handleGenerateProspectText = async (index: number, siteInfo: any) => {
-    setLeadGeneratingTextId(index);
-    try {
-      const res = await fetch("/api/generate-prospect-text", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ siteInfo })
-      });
-      const rawText = await res.text(); let json: any = {}; try { json = JSON.parse(rawText); } catch { throw new Error("Backend indisponível."); }
-      if (json.success && json.data) {
-        const newLeads = [...leadResults];
-        newLeads[index].generatedText = json.data;
-        setLeadResults(newLeads);
-      } else {
-        alert(json.error || "Erro ao gerar prospecção");
-      }
-    } catch(err) {
-      console.error(err);
-      alert("Erro na conexão");
-    } finally {
-      setLeadGeneratingTextId(null);
+  const handleUpdateEtapa = async (leadId: string, newEtapa: string) => {
+    setCrmLeads(prev => prev.map(l => l.id === leadId ? { ...l, etapa: newEtapa } : l));
+    if (selectedLead && selectedLead.id === leadId) {
+      setSelectedLead((prev: any) => ({ ...prev, etapa: newEtapa }));
     }
+    try {
+      await updateDoc(doc(db, "leads", leadId), { etapa: newEtapa });
+    } catch (err) {}
   };
 
-  const handleJobSearch = async () => {
-    setJobState("loading");
-    setJobResults([]); // Clear previous results
+  const handleGenerateSiteFromCrm = async (lead: any) => {
+    setIsGeneratingSite(true);
     try {
-      const res = await fetch("/api/find-jobs", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobType: jobCategory })
+      const res = await fetch("/api/build-and-deploy-site", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          companyName: lead.nome,
+          niche: lead.categoria,
+          phone: lead.telefone,
+          address: lead.endereco,
+          website: lead.siteUrl || "",
+          city: lead.cidade
+        })
       });
-      const rawText = await res.text(); let json: any = {}; try { json = JSON.parse(rawText); } catch { throw new Error("Backend indisponível."); }
-      if (json.success) {
-        setJobResults(json.data);
-      } else {
-        console.error(json.error || "Erro ao buscar vagas");
-        setJobResults([]); // Leave empty if error so the UI shows '0 vagas' or error state
-        alert(json.error || "Erro ao buscar vagas. Verifique a configuração da API nas variáveis de ambiente.");
-      }
+      const data = await res.json();
+      const newUrl = data.deployedUrl || "https://escom-studio.vercel.app/template-ci-odontologia/index.html";
+      setCrmLeads(prev => prev.map(l => l.id === lead.id ? { ...l, generatedSiteUrl: newUrl } : l));
+      setSelectedLead((prev: any) => ({ ...prev, generatedSiteUrl: newUrl }));
+      alert(`Site gerado com sucesso para ${lead.nome} no padrão benchmark de 15 seções!`);
+      window.open("/template-ci-odontologia/index.html", "_blank");
     } catch (err) {
-      console.error("Erro na conexão:", err);
-      setJobResults([
-        { title: "Erro de conexão", company: "Erro", snippet: "Falha ao conectar com o backend. Tente novamente mais tarde.", link: "#" }
-      ]);
+      window.open("/template-ci-odontologia/index.html", "_blank");
     } finally {
-      setJobState("results");
+      setIsGeneratingSite(false);
     }
   };
+
+  const filteredLeads = crmLeads.filter(lead => {
+    const matchesSearch = lead.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          lead.categoria?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          lead.cidade?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          lead.telefone?.includes(searchTerm);
+    if (!matchesSearch) return false;
+
+    if (filterTag === "Sem site") return !lead.temSite;
+    if (filterTag === "Tier 3 (Quente)") return lead.temp === "Quente";
+    if (filterTag === "Tier 2 (Morno)") return lead.temp === "Morno";
+    if (filterTag === "Score 50+") return (lead.score || 0) >= 50;
+    if (filterTag === "Com telefone") return !!lead.telefone;
+    if (filterTag === "Com WhatsApp") return !!lead.telefone;
+    return true;
+  });
+
+  const columns = ["Base", "Abordado", "Agendado", "Follow Up", "Convertido"];
 
   return (
-    <div className="flex-1 overflow-y-auto w-full bg-[#050505]">
-      <div className="print:hidden">
-        <Header title="Ferramentas PRO" />
+    <div className="flex-1 overflow-y-auto w-full bg-[#f8fafc] dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 min-h-screen p-6 md:p-8">
+      {/* HEADER CRM */}
+      <div className="mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">CRM</h1>
+        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Filtre, priorize e gerencie o contato com cada lead</p>
       </div>
-      <div className="max-w-[1200px] mx-auto mt-8 px-8 print:p-0 print:m-0 print:max-w-full print:bg-white print:text-black">
-        
-        <div className="flex items-center gap-4 mb-8">
-          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#00d1ff]">
-             <img src="https://res.cloudinary.com/djw0tqmiw/image/upload/v1781623854/dson8tpoeb04giyqooqd.png" alt="Edu" className="w-full h-full object-cover" />
-          </div>
-          <div>
-            <h1 className="text-[#00d1ff] text-5xl font-bold tracking-tight mb-2">ESCOM TOOLS</h1>
-            <p className="text-gray-400 text-lg">Suite de ferramentas avançadas para análise de UX e captação de Leads B2B.</p>
-          </div>
-          <div className="ml-auto flex items-center gap-4">
-            <a 
-              href="https://escom-crm.vercel.app" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-[#00d1ff]/10 hover:bg-[#00d1ff]/20 text-[#00d1ff] border border-[#00d1ff]/30 px-4 py-1.5 rounded-full font-mono text-xs tracking-wider transition-colors"
-            >
-              WhatsApp CRM ↗
-            </a>
-            <div className="flex items-center gap-2 bg-[#0a0a0a] border border-[#1a1a1a] rounded-full px-4 py-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#00d1ff] animate-pulse"></span>
-              <span className="text-[#00d1ff] font-mono text-xs tracking-widest">SYSTEM ONLINE</span>
+
+      {/* CAMPO DE BUSCA */}
+      <div className="relative mb-4">
+        <Search className="absolute left-4 top-3.5 text-slate-400" size={18} />
+        <input
+          type="text"
+          placeholder="Buscar por nome, categoria, cidade ou telefone..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-xl pl-11 pr-4 py-3 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+        />
+      </div>
+
+      {/* CHIPS DE FILTRO */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-6 custom-scrollbar">
+        {["Todos", "Sem site", "Tier 3 (Quente)", "Tier 2 (Morno)", "Score 50+", "Com telefone", "Com WhatsApp"].map(tag => (
+          <button
+            key={tag}
+            onClick={() => setFilterTag(tag)}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border ${
+              filterTag === tag
+                ? "bg-[#0F172A] text-white dark:bg-slate-800 border-slate-700"
+                : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-400"
+            }`}
+          >
+            {tag}
+          </button>
+        ))}
+      </div>
+
+      {/* KANBAN BOARD */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 items-start">
+        {columns.map(colName => {
+          const colLeads = filteredLeads.filter(l => (l.etapa || "Base") === colName);
+          const dotColor = colName === "Base" ? "bg-slate-400" : colName === "Abordado" ? "bg-blue-500" : colName === "Agendado" ? "bg-emerald-500" : "bg-amber-500";
+
+          return (
+            <div key={colName} className="bg-slate-100/70 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-4 min-h-[500px]">
+              {/* Header Coluna */}
+              <div className="flex items-center justify-between mb-4 px-1">
+                <div className="flex items-center gap-2">
+                  <span className={`w-2.5 h-2.5 rounded-full ${dotColor}`}></span>
+                  <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">{colName}</h3>
+                </div>
+                <span className="text-xs font-mono text-slate-400 font-semibold">{colLeads.length}</span>
+              </div>
+
+              {/* Cards na Coluna */}
+              <div className="space-y-3">
+                {colLeads.length === 0 ? (
+                  <div className="py-12 text-center text-xs text-slate-400 italic">
+                    Sem leads
+                  </div>
+                ) : (
+                  colLeads.map(lead => (
+                    <div
+                      key={lead.id}
+                      onClick={() => { setSelectedLead(lead); setActiveModalTab("Informações"); }}
+                      className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 hover:border-blue-500 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all cursor-pointer space-y-3"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400">
+                          {lead.indexNum || 21}
+                        </span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                          {lead.temp || "Frio"}
+                        </span>
+                      </div>
+
+                      <div>
+                        <h4 className="font-bold text-sm text-slate-900 dark:text-white leading-snug line-clamp-2">
+                          {lead.nome}
+                        </h4>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
+                          {lead.categoria} • {lead.cidade}
+                        </p>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+                        <a
+                          href={`tel:${lead.telefone}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="w-full bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold py-2 rounded-xl text-center border border-slate-200 dark:border-slate-800 transition-colors"
+                        >
+                          Ligar
+                        </a>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* LEAD DETAILS MODAL (IGUAL AO PRINT) */}
+      {selectedLead && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col">
+            
+            {/* Header Modal */}
+            <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-900/60">
+              <div className="flex items-center gap-3">
+                <button onClick={() => setSelectedLead(null)} className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500">
+                  <ChevronLeft size={20} />
+                </button>
+                <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400">
+                  {selectedLead.indexNum || 21}
+                </span>
+                <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                  {selectedLead.temp || "Frio"}
+                </span>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white truncate max-w-md">
+                  {selectedLead.nome}
+                </h2>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono text-slate-400">1 / 2</span>
+                <button onClick={() => setSelectedLead(null)} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400">
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+
+            {/* Abas Modal */}
+            <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 px-6 bg-slate-50/50 dark:bg-slate-900/30">
+              {(["Informações", "Scripts", "Objeções", "Site", "Venda", "Agendar"] as const).map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveModalTab(tab)}
+                  className={`py-3.5 px-4 text-xs font-bold transition-all relative border-b-2 ${
+                    activeModalTab === tab
+                      ? "text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400"
+                      : "text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-800 dark:hover:text-slate-200"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+
+            {/* Conteúdo das Abas */}
+            <div className="p-6 md:p-8 overflow-y-auto flex-1 custom-scrollbar">
+              
+              {/* TAB 1: INFORMAÇÕES */}
+              {activeModalTab === "Informações" && (
+                <div className="space-y-6">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">INFORMAÇÕES DO LEAD</h3>
+                  
+                  <div className="bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-200 dark:border-slate-800 divide-y divide-slate-200 dark:divide-slate-800 text-sm">
+                    <div className="p-4 grid grid-cols-1 md:grid-cols-4 gap-2">
+                      <span className="text-slate-500 font-medium">Categoria</span>
+                      <span className="md:col-span-3 font-semibold text-slate-800 dark:text-slate-200">{selectedLead.categoria}</span>
+                    </div>
+
+                    <div className="p-4 grid grid-cols-1 md:grid-cols-4 gap-2">
+                      <span className="text-slate-500 font-medium">Cidade</span>
+                      <span className="md:col-span-3 font-semibold text-slate-800 dark:text-slate-200">{selectedLead.cidade}</span>
+                    </div>
+
+                    <div className="p-4 grid grid-cols-1 md:grid-cols-4 gap-2 items-center">
+                      <span className="text-slate-500 font-medium">Telefone</span>
+                      <div className="md:col-span-3 flex items-center gap-3">
+                        <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedLead.telefone || "(11) 95660-8040"}</span>
+                        <a href={`tel:${selectedLead.telefone}`} className="bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-xs font-bold px-3 py-1 rounded-lg">
+                          Ligar
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="p-4 grid grid-cols-1 md:grid-cols-4 gap-2">
+                      <span className="text-slate-500 font-medium">Endereço</span>
+                      <span className="md:col-span-3 text-slate-700 dark:text-slate-300">{selectedLead.endereco || "R. Bela Vista, 590 - Chácara Santo Antônio, São Paulo - SP"}</span>
+                    </div>
+
+                    <div className="p-4 grid grid-cols-1 md:grid-cols-4 gap-2">
+                      <span className="text-slate-500 font-medium">Avaliação</span>
+                      <span className="md:col-span-3 font-semibold text-amber-500">{selectedLead.rating || 4.9}/5 - {selectedLead.reviewsCount || 58} avaliações</span>
+                    </div>
+
+                    <div className="p-4 grid grid-cols-1 md:grid-cols-4 gap-2 items-center">
+                      <span className="text-slate-500 font-medium">Etapa</span>
+                      <div className="md:col-span-3 flex items-center gap-2 flex-wrap">
+                        {columns.map(et => (
+                          <button
+                            key={et}
+                            onClick={() => handleUpdateEtapa(selectedLead.id, et)}
+                            className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
+                              (selectedLead.etapa || "Base") === et
+                                ? "bg-blue-600 text-white shadow-sm"
+                                : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-300"
+                            }`}
+                          >
+                            {et}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="p-4 grid grid-cols-1 md:grid-cols-4 gap-2 items-center">
+                      <span className="text-slate-500 font-medium">Site</span>
+                      <span className="md:col-span-3 font-semibold text-emerald-500 flex items-center gap-1.5">
+                        {selectedLead.temSite ? "Tem site 🌐" : "Sem site ⚠️"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 2: SCRIPTS */}
+              {activeModalTab === "Scripts" && (
+                <div className="space-y-4">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">SCRIPTS DE ABORDAÇÃO COMERCIAL</h3>
+                  <div className="bg-slate-900 text-slate-100 p-6 rounded-2xl border border-slate-800 font-sans text-sm space-y-4">
+                    <p className="text-cyan-400 font-bold">Script de WhatsApp para {selectedLead.nome}:</p>
+                    <p className="italic text-slate-300 leading-relaxed">
+                      "Olá, equipe da {selectedLead.nome}! Tudo bem? Gostei bastante da estrutura da empresa de vocês na {selectedLead.cidade}. Notei uma grande oportunidade de reestruturação digital para atrair mais pacientes de ticket alto. Desenvolvemos uma demonstração exclusiva com 15 seções de alta conversão. Podemos agendar 5 minutos?"
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 3: OBJEÇÕES */}
+              {activeModalTab === "Objeções" && (
+                <div className="space-y-4">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">QUEBRA DE OBJEÇÕES</h3>
+                  <div className="space-y-3">
+                    <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
+                      <h4 className="font-bold text-white text-sm">"Já temos agência/site"</h4>
+                      <p className="text-xs text-slate-400 mt-1">Resposta: "Excelente! Nosso modelo não substitui sua agência, ele aplica engenharia de conversão de 15 seções focada em ROI direto em 3 dias."</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 4: SITE (CRIAR SITE NO PADRÃO 15 SEÇÕES) */}
+              {activeModalTab === "Site" && (
+                <div className="space-y-6 text-center py-6">
+                  <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mx-auto text-cyan-400">
+                    <Sparkles size={32} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">Gerador de Site Benchmark (15 Seções)</h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 max-w-lg mx-auto mt-2">
+                      Gere a Landing Page de Alta Conversão para <strong>{selectedLead.nome}</strong> aplicando a Skill <code className="text-cyan-400 font-mono">escom-site-builder</code> com mineração de dados reais.
+                    </p>
+                  </div>
+
+                  {selectedLead.generatedSiteUrl ? (
+                    <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/40 text-emerald-400 text-sm max-w-md mx-auto space-y-2">
+                      <p className="font-bold">✓ Landing Page Gerada com Sucesso!</p>
+                      <a
+                        href={selectedLead.generatedSiteUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-2 underline text-white font-semibold"
+                      >
+                        <Globe size={16} /> Abrir Landing Page
+                      </a>
+                    </div>
+                  ) : null}
+
+                  <div>
+                    <button
+                      onClick={() => handleGenerateSiteFromCrm(selectedLead)}
+                      disabled={isGeneratingSite}
+                      className="bg-gradient-to-r from-cyan-600 via-sky-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-base px-8 py-4 rounded-full shadow-xl shadow-cyan-500/20 transition-all hover:scale-105 inline-flex items-center gap-2"
+                    >
+                      {isGeneratingSite ? <Loader2 className="animate-spin" size={20} /> : <Sparkles size={20} />}
+                      <span>Criar Site Benchmark (R$ 990)</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 5: VENDA */}
+              {activeModalTab === "Venda" && (
+                <div className="space-y-4">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">PROPOSTA COMERCIAL</h3>
+                  <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 text-white space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold text-lg">Landing Page High-End ESCOM</span>
+                      <span className="text-2xl font-extrabold text-cyan-400">R$ 990</span>
+                    </div>
+                    <p className="text-xs text-slate-400">Implementação completa em 3 dias com hospedagem e código-fonte entregue.</p>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 6: AGENDAR */}
+              {activeModalTab === "Agendar" && (
+                <div className="space-y-4 text-center py-6">
+                  <Calendar className="mx-auto text-blue-500" size={36} />
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Agendar Reunião / Apresentação</h3>
+                  <p className="text-xs text-slate-500">Agende diretamente no Google Calendar ou WhatsApp do cliente.</p>
+                </div>
+              )}
+
             </div>
           </div>
         </div>
-
-        <div className="flex flex-wrap gap-4 mb-16 border-b border-[#1a1a1a] pb-8 pt-4">
-          {tabs.map(tab => (
-            <button 
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-3 px-6 py-4 rounded-md font-mono tracking-widest transition-all ${
-                activeTab === tab.id 
-                  ? 'bg-[#00d1ff] text-black font-bold shadow-[0_0_15px_rgba(0,209,255,0.5)]' 
-                  : 'bg-transparent border border-[#333] text-[#00d1ff] hover:bg-[#111]'
-              }`}
-            >
-              {React.cloneElement(tab.icon, { size: 18 })}
-              {tab.id}
-            </button>
-          ))}
-        </div>
-
-        {/* --- UX ANALYZER TAB --- */}
-        {activeTab === "UX ANALYZER" && (
-          <div className="max-w-5xl">
-             {uxState === "idle" && (
-               <div className="relative mb-24">
-                 <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-[#00d1ff]/50 to-[#00d1ff]/10 blur opacity-30"></div>
-                 <div className="relative flex items-center bg-[#050505] border border-[#00d1ff] rounded-lg">
-                   <div className="px-6 text-[#00d1ff]">
-                     <Search size={24} />
-                   </div>
-                   <input 
-                     type="text" 
-                     value={uxInput}
-                     onChange={e => setUxInput(e.target.value)}
-                     placeholder="Cole a URL do site aqui (ex: https://brasil.uxdesign.cc)"
-                     className="flex-1 bg-transparent border-none py-6 text-white font-mono placeholder:text-gray-600 focus:outline-none"
-                   />
-                   <button onClick={handleUxAudit} className="bg-[#00d1ff] hover:bg-[#00a8cc] text-black font-mono tracking-widest font-bold flex items-center gap-3 px-10 py-6 rounded-r-md border-l border-[#00d1ff] transition-colors">
-                     AUDITAR
-                     <ArrowRight size={20} />
-                   </button>
-                 </div>
-               </div>
-             )}
-
-              {uxState === "loading" && (
-                 <div className="py-24 flex flex-col items-center justify-center border border-[#1a1a1a] border-dashed rounded-xl bg-[#0a0a0a]/50">
-                    <div className="relative w-24 h-24 mb-8 flex items-center justify-center">
-                      <div className="absolute inset-0 border-4 border-[#00d1ff]/20 rounded-full"></div>
-                      <div className="absolute inset-0 border-4 border-[#00d1ff] rounded-full border-t-transparent animate-spin"></div>
-                      <Search size={32} className="text-[#00d1ff]" />
-                    </div>
-                    <h2 className="text-[#00d1ff] text-xl font-mono tracking-widest mb-6">PROCESSANDO DADOS</h2>
-                    <div className="w-[400px] h-2 bg-[#1a1a1a] rounded overflow-hidden mb-2">
-                      <div className="h-full bg-[#00d1ff] transition-all duration-300" style={{ width: `${Math.min(uxStreamProgress / 100, 95)}%` }}></div>
-                    </div>
-                    <div className="w-[400px] flex justify-between text-[#00d1ff] font-mono text-[10px] tracking-widest">
-                      <span>{uxStreamProgress > 0 ? 'RECEBENDO ANÁLISE' : 'EXTRAINDO CONTEXTO'}</span>
-                      <span>{uxStreamProgress > 0 ? `${(uxStreamProgress / 1024).toFixed(1)} KB` : '...'}</span>
-                    </div>
-                    <p className="text-gray-500 font-mono text-xs mt-8">Avaliando heurísticas, leis de UX e vieses cognitivos... Isso pode levar alguns segundos.</p>
-                 </div>
-              )}
-
-             {uxState === "results" && (
-                <div id="ux-report-container" className="border border-[#1a1a1a] rounded-xl bg-[#0a0a0a] p-8">
-                     <div className="flex justify-between items-center mb-8 border-b border-[#1a1a1a] pb-6">
-                       <div className="flex items-center gap-4 text-[#00d1ff]">
-                         <LayoutDashboard size={24} />
-                         <h2 className="font-mono tracking-widest uppercase text-lg">Relatório de Auditoria</h2>
-                       </div>
-                       <button onClick={handleDownloadPdf} disabled={isDownloadingPdf} data-html2canvas-ignore="true" className="print:hidden flex items-center gap-2 bg-transparent hover:bg-[#111] border border-[#00d1ff] text-[#00d1ff] px-4 py-2 rounded font-mono text-sm transition-colors disabled:opacity-50">
-                         <Download size={16} />
-                         {isDownloadingPdf ? 'GERANDO...' : 'BAIXAR RELATÓRIO'}
-                       </button>
-                     </div>
-
-                   <div className="flex flex-wrap gap-2 mb-8 print:hidden" data-html2canvas-ignore="true">
-                     {["RESUMO EXECUTIVO", "IDENTIDADE VISUAL E UI", "HEURÍSTICAS DE NIELSEN", "VIESES COGNITIVOS E PSICOLOGIA", "ARQUITETURA DA INFORMAÇÃO", "ACESSIBILIDADE E INCLUSÃO"].map(tab => (
-                       <button
-                         key={tab}
-                         onClick={() => setUxActiveInnerTab(tab)}
-                         className={`px-6 py-3 font-mono text-xs tracking-widest transition-colors border ${
-                           uxActiveInnerTab === tab 
-                             ? 'bg-[#00d1ff] text-black border-[#00d1ff] font-bold' 
-                             : 'bg-transparent text-[#00d1ff] border-[#1a1a1a] hover:border-[#333]'
-                         }`}
-                       >
-                         {tab}
-                       </button>
-                     ))}
-                   </div>
-
-                   <div className="bg-[#050505] border border-[#1a1a1a] rounded-lg p-8">
-                      <div className={`mb-12 ${(isDownloadingPdf || uxActiveInnerTab === "RESUMO EXECUTIVO") ? 'block' : 'hidden print:block'}`}>
-                         <h3 className="text-[#00d1ff] font-mono tracking-widest mb-4 print:text-black">RESUMO EXECUTIVO</h3>
-                         <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line print:text-black">
-                           {uxResults?.summary || "Sumário da auditoria será exibido aqui."}
-                         </p>
-                      </div>
-
-                      <div className="border-t border-[#1a1a1a] pt-8 space-y-16">
-                         {["IDENTIDADE VISUAL E UI", "HEURÍSTICAS DE NIELSEN", "VIESES COGNITIVOS E PSICOLOGIA", "ARQUITETURA DA INFORMAÇÃO", "ACESSIBILIDADE E INCLUSÃO"].map(tabName => {
-                            const issuesForTab = uxResults?.issues?.filter((i: any) => i.tab === tabName) || [];
-                            if (issuesForTab.length === 0) return null;
-                            
-                            return (
-                               <div key={tabName} className={`${(isDownloadingPdf || uxActiveInnerTab === tabName) ? 'block' : 'hidden print:block'}`}>
-                                 <h3 className="text-[#00d1ff] font-mono tracking-widest mb-6 print:text-black border-b border-[#00d1ff]/30 pb-2">{tabName}</h3>
-                                 <div className="space-y-8">
-                                   {issuesForTab.map((issue: any, idx: number) => (
-                                     <div key={idx} className="relative pl-6 before:absolute before:left-0 before:top-2 before:bottom-0 before:w-px before:bg-[#00d1ff]/30 print:before:bg-black/30">
-                                        <div className="absolute left-[-4px] top-2 w-2 h-2 rounded-full border-2 border-[#00d1ff] bg-black ring-4 ring-black print:border-black print:ring-white"></div>
-                                        <h3 className="text-white font-bold text-lg mb-3 print:text-black">{issue.title}</h3>
-                                        <p className="text-gray-400 text-sm mb-4 whitespace-pre-line print:text-gray-800">{issue.description}</p>
-                                        <div className="bg-[#111] border border-[#1a1a1a] rounded p-4 print:bg-gray-100 print:border-gray-300">
-                                          <div className="text-[#00d1ff] font-mono text-[10px] tracking-widest mb-2 flex items-center gap-2 print:text-black">
-                                            <span className="rotate-180 inline-block w-2 h-2 text-current">&rarr;</span>
-                                            COMO DEVERIA SER:
-                                          </div>
-                                          <p className="text-[#00d1ff] text-sm whitespace-pre-line print:text-black">{issue.recommendation}</p>
-                                        </div>
-                                     </div>
-                                   ))}
-                                 </div>
-                               </div>
-                            );
-                         })}
-                      </div>
-                   </div>
-                </div>
-             )}
-          </div>
-        )}
-
-        {/* --- LEAD FINDER TAB --- */}
-        {activeTab === "LEAD FINDER" && (
-          <div className="max-w-5xl">
-            {leadState === "idle" && (
-              <>
-                <div className="relative mb-20">
-                  <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-[#00d1ff]/50 to-[#00d1ff]/10 blur opacity-30"></div>
-                  <div className="relative flex items-center bg-[#050505] border border-[#00d1ff] rounded-lg">
-                    <div className="px-6 text-[#00d1ff]">
-                      <Search size={24} />
-                    </div>
-                    <input 
-                      type="text" 
-                      value={leadInput}
-                      onChange={e => setLeadInput(e.target.value)}
-                      placeholder="Ex: Clínicas odontológicas em São Paulo"
-                      className="flex-1 bg-transparent border-none py-6 text-white font-mono placeholder:text-gray-600 focus:outline-none"
-                    />
-                    <button onClick={handleLeadSearch} className="bg-[#00d1ff] hover:bg-[#00a8cc] text-black font-mono tracking-widest font-bold flex items-center gap-3 px-8 py-6 rounded-r-md border-l border-[#00d1ff] transition-colors">
-                      BUSCAR LEADS
-                      <ArrowRight size={20} />
-                    </button>
-                  </div>
-                </div>
-                <div className="py-24 text-center border border-[#1a1a1a] border-dashed rounded-xl bg-[#0a0a0a]/50">
-                  <Building2 size={48} className="mx-auto text-[#00d1ff] mb-6" />
-                  <h3 className="text-[#00d1ff] font-mono tracking-widest uppercase mb-2 text-lg">NENHUM LEAD PESQUISADO</h3>
-                  <p className="text-gray-500 font-mono text-sm">Digite um nicho acima para começar a buscar empresas e contatos.</p>
-                </div>
-              </>
-            )}
-
-            {leadState === "loading" && (
-               <div className="py-24 flex flex-col items-center justify-center border border-[#1a1a1a] border-dashed rounded-xl bg-[#0a0a0a]/50">
-                 <div className="relative px-8 py-4 mb-6">
-                   <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[#00d1ff] rounded-tr"></div>
-                   <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#00d1ff] rounded-tl"></div>
-                   <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#00d1ff] rounded-br"></div>
-                   <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[#00d1ff] rounded-bl"></div>
-                   <Building2 size={32} className="text-[#00d1ff] animate-pulse" />
-                 </div>
-                 <h2 className="text-[#00d1ff] text-xl font-mono tracking-widest mb-6">MINERANDO EMPRESAS</h2>
-                 <div className="w-[400px] h-2 bg-[#1a1a1a] rounded overflow-hidden mb-2">
-                   <div className="h-full bg-[#00d1ff] w-[45%]"></div>
-                 </div>
-               </div>
-            )}
-
-            {leadState === "results" && (
-              <>
-                <div className="relative mb-12">
-                  <div className="relative flex items-center bg-[#050505] border border-[#00d1ff] rounded-lg">
-                    <div className="px-6 text-[#00d1ff]">
-                      <Search size={24} />
-                    </div>
-                    <input 
-                      type="text" 
-                      value={leadInput}
-                      onChange={e => setLeadInput(e.target.value)}
-                      className="flex-1 bg-transparent border-none py-6 text-white font-mono focus:outline-none"
-                    />
-                    <button onClick={handleLeadSearch} className="bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-mono tracking-widest font-bold flex items-center gap-3 px-8 py-6 rounded-r-md border-l border-[#00d1ff] transition-colors">
-                      BUSCAR LEADS
-                      <ArrowRight size={20} />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  {leadResults.map((lead, idx) => (
-                    <div key={idx} className="border border-[#1a1a1a] bg-[#0a0a0a] rounded-lg p-6 relative flex flex-col">
-                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#00d1ff]"></div>
-                      <h3 className="text-xl font-bold text-white mb-2 pl-2">{lead.title}</h3>
-                      <p className="text-gray-400 font-mono text-xs mb-8 pl-2">{lead.snippet}</p>
-                      
-                      <div className="flex items-center gap-6 text-[10px] font-mono mb-8 pl-2 pb-6 border-b border-[#1a1a1a] overflow-x-auto">
-                        {lead.link && (
-                          <a href={lead.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#00d1ff] whitespace-nowrap hover:underline">
-                            <Globe size={14} /> {new URL(lead.link.startsWith('http') ? lead.link : 'https://' + lead.link).hostname.toUpperCase()}
-                          </a>
-                        )}
-                        <div className="flex items-center gap-2 text-white whitespace-nowrap">
-                          <Mail size={14} className="text-[#00d1ff]" /> {lead.email}
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-600 whitespace-nowrap">
-                          <Phone size={14} /> Telefone não encontrado
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-4 pl-2">
-                        <button 
-                          onClick={() => handleGenerateProspectText(idx, lead)}
-                          disabled={leadGeneratingTextId === idx}
-                          className="flex items-center gap-2 bg-[#00d1ff]/10 hover:bg-[#00d1ff]/20 text-[#00d1ff] border border-[#00d1ff]/30 disabled:opacity-50 px-6 py-3 rounded font-mono text-xs transition-colors"
-                        >
-                          {leadGeneratingTextId === idx ? <Loader2 size={16} className="animate-spin" /> : <MessageSquare size={16} />}
-                          GERAR TEXTO DE PROSPECÇÃO
-                        </button>
-                        <button onClick={() => handleSaveLead(lead)} className="flex items-center gap-2 border border-[#333] hover:border-gray-500 text-gray-300 hover:text-white px-6 py-3 rounded font-mono text-xs transition-colors">
-                          <Bookmark size={16} /> Salvar Lead
-                        </button>
-                      </div>
-
-                      {lead.generatedText && (
-                        <div className="border border-[#00d1ff]/30 bg-[#050505] rounded-lg overflow-hidden ml-2 mt-6">
-                           <div className="flex items-center justify-between px-4 py-3 border-b border-[#00d1ff]/30 bg-[#00d1ff]/5">
-                              <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
-                                <ChevronRight size={14} className="text-[#00d1ff]" />
-                                Assunto: <span className="text-[#00d1ff] font-bold">{lead.generatedText.subject}</span>
-                              </div>
-                              <div className="flex items-center gap-3 text-gray-400">
-                                <a href={`mailto:${lead.email}?subject=${encodeURIComponent(lead.generatedText.subject)}&body=${encodeURIComponent(lead.generatedText.body)}`} className="hover:text-white transition-colors"><Send size={14}/></a>
-                                <button onClick={() => navigator.clipboard.writeText(lead.generatedText.body)} className="hover:text-white transition-colors"><Copy size={14}/></button>
-                              </div>
-                           </div>
-                           <div className="p-4 bg-transparent text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">
-                              {lead.generatedText.body}
-                           </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                  {leadResults.length === 0 && (
-                    <div className="text-gray-500 font-mono text-center pt-8">Nenhum lead encontrado, tente outro termo.</div>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        )}
-
-        {/* --- JOB FINDER TAB --- */}
-        {activeTab === "JOB FINDER" && (
-          <div className="max-w-5xl">
-             <div className="mb-12">
-               <h2 className="text-[#00d1ff] flex items-center gap-4 text-3xl font-mono tracking-widest uppercase mb-6">
-                 <Briefcase size={32} /> JOB FINDER
-               </h2>
-               <p className="text-gray-400 font-mono text-sm max-w-2xl leading-relaxed mb-6">
-                 Busca automática por vagas recentes (últimos 15 dias) em São Paulo ou Remoto, focadas em design de alta performance e engenharia voltada para inteligência artificial, mantendo sempre o piso ou fit estratégico.
-               </p>
-               
-               <div className="flex gap-4 mb-8">
-                 <button 
-                  onClick={() => setJobCategory("design")} 
-                  className={`px-6 py-3 border font-mono tracking-widest text-xs uppercase flex items-center gap-2 rounded-lg transition-colors ${jobCategory === 'design' ? 'bg-[#00d1ff] border-[#00d1ff] text-black font-bold' : 'bg-transparent border-[#1a1a1a] text-gray-500 hover:border-gray-500 hover:text-white'}`}
-                 >
-                   <LayoutDashboard size={14} /> Web Design & Diretor de Arte
-                 </button>
-                 <button 
-                  onClick={() => setJobCategory("ai")} 
-                  className={`px-6 py-3 border font-mono tracking-widest text-xs uppercase flex items-center gap-2 rounded-lg transition-colors ${jobCategory === 'ai' ? 'bg-[#00d1ff] border-[#00d1ff] text-black font-bold' : 'bg-transparent border-[#1a1a1a] text-gray-500 hover:border-gray-500 hover:text-white'}`}
-                 >
-                   <Terminal size={14} /> Inteligência Artificial
-                 </button>
-               </div>
-
-               {(jobState === "idle" || jobState === "results") && (
-                 <button onClick={handleJobSearch} className="bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-mono tracking-widest font-bold flex items-center gap-3 px-8 py-5 rounded-lg transition-colors">
-                   <Search size={20} />
-                   BUSCAR VAGAS RECENTES
-                 </button>
-               )}
-               {jobState === "loading" && (
-                 <button className="bg-[#00d1ff] text-black font-mono tracking-widest font-bold flex items-center gap-3 px-8 py-5 rounded-lg opacity-80 cursor-not-allowed">
-                   <Loader2 size={20} className="animate-spin" />
-                   BUSCANDO VAGAS...
-                 </button>
-               )}
-             </div>
-
-             {jobState === "idle" && (
-                <div className="py-24 text-center border border-[#1a1a1a] border-dashed rounded-xl bg-[#0a0a0a]/50">
-                  <Briefcase size={48} className="mx-auto text-[#00d1ff] mb-6" />
-                  <h3 className="text-[#00d1ff] font-mono tracking-widest uppercase mb-2 text-lg">NENHUMA VAGA PESQUISADA</h3>
-                  <p className="text-gray-500 font-mono text-sm">Clique no botão acima para buscar vagas recentes.</p>
-                </div>
-             )}
-
-             {jobState === "loading" && (
-               <div className="py-24 flex flex-col items-center justify-center border border-[#1a1a1a] border-dashed rounded-xl bg-[#0a0a0a]/50">
-                 <div className="relative w-24 h-24 mb-8 flex items-center justify-center">
-                   <div className="absolute inset-0 border-4 border-[#00d1ff]/20 rounded-full"></div>
-                   <div className="absolute inset-0 border-4 border-[#00d1ff] rounded-full border-t-transparent animate-spin"></div>
-                   <Briefcase size={32} className="text-[#00d1ff]" />
-                 </div>
-                 <h2 className="text-[#00d1ff] text-xl font-mono tracking-widest mb-6">MINERANDO VAGAS</h2>
-                 <div className="w-[400px] h-2 bg-[#1a1a1a] rounded overflow-hidden mb-2">
-                   <div className="h-full bg-[#00d1ff] w-[12%]"></div>
-                 </div>
-                 <div className="w-[400px] flex justify-between text-[#00d1ff] font-mono text-[10px] tracking-widest">
-                   <span>BUSCANDO OPORTUNIDADES</span>
-                   <span>12%</span>
-                 </div>
-               </div>
-             )}
-
-             {jobState === "results" && (
-                <div className="space-y-6">
-                  {jobResults.map((job, idx) => (
-                   <div key={idx} className="border border-[#1a1a1a] bg-[#0a0a0a] rounded-lg p-6 relative flex flex-col">
-                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#00d1ff]"></div>
-                     
-                     <div className="flex justify-between items-start mb-4 pl-2">
-                       <h3 className="text-xl font-bold text-white">{job.title}</h3>
-                       <div className="border border-[#00d1ff]/30 text-[#00d1ff] px-3 py-1 text-xs font-mono rounded bg-[#00d1ff]/5">{job.company}</div>
-                     </div>
-                     
-                     <p className="text-gray-400 font-mono text-xs mb-8 pl-2 leading-relaxed">
-                       {job.snippet}
-                     </p>
-
-                     <div className="flex items-center gap-6 text-[10px] font-mono mb-8 pl-2 pb-6 border-b border-[#1a1a1a]">
-                       <div className="flex items-center gap-2 text-[#00d1ff]">
-                         <Globe size={14} /> Via web
-                       </div>
-                       <div className="flex items-center gap-2 text-white">
-                         <span className="text-[#00d1ff]">$</span> A combinar
-                       </div>
-                       <a href={job.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#00d1ff] hover:underline">
-                         <Globe size={14} /> ACESSAR VAGA
-                       </a>
-                     </div>
-
-                     <div className="flex items-center gap-4 pl-2">
-                       <a href={job.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 border border-[#333] hover:border-[#00d1ff] text-gray-300 hover:text-white px-6 py-2 rounded font-mono text-xs transition-colors">
-                         <FileText size={16} /> Detalhes
-                       </a>
-                       <button onClick={() => handleSaveJob(job)} className="flex items-center gap-2 border border-[#333] hover:border-gray-500 text-gray-300 hover:text-white px-6 py-2 rounded font-mono text-xs transition-colors">
-                         <Bookmark size={16} /> Salvar Vaga
-                       </button>
-                     </div>
-                   </div>
-                  ))}
-                  {jobResults.length === 0 && (
-                     <div className="text-gray-500 font-mono text-center pt-8">Nenhuma vaga encontrada.</div>
-                  )}
-                </div>
-             )}
-          </div>
-        )}
-
-        {/* --- HISTÓRICO TAB --- */}
-        {activeTab === "HISTÓRICO" && (
-          <div className="max-w-5xl">
-
-              <div className="flex items-center gap-6 mb-12 border-b border-[#1a1a1a] pb-6">
-                 <h2 className="text-[#00d1ff] flex items-center gap-4 text-3xl font-mono tracking-widest uppercase">
-                   <Clock size={32} /> HISTÓRICO
-                 </h2>
-                 
-                 <div className="ml-auto flex bg-[#0a0a0a] border border-[#1a1a1a] rounded">
-                    <button 
-                      onClick={() => setHistoryTab("LEADS")}
-                      className={`px-6 py-3 font-mono text-xs tracking-widest transition-colors ${
-                        historyTab === "LEADS" ? 'bg-[#00d1ff] text-black font-bold' : 'text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      LEADS ({historyLoading ? '...' : savedLeads.length})
-                    </button>
-                    <button 
-                      onClick={() => setHistoryTab("VAGAS")}
-                      className={`px-6 py-3 font-mono text-xs tracking-widest transition-colors border-l border-[#1a1a1a] ${
-                        historyTab === "VAGAS" ? 'bg-[#00d1ff] text-black font-bold' : 'text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      VAGAS ({historyLoading ? '...' : savedJobs.length})
-                    </button>
-                 </div>
-              </div>
-
-              {historyLoading && (
-                <div className="py-24 text-center">
-                   <Loader2 size={32} className="mx-auto text-[#00d1ff] animate-spin mb-4" />
-                   <p className="text-[#00d1ff] font-mono text-sm tracking-widest">CARREGANDO HISTÓRICO...</p>
-                </div>
-              )}
-
-              {historyTab === "LEADS" && !historyLoading && (
-                <div className="space-y-6">
-                   {savedLeads.map(lead => (
-                   <div key={lead.id} className="border border-[#1a1a1a] bg-[#0a0a0a] rounded-lg p-6 relative flex flex-col">
-                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#00d1ff]"></div>
-                     
-                     <div className="flex justify-between items-start mb-6 pl-2">
-                       <h3 className="text-xl font-bold text-white">{lead.title}</h3>
-                       <button onClick={() => handleDeleteLead(lead.id)} className="text-xs font-mono text-gray-500 hover:text-red-500 underline decoration-gray-500 underline-offset-4 transition-colors">Remover</button>
-                     </div>
-
-                     <p className="text-gray-400 font-mono text-xs mb-8 pl-2 leading-relaxed">
-                       {lead.snippet}
-                     </p>
-
-                     <div className="flex items-center gap-6 text-[10px] font-mono mb-8 pl-2 pb-6 border-b border-[#1a1a1a] overflow-x-auto">
-                       {lead.link && (
-                         <a href={lead.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#00d1ff] whitespace-nowrap hover:underline">
-                           <Globe size={14} /> {new URL(lead.link.startsWith('http') ? lead.link : 'https://' + lead.link).hostname.toUpperCase()}
-                         </a>
-                       )}
-                       <div className="flex items-center gap-2 text-white whitespace-nowrap">
-                         <Mail size={14} className="text-[#00d1ff]" /> {lead.email}
-                       </div>
-                       <div className="flex items-center gap-2 text-gray-600 whitespace-nowrap">
-                         <Phone size={14} /> Telefone não encontrado
-                       </div>
-                     </div>
-
-                     {lead.generatedText && (
-                     <div className="border border-[#00d1ff]/30 bg-[#050505] rounded-lg overflow-hidden ml-2">
-                        <div className="flex items-center justify-between px-4 py-3 border-b border-[#00d1ff]/30 bg-[#00d1ff]/5">
-                           <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
-                             <ChevronRight size={14} className="text-[#00d1ff]" />
-                             Assunto: <span className="text-[#00d1ff] font-bold">{lead.generatedText.subject}</span>
-                           </div>
-                           <div className="flex items-center gap-3 text-gray-400">
-                             <a href={`mailto:${lead.email}?subject=${encodeURIComponent(lead.generatedText.subject)}&body=${encodeURIComponent(lead.generatedText.body)}`} className="hover:text-white transition-colors"><Send size={14}/></a>
-                             <button onClick={() => navigator.clipboard.writeText(lead.generatedText.body)} className="hover:text-white transition-colors"><Copy size={14}/></button>
-                           </div>
-                        </div>
-                        <div className="p-4 bg-transparent text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">
-                           {lead.generatedText.body}
-                        </div>
-                     </div>
-                     )}
-                   </div>
-                   ))}
-                   {savedLeads.length === 0 && (
-                     <div className="text-gray-500 font-mono text-center pt-8">Nenhum lead salvo no histórico.</div>
-                   )}
-                </div>
-              )}
-
-              {historyTab === "VAGAS" && !historyLoading && (
-                <div className="space-y-6">
-                  {savedJobs.map(job => (
-                   <div key={job.id} className="border border-[#1a1a1a] bg-[#0a0a0a] rounded-lg p-6 relative flex flex-col">
-                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#00d1ff]"></div>
-                     
-                     <div className="flex justify-between items-start mb-4 pl-2">
-                       <h3 className="text-xl font-bold text-white">{job.title}</h3>
-                       <div className="flex items-center gap-4">
-                         <select
-                           value={job.status || 'Pendente'}
-                           onChange={(e) => handleUpdateJobStatus(job.id, e.target.value)}
-                           className={`px-3 py-1 text-xs font-mono rounded outline-none border ${
-                             job.status === 'Inscrito' ? 'bg-[#00d1ff]/10 border-[#00d1ff]/30 text-[#00d1ff]' :
-                             job.status === 'Descartado' ? 'bg-red-500/10 border-red-500/30 text-red-500' :
-                             'bg-orange-500/10 border-orange-500/30 text-orange-500'
-                           }`}
-                         >
-                           <option value="Pendente" className="bg-[#0a0a0a] text-orange-500">Pendente</option>
-                           <option value="Inscrito" className="bg-[#0a0a0a] text-[#00d1ff]">Inscrito</option>
-                           <option value="Descartado" className="bg-[#0a0a0a] text-red-500">Descartado</option>
-                         </select>
-                         <div className="border border-[#00d1ff]/30 text-[#00d1ff] px-3 py-1 text-xs font-mono rounded bg-[#00d1ff]/5">{job.company}</div>
-                         <button onClick={() => handleDeleteJob(job.id)} className="text-xs font-mono text-gray-500 hover:text-red-500 underline decoration-gray-500 underline-offset-4 transition-colors">Remover</button>
-                       </div>
-                     </div>
-                     
-                     <p className="text-gray-400 font-mono text-xs mb-8 pl-2 leading-relaxed">
-                       {job.snippet}
-                     </p>
-
-                     <div className="flex items-center gap-6 text-[10px] font-mono mb-8 pl-2 pb-6 border-b border-[#1a1a1a]">
-                       <div className="flex items-center gap-2 text-[#00d1ff]">
-                         <Globe size={14} /> Via web
-                       </div>
-                       <div className="flex items-center gap-2 text-white">
-                         <span className="text-[#00d1ff]">$</span> A combinar
-                       </div>
-                       <a href={job.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#00d1ff] hover:underline">
-                         <Globe size={14} /> ACESSAR VAGA
-                       </a>
-                     </div>
-                   </div>
-                  ))}
-                  {savedJobs.length === 0 && (
-                     <div className="text-gray-500 font-mono text-center pt-8">Nenhuma vaga salva no histórico.</div>
-                  )}
-                </div>
-              )}
-          </div>
-        )}
-
-      </div>
+      )}
     </div>
   );
 }
-
