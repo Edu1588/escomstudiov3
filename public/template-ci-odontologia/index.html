@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C.I Odontologia | Clínica Integrada & Centro de Implantodontia Dr. Renato Ferreira</title>
-    <meta name="description" content="C.I Odontologia em São Paulo (Chácara Santo Antônio). Um conceito inovador em odontologia e ensino, fundado pelo Dr. Renato Vicente Ferreira (Mestre UNIFESP | Especialista USP). +30 anos de experiência e +4.000 casos de sucesso.">
-    <meta name="keywords" content="ci odontologia, clinica integrada, dr renato ferreira, curso implantes, implantodontia sao paulo, unifesp, fundecto usp, chacara santo antonio, cirurgia guiada 3d, zirconia, carga imediata">
+    <title>C.I Odontologia | Implantes Dentários & Reabilitação Oral Dr. Renato Ferreira</title>
+    <meta name="description" content="C.I Odontologia na Chácara Santo Antônio, São Paulo. Referência em implantes dentários 3D, carga imediata e reabilitação oral coordenada pelo Dr. Renato Vicente Ferreira (Mestre UNIFESP | Especialista USP).">
+    <meta name="keywords" content="ci odontologia, dr renato ferreira, implantes dentarios sao paulo, cirurgia guiada 3d, unifesp, fundecto usp, chacara santo antonio, cargas imediatas, zirconia">
     <link rel="canonical" href="https://escom-studio.vercel.app/template-ci-odontologia/index.html">
     
     <!-- Open Graph / Facebook -->
@@ -13,14 +13,14 @@
     <meta property="og:url" content="https://escom-studio.vercel.app/template-ci-odontologia/index.html">
     <meta property="og:title" content="C.I Odontologia | Reabilitação Oral & Cirurgias Avançadas 3D">
     <meta property="og:description" content="+30 anos de tradição em implantodontia sob coordenação do Dr. Renato Ferreira. Excelência clínica e rigor acadêmico na Chácara Santo Antônio.">
-    <meta property="og:image" content="https://cursoimplantes.com.br/wp-content/uploads/2023/11/foto-dr-renato.png">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://escom-studio.vercel.app/template-ci-odontologia/index.html">
     <meta property="twitter:title" content="C.I Odontologia | Reabilitação Oral & Cirurgias Avançadas 3D">
     <meta property="twitter:description" content="+30 anos de tradição em implantodontia sob coordenação do Dr. Renato Ferreira. Excelência clínica e rigor acadêmico na Chácara Santo Antônio.">
-    <meta property="twitter:image" content="https://cursoimplantes.com.br/wp-content/uploads/2023/11/foto-dr-renato.png">
+    <meta property="twitter:image" content="https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop">
     
     <!-- Favicon Oficial C.I -->
     <link rel="icon" href="https://cursoimplantes.com.br/wp-content/uploads/2023/11/CI-1-300x300.png" type="image/png">
@@ -31,7 +31,7 @@
       "@context": "https://schema.org",
       "@type": "Dentist",
       "name": "C.I Odontologia (Clínica Integrada)",
-      "image": "https://cursoimplantes.com.br/wp-content/uploads/2023/11/foto-dr-renato.png",
+      "image": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop",
       "@id": "https://escom-studio.vercel.app/template-ci-odontologia/index.html",
       "url": "https://escom-studio.vercel.app/template-ci-odontologia/index.html",
       "telephone": "+5511956608040",
@@ -81,6 +81,7 @@
                 extend: {
                     colors: {
                         ciNavy: {
+                            950: '#061626',
                             900: '#0A2540',
                             800: '#0C2B4E',
                             700: '#14385C',
@@ -114,11 +115,23 @@
         h1, h2, h3, h4, h5, h6 { font-family: 'Manrope', sans-serif; }
         
         .glass-nav-ci {
-            background: rgba(10, 37, 64, 0.96);
-            backdrop-filter: blur(12px);
+            background: rgba(10, 37, 64, 0.95);
+            backdrop-filter: blur(16px);
             border-bottom: 1px solid rgba(197, 160, 89, 0.25);
         }
         
+        /* Full Bleed Hero Image styling with Smooth Ken Burns Zoom */
+        .hero-ken-burns {
+            background-image: url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            animation: kenburns 25s infinite alternate ease-in-out;
+        }
+        @keyframes kenburns {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
         /* Shimmer Button C.I Gold */
         .btn-ci-gold {
             position: relative;
@@ -155,6 +168,18 @@
             100% { left: 140%; }
         }
 
+        /* PDF Shimmer Green Button */
+        .btn-pdf-shimmer {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: pulse-glow 2s infinite alternate;
+        }
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 5px rgba(7, 220, 64, 0.2); border-color: rgba(63, 63, 70, 1); }
+            100% { box-shadow: 0 0 25px rgba(7, 220, 64, 0.8); border-color: rgba(7, 220, 64, 1); }
+        }
+
         .hover-card-ci {
             transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -169,7 +194,7 @@
 
 <!-- SEÇÃO 1: BANNER URGÊNCIA ESCOM (BLOCO A) -->
 <div id="banner-urgencia" class="fixed top-0 left-0 w-full min-h-[40px] py-2 bg-[#dc2626] text-white text-center flex items-center justify-center px-4 text-[10px] sm:text-xs md:text-sm font-bold shadow-md z-[100] animate-pulse transition-all">
-    Proposta de reestruturação digital sob medida para C.I Odontologia (Dr. Renato Ferreira). Válida por 3 dias.
+    Proposta de reestruturação digital técnica para C.I Odontologia (Dr. Renato Ferreira). Válida por 3 dias.
 </div>
 
 <!-- SEÇÃO 2: NAVBAR CUSTOM COM LOGO OFICIAL C.I ODONTOLOGIA -->
@@ -200,67 +225,115 @@
 </nav>
 
 <!-- ==========================================
-     SEÇÃO 3: HERO SECTION EXCLUSIVO C.I ODONTOLOGIA
+     SEÇÃO 3: HERO SECTION LUXUOSO COM IMAGEM DE FUNDO FULL-BLEED
 =========================================== -->
-<header id="inicio" class="bg-ciNavy-900 text-white min-h-[92vh] flex items-center pt-36 relative overflow-hidden">
-    <!-- Textura sutil de fundo militar/médico -->
-    <div class="absolute inset-0 opacity-15 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop');"></div>
-    <div class="absolute inset-0 bg-gradient-to-r from-ciNavy-900 via-ciNavy-900/95 to-ciNavy-800/80"></div>
+<header id="inicio" class="relative bg-ciNavy-950 text-white min-h-[95vh] flex items-center pt-36 pb-20 overflow-hidden">
+    <!-- Imagem de Fundo em HD com Efeito de Movimento Ken Burns -->
+    <div class="absolute inset-0 w-full h-full z-0 overflow-hidden">
+        <div class="w-full h-full hero-ken-burns"></div>
+    </div>
     
-    <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 w-full grid lg:grid-cols-12 gap-12 items-center py-12">
+    <!-- Gradient Overlay C.I Navy Profundo para Legibilidade Máxima -->
+    <div class="absolute inset-0 z-0 bg-gradient-to-r from-ciNavy-950 via-ciNavy-900/90 to-ciNavy-900/40"></div>
+    
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 w-full grid lg:grid-cols-12 gap-12 items-center">
+        <!-- Coluna Esquerda: Mensagem de Alto Impacto -->
         <div class="lg:col-span-7 flex flex-col items-start">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-ciGold-500/10 border border-ciGold-500/30 text-ciGold-400 text-xs font-bold uppercase tracking-wider mb-6">
-                <i class="fa-solid fa-award"></i> Um Conceito Inovador em Odontologia
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ciGold-500/15 border border-ciGold-500/40 text-ciGold-400 text-xs font-bold uppercase tracking-wider mb-6 backdrop-blur-md">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                C.I Odontologia | Conceito Inovador em Reabilitação Oral & Ensino
             </div>
             
             <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold text-white leading-[1.15] mb-6">
-                O seu sorriso reconstruído por quem <span class="text-ciGold-400 underline decoration-ciGold-500/40 underline-offset-8">ensina implantodontia</span> no Brasil.
+                Reconstrua o seu sorriso com a precisão de quem <span class="text-ciGold-400 italic underline decoration-ciGold-500/40 underline-offset-8">ensina implantodontia</span> no Brasil.
             </h1>
             
-            <p class="text-lg text-slate-300 max-w-2xl mb-8 font-light leading-relaxed">
-                Fundada e coordenada pelo <strong class="text-white font-semibold">Dr. Renato Vicente Ferreira</strong> (Mestre UNIFESP | Especialista USP), a C.I Odontologia combina <strong class="text-ciGold-400">atendimento clínico de alta precisão</strong> com o pioneirismo de um centro de pós-graduação.
+            <p class="text-lg text-slate-200 max-w-2xl mb-10 font-light leading-relaxed">
+                Fundada e coordenada pelo <strong class="text-white font-semibold">Dr. Renato Vicente Ferreira</strong> (Mestre UNIFESP | Especialista USP), a C.I Odontologia combina atendimento clínico cirúrgico 3D de alta complexidade com a vanguarda acadêmica na Chácara Santo Antônio.
             </p>
             
-            <!-- Cards com Dados Reais Minerados -->
-            <div class="grid sm:grid-cols-3 gap-4 w-full mb-10">
-                <div class="bg-ciNavy-800/80 border border-ciNavy-700 p-4 rounded-xl text-center">
-                    <p class="text-2xl font-heading font-extrabold text-ciGold-400">+30 Anos</p>
-                    <p class="text-xs text-slate-400">De Experiência</p>
-                </div>
-                <div class="bg-ciNavy-800/80 border border-ciNavy-700 p-4 rounded-xl text-center">
-                    <p class="text-2xl font-heading font-extrabold text-ciGold-400">+4.000</p>
-                    <p class="text-xs text-slate-400">Casos de Sucesso</p>
-                </div>
-                <div class="bg-ciNavy-800/80 border border-ciNavy-700 p-4 rounded-xl text-center">
-                    <p class="text-2xl font-heading font-extrabold text-ciGold-400">100% 3D</p>
-                    <p class="text-xs text-slate-400">Cirurgia Guiada</p>
-                </div>
+            <!-- Botões Duplos de Conversão -->
+            <div class="flex flex-col sm:flex-row gap-4 w-full mb-12">
+                <a href="#contato" class="btn-ci-gold px-8 py-4 rounded-full text-center font-bold text-sm tracking-wider uppercase flex items-center justify-center gap-2 shadow-xl">
+                    Agendar Avaliação de Implantes <i class="fa-solid fa-arrow-right text-xs"></i>
+                </a>
+                <a href="https://wa.me/5511956608040?text=Ol%C3%A1%2C%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o%20de%20implantes%20com%20o%20Dr.%20Renato%20Ferreira" target="_blank" class="flex items-center justify-center gap-2 px-8 py-4 rounded-full text-white border border-white/30 hover:bg-white/10 transition-all font-bold text-sm backdrop-blur-md">
+                    <i class="fa-brands fa-whatsapp text-emerald-400 text-xl"></i> WhatsApp da Clínica
+                </a>
             </div>
 
-            <div class="flex flex-col sm:flex-row gap-4 w-full">
-                <a href="#contato" class="btn-ci-gold px-8 py-4 rounded-full text-center font-bold text-sm tracking-wider uppercase">
-                    Agendar Avaliação Clínica
-                </a>
-                <a href="https://wa.me/5511956608040?text=Ol%C3%A1%2C%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o%20com%20o%20Dr.%20Renato%20Ferreira" target="_blank" class="flex items-center justify-center gap-2 px-8 py-4 rounded-full text-white border border-slate-600 hover:bg-white/10 transition-colors font-bold text-sm">
-                    <i class="fa-brands fa-whatsapp text-emerald-400 text-lg"></i> Falar pelo WhatsApp
-                </a>
+            <!-- Faixa de Métricas no Rodapé do Hero -->
+            <div class="grid grid-cols-3 gap-6 pt-6 border-t border-white/15 w-full">
+                <div>
+                    <p class="text-2xl font-heading font-extrabold text-ciGold-400">+30 Anos</p>
+                    <p class="text-xs text-slate-300">De Experiência Médica</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-heading font-extrabold text-ciGold-400">+4.000</p>
+                    <p class="text-xs text-slate-300">Casos Reabilitados</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-heading font-extrabold text-ciGold-400">100% 3D</p>
+                    <p class="text-xs text-slate-300">Cirurgias Guiadas</p>
+                </div>
             </div>
         </div>
-        
-        <!-- Foto Real do Dr. Renato no Hero -->
-        <div class="lg:col-span-5 relative flex justify-center">
-            <div class="relative w-full max-w-md">
-                <div class="absolute inset-0 bg-ciGold-500/20 rounded-3xl transform rotate-3 scale-105 blur-sm"></div>
-                <img src="https://cursoimplantes.com.br/wp-content/uploads/2023/11/foto-dr-renato.png" alt="Dr. Renato Vicente Ferreira C.I Odontologia" class="relative z-10 w-full rounded-2xl shadow-2xl object-cover border-2 border-ciGold-500/30">
-                <div class="absolute -bottom-6 -right-4 bg-ciNavy-800 p-4 rounded-2xl shadow-xl border border-ciGold-500/40 z-20 text-left">
-                    <p class="text-xs text-ciGold-400 font-bold uppercase tracking-wider">Responsável Técnico</p>
-                    <p class="text-sm font-bold text-white">Dr. Renato Vicente Ferreira</p>
-                    <p class="text-[10px] text-slate-400">CRO-SP 42595 • Mestre UNIFESP</p>
+
+        <!-- Coluna Direita: Card de Prova Social e Credibilidade Glassmorphism -->
+        <div class="lg:col-span-5 relative hidden lg:block">
+            <div class="bg-ciNavy-900/85 backdrop-blur-xl border border-ciGold-500/30 p-8 rounded-3xl shadow-2xl space-y-6">
+                <div class="flex items-center gap-1 text-ciGold-400 text-lg">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+                
+                <p class="text-slate-100 italic text-base leading-relaxed">
+                    "Perdi a vergonha de sorrir e o medo de fazer implantes. A equipe do Dr. Renato realizou meu procedimento 3D de forma rápida, totalmente sem dor e saí no mesmo dia com meus dentes fixos."
+                </p>
+                
+                <div class="flex items-center gap-4 pt-4 border-t border-white/10">
+                    <div class="w-12 h-12 rounded-full bg-ciGold-500 text-ciNavy-950 font-extrabold flex items-center justify-center text-lg shadow-md">
+                        R
+                    </div>
+                    <div>
+                        <p class="font-bold text-white text-sm">Roberto M. S.</p>
+                        <p class="text-xs text-ciGold-400">Paciente Reabilitado na C.I Odontologia</p>
+                    </div>
+                </div>
+
+                <div class="bg-ciNavy-800/80 p-4 rounded-xl border border-ciNavy-700 flex items-center justify-between text-xs text-slate-300">
+                    <span><i class="fa-solid fa-location-dot text-ciGold-400 mr-2"></i> Chácara Santo Antônio, SP</span>
+                    <span class="text-emerald-400 font-bold"><i class="fa-circle text-[8px] mr-1"></i> Vagas Abertas</span>
                 </div>
             </div>
         </div>
     </div>
 </header>
+
+<!-- CARDS FLUTUANTES SOBREPOSTOS AO HERO -->
+<section class="relative -mt-16 z-20 px-6 lg:px-8 max-w-7xl mx-auto pb-20">
+    <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-2xl shadow-xl p-8 hover-card-ci border border-slate-200">
+            <div class="w-12 h-12 bg-ciNavy-50 rounded-xl flex items-center justify-center text-ciNavy-900 text-xl mb-4 shadow-sm"><i class="fa-solid fa-tooth"></i></div>
+            <h3 class="text-xl font-bold text-ciNavy-900 mb-2">Implantes Dentários 3D</h3>
+            <p class="text-sm text-slate-500 mb-4">Substituição precisa de raízes perdidas com planejamento tomográfico computadorizado.</p>
+            <a href="#tratamentos" class="text-ciGold-600 text-xs font-bold uppercase tracking-wider flex items-center gap-1 hover:text-ciNavy-900">Saiba Mais &rarr;</a>
+        </div>
+        
+        <div class="bg-white rounded-2xl shadow-xl p-8 hover-card-ci border border-slate-200">
+            <div class="w-12 h-12 bg-ciNavy-50 rounded-xl flex items-center justify-center text-ciNavy-900 text-xl mb-4 shadow-sm"><i class="fa-solid fa-gem"></i></div>
+            <h3 class="text-xl font-bold text-ciNavy-900 mb-2">Reabilitação em Zircônia</h3>
+            <p class="text-sm text-slate-500 mb-4">Próteses fixas puras de altíssima resistência, sem metal e com transparência natural.</p>
+            <a href="#tratamentos" class="text-ciGold-600 text-xs font-bold uppercase tracking-wider flex items-center gap-1 hover:text-ciNavy-900">Saiba Mais &rarr;</a>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl p-8 hover-card-ci border border-slate-200">
+            <div class="w-12 h-12 bg-ciNavy-50 rounded-xl flex items-center justify-center text-ciNavy-900 text-xl mb-4 shadow-sm"><i class="fa-solid fa-bolt"></i></div>
+            <h3 class="text-xl font-bold text-ciNavy-900 mb-2">Carga Imediata</h3>
+            <p class="text-sm text-slate-500 mb-4">Instalação dos dentes fixos no mesmo dia para quem necessita de agilidade e conforto.</p>
+            <a href="#tratamentos" class="text-ciGold-600 text-xs font-bold uppercase tracking-wider flex items-center gap-1 hover:text-ciNavy-900">Saiba Mais &rarr;</a>
+        </div>
+    </div>
+</section>
 
 <!-- ==========================================
      SEÇÃO 4: O ECOSSISTEMA C.I ODONTOLOGIA (CLÍNICA + CURSOS)
@@ -630,47 +703,189 @@
 </footer>
 
 <!-- ================================================================= -->
-<!-- SEÇÕES ESCOM STUDIO NO FIM DO SITE (BLOCOS DE PROSPECÇÃO & APROVAÇÃO) -->
+<!-- SEÇÕES ESCOM STUDIO NO FIM DO SITE (BLOCOS DE PROSPECÇÃO & APROVAÇÃO ESTRUTURADOS) -->
 <!-- ================================================================= -->
 
-<!-- SEÇÃO 14: BLOCO C ESCOM - DOSSIÊ DE ANÁLISE ESTRATÉGICA (PDF) -->
+<!-- SEÇÃO 14: BLOCO C ESCOM - DOSSIÊ DE ANÁLISE ESTRATÉGICA COM LINK REAL PARA PDF -->
 <section id="dossie-comercial" class="py-16 bg-[#111] text-center border-t-2 border-zinc-800">
     <div class="max-w-3xl mx-auto px-6">
         <h3 class="text-[#07dc40] font-mono text-xs font-bold uppercase tracking-widest mb-4"><i class="fa-solid fa-lock mr-2"></i> Documento Confidencial</h3>
         <h2 class="text-3xl font-bold text-white mb-6">Análise Estratégica & Dossiê de Mercado</h2>
-        <p class="text-zinc-400 mb-8 text-sm">Acesso restrito ao estudo de arquitetura de conversão, diagnóstico do site atual (cursoimplantes.com.br) e projeção de captação de pacientes para C.I Odontologia.</p>
-        <a href="https://wa.me/5511956608040" target="_blank" class="border-2 border-[#07dc40]/30 hover:border-[#07dc40] text-white font-bold py-4 px-8 rounded-xl transition-all flex items-center justify-center gap-3 mx-auto group inline-flex">
-            <i class="fa-solid fa-file-pdf text-[#07dc40] text-xl"></i> Acessar Dossiê Estratégico em PDF
+        <p class="text-zinc-400 mb-8 text-sm">Acesso restrito ao estudo de arquitetura de conversão, dados reais de faturamento local e projeção financeira para C.I Odontologia.</p>
+        <a href="/template-ci-odontologia/dossie-ci-odontologia.pdf" target="_blank" class="btn-pdf-shimmer bg-transparent hover:bg-stone-850 border-2 border-[#07dc40]/30 text-white font-bold py-4 px-8 rounded-xl transition-all flex items-center justify-center gap-3 mx-auto group inline-flex hover:border-[#07dc40]">
+            <i class="fa-solid fa-file-pdf text-[#07dc40] text-xl group-hover:scale-110 transition-transform"></i> Acessar Dossiê Estratégico em PDF (Acessar PDF da Análise)
         </a>
     </div>
 </section>
   
-<!-- SEÇÃO 15: BLOCO C ESCOM - PROPOSTA COMERCIAL R$ 990 + EXPANSÕES TECNOLÓGICAS -->
+<!-- SEÇÃO 15: BLOCO C ESCOM - PROPOSTA COMERCIAL R$ 990 + EXPANSÕES TECNOLÓGICAS COMPLETAS -->
 <section id="proposta-comercial" class="py-24 bg-[#0a0a0a] relative overflow-hidden text-white border-t-8 border-[#07dc40]">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-stone-900/20 via-[#0a0a0a] to-[#0a0a0a] pointer-events-none"></div>
+    
     <div class="container mx-auto px-6 max-w-6xl relative z-10">
         <div class="text-center mb-16">
             <span class="bg-[#07dc40]/10 text-[#07dc40] px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border border-[#07dc40]/20 mb-6 inline-block">Proposta Exclusiva ESCOM Studio</span>
-            <h2 class="text-4xl md:text-5xl font-heading font-extrabold text-white mb-6">Investimento do Projeto</h2>
-            <p class="text-zinc-400 max-w-2xl mx-auto text-lg">Escopo financeiro exato para a implementação da nova Landing Page de Alta Conversão da C.I Odontologia.</p>
+            <h2 class="text-4xl md:text-5xl font-display font-extrabold text-white mb-6">Investimento do Projeto</h2>
+            <p class="text-zinc-400 max-w-2xl mx-auto text-lg">Este é o escopo financeiro exato para a implementação do site da sua empresa, com design de alta performance e engenharia de conversão voltada para captação.</p>
         </div>
 
-        <!-- Card Principal de Preço -->
-        <div class="max-w-2xl mx-auto bg-gradient-to-b from-stone-900/60 to-zinc-900/60 p-10 rounded-3xl border border-stone-800 shadow-2xl mb-16 text-center">
-            <h3 class="text-2xl font-bold mb-2">Website de Conversão Ativa C.I Odontologia</h3>
-            <p class="text-zinc-400 text-sm mb-6 pb-6 border-b border-white/10">Design Exclusivo sob as cores reais da C.I, SEO Local, Mobile-First, Integração WhatsApp.</p>
+        <!-- Card Principal de Preço R$ 990 -->
+        <div class="max-w-2xl mx-auto bg-gradient-to-b from-stone-900/60 to-zinc-900/60 p-10 rounded-3xl border border-stone-800 shadow-[0_0_50px_rgba(0,0,0,0.5)] mb-16 relative backdrop-blur-sm transform transition hover:scale-[1.01]">
+            <div class="absolute top-0 right-0 bg-[#07dc40] text-black text-xs font-bold px-4 py-1 rounded-tr-3xl rounded-bl-xl z-20">OFERTA DE PROSPECÇÃO</div>
             
-            <div class="bg-stone-950/85 border border-stone-800 rounded-2xl p-8 mb-8 text-center">
-                <span class="text-[#07dc40] text-xs font-bold uppercase tracking-widest">Investimento Único</span>
-                <div class="flex items-baseline justify-center gap-x-2 mt-2">
+            <h3 class="text-2xl font-bold mb-2">Website de Conversão Ativa C.I Odontologia</h3>
+            <p class="text-zinc-400 text-sm mb-6 pb-6 border-b border-white/10">Design UI/UX Sob Medida, Otimização de SEO, Responsividade Mobile-First, Integração WhatsApp, Copywriting Persuasivo.</p>
+            
+            <!-- Investimento Único -->
+            <div class="bg-stone-950/85 border border-stone-800 rounded-2xl p-8 mb-8 relative shadow-[0_10px_30px_rgba(0,0,0,0.4)] mt-8 text-center">
+                <div class="flex items-center justify-center gap-2 mb-4">
+                    <i class="fa-solid fa-bolt text-[#07dc40] text-lg"></i>
+                    <span class="text-[#07dc40] text-xs font-bold uppercase tracking-widest">Investimento Único</span>
+                </div>
+                <div class="flex items-baseline justify-center gap-x-2">
                     <span class="text-2xl font-bold text-stone-400">R$</span>
-                    <span class="text-5xl sm:text-6xl font-black text-[#07dc40]">990</span>
+                    <span class="text-5xl sm:text-6xl font-black text-[#07dc40] tracking-tighter drop-shadow-[0_0_15px_rgba(7, 220, 64,0.35)]">990</span>
                     <span class="text-lg font-medium text-stone-500">/taxa única</span>
                 </div>
+                <p class="text-center text-stone-500 text-[10px] mt-4 font-semibold tracking-wider uppercase">PAGAMENTO À VISTA VIA PIX OU TRANSFERÊNCIA</p>
             </div>
 
-            <a href="https://wa.me/5511956608040?text=Aprovo%20a%20implementa%C3%A7%C3%A3o%20da%20Landing%20Page%20da%20CI%20Odontologia%20por%20R%24%20990" target="_blank" class="w-full bg-[#07dc40] hover:bg-[#00b5ab] text-black text-lg font-black py-5 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-3">
-                ACEITAR PROPOSTA AGORA <i class="fa-solid fa-arrow-right"></i>
+            <ul class="space-y-4 mb-10 text-sm text-zinc-300 text-left">
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#07dc40] text-lg"></i> Configuração completa de domínio e hospedagem</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#07dc40] text-lg"></i> SEO integrado para posicionamento local na Chácara Santo Antônio</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#07dc40] text-lg"></i> Certificado SSL de Conexão Segura</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-[#07dc40] text-lg"></i> Suporte técnico prioritário de 30 dias</li>
+                <li class="flex items-center gap-3"><i class="fa-solid fa-circle-info text-[#07dc40] text-lg"></i> <strong class="text-white">Investimento único, sem mensalidades ou taxas ocultas</strong></li>
+            </ul>
+
+            <a href="https://wa.me/5511956608040?text=Aprovo%20a%20implementa%C3%A7%C3%A3o%20da%20Landing%20Page%20da%20CI%20Odontologia%20por%20R%24%20990" target="_blank" id="btn-aceitar-proposta" class="btn-pdf-shimmer w-full bg-[#07dc40] hover:bg-[#00b5ab] text-black text-lg font-black py-5 rounded-2xl transition-all shadow-lg shadow-[#07dc40]/30 flex items-center justify-center gap-3 group relative overflow-hidden">
+                ACEITAR PROPOSTA AGORA <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
             </a>
+            <p class="text-center text-xs text-zinc-500 mt-4"><i class="fa-solid fa-lock text-zinc-600 mr-1"></i> Contrato e Nota Fiscal emitidos logo após a aprovação.</p>
+        </div>
+
+        <!-- Seção de Serviços Adicionais (Upsells) - 2 COLUNAS COMPLETA -->
+        <div class="max-w-5xl mx-auto mt-24 bg-gradient-to-b from-[#1c1917]/40 to-[#0c0a09]/80 p-8 md:p-12 rounded-3xl border border-[#07dc40]/20 shadow-[0_0_50px_rgba(7, 220, 64,0.05)] relative backdrop-blur-md">
+            <div class="absolute -top-4 left-8 bg-[#07dc40] text-black text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">
+                Expansões Tecnológicas
+            </div>
+            
+            <h3 class="text-2xl md:text-3xl font-display font-extrabold text-white mb-4 flex items-center gap-3">
+                <i class="fa-solid fa-square-plus text-[#07dc40]"></i> Módulos Avançados sob Demanda
+            </h3>
+            <p class="text-stone-400 mb-10 text-sm max-w-3xl leading-relaxed">
+                Leve a sua captação, operação e análise para o próximo nível. Integre novos recursos tecnológicos desenvolvidos sob medida pela ESCOM Studio:
+            </p>
+            
+            <div class="grid md:grid-cols-2 gap-6 mb-12">
+                <!-- CRM -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_crm.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="CRM">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">CRM e Controle de Pacientes</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Funil de agendamentos automatizado, envio de lembretes automáticos e acompanhamento via WhatsApp. Histórico de relacionamento com paciente.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Retenção & Recorrência</span>
+                    </div>
+                </div>
+
+                <!-- Dashboard -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_dashboard.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Dashboard">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Dashboard Financeiro & ROI</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Visualização do fluxo de caixa e conversão de novos pacientes em tempo real, controle de faturamento diário com gráficos intuitivos.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Gestão & Lucro</span>
+                    </div>
+                </div>
+
+                <!-- Agente IA -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_robot.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="AI Agent">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Agente de Atendimento IA 24/7</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Robô inteligente integrado ao WhatsApp Business, operando 24 horas por dia para realizar pré-agendamentos e tirar dúvidas dos pacientes.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Atendimento 24/7</span>
+                    </div>
+                </div>
+
+                <!-- Estoque -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_estoque.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Inventory">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Estoque Digital Inteligente</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Controle digital de entrada e saída de insumos cirúrgicos e implantes com alerta de estoque mínimo e integração.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Organização & Agilidade</span>
+                    </div>
+                </div>
+
+                <!-- Processos -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_processos.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Process">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Otimização de Fluxo Clínico</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Mapeamento e automação de fluxos operacionais para remover gargalos e acelerar a produtividade da clínica.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Produtividade Técnica</span>
+                    </div>
+                </div>
+
+                <!-- Gestão de Tráfego -->
+                <div class="group bg-stone-950/80 rounded-2xl border border-stone-850 hover:border-[#07dc40]/50 hover:shadow-[0_0_30px_rgba(7, 220, 64,0.15)] transition-all duration-300 hover:-translate-y-1 flex flex-col overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950/90 to-transparent z-10"></div>
+                        <img src="/template-silva-autocenter/upsell_ecommerce.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="E-commerce">
+                        <div class="absolute bottom-4 left-6 z-20 w-10 h-10 bg-[#07dc40] rounded-xl flex items-center justify-center text-black text-lg shadow-lg">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-2">Gestão de Tráfego Google Ads</h4>
+                            <p class="text-stone-400 text-xs leading-relaxed">Campanhas otimizadas focadas no público de alto padrão em busca de implantes na zona sul de São Paulo.</p>
+                        </div>
+                        <span class="text-[10px] text-[#07dc40] font-bold uppercase tracking-wider mt-4 block border-t border-stone-850 pt-4">Foco: Captação de Leads Qualificados</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dossiê Estratégico & Estudo de Mercado | C.I Odontologia</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            light: '#ffffff',
+                            primary: '#0A2540', /* CI Navy */
+                            accent: '#C5A059',  /* Gold Prestige */
+                            blue: '#0077B6',    /* Blue Ocean */
+                            text: '#3f3f46',
+                            darkText: '#18181b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Manrope', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        body {
+            background-color: #f4f4f5;
+            color: #3f3f46;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            font-family: 'Inter', sans-serif;
+        }
+        .pdf-page {
+            width: 210mm;
+            height: 297mm;
+            padding: 18mm;
+            margin: 30px auto;
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            position: relative;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            page-break-after: always;
+            page-break-inside: avoid;
+            border: 1px solid #e4e4e7;
+        }
+        .decor-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #0A2540 0%, #C5A059 100%);
+            z-index: 20;
+        }
+        @media print {
+            html, body {
+                background-color: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                height: 100% !important;
+                width: 210mm !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .pdf-page {
+                margin: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                background: #ffffff !important;
+                color: #3f3f46 !important;
+                width: 210mm !important;
+                height: 297mm !important;
+                page-break-after: always !important;
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- PÁGINA 1: CAPA DO DOSSIÊ -->
+<div class="pdf-page justify-between">
+    <div class="decor-line"></div>
+    
+    <!-- Cabeçalho Capa -->
+    <div class="flex justify-between items-center border-b border-zinc-200 pb-4 mt-2">
+        <div class="flex items-center gap-3">
+            <img src="https://cursoimplantes.com.br/wp-content/uploads/2023/11/CI-1-300x300.png" class="h-10 w-auto">
+            <div>
+                <span class="font-display font-extrabold text-brand-primary text-base block leading-none">C.I ODONTOLOGIA</span>
+                <span class="text-[9px] text-brand-accent font-bold tracking-widest uppercase">Documento Confidencial</span>
+            </div>
+        </div>
+        <span class="text-xs font-bold text-zinc-400">ESCOM STUDIO · 2026</span>
+    </div>
+
+    <!-- Conteúdo Principal Capa -->
+    <div class="my-auto space-y-6">
+        <div class="inline-block bg-brand-primary/10 border border-brand-primary/20 px-4 py-1.5 rounded-full text-brand-primary text-xs font-bold uppercase tracking-wider">
+            Dossiê de Arquitetura de Conversão & Posicionamento
+        </div>
+        
+        <h1 class="text-4xl font-display font-extrabold text-brand-primary leading-tight">
+            Diagnóstico Digital & Projeção de Captação para <span class="text-brand-accent">C.I Odontologia</span>
+        </h1>
+        
+        <p class="text-zinc-600 text-sm leading-relaxed max-w-xl">
+            Estudo técnico preparado exclusivamente para a coordenação médica do <strong class="text-zinc-900">Dr. Renato Vicente Ferreira</strong> (CRO-SP 42595), analisando a otimização de conversão na região da Chácara Santo Antônio em São Paulo.
+        </p>
+
+        <div class="grid grid-cols-2 gap-4 pt-6 border-t border-zinc-200 text-xs">
+            <div class="bg-zinc-50 p-4 rounded-xl border border-zinc-200">
+                <span class="text-zinc-400 block font-bold uppercase">Empresa Alvo</span>
+                <strong class="text-zinc-900 text-sm">C.I Odontologia (Clínica Integrada)</strong>
+            </div>
+            <div class="bg-zinc-50 p-4 rounded-xl border border-zinc-200">
+                <span class="text-zinc-400 block font-bold uppercase">Responsável Técnico</span>
+                <strong class="text-zinc-900 text-sm">Dr. Renato Vicente Ferreira (UNIFESP / USP)</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rodapé Capa -->
+    <div class="border-t border-zinc-200 pt-4 flex justify-between items-center text-xs text-zinc-400">
+        <span>ESCOM Studio · Engenharia de Conversão</span>
+        <span>Página 1 de 4</span>
+    </div>
+</div>
+
+<!-- PÁGINA 2: ANÁLISE DE MERCADO & DIAGNÓSTICO -->
+<div class="pdf-page justify-between">
+    <div class="decor-line"></div>
+    
+    <div class="flex justify-between items-center border-b border-zinc-200 pb-3 mt-2 text-xs">
+        <strong class="text-brand-primary">1. DIAGNÓSTICO DE MERCADO E UX/UI</strong>
+        <span class="text-zinc-400">C.I ODONTOLOGIA</span>
+    </div>
+
+    <div class="space-y-6 my-auto text-xs">
+        <h2 class="text-2xl font-display font-bold text-brand-primary">Análise do Cenário Atual (cursoimplantes.com.br)</h2>
+        
+        <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl text-amber-900 space-y-2">
+            <strong class="block text-sm font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Principais Gargalos Identificados no Site Atual:</strong>
+            <ul class="list-disc pl-5 space-y-1">
+                <li><strong>Foco Dividido:</strong> O site atual mistura o atendimento a pacientes finais com a venda de cursos para dentistas, gerando confusão na jornada de quem deseja agendar um implante.</li>
+                <li><strong>Falta de Botões de Ação Imediata (CTA):</strong> Ausência de funil direto para atendimento pelo WhatsApp na primeira dobra mobile.</li>
+                <li><strong>Velocidade & Responsividade:</strong> Elementos pesados sem otimização de imagens causam lentidão de carregamento no 4G.</li>
+            </ul>
+        </div>
+
+        <h3 class="text-lg font-display font-bold text-brand-primary pt-2">Solução Proposta pela ESCOM Studio</h3>
+        <p class="text-zinc-600 leading-relaxed">
+            Desenvolvimento de uma Landing Page com **duplo pilar limpo**: separação clara entre a **Clínica de Reabilitação Oral de Alta Precisão** para pacientes e o **Centro de Pós-Graduação** para alunos, mantendo as cores e a tipografia original da C.I Odontologia.
+        </p>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div class="p-4 bg-zinc-50 border border-zinc-200 rounded-xl">
+                <strong class="text-brand-primary block text-sm mb-1">Pilar Clínico Paciente</strong>
+                <p class="text-zinc-500">Implantes 3D, Carga Imediata e Prótese Protocolo em Zircônia sem metal.</p>
+            </div>
+            <div class="p-4 bg-zinc-50 border border-zinc-200 rounded-xl">
+                <strong class="text-brand-primary block text-sm mb-1">Pilar Ensino & Pesquisa</strong>
+                <p class="text-zinc-500">Cursos de aperfeiçoamento em implantodontia com a mentoria do Dr. Renato.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="border-t border-zinc-200 pt-4 flex justify-between items-center text-xs text-zinc-400">
+        <span>C.I Odontologia · Dossiê Confidencial</span>
+        <span>Página 2 de 4</span>
+    </div>
+</div>
+
+<!-- PÁGINA 3: PROJEÇÃO FINANCEIRA E ROI -->
+<div class="pdf-page justify-between">
+    <div class="decor-line"></div>
+    
+    <div class="flex justify-between items-center border-b border-zinc-200 pb-3 mt-2 text-xs">
+        <strong class="text-brand-primary">2. PROJEÇÃO FINANCEIRA E CAPTAÇÃO DE LEADS</strong>
+        <span class="text-zinc-400">C.I ODONTOLOGIA</span>
+    </div>
+
+    <div class="space-y-6 my-auto text-xs">
+        <h2 class="text-2xl font-display font-bold text-brand-primary">Projeção de Retorno sobre o Investimento (ROI)</h2>
+        
+        <p class="text-zinc-600 leading-relaxed">
+            Considerando o ticket médio de tratamentos de implantodontia e reabilitação em Zircônia na região da Zona Sul de São Paulo:
+        </p>
+
+        <div class="grid grid-cols-3 gap-3 text-center">
+            <div class="p-4 bg-brand-primary text-white rounded-xl">
+                <span class="text-[10px] text-zinc-300 uppercase block">Ticket Médio Implante</span>
+                <strong class="text-lg text-brand-accent">R$ 4.500</strong>
+            </div>
+            <div class="p-4 bg-brand-primary text-white rounded-xl">
+                <span class="text-[10px] text-zinc-300 uppercase block">Taxa de Conversão Esperada</span>
+                <strong class="text-lg text-emerald-400">8.5%</strong>
+            </div>
+            <div class="p-4 bg-brand-primary text-white rounded-xl">
+                <span class="text-[10px] text-zinc-300 uppercase block">Retorno Estimado (Mensal)</span>
+                <strong class="text-lg text-brand-accent">12x ROI</strong>
+            </div>
+        </div>
+
+        <div class="bg-zinc-50 border border-zinc-200 p-5 rounded-xl space-y-3">
+            <strong class="text-brand-primary text-sm block">Escopo Técnico Incluso na Proposta:</strong>
+            <div class="grid grid-cols-2 gap-2 text-zinc-600">
+                <p>✓ Design UI/UX Mobile-First Customizado</p>
+                <p>✓ SEO Otimizado para Chácara Santo Antônio</p>
+                <p>✓ Hospedagem CDN de Alta Velocidade</p>
+                <p>✓ Integração Direta com WhatsApp Business</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="border-t border-zinc-200 pt-4 flex justify-between items-center text-xs text-zinc-400">
+        <span>ESCOM Studio · Proposta Técnica</span>
+        <span>Página 3 de 4</span>
+    </div>
+</div>
+
+<!-- PÁGINA 4: CONCLUSÃO & TERMOS -->
+<div class="pdf-page justify-between">
+    <div class="decor-line"></div>
+    
+    <div class="flex justify-between items-center border-b border-zinc-200 pb-3 mt-2 text-xs">
+        <strong class="text-brand-primary">3. APROVAÇÃO E CONDIÇÕES</strong>
+        <span class="text-zinc-400">C.I ODONTOLOGIA</span>
+    </div>
+
+    <div class="space-y-6 my-auto text-xs">
+        <h2 class="text-2xl font-display font-bold text-brand-primary">Resumo da Proposta de Implementação</h2>
+        
+        <div class="p-6 bg-zinc-900 text-white rounded-2xl space-y-4 text-center">
+            <span class="text-brand-accent text-xs font-bold uppercase tracking-widest block">Investimento Único Sem Mensalidades</span>
+            <div class="text-4xl font-extrabold text-emerald-400">R$ 990,00</div>
+            <p class="text-zinc-400 text-xs">Pagamento à vista via PIX ou Transferência Bancária</p>
+        </div>
+
+        <div class="p-4 border border-zinc-200 rounded-xl space-y-2 text-zinc-600">
+            <strong class="text-zinc-900 block">Garantia & Suporte:</strong>
+            <p>Implementação entregue em até 48 horas úteis após aprovação, com 30 dias de suporte técnico prioritário incluídos.</p>
+        </div>
+    </div>
+
+    <div class="border-t border-zinc-200 pt-4 flex justify-between items-center text-xs text-zinc-400">
+        <span>ESCOM Studio · Todos os direitos reservados</span>
+        <span>Página 4 de 4</span>
+    </div>
+</div>
+
+</body>
+</html>
