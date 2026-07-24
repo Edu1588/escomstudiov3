@@ -13,14 +13,14 @@
     <meta property="og:url" content="https://escomstudio.com.br/template-ci-odontologia/index.html">
     <meta property="og:title" content="C.I Odontologia | Reabilitação Oral & Cirurgias Avançadas 3D">
     <meta property="og:description" content="+30 anos de tradição em implantodontia sob coordenação do Dr. Renato Ferreira. Excelência clínica e rigor acadêmico na Chácara Santo Antônio.">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop">
+    <meta property="og:image" content="/template-ci-odontologia/clinica_real.png">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://escomstudio.com.br/template-ci-odontologia/index.html">
     <meta property="twitter:title" content="C.I Odontologia | Reabilitação Oral & Cirurgias Avançadas 3D">
     <meta property="twitter:description" content="+30 anos de tradição em implantodontia sob coordenação do Dr. Renato Ferreira. Excelência clínica e rigor acadêmico na Chácara Santo Antônio.">
-    <meta property="twitter:image" content="https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop">
+    <meta property="twitter:image" content="/template-ci-odontologia/clinica_real.png">
     
     <!-- Favicon Oficial C.I -->
     <link rel="icon" href="https://cursoimplantes.com.br/wp-content/uploads/2023/11/CI-1-300x300.png" type="image/png">
@@ -31,7 +31,7 @@
       "@context": "https://schema.org",
       "@type": "Dentist",
       "name": "C.I Odontologia (Clínica Integrada)",
-      "image": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop",
+      "image": "/template-ci-odontologia/clinica_real.png",
       "@id": "https://escomstudio.com.br/template-ci-odontologia/index.html",
       "url": "https://escomstudio.com.br/template-ci-odontologia/index.html",
       "telephone": "+5511956608040",
@@ -218,7 +218,7 @@
     <!-- Hero Section -->
     <header id="inicio" class="hero-section min-h-[90vh] flex items-center pt-36 relative overflow-hidden">
         <!-- Animated Background Image (Ken Burns Effect) -->
-        <div class="absolute inset-0 w-full h-full z-0 bg-cover bg-center origin-center transition-transform duration-[20000ms] ease-linear hover:scale-110" style="background-image: url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop'); transform: scale(1.05);"></div>
+        <div class="absolute inset-0 w-full h-full z-0 bg-cover bg-center origin-center transition-transform duration-[20000ms] ease-linear hover:scale-110" style="background-image: url('/template-ci-odontologia/clinica_real.png'); transform: scale(1.05);"></div>
         <!-- Lighter Overlay -->
         <div class="absolute inset-0 z-0 opacity-80 hero-overlay"></div>
         <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 w-full grid lg:grid-cols-2 gap-12 items-center">
@@ -324,7 +324,7 @@
             <div class="grid lg:grid-cols-2 gap-16 items-center">
                 <div class="relative gsap-scale">
                     <div class="absolute inset-0 bg-ciNavy-700 rounded-3xl transform rotate-3 scale-105"></div>
-                    <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop" alt="Estrutura CI Odontologia" class="relative z-10 w-full rounded-2xl shadow-xl object-cover h-[500px]">
+                    <img src="/template-ci-odontologia/clinica_real.png" alt="Estrutura CI Odontologia" class="relative z-10 w-full rounded-2xl shadow-xl object-cover h-[500px]">
                     <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl border border-slate-200 z-20 flex items-center gap-4">
                         <div class="w-12 h-12 bg-ciNavy-800 rounded-full flex items-center justify-center text-white"><i class="fa-solid fa-award text-xl text-ciGold-500"></i></div>
                         <div>
@@ -343,21 +343,26 @@
                         Nossa estrutura física é desenhada para oferecer comodidade: desde o diagnóstico inicial em consultório até o planejamento cirúrgico computadorizado 3D de reabilitações extensas e de alta performance.
                     </p>
                     
-                    <!-- Corpo Clínico Highlight -->
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-250 mb-8">
-                        <div class="flex items-center gap-6">
-                            <img src="https://cursoimplantes.com.br/wp-content/uploads/2023/11/foto-dr-renato.png" alt="Dr. Renato Vicente Ferreira" class="w-20 h-20 rounded-full object-cover shadow-md border-2 border-ciGold-500">
-                            <div>
-                                <h4 class="font-bold text-slate-900 text-lg">Dr. Renato Vicente Ferreira</h4>
-                                <p class="text-sm text-ciGold-500 font-bold mb-1">CRO-SP 42.595 • Diretor Clínico</p>
-                                <p class="text-xs text-slate-500">Mestre em Osteometabolismo pela UNIFESP e Especialista Fundecto USP. Mais de 30 anos de atuação cirúrgica em implantodontia.</p>
+                    <!-- Corpo Clínico Highlight de Alto Destaque -->
+                    <div class="bg-ciNavy-900 border border-ciGold-500/30 rounded-3xl p-8 shadow-2xl relative overflow-hidden mb-8 mt-12 text-left">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-ciGold-500/5 rounded-full blur-2xl"></div>
+                        <div class="flex flex-col md:flex-row items-center md:items-start gap-8 relative z-10">
+                            <div class="relative shrink-0">
+                                <div class="absolute inset-0 bg-ciGold-500/10 rounded-2xl rotate-6 transform scale-105"></div>
+                                <img src="https://cursoimplantes.com.br/wp-content/uploads/2023/11/foto-dr-renato.png" alt="Dr. Renato Vicente Ferreira" class="relative z-10 w-32 h-36 rounded-2xl object-cover shadow-xl border-2 border-ciGold-500">
+                            </div>
+                            <div class="text-center md:text-left">
+                                <span class="bg-ciGold-500/10 text-ciGold-500 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-3 inline-block">Responsável Clínico</span>
+                                <h4 class="font-serif font-bold text-white text-2xl mb-1">Dr. Renato Vicente Ferreira</h4>
+                                <p class="text-xs text-ciGold-500 font-mono tracking-wider uppercase mb-4">CRO-SP 42.595 • Responsável Técnico</p>
+                                <p class="text-sm text-slate-300 leading-relaxed mb-4">
+                                    Mestre em Osteometabolismo pela UNIFESP, especialista em Prótese Dentária pela UNESP Araraquara e especialista em Cirurgias Avançadas em Implantodontia pela Fundecto USP. Com mais de 30 anos de rigor científico e experiência acadêmica, o Dr. Renato lidera o corpo clínico da C.I. Odontologia promovendo tratamentos de reabilitação oral e implantes guiados 3D com precisão milimétrica.
+                                </p>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            
-            <!-- Galeria de Estrutura -->
+                    
+                    <!-- Galeria de Estrutura -->
             <div class="mt-20 gsap-fade-up">
                 <h4 class="text-center font-bold text-slate-800 text-2xl mb-8 font-serif">Infraestrutura Clínica & Diagnóstico</h4>
                 
