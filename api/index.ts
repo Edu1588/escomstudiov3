@@ -1821,6 +1821,69 @@ app.all("/api/piassa-cron", async (req, res) => {
   }
 });
 
+// --- Enviar todas as vagas salvas por email em lotes de 30 ---
+app.post("/api/piassa/send-all-jobs", async (req, res) => {
+  try {
+    await ensureAuth();
+    const snap = await getDocs(collection(db, "jobs"));
+    const allJobs = snap.docs.map(d => ({ id: d.id, ...d.data() as any }));
+
+    if (allJobs.length === 0) {
+      return res.json({ success: true, message: "Nenhuma vaga encontrada.", sent: 0 });
+    }
+
+    const resendApiKey = process.env.RESEND_API_KEY || "re_Hmg78ECH_8JJ7LJUeQ92FUfMwWwUyzPqY";
+    const resend = new Resend(resendApiKey);
+    const receiverEmail = "vamosvencerjuntos@gmail.com";
+    const BATCH_SIZE = 30;
+    const totalBatches = Math.ceil(allJobs.length / BATCH_SIZE);
+    let sentBatches = 0;
+
+    for (let i = 0; i < allJobs.length; i += BATCH_SIZE) {
+      const batch = allJobs.slice(i, i + BATCH_SIZE);
+      const batchNum = sentBatches + 1;
+
+      let listHtml = "";
+      batch.forEach((job, idx) => {
+        listHtml += `
+          <div style="border-bottom: 1px solid #eee; padding: 12px 0; font-family: sans-serif;">
+            <h4 style="margin: 0 0 4px 0; color: #00d1ff; font-size: 14px;">#${i + idx + 1} - ${job.title || "Sem Título"}</h4>
+            <p style="margin: 0 0 4px 0; font-size: 12px;"><strong>Empresa:</strong> ${job.company || "N/I"} | <strong>Função:</strong> ${job.role || "N/I"} | <strong>Status:</strong> ${job.status || "Pendente"}</p>
+            ${job.emailContato ? `<p style="margin: 0 0 4px 0; font-size: 12px;"><strong>E-mail Contato:</strong> ${job.emailContato}</p>` : ""}
+            <p style="margin: 0; font-size: 11px; color: #666; font-style: italic;">"${(job.snippet || "").substring(0, 120)}..."</p>
+            ${job.link ? `<p style="margin: 4px 0 0 0; font-size: 11px;"><a href="${job.link}" target="_blank" style="color: #00d1ff; text-decoration: none; font-weight: bold;">Acessar Vaga &rarr;</a></p>` : ""}
+          </div>
+        `;
+      });
+
+      await resend.emails.send({
+        from: "Piassa Vagas <onboarding@resend.dev>",
+        to: receiverEmail,
+        subject: `📋 Lote ${batchNum}/${totalBatches} - ${batch.length} Vagas Piassa (${allJobs.length} total)`,
+        html: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
+            <h2 style="color: #111; border-bottom: 2px solid #00d1ff; padding-bottom: 10px; margin-top: 0;">📋 Lote ${batchNum} de ${totalBatches}</h2>
+            <p>Envio em lotes de 30 vagas. Esta é a <strong>${batchNum}ª remessa</strong> de <strong>${totalBatches}</strong> total.</p>
+            <hr style="border: 0; border-top: 1px solid #eee;"/>
+            ${listHtml}
+            <br/>
+            <p style="font-size: 12px; color: #888;">Progresso: ${Math.min(i + BATCH_SIZE, allJobs.length)}/${allJobs.length} vagas enviadas.</p>
+            <p>Acesse o painel: <a href="https://escomstudio.com.br/piassa" target="_blank" style="color: #00d1ff; font-weight: bold; text-decoration: none;">Painel Piassa</a></p>
+          </div>
+        `
+      });
+
+      sentBatches++;
+      console.log(`[PIASSA_SEND_ALL] Lote ${batchNum}/${totalBatches} enviado com ${batch.length} vagas.`);
+    }
+
+    res.json({ success: true, totalJobs: allJobs.length, totalBatches, sentBatches });
+  } catch (e: any) {
+    console.error("[PIASSA_SEND_ALL] Erro:", e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // --- Rotas de Cron Adicionais para Evitar 404 do Vercel Scheduler ---
 app.all("/api/trigger-cron", async (req, res) => {
   res.json({ success: true, message: "Cron trigger-cron executed successfully" });
