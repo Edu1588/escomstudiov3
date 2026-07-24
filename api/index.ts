@@ -260,7 +260,7 @@ async function mineAndSaveVagas() {
 
   if (newlyAddedJobs.length > 0) {
     try {
-      const resendApiKey = process.env.RESEND_API_KEY || "re_UmqH3RyE_MK1VdBdNEpdgQtuNvN8nAjq1";
+      const resendApiKey = process.env.RESEND_API_KEY || "re_Hmg78ECH_8JJ7LJUeQ92FUfMwWwUyzPqY";
       const resend = new Resend(resendApiKey);
       const receiverEmail = "vamosvencerjuntos@gmail.com";
 
@@ -726,7 +726,7 @@ app.get("/api/send-test-email", async (req, res) => {
       `;
     });
 
-    const resendApiKey = process.env.RESEND_API_KEY || "re_UmqH3RyE_MK1VdBdNEpdgQtuNvN8nAjq1";
+    const resendApiKey = process.env.RESEND_API_KEY || "re_Hmg78ECH_8JJ7LJUeQ92FUfMwWwUyzPqY";
     const resend = new Resend(resendApiKey);
 
     const emailResponse = await resend.emails.send({
@@ -1627,7 +1627,7 @@ app.post("/api/contact", async (req, res) => {
     }
     const protocol = "ESCOM-" + Math.floor(100000 + Math.random() * 900000);
     
-    const resendApiKey = process.env.RESEND_API_KEY || "re_UmqH3RyE_MK1VdBdNEpdgQtuNvN8nAjq1";
+    const resendApiKey = process.env.RESEND_API_KEY || "re_Hmg78ECH_8JJ7LJUeQ92FUfMwWwUyzPqY";
     const resend = new Resend(resendApiKey);
 
     const receiverEmail = process.env.CONTACT_RECEIVER_EMAIL || "es.comunicacao@outlook.com";
@@ -1705,7 +1705,7 @@ app.all("/api/piassa-cron", async (req, res) => {
     let fallbackJobs: any[] = [];
     
     if (pendingJobs.length > 0) {
-      const resendApiKey = process.env.RESEND_API_KEY || "re_UmqH3RyE_MK1VdBdNEpdgQtuNvN8nAjq1";
+      const resendApiKey = process.env.RESEND_API_KEY || "re_Hmg78ECH_8JJ7LJUeQ92FUfMwWwUyzPqY";
       const resend = new Resend(resendApiKey);
       const receiverEmail = process.env.PIASSA_RECEIVER_EMAIL || "vamosvencerjuntos@gmail.com";
 
