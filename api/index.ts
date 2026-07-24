@@ -606,6 +606,30 @@ initCronJobs();
 
 app.get("/api/health", (req, res) => { res.json({ status: "ok" }); });
 
+app.get("/api/debug-files", (req, res) => {
+  const paths = [
+    path.join(process.cwd(), "public", "template-ci-odontologia", "index.html"),
+    path.join(process.cwd(), "template-ci-odontologia", "index.html"),
+    path.join(process.cwd(), "dist", "template-ci-odontologia", "index.html"),
+    path.join(process.cwd(), "index.html")
+  ];
+  const results = {};
+  for (const p of paths) {
+    if (fs.existsSync(p)) {
+      const content = fs.readFileSync(p, "utf-8");
+      results[p] = {
+        exists: true,
+        size: content.length,
+        title: content.match(/<title>([\s\S]*?)<\/title>/)?.[1] || "No title",
+        ciNavy: content.includes("ciNavy")
+      };
+    } else {
+      results[p] = { exists: false };
+    }
+  }
+  res.json({ results, cwd: process.cwd() });
+});
+
 app.get("/api/trigger-minera", async (req, res) => {
   try { const r = await runMineraLeadsCron(); res.json({ success: true, r }); }
   catch(e) { res.status(500).json({ error: e.message }); }
