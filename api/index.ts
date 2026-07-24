@@ -205,6 +205,7 @@ async function mineAndSaveVagas() {
   
   const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
   let added = 0;
+  const newlyAddedJobs: any[] = [];
   
   for (const item of results) {
     if (!item.url || existingLinks.has(item.url)) continue;
@@ -238,7 +239,7 @@ async function mineAndSaveVagas() {
 
     // Salvar todas as vagas recentes com e-mail ou link
     const jobId = "job_" + Math.random().toString(36).substring(2, 15);
-    await setDoc(doc(db, "jobs", jobId), {
+    const jobData = {
       title: item.title || "Vaga de Marketing",
       company: company,
       snippet: item.snippet || "",
@@ -247,13 +248,57 @@ async function mineAndSaveVagas() {
       status: "Pendente",
       emailContato: emailContato,
       createdAt: Date.now()
-    });
+    };
+    await setDoc(doc(db, "jobs", jobId), jobData);
     
+    newlyAddedJobs.push(jobData);
     existingLinks.add(item.url);
     added++;
   }
   
   console.log(`[VAGAS_MINER] Mineração concluída: ${added} novas vagas salvas no Firestore.`);
+
+  if (newlyAddedJobs.length > 0) {
+    try {
+      const resendApiKey = process.env.RESEND_API_KEY || "re_UmqH3RyE_MK1VdBdNEpdgQtuNvN8nAjq1";
+      const resend = new Resend(resendApiKey);
+      const receiverEmail = "vamosvencerjuntos@gmail.com";
+
+      console.log(`[VAGAS_MINER] Enviando e-mail de notificação para ${receiverEmail} com as ${newlyAddedJobs.length} novas vagas...`);
+
+      let listHtml = "";
+      newlyAddedJobs.forEach((job, idx) => {
+        listHtml += `
+          <div style="border-bottom: 1px solid #eee; padding: 15px 0; font-family: sans-serif;">
+            <h4 style="margin: 0 0 5px 0; color: #00d1ff; font-size: 16px;">#${idx + 1} - ${job.title}</h4>
+            <p style="margin: 0 0 5px 0; font-size: 13px;"><strong>Empresa:</strong> ${job.company} | <strong>Função:</strong> ${job.role}</p>
+            ${job.emailContato ? `<p style="margin: 0 0 5px 0; font-size: 13px;"><strong>E-mail de Contato:</strong> ${job.emailContato}</p>` : ""}
+            <p style="margin: 0; font-size: 12px; color: #666; font-style: italic;">"${job.snippet}"</p>
+            ${job.link ? `<p style="margin: 5px 0 0 0; font-size: 12px;"><a href="${job.link}" target="_blank" style="color: #00d1ff; text-decoration: none; font-weight: bold;">Acessar Vaga &rarr;</a></p>` : ""}
+          </div>
+        `;
+      });
+
+      await resend.emails.send({
+        from: "Piassa Vagas <onboarding@resend.dev>",
+        to: receiverEmail,
+        subject: `📢 ${newlyAddedJobs.length} Nova(s) Vaga(s) Minerada(s) & Salva(s) - Piassa`,
+        html: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
+            <h2 style="color: #111; border-bottom: 2px solid #00d1ff; padding-bottom: 10px; margin-top: 0;">📢 Novas Vagas Encontradas - Piassa</h2>
+            <p>O robô do Piassa acabou de minerar e salvar as seguintes novas vagas:</p>
+            <hr style="border: 0; border-top: 1px solid #eee;"/>
+            ${listHtml}
+            <br/>
+            <p>Acesse o painel do Piassa para gerenciar as vagas: <a href="https://escomstudio.com.br/piassa" target="_blank" style="color: #00d1ff; font-weight: bold; text-decoration: none;">Painel Piassa</a></p>
+          </div>
+        `
+      });
+      console.log(`[VAGAS_MINER] E-mail de notificação de mineração enviado com sucesso.`);
+    } catch (err: any) {
+      console.error("[VAGAS_MINER] Falha ao enviar e-mail de notificação de mineração:", err.message);
+    }
+  }
 }
 
 export async function autoBuildSiteFromLead(p, query, groq) {
