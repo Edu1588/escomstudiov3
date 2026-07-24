@@ -4,8 +4,6 @@
     { "source": "/template-ci-odontologia/dossie", "destination": "/template-ci-odontologia/dossie.html" },
     { "source": "/template-ci-odontologia/dossie.html", "destination": "/template-ci-odontologia/dossie.html" },
     { "source": "/template-ci-odontologia/dossie-ci-odontologia.pdf", "destination": "/template-ci-odontologia/dossie.html" },
-    { "source": "/template-ci-odontologia", "destination": "/template-ci-odontologia/index.html" },
-    { "source": "/template-ci-odontologia/index.html", "destination": "/template-ci-odontologia/index.html" },
     { "source": "/site-aventis-ma", "destination": "/site-aventis-ma/index.html" },
     { "source": "/site-aventis-ma/analise", "destination": "/site-aventis-ma/analise.html" },
     { "source": "/site-aventis-ma/analise.pdf", "destination": "/site-aventis-ma/analise.html" },

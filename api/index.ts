@@ -47,6 +47,7 @@ export async function ensureAuth() {
 ensureAuth().catch(err => console.error("Initial auth failed:", err));
 
 app.get(["/template-ci-odontologia", "/template-ci-odontologia/index.html"], (req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0");
   const filePath = path.join(process.cwd(), "public", "template-ci-odontologia", "index.html");
   if (fs.existsSync(filePath)) {
     res.setHeader("Content-Type", "text/html; charset=utf-8");
@@ -61,6 +62,7 @@ app.get(["/template-ci-odontologia", "/template-ci-odontologia/index.html"], (re
 });
 
 app.get(["/template-ci-odontologia/dossie", "/template-ci-odontologia/dossie.html", "/template-ci-odontologia/dossie-ci-odontologia.pdf"], (req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0");
   const filePath = path.join(process.cwd(), "public", "template-ci-odontologia", "dossie.html");
   if (fs.existsSync(filePath)) {
     res.setHeader("Content-Type", "text/html; charset=utf-8");
