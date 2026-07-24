@@ -682,6 +682,75 @@ app.get("/api/trigger-minera", async (req, res) => {
   catch(e) { res.status(500).json({ error: e.message }); }
 });
 
+app.get("/api/send-test-email", async (req, res) => {
+  const destination = (req.query.email as string) || "es.comunicacao@outlook.com";
+  try {
+    const snap = await getDocs(collection(db, "jobs"));
+    const jobs = snap.docs.map(d => {
+      const data = d.data();
+      return {
+        id: d.id,
+        title: data.title || "Vaga de Marketing",
+        company: data.company || "Não informada",
+        snippet: data.snippet || "",
+        link: data.link || "",
+        role: data.role || "Não informada",
+        status: data.status || "Pendente",
+        emailContato: data.emailContato || null,
+        createdAt: data.createdAt || 0
+      };
+    });
+
+    // Ordenar das mais recentes para as mais antigas e pegar apenas as 10 primeiras
+    jobs.sort((a, b) => b.createdAt - a.createdAt);
+    const testChunk = jobs.slice(0, 10);
+
+    let jobsHtml = "";
+    testChunk.forEach((job, idx) => {
+      const formattedDate = job.createdAt ? new Date(job.createdAt).toLocaleDateString("pt-BR") : "N/A";
+      jobsHtml += `
+        <div style="border-bottom: 1px solid #eee; padding: 15px 0; font-family: sans-serif;">
+          <h4 style="margin: 0 0 5px 0; color: #00d1ff; font-size: 16px;">#${idx + 1} - ${job.title}</h4>
+          <p style="margin: 0 0 5px 0; font-size: 13px;">
+            <strong>Empresa:</strong> ${job.company} | 
+            <strong>Função:</strong> ${job.role} | 
+            <strong>Status:</strong> <span style="background: #eee; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${job.status}</span>
+          </p>
+          ${job.emailContato ? `<p style="margin: 0 0 5px 0; font-size: 13px;"><strong>E-mail Contato:</strong> ${job.emailContato}</p>` : ""}
+          <p style="margin: 0; font-size: 12px; color: #666; font-style: italic;">"${job.snippet}"</p>
+          <div style="margin-top: 8px; font-size: 12px; display: flex; gap: 15px;">
+            <span><strong>Criada em:</strong> ${formattedDate}</span>
+            ${job.link ? `<span><a href="${job.link}" target="_blank" style="color: #00d1ff; text-decoration: none; font-weight: bold;">Acessar Vaga &rarr;</a></span>` : ""}
+          </div>
+        </div>
+      `;
+    });
+
+    const resendApiKey = process.env.RESEND_API_KEY || "re_UmqH3RyE_MK1VdBdNEpdgQtuNvN8nAjq1";
+    const resend = new Resend(resendApiKey);
+
+    const emailResponse = await resend.emails.send({
+      from: "Piassa Vagas <onboarding@resend.dev>",
+      to: destination,
+      subject: `🧪 Teste de Integração: 10 Vagas Recentes - Piassa`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
+          <h2 style="color: #111; border-bottom: 2px solid #00d1ff; padding-bottom: 10px; margin-top: 0;">🧪 Teste de Conectividade Piassa</h2>
+          <p>Olá! Este é um e-mail de validação contendo as 10 vagas mais recentes encontradas no banco de dados do Piassa.</p>
+          <hr style="border: 0; border-top: 1px solid #eee;"/>
+          ${jobsHtml}
+          <br/>
+          <p>Acesse o painel para gerenciar todas as vagas: <a href="https://escomstudio.com.br/piassa" target="_blank" style="color: #00d1ff; font-weight: bold; text-decoration: none;">Painel Piassa</a></p>
+        </div>
+      `
+    });
+
+    res.json({ success: true, message: `E-mail de teste enviado com sucesso para ${destination}`, data: emailResponse });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 app.get("/api/auto-build-pipeline", async (req, res) => {
   try { const r = await runAutoBuildPipeline(); res.json({ success: true, result: r }); }
   catch(e) { res.status(500).json({ error: e.message }); }
