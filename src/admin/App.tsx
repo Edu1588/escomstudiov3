@@ -40,6 +40,7 @@ import Financas from "./pages/Financas";
 import Login from "./pages/Login";
 import Trajetoria from "./pages/Trajetoria";
 import Escritorio from "./pages/Escritorio";
+import Agendamentos from "./pages/Agendamentos";
 import { VoicePoweredOrb } from "../components/ui/voice-powered-orb";
 
 function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: boolean) => void }) {
@@ -83,9 +84,11 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
       name: "Prospect", 
       icon: <Target size={18} />,
       subItems: [
-        { name: "Prospect Suite", path: "/prospect" },
-        { name: "Mineração de Sites", path: "/mineracao" },
+        { name: "Dashboard", path: "/" },
         { name: "Leads", path: "/leads" },
+        { name: "CRM", path: "/prospect" },
+        { name: "Agendamentos", path: "/agendamentos" },
+        { name: "Mineração de Sites", path: "/mineracao" },
         { name: "WhatsApp CRM ↗", path: "https://escom-crm.vercel.app", isExternal: true }
       ]
     },
@@ -332,6 +335,7 @@ export default function App() {
           <Route path="/saude" element={<Saude />} />
           <Route path="/financas" element={<Financas />} />
           <Route path="/escritorio" element={<Escritorio />} />
+          <Route path="/agendamentos" element={<Agendamentos />} />
         </Routes>
       </main>
       <div className="fixed bottom-6 right-6 z-[100] w-20 h-20 pointer-events-none">
