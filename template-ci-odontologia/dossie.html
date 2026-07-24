@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dossiê Estratégico | CI Odontologia</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Mulish:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            light: '#ffffff',
+                            primary: '#0C2B4E', /* Navy oficial */
+                            accent: '#C5A059',  /* Gold oficial */
+                            text: '#3f4e5f',
+                            darkText: '#061626'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Mulish', 'sans-serif'],
+                        display: ['Manrope', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+            user-select: none;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            font-family: 'Mulish', sans-serif;
+        }
+        .pdf-page {
+            width: 210mm;
+            height: 297mm;
+            padding: 18mm;
+            margin: 30px auto;
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            position: relative;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            page-break-after: always;
+            page-break-inside: avoid;
+            border: 1px solid #e2e8f0;
+        }
+        .decor-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #0C2B4E 0%, #C5A059 100%);
+            z-index: 20;
+        }
+        @media print {
+            html, body {
+                background-color: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                height: 100% !important;
+                width: 210mm !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .pdf-page {
+                margin: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                background: #ffffff !important;
+                color: #334155 !important;
+                width: 210mm !important;
+                height: 297mm !important;
+                page-break-after: always !important;
+                page-break-inside: avoid !important;
+            }
+            .print\:hidden {
+                display: none !important;
+            }
+        }
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 8rem;
+            color: rgba(12, 43, 78, 0.01);
+            font-weight: 800;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header flutuante de navegação para a Web -->
+    <div class="max-w-[210mm] mx-auto mb-2 mt-4 px-4 flex justify-between items-center text-xs text-slate-500 print:hidden">
+        <div>
+            <a href="index.html" class="text-slate-600 hover:text-brand-accent font-bold transition flex items-center gap-1">
+                <i class="fa-solid fa-arrow-left"></i> Voltar para o Site
+            </a>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="window.print()" class="bg-brand-primary hover:bg-brand-accent text-white hover:text-brand-primary font-bold px-4 py-1.5 rounded-lg shadow-md transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-print"></i> Imprimir / Salvar PDF
+            </button>
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>MODO DE IMPRESSÃO (A4 CLEAN)</span>
+        </div>
+    </div>
+
+    <!-- PÁGINA 1: CAPA EDITORIAL CLEAN -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer justify-between h-full py-6">
+            <div class="space-y-2">
+                <p class="text-slate-400 font-mono text-sm tracking-[0.2em] uppercase">ESCOM Studio &bull; Business Intelligence</p>
+                <h1 class="text-brand-primary font-display font-black text-5xl leading-tight">
+                    Análise Estratégica<br>
+                    <span class="text-brand-accent">CI Odontologia</span>
+                </h1>
+                <div class="w-16 h-1.5 bg-brand-accent mt-4"></div>
+            </div>
+
+            <!-- Imagem Centralizada com Borda Premium -->
+            <div class="my-4 relative overflow-hidden rounded-2xl border border-slate-200 shadow-md h-[115mm]">
+                <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop');"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-brand-primary/20 via-transparent to-transparent"></div>
+            </div>
+
+            <div class="flex justify-between items-end border-t border-slate-100 pt-6">
+                <div>
+                    <p class="text-xs text-slate-400 uppercase tracking-wider">Documento Preparado para</p>
+                    <p class="text-brand-primary font-bold text-lg">Dr. Renato Ferreira & Diretoria</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-slate-400 uppercase tracking-wider">Status</p>
+                    <p class="text-brand-accent font-mono font-bold text-sm uppercase tracking-wider flex items-center gap-1.5 justify-end">
+                        <span class="w-2 h-2 rounded-full bg-brand-accent"></span> Confidencial
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 2: SOBRE NÓS -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-brand-primary mb-8 pb-3 border-b-2 border-slate-100 flex items-center gap-3">
+                Sobre Nós <span class="text-brand-accent text-sm font-mono font-normal">/ ESCOM Studio</span>
+            </h2>
+            
+            <div class="flex-1">
+                <p class="text-sm text-slate-700 leading-relaxed mb-6 font-medium">
+                    Olá! Somos a <strong>ESCOM Studio</strong>, uma empresa especializada em Web Design de luxo, Arquitetura de Conversão e Engenharia de Experiência do Usuário (UX).
+                </p>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+                    <p class="text-xs text-slate-650 leading-relaxed">
+                        Nós não apenas desenhamos sites bonitos; nós desenvolvemos ecossistemas digitais baseados no comportamento humano, neurociência aplicada e posicionamento premium de mercado.
+                        Fizemos uma análise detalhada sobre o seu negócio e identificamos oportunidades valiosas para elevar a percepção de valor da sua marca, 
+                        aumentar o contraste e a usabilidade de acordo com as diretrizes internacionais (WCAG), e criar um design system irresistível aos olhos de pacientes de alto ticket.
+                    </p>
+                </div>
+                <p class="text-xs text-slate-650 leading-relaxed">
+                    Nas páginas a seguir, você encontrará um <strong>dossiê estratégico e visual</strong> cuidadosamente preparado, mostrando como sua presença digital atual pode ser aprimorada 
+                    e as soluções exatas que implementamos no seu novo projeto de landing page premium.
+                </p>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-slate-400 font-mono border-t border-slate-100 pt-4">Página 2</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 3: ÍNDICE -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="watermark">CONFIDENCIAL</div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-brand-primary mb-8 pb-3 border-b-2 border-slate-100 flex items-center gap-3">
+                Conteúdo <span class="text-brand-accent text-sm font-mono font-normal">/ Índice Executivo</span>
+            </h2>
+            
+            <div class="grid grid-cols-2 gap-y-6 gap-x-12 text-base flex-1 py-4">
+                <div class="flex items-baseline gap-3 border-b border-slate-100 pb-2">
+                    <span class="font-black text-brand-accent text-lg font-mono">01</span>
+                    <span class="text-brand-primary font-semibold">Identidade Visual & Cores</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-slate-100 pb-2">
+                    <span class="font-black text-brand-accent text-lg font-mono">02</span>
+                    <span class="text-brand-primary font-semibold">Tipografia Premium</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-slate-100 pb-2">
+                    <span class="font-black text-brand-accent text-lg font-mono">03</span>
+                    <span class="text-brand-primary font-semibold">Diagnóstico do Negócio Atual</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-slate-100 pb-2">
+                    <span class="font-black text-brand-accent text-lg font-mono">04</span>
+                    <span class="text-brand-primary font-semibold">Anatomia da LP de Alto Ticket</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-slate-100 pb-2">
+                    <span class="font-black text-brand-accent text-lg font-mono">05</span>
+                    <span class="text-brand-primary font-semibold">Psicografia & Avatares</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-slate-100 pb-2">
+                    <span class="font-black text-brand-accent text-lg font-mono">06</span>
+                    <span class="text-brand-primary font-semibold">ROI & Viabilidade Financeira</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-slate-100 pb-2">
+                    <span class="font-black text-brand-accent text-lg font-mono">07</span>
+                    <span class="text-brand-primary font-semibold">O Campo de Batalha</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-slate-100 pb-2">
+                    <span class="font-black text-brand-accent text-lg font-mono">08</span>
+                    <span class="text-brand-primary font-semibold">Oceano Azul & Turismo</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-slate-100 pb-2">
+                    <span class="font-black text-brand-accent text-lg font-mono">09</span>
+                    <span class="text-brand-primary font-semibold">Lacunas & Filtro de Copy</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-slate-100 pb-2">
+                    <span class="font-black text-brand-accent text-lg font-mono">10</span>
+                    <span class="text-brand-primary font-semibold">Síntese Final</span>
+                </div>
+                <div class="flex items-baseline gap-3 border-b border-slate-100 pb-2 col-span-2">
+                    <span class="font-black text-brand-accent text-lg font-mono">11</span>
+                    <span class="text-brand-primary font-semibold">Os 6 Pilares de Vantagem</span>
+                </div>
+            </div>
+            
+            <div class="bg-slate-50 p-6 rounded-xl border-l-4 border-brand-primary mt-auto">
+                <p class="text-sm text-slate-650 leading-relaxed">
+                    Este documento apresenta um raio-x estratégico para a reabilitação oral e odontologia digital premium da CI Odontologia. O foco está em centralizar a jornada cirúrgica do paciente sem fricção e com design sob medida.
+                </p>
+            </div>
+            <div class="mt-4 flex justify-between items-center text-xs text-slate-400 font-mono">
+                <span>Dossiê CI Odontologia - Inteligência Comercial</span>
+                <span>Página 3</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 4: DIAGNÓSTICO DO NEGÓCIO ATUAL -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="watermark">CONFIDENCIAL</div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-brand-primary mb-6 leading-tight">
+                Diagnóstico do Negócio:<br>
+                <span class="text-brand-accent">CI Odontologia e Posicionamento</span>
+            </h2>
+            
+            <p class="text-xs text-slate-650 leading-relaxed mb-5">
+                Fundada sob a liderança científica e clínica do **Dr. Renato Vicente Ferreira** (Mestre pela UNIFESP e Especialista Fundecto USP), a CI Odontologia é referência de excelência técnica na Chácara Santo Antônio, Zona Sul de São Paulo.
+            </p>
+
+            <div class="space-y-4 flex-1 text-sm">
+                <div class="p-5 border border-slate-200 bg-slate-50/40 rounded-xl">
+                    <h3 class="text-brand-primary font-bold text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-medal"></i> A Força Técnica e Tradição
+                    </h3>
+                    <p class="text-xs text-slate-650 leading-relaxed">
+                        A CI Odontologia se destaca pela bagagem científica e acadêmica do Dr. Renato Ferreira (CRO-SP 42595), consolidando mais de 30 anos de atuação profissional. O atendimento a casos complexos de implantes 3D e reabilitações protéticas coloca a clínica em posição privilegiada de autoridade médica.
+                    </p>
+                </div>
+
+                <div class="p-5 border border-slate-200 bg-slate-50/40 rounded-xl">
+                    <h3 class="text-red-700 font-bold text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> O Gargalo Comercial Anterior
+                    </h3>
+                    <p class="text-xs text-slate-650 leading-relaxed">
+                        A comunicação anterior baseava-se em fotos clínicas puramente científicas, que geravam distanciamento visual e medo do procedimento cirúrgico na mente do público leigo. Faltava uma presença digital que comunicasse a sofisticação da clínica, a localização nobre na Zona Sul de SP e os tratamentos rápidos de carga imediata.
+                    </p>
+                </div>
+
+                <div class="bg-emerald-50/40 p-5 border border-emerald-100 rounded-xl">
+                    <h3 class="text-emerald-800 font-bold text-xs uppercase tracking-wider mb-1">A Solução Proposta</h3>
+                    <p class="text-[11px] text-slate-650 leading-relaxed">
+                        Reposicionar a marca por meio de um design system limpo em azul marinho e dourado. Focar a narrativa comercial nos conceitos de **Implantologia Guiada 3D computadorizada** (menor tempo cirúrgico), **Carga Imediata** (sorriso fixo rápido) e **Conforto Total do Paciente**, com funil de conversão otimizado no WhatsApp.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-slate-400 font-mono border-t border-slate-100 pt-4">Página 4</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 5: PSICOGRAFIA & AVATARES -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-brand-primary mb-2">Psicografia & Avatares de Compra</h2>
+            <p class="text-xs text-slate-600 mb-3">
+                Decodificação das dores subconscientes e segmentação do público-alvo de alto ticket da CI Odontologia:
+            </p>
+
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="bg-blue-50/40 p-3.5 rounded-xl border border-blue-100 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <i class="fa-solid fa-user-tie text-blue-600 text-sm"></i>
+                            <h3 class="text-brand-primary font-bold text-xs">Avatar A: O Executivo / Morador da Chácara Sto Antônio</h3>
+                        </div>
+                        <p class="text-[10px] text-slate-650 leading-relaxed mb-2">
+                            <strong>Dores:</strong> Falta de tempo crônica e burocracia. Não quer ir a múltiplos laboratórios. Busca reabilitação de alta precisão que se encaixe em sua agenda profissional.
+                        </p>
+                    </div>
+                    <div class="bg-white p-2 rounded-lg border border-blue-100 text-[10px]">
+                        <span class="text-blue-700 font-bold">Foco:</span> Cirurgia Guiada Computadorizada 3D e Carga Imediata.
+                    </div>
+                </div>
+
+                <div class="bg-purple-50/40 p-3.5 rounded-xl border border-purple-100 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <i class="fa-solid fa-person-dress text-purple-600 text-sm"></i>
+                            <h3 class="text-brand-primary font-bold text-xs">Avatar B: Pacientes Idosos / Maduros</h3>
+                        </div>
+                        <p class="text-[10px] text-slate-650 leading-relaxed mb-2">
+                            <strong>Dores:</strong> Pavor extremo de dor cirúrgica e desgaste com próteses instáveis e moles. Deseja recuperar a autoconfiança social e a mastigação completa.
+                        </p>
+                    </div>
+                    <div class="bg-white p-2 rounded-lg border border-purple-100 text-[10px]">
+                        <span class="text-purple-700 font-bold">Foco:</span> Implantes de Carga Rápida e Sedação Monitorada.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Caixa de Neutralizadores Emocionais na base -->
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs">
+                <h3 class="text-brand-primary font-bold text-xs mb-1.5"><i class="fa-solid fa-shield-halved text-brand-accent"></i> Matriz de Neutralização de Objeções</h3>
+                <ul class="grid grid-cols-3 gap-3 text-[10px] text-slate-600">
+                    <li class="bg-white p-2.5 rounded-lg border border-slate-150">
+                        <strong class="text-brand-primary block mb-0.5">Medo de Dente Provisório:</strong> Instalação rápida de coroas no mesmo dia do implante.
+                    </li>
+                    <li class="bg-white p-2.5 rounded-lg border border-slate-150">
+                        <strong class="text-brand-primary block mb-0.5">Medo da Dor:</strong> Anestesia computadorizada localizada e protocolos de sedação rápida.
+                    </li>
+                    <li class="bg-white p-2.5 rounded-lg border border-slate-150">
+                        <strong class="text-brand-primary block mb-0.5">Custos Altos:</strong> Ancoragem no valor vitalício da reabilitação em Zircônia e resinas alemãs.
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-slate-400 font-mono border-t border-slate-100 pt-4">Página 5</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 6: O CAMPO DE BATALHA -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-brand-primary mb-3">O Campo de Batalha</h2>
+            <p class="text-xs text-slate-600 mb-4">
+                Mapeamento dos concorrentes na região de Santo Amaro e Chácara Santo Antônio:
+            </p>
+
+            <div class="grid grid-cols-2 gap-3 flex-1 text-xs mb-3">
+                <div class="bg-slate-50/50 p-3 rounded-xl border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-brand-primary text-xs mb-1">1. Clínicas de Redes Populares</h3>
+                        <p class="text-[10px] text-slate-600 leading-relaxed"><strong class="text-emerald-700">Força:</strong> Parcelamento longo e apelo visual em calçadas populares.</p>
+                        <p class="text-[10px] text-slate-600 leading-relaxed"><strong class="text-red-600">Fraqueza:</strong> Uso de componentes genéricos, alta rotatividade de dentistas e falta de privacidade.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-slate-50/50 p-3 rounded-xl border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-brand-primary text-xs mb-1">2. Consultórios Familiares Tradicionais</h3>
+                        <p class="text-[10px] text-slate-600 leading-relaxed"><strong class="text-emerald-700">Força:</strong> Confiança local e anos atendendo a mesma família.</p>
+                        <p class="text-[10px] text-slate-600 leading-relaxed"><strong class="text-red-600">Fraqueza:</strong> Equipamentos antigos, processos manuais de moldagem e falta de tecnologia 3D de diagnóstico.</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50/50 p-3 rounded-xl border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-brand-primary text-xs mb-1">3. Grandes Redes de Implantes</h3>
+                        <p class="text-[10px] text-slate-650 leading-relaxed"><strong class="text-emerald-700">Força:</strong> Altíssimo orçamento de marketing televisivo e comercial.</p>
+                        <p class="text-[10px] text-slate-650 leading-relaxed"><strong class="text-red-600">Fraqueza:</strong> Atendimento impessoal e focado em escala, desconsiderando a odontologia individualizada.</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50/50 p-3 rounded-xl border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-brand-primary text-xs mb-1">4. Franquias Estéticas e de Facetas</h3>
+                        <p class="text-[10px] text-slate-650 leading-relaxed"><strong class="text-emerald-700">Força:</strong> Marketing estético de lentes de contato no Instagram.</p>
+                        <p class="text-[10px] text-slate-650 leading-relaxed"><strong class="text-red-600">Fraqueza:</strong> Baixa capacidade técnica para reabilitações cirúrgicas e ósseas severas.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs mb-2">
+                <h3 class="font-bold text-brand-primary text-xs mb-1">Diferencial Inquestionável da CI Odontologia</h3>
+                <p class="text-[10px] text-slate-600 leading-relaxed">
+                    Combinação do **rigor científico acadêmico (Dr. Renato Ferreira)** com a facilidade e rapidez do diagnóstico computadorizado, centralizado no endereço de fácil acesso na Chácara Santo Antônio.
+                </p>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-slate-400 font-mono border-t border-slate-100 pt-4">Página 6</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 7: CORES -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-brand-primary mb-4">Identidade Visual & Cores</h2>
+            <p class="text-xs text-slate-600 mb-4">
+                A psicologia cromática do site e do dossiê foi estruturada sob medida:
+            </p>
+
+            <div class="flex-1 bg-slate-50/50 p-6 rounded-xl border border-slate-200">
+                <h3 class="text-brand-primary font-bold text-lg mb-3">Racional Cromático Premium</h3>
+                <p class="text-sm text-slate-700 leading-relaxed mb-8">
+                    Para elevar o ticket médio dos atendimentos, a CI Odontologia utiliza uma paleta sóbria e altamente sofisticada. O **Azul Escuro (Navy)** transmite estabilidade institucional e rigor científico médico. O **Dourado (Gold)** evoca exclusividade e alta qualidade. O **Azul Claro (Light Blue)** atua na suavização visual e no contraste moderno de conversão dos botões.
+                </p>
+                
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full border border-slate-300 shadow-sm" style="background-color: #0C2B4E"></div>
+                        <div>
+                            <p class="font-bold text-brand-primary text-xs">ciNavy</p>
+                            <p class="text-[9px] text-slate-500 font-mono">#0C2B4E</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full border border-slate-300 shadow-sm" style="background-color: #C5A059"></div>
+                        <div>
+                            <p class="font-bold text-brand-primary text-xs">ciGold</p>
+                            <p class="text-[9px] text-slate-500 font-mono">#C5A059</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full border border-slate-300 shadow-sm" style="background-color: #0096C7"></div>
+                        <div>
+                            <p class="font-bold text-brand-primary text-xs">ciBlue</p>
+                            <p class="text-[9px] text-slate-500 font-mono">#0096C7</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-slate-400 font-mono border-t border-slate-100 pt-4">Página 7</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 8: TIPOGRAFIA -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-brand-primary mb-4">Tipografia Premium</h2>
+            <p class="text-xs text-slate-600 mb-4">
+                A seleção de fontes para compor a estética premium do projeto:
+            </p>
+
+            <div class="flex-1 bg-slate-50/50 p-6 rounded-xl border border-slate-200">
+                <h3 class="text-brand-primary font-bold text-lg mb-3">A Arquitetura das Letras</h3>
+                <p class="text-sm text-slate-700 leading-relaxed mb-8">
+                    Utilizamos a fonte **Manrope** para títulos, transmitindo sobriedade geométrica, legibilidade e contornos limpos. Nos textos corridos e parágrafos, a fonte **Mulish** oferece conforto na leitura em telas mobile e layouts refinados.
+                </p>
+
+                <div class="space-y-6">
+                    <div class="p-4 bg-white border border-slate-150 rounded-lg">
+                        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Títulos e Chamadas Principais (Sans-serif Geométrica)</p>
+                        <p class="font-display font-bold text-3xl text-brand-primary">
+                            Manrope
+                        </p>
+                    </div>
+                    <div class="p-4 bg-white border border-slate-150 rounded-lg">
+                        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Textos e Parágrafos (Foco em Legibilidade)</p>
+                        <p class="font-sans text-xl text-slate-800">
+                            Mulish
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-slate-400 font-mono border-t border-slate-100 pt-4">Página 8</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 9: LACUNAS & FILTRO DE COPY -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-brand-primary mb-4">Lacunas & Filtro de Copy</h2>
+            
+            <div class="bg-blue-50/40 border border-blue-100 p-4 rounded-xl mb-4 text-xs">
+                <h3 class="text-brand-primary font-bold text-sm mb-1 flex items-center gap-2">
+                    <i class="fa-solid fa-star text-brand-accent"></i> O Espaço Vazio de Mercado
+                </h3>
+                <p class="text-slate-650 leading-relaxed">
+                    A grande oportunidade de atração da CI Odontologia consiste em alcançar o paciente da Zona Sul que deseja realizar seu implante dentário com segurança cirúrgica e **conforto extremo**, sem precisar de processos de moldagem analógicos demorados.
+                </p>
+            </div>
+
+            <div class="flex-1">
+                <h3 class="text-brand-primary font-bold text-base mb-2"><i class="fa-solid fa-filter text-brand-accent"></i> Filtro de Comunicação (Copywriting)</h3>
+                <p class="text-xs text-slate-600 mb-3">Para manter a percepção de alto ticket, eliminamos termos populares desgastados:</p>
+                
+                <div class="grid grid-cols-2 gap-4 text-xs">
+                    <div class="bg-red-50/50 p-4 rounded-xl border border-red-200">
+                        <p class="font-bold text-red-700 mb-2 uppercase tracking-wider text-[10px]">Evitar Termos Populares</p>
+                        <ul class="space-y-1.5 text-slate-600">
+                            <li class="line-through">"Implantes populares com desconto"</li>
+                            <li class="line-through">"Sorria com economia"</li>
+                            <li class="line-through">"Preços imbatíveis em próteses"</li>
+                            <li class="line-through">"A melhor clínica de SP"</li>
+                        </ul>
+                    </div>
+                    <div class="bg-emerald-50/50 p-4 rounded-xl border border-emerald-200">
+                        <p class="font-bold text-emerald-800 mb-2 uppercase tracking-wider text-[10px]">Substituir por Fatos Sólidos</p>
+                        <ul class="space-y-1.5 text-slate-700 font-medium">
+                            <li>&bull; "Planejamento Digital e Guiado 3D"</li>
+                            <li>&bull; "Dr. Renato Ferreira (CRO-SP 42595)"</li>
+                            <li>&bull; "Mestre em Saúde pela UNIFESP"</li>
+                            <li>&bull; "Reabilitações e Cargas Rápidas"</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-slate-400 font-mono border-t border-slate-100 pt-4">Página 9</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 10: OS 6 PILARES DE VANTAGEM -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-brand-primary mb-4">Os 6 Pilares da CI Odontologia</h2>
+            <p class="text-xs text-slate-600 mb-4">
+                Como os investimentos e infraestrutura clínica são apresentados de forma comercialmente persuasiva no site:
+            </p>
+
+            <div class="grid grid-cols-2 gap-4 flex-1 text-xs">
+                <div class="bg-slate-50/50 p-4 rounded-xl border border-slate-200">
+                    <div class="text-brand-accent text-lg mb-1"><i class="fa-solid fa-desktop-laptop"></i></div>
+                    <h3 class="text-brand-primary font-bold text-sm mb-1">1. Planejamento 3D Digital</h3>
+                    <p class="text-slate-600 leading-relaxed text-[11px]">Cirurgias mapeadas e ensaiadas previamente em computador, proporcionando maior precisão de encaixe e cortes mínimos.</p>
+                </div>
+                
+                <div class="bg-slate-50/50 p-4 rounded-xl border border-slate-200">
+                    <div class="text-brand-accent text-lg mb-1"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <h3 class="text-brand-primary font-bold text-sm mb-1">2. Direção Científica de Alto Nível</h3>
+                    <p class="text-slate-600 leading-relaxed text-[11px]">Tratamentos orientados pelo Dr. Renato Vicente Ferreira, detentor de mestrado pela UNIFESP e formação USP.</p>
+                </div>
+
+                <div class="bg-slate-50/50 p-4 rounded-xl border border-slate-200">
+                    <div class="text-brand-accent text-lg mb-1"><i class="fa-solid fa-bolt"></i></div>
+                    <h3 class="text-brand-primary font-bold text-sm mb-1">3. Protocolos de Carga Rápida</h3>
+                    <p class="text-slate-600 leading-relaxed text-[11px]">Substituição acelerada de dentes comprometidos, possibilitando a fixação de coroas logo após o implante.</p>
+                </div>
+
+                <div class="bg-slate-50/50 p-4 rounded-xl border border-slate-200">
+                    <div class="text-brand-accent text-lg mb-1"><i class="fa-solid fa-heart-pulse"></i></div>
+                    <h3 class="text-brand-primary font-bold text-sm mb-1">4. Conforto Cirúrgico Focado</h3>
+                    <p class="text-slate-600 leading-relaxed text-[11px]">Técnicas modernas de redução de ansiedade e anestesia precisa para que a jornada seja tranquila.</p>
+                </div>
+
+                <div class="bg-slate-50/50 p-4 rounded-xl border border-slate-200">
+                    <div class="text-brand-accent text-lg mb-1"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3 class="text-brand-primary font-bold text-sm mb-1">5. Componentes e Insumos Premium</h3>
+                    <p class="text-slate-600 leading-relaxed text-[11px]">Utilização de ligas de titânio de altíssima qualidade de marcas internacionais para favorecer a ósseointegração rápida.</p>
+                </div>
+
+                <div class="bg-slate-50/50 p-4 rounded-xl border border-slate-200">
+                    <div class="text-brand-accent text-lg mb-1"><i class="fa-solid fa-house-chimney-medical"></i></div>
+                    <h3 class="text-brand-primary font-bold text-sm mb-1">6. Localização Estratégica na Zona Sul</h3>
+                    <p class="text-slate-600 leading-relaxed text-[11px]">Estrutura nobre, acessível e segura situada na Chácara Santo Antônio, dispondo de atendimento privativo.</p>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-slate-400 font-mono border-t border-slate-100 pt-4">Página 10</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 11: ANATOMIA DA LANDING PAGE -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-brand-primary mb-3">Anatomia da LP de Alto Ticket</h2>
+            <p class="text-xs text-slate-600 mb-4">
+                Divisão lógica dos blocos no site para maximizar conversões e contatos via WhatsApp:
+            </p>
+            
+            <div class="space-y-4 flex-1 text-xs">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 border border-slate-200 bg-slate-50/40 rounded-xl">
+                        <h3 class="text-brand-accent font-bold text-xs uppercase tracking-wider mb-2">1. Hero Section (Abertura)</h3>
+                        <p class="text-[11px] text-slate-600 leading-relaxed">Foco no problema do paciente (mastigação comprometida ou sorriso estético) e na velocidade do planejamento guiado 3D.</p>
+                    </div>
+                    <div class="p-4 border border-slate-200 bg-slate-50/40 rounded-xl">
+                        <h3 class="text-brand-accent font-bold text-xs uppercase tracking-wider mb-2">2. Bloco da Carga Rápida</h3>
+                        <p class="text-[11px] text-slate-600 leading-relaxed">Explicação didática da viabilidade de dentes fixos instalados sem dor em prazos reduzidos.</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 border border-slate-200 bg-slate-50/40 rounded-xl">
+                        <h3 class="text-brand-accent font-bold text-xs uppercase tracking-wider mb-2">3. Autoridade e Bagagem Médica</h3>
+                        <p class="text-[11px] text-slate-600 leading-relaxed">Exposição do currículo UNIFESP e USP do Dr. Renato Vicente Ferreira, gerando credibilidade e eliminando receios técnicos.</p>
+                    </div>
+                    <div class="p-4 border border-slate-200 bg-slate-50/40 rounded-xl">
+                        <h3 class="text-brand-accent font-bold text-xs uppercase tracking-wider mb-2">4. Chamada para a Ação Focada</h3>
+                        <p class="text-[11px] text-slate-600 leading-relaxed">Redirecionamento ao WhatsApp oficial de pré-triagem rápida da recepção da clínica, evitando formulários cansativos.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-emerald-50/40 p-4 border border-emerald-100 rounded-xl">
+                    <h3 class="text-emerald-800 font-bold text-xs uppercase tracking-wider mb-1">Conversão Focada no Mobile</h3>
+                    <p class="text-[11px] text-slate-650 leading-relaxed">
+                        Botões flutuantes em posições de polegar, imagens que carregam de forma instantânea e textos diretos que geram urgência suave na consulta inicial de diagnóstico.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-slate-400 font-mono border-t border-slate-100 pt-4">Página 11</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 12: ROI & VIABILIDADE FINANCEIRA -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-brand-primary mb-3">ROI & Prospecção de Pacientes</h2>
+            <p class="text-xs text-slate-600 mb-4">
+                Simulação e viabilidade para captação de implantes high-ticket em comparação com campanhas padrão:
+            </p>
+            
+            <div class="grid grid-cols-2 gap-4 mb-4 text-xs">
+                <div class="bg-slate-50/40 p-4 rounded-xl border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-brand-primary font-bold text-xs mb-1.5 flex items-center gap-1.5">
+                            <i class="fa-solid fa-calculator"></i> Custo de Aquisição Otimizado (CAC)
+                            
+                        </h3>
+                        <p class="text-[11px] text-slate-600 leading-relaxed">Campanhas focadas em regiões de alta renda em São Paulo trazem contatos qualificados e pré-filtrados, otimizando o custo por paciente que fecha tratamento.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-slate-50/40 p-4 rounded-xl border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-emerald-700 font-bold text-xs mb-1.5 flex items-center gap-1.5">
+                            <i class="fa-solid fa-chart-line"></i> Alto Valor Percebido (Ticket Médio)
+                        </h3>
+                        <p class="text-[11px] text-slate-600 leading-relaxed">Protocolos cirúrgicos e implantes 3D importados possuem alto retorno financeiro por caso fechado, justificando plenamente o investimento em tráfego.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-purple-50/30 p-4 border border-purple-150 rounded-xl flex-1 flex flex-col justify-center">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-brand-primary mb-3 text-center">Simulação Prática de Resultados</h3>
+                
+                <div class="grid grid-cols-3 gap-3 text-center text-xs">
+                    <div class="p-3 bg-white rounded-lg border border-purple-100 shadow-sm">
+                        <p class="text-slate-500 text-[10px] uppercase">Investimento Mensal Ads</p>
+                        <p class="text-sm font-black text-brand-primary mt-1">R$ 2.500</p>
+                    </div>
+                    <div class="p-3 bg-white rounded-lg border border-purple-100 shadow-sm">
+                        <p class="text-slate-500 text-[10px] uppercase">Agendamentos Clínicos</p>
+                        <p class="text-sm font-black text-brand-primary mt-1">4 a 6 casos</p>
+                    </div>
+                    <div class="p-3 bg-white rounded-lg border border-purple-100 shadow-sm">
+                        <p class="text-slate-500 text-[10px] uppercase">Retorno Estimado</p>
+                        <p class="text-sm font-black text-emerald-700 mt-1">R$ 30k - R$ 55k</p>
+                    </div>
+                </div>
+                
+                <p class="text-[10px] text-slate-500 mt-3 text-center leading-relaxed">
+                    *Mapeamento baseado na atração de tratamentos reabilitadores complexos e cirurgias guiadas no público de alto poder aquisitivo.
+                </p>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-slate-400 font-mono border-t border-slate-100 pt-4">Página 12</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 13: EXPANSÃO E OCEANO AZUL -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer">
+            <h2 class="text-3xl font-display font-black text-brand-primary mb-4">Oceano Azul & Diferenciação</h2>
+            <p class="text-xs text-slate-600 mb-4">
+                Estratégias para isolar a CI Odontologia da concorrência direta por preço em São Paulo:
+            </p>
+
+            <div class="space-y-4 flex-1 text-xs">
+                <div class="bg-blue-50/30 p-4 rounded-xl border border-blue-100 flex items-start gap-3">
+                    <div class="text-blue-600 text-lg"><i class="fa-solid fa-stethoscope"></i></div>
+                    <div>
+                        <h3 class="text-brand-primary font-bold text-sm mb-1">Odontologia Digital Integrada</h3>
+                        <p class="text-[11px] text-slate-650 leading-relaxed">
+                            O site novo posiciona a clínica não apenas como um consultório de dentista comum, mas como um centro de alta tecnologia em reabilitação computadorizada guiada 3D.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-purple-50/30 p-4 rounded-xl border border-purple-100 flex items-start gap-3">
+                    <div class="text-purple-600 text-lg"><i class="fa-solid fa-arrows-spin"></i></div>
+                    <div>
+                        <h3 class="text-brand-primary font-bold text-sm mb-1">Upgrade de Reabilitações de Resina</h3>
+                        <p class="text-[11px] text-slate-650 leading-relaxed">
+                            Prospecção inteligente voltada a pacientes que já possuem implantes antigos de resina em mau estado e buscam o requinte estético da Zircônia 3D Metal-Free, com maior longevidade e aspecto natural.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-auto flex justify-end text-xs text-slate-400 font-mono border-t border-slate-100 pt-4">Página 13</div>
+        </div>
+    </div>
+
+    <!-- PÁGINA 14: CONCLUSÃO -->
+    <div class="pdf-page">
+        <div class="decor-line"></div>
+        <div class="content-layer justify-center items-center text-center h-full">
+            <div class="bg-slate-50/80 p-8 rounded-2xl border border-slate-200 shadow-sm max-w-xl">
+                <i class="fa-solid fa-rocket text-brand-primary text-5xl mb-6"></i>
+                <h2 class="text-brand-primary font-display font-bold text-3xl mb-4">A Síntese Final</h2>
+                
+                <p class="text-sm text-slate-600 leading-relaxed mb-6">
+                    A presença digital da sua marca deve refletir fielmente o altíssimo nível técnico e a autoridade que a CI Odontologia já possui no espaço físico. Com o novo website e a arquitetura de conversão implantada, a atração de pacientes high-ticket torna-se um processo previsível.
+                </p>
+
+                <p class="text-xs text-slate-700 font-medium leading-relaxed italic border-t border-slate-200 pt-4 mb-6">
+                    Agora que finalizamos este novo website, vamos bater um papo rápido para alinhar as campanhas e começar a colher os resultados no consultório?<br>
+                    <span class="block mt-2 text-[10px] text-slate-500 font-sans not-italic font-semibold">Contato: es.comunicacao@outlook.com | WhatsApp: (13) 98106-2787</span>
+                </p>
+
+                <div class="flex items-center justify-center gap-3 text-xs text-slate-400 border-t border-slate-150 pt-4">
+                    <span class="font-bold text-slate-800 tracking-wider uppercase">ESCOM Studio &bull; Business Intelligence</span>
+                </div>
+            </div>
+            
+            <div class="mt-auto w-full flex justify-between items-center text-xs text-slate-400 font-mono border-t border-slate-100 pt-4">
+                <span>Dossiê CI Odontologia - Confidencial</span>
+                <span>Página 14</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
