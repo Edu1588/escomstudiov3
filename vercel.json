@@ -17,6 +17,7 @@
     { "source": "/:slug(proposta-escom-[a-zA-Z0-9-]+)", "destination": "/baseproposta" },
     { "source": "/template-silva-autocenter/silva-autocenter.pdf", "destination": "/template-silva-autocenter/dossie" },
     { "source": "/api/:path*", "destination": "/api" },
+    { "source": "/home-v2", "destination": "/home-v2.html" },
     { "source": "/admin/(.*)", "destination": "/admin" },
     { "source": "/sobre", "destination": "/sobre/index.html" },
     { "source": "/portfolioedu", "destination": "/portfolioedu/index.html" },

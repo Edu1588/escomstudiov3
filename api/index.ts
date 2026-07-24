@@ -1822,7 +1822,7 @@ app.all("/api/piassa-cron", async (req, res) => {
 });
 
 // --- Enviar todas as vagas salvas por email em lotes de 30 ---
-app.post("/api/piassa/send-all-jobs", async (req, res) => {
+app.all("/api/piassa/send-all-jobs", async (req, res) => {
   try {
     await ensureAuth();
     const snap = await getDocs(collection(db, "jobs"));
