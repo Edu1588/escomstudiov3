@@ -46,14 +46,14 @@ export async function ensureAuth() {
 }
 ensureAuth().catch(err => console.error("Initial auth failed:", err));
 
-app.get(["/template-ci-odontologia", "/template-ci-odontologia/index.html"], (req, res) => {
+app.get(["/template-ci-odontologia", "/template-ci-odontologia/index.html", "/ci-odontologia", "/ci-odontologia/index.html"], (req, res) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0");
-  const filePath = path.join(process.cwd(), "public", "template-ci-odontologia", "index.html");
+  const filePath = path.join(process.cwd(), "public", "ci-odontologia", "index.html");
   if (fs.existsSync(filePath)) {
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     return res.sendFile(filePath);
   }
-  const rootPath = path.join(process.cwd(), "template-ci-odontologia", "index.html");
+  const rootPath = path.join(process.cwd(), "ci-odontologia", "index.html");
   if (fs.existsSync(rootPath)) {
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     return res.sendFile(rootPath);
@@ -61,9 +61,9 @@ app.get(["/template-ci-odontologia", "/template-ci-odontologia/index.html"], (re
   res.status(404).send("Template não encontrado.");
 });
 
-app.get(["/template-ci-odontologia/dossie", "/template-ci-odontologia/dossie.html", "/template-ci-odontologia/dossie-ci-odontologia.pdf"], (req, res) => {
+app.get(["/template-ci-odontologia/dossie", "/template-ci-odontologia/dossie.html", "/template-ci-odontologia/dossie-ci-odontologia.pdf", "/ci-odontologia/dossie", "/ci-odontologia/dossie.html"], (req, res) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0");
-  const filePath = path.join(process.cwd(), "public", "template-ci-odontologia", "dossie.html");
+  const filePath = path.join(process.cwd(), "public", "ci-odontologia", "dossie.html");
   if (fs.existsSync(filePath)) {
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     return res.sendFile(filePath);
