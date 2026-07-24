@@ -38,6 +38,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
+// Serve arquivos estáticos do public/
+app.use(express.static(path.join(process.cwd(), "public")));
+
 export async function ensureAuth() {
   if (!auth.currentUser) {
     try { await signInWithEmailAndPassword(auth, "admin@escom.com", "Edu@1508001"); console.log("[SERVER_AUTH] Autenticado"); }
@@ -1801,7 +1804,7 @@ app.all("/api/piassa-cron", async (req, res) => {
               <hr style="border: 0; border-top: 1px solid #eee;"/>
               ${jobsListHtml}
               <br/>
-              <p>Acesse o painel do Piassa para gerenciá-las manualmente: <a href="https://escom-studio.vercel.app/piassa" target="_blank" style="color: #00d1ff; font-weight: bold; text-decoration: none;">Painel Piassa</a></p>
+              <p>Acesse o painel do Piassa para gerenciá-las manualmente: <a href="https://escomstudio.com.br/piassa" target="_blank" style="color: #00d1ff; font-weight: bold; text-decoration: none;">Painel Piassa</a></p>
             </div>
           `
         });
