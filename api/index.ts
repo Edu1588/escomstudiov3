@@ -38,9 +38,6 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
-// Serve arquivos estáticos do public/
-app.use(express.static(path.join(process.cwd(), "public")));
-
 export async function ensureAuth() {
   if (!auth.currentUser) {
     try { await signInWithEmailAndPassword(auth, "admin@escom.com", "Edu@1508001"); console.log("[SERVER_AUTH] Autenticado"); }
