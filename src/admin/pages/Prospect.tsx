@@ -22,7 +22,7 @@ export default function Prospect() {
       categoria: "Clínicas Odontológicas (Foco em Implantes e Lentes de Contato)",
       cidade: "São Paulo, SP",
       endereco: "R. Bela Vista, 590 - Chácara Santo Antônio, São Paulo - SP, 04709-001",
-      telefone: "(11) 95660-8040",
+      telefone: "(11) 99753-3611",
       rating: 4.9,
       reviewsCount: 58,
       temSite: true,

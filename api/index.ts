@@ -33,6 +33,11 @@ const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp, firebaseConfig.firestoreDatabaseId || '(default)');
 
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.use(cors());
+app.use(express.json({ limit: '50mb' }));
+
 export async function ensureAuth() {
   if (!auth.currentUser) {
     try { await signInWithEmailAndPassword(auth, "admin@escom.com", "Edu@1508001"); console.log("[SERVER_AUTH] Autenticado"); }
@@ -53,6 +58,15 @@ app.get(["/template-ci-odontologia", "/template-ci-odontologia/index.html"], (re
     return res.sendFile(rootPath);
   }
   res.status(404).send("Template não encontrado.");
+});
+
+app.get(["/template-ci-odontologia/dossie", "/template-ci-odontologia/dossie.html", "/template-ci-odontologia/dossie-ci-odontologia.pdf"], (req, res) => {
+  const filePath = path.join(process.cwd(), "public", "template-ci-odontologia", "dossie.html");
+  if (fs.existsSync(filePath)) {
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    return res.sendFile(filePath);
+  }
+  res.status(404).send("Dossiê não encontrado.");
 });
 
 function calculateLeadScore(lead, auditData) {
@@ -579,11 +593,7 @@ async function runAutoBuildPipeline() {
 }
 
 
-const app = express();
-const PORT = Number(process.env.PORT) || 3000;
 
-app.use(cors());
-app.use(express.json());
 
 function initCronJobs() {
   console.log("[CRON] Initializing...");

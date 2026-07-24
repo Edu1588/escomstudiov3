@@ -1,6 +1,11 @@
 {
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/template-ci-odontologia/dossie", "destination": "/template-ci-odontologia/dossie.html" },
+    { "source": "/template-ci-odontologia/dossie.html", "destination": "/template-ci-odontologia/dossie.html" },
+    { "source": "/template-ci-odontologia/dossie-ci-odontologia.pdf", "destination": "/template-ci-odontologia/dossie.html" },
+    { "source": "/template-ci-odontologia", "destination": "/template-ci-odontologia/index.html" },
+    { "source": "/template-ci-odontologia/index.html", "destination": "/template-ci-odontologia/index.html" },
     { "source": "/site-aventis-ma", "destination": "/site-aventis-ma/index.html" },
     { "source": "/site-aventis-ma/analise", "destination": "/site-aventis-ma/analise.html" },
     { "source": "/site-aventis-ma/analise.pdf", "destination": "/site-aventis-ma/analise.html" },
@@ -13,8 +18,6 @@
     { "source": "/portfolioedu", "destination": "/portfolioedu/index.html" },
     { "source": "/portfolio-projetos", "destination": "/portfolio-projetos/index.html" },
     { "source": "/piassa(.*)", "destination": "/piassa/index.html" },
-
-    { "source": "/template-ci-odontologia(.*)", "destination": "/api" },
     { "source": "/site-onward-consultoria", "destination": "/site-onward-consultoria.html" },
     { "source": "/site-onward-consultoria/analise", "destination": "/site-onward-consultoria/analise.html" },
     { "source": "/site-onward-consultoria/analise.pdf", "destination": "/site-onward-consultoria/analise.html" },

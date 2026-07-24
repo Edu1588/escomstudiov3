@@ -22,6 +22,7 @@ export default function Piassa() {
   const [savedJobs, setSavedJobs] = useState<any[]>([]);
   const [savedLoading, setSavedLoading] = useState(false);
   const [filterRole, setFilterRole] = useState("Todas");
+  const [sortBy, setSortBy] = useState<"recents" | "oldest">("recents");
 
   useEffect(() => {
     if (authenticated) loadSavedJobs();
@@ -90,7 +91,20 @@ export default function Piassa() {
     }
   };
 
+  const getRoleCount = (roleName: string) => {
+    if (roleName === "Todas") return savedJobs.length;
+    return savedJobs.filter(j => j.role === roleName).length;
+  };
+
   const filteredJobs = filterRole === "Todas" ? savedJobs : savedJobs.filter(j => j.role === filterRole);
+
+  const sortedJobs = [...filteredJobs].sort((a, b) => {
+    const getMs = (ts: any) => (ts?.seconds ? ts.seconds * 1000 : typeof ts === "number" ? ts : 0);
+    const timeA = getMs(a.createdAt);
+    const timeB = getMs(b.createdAt);
+    if (sortBy === "recents") return timeB - timeA;
+    return timeA - timeB;
+  });
 
   if (!authenticated) {
     return (
@@ -145,39 +159,58 @@ export default function Piassa() {
             <Clock size={20} className="text-[#00d1ff]" />
             <h2 className="text-sm sm:text-xl font-mono tracking-widest uppercase">VAGAS ENCONTRADAS</h2>
             
-            {/* Seletor Lista / Grade */}
-            <div className={`flex rounded-lg p-0.5 border ${dark ? 'bg-[#1a1a1a] border-[#333]' : 'bg-gray-100 border-gray-200'}`}>
-              <button onClick={() => setViewMode("list")} title="Ver como Lista"
-                className={`p-1.5 rounded transition-all ${viewMode === "list" ? (dark ? 'bg-[#00d1ff] text-black shadow' : 'bg-white text-gray-900 shadow') : 'text-gray-500 hover:text-gray-300'}`}>
-                <List size={14} />
-              </button>
-              <button onClick={() => setViewMode("grid")} title="Ver como Grade"
-                className={`p-1.5 rounded transition-all ${viewMode === "grid" ? (dark ? 'bg-[#00d1ff] text-black shadow' : 'bg-white text-gray-900 shadow') : 'text-gray-500 hover:text-gray-300'}`}>
-                <LayoutGrid size={14} />
-              </button>
+            {/* Seletor Ordenação & Lista / Grade */}
+            <div className="flex items-center gap-2">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as "recents" | "oldest")}
+                className={`text-[10px] font-mono tracking-widest uppercase px-2.5 py-1.5 rounded-lg border outline-none cursor-pointer ${
+                  dark ? 'bg-[#1a1a1a] border-[#333] text-gray-300' : 'bg-gray-100 border-gray-200 text-gray-700'
+                }`}
+              >
+                <option value="recents">Mais Recentes</option>
+                <option value="oldest">Mais Antigas</option>
+              </select>
+
+              <div className={`flex rounded-lg p-0.5 border ${dark ? 'bg-[#1a1a1a] border-[#333]' : 'bg-gray-100 border-gray-200'}`}>
+                <button onClick={() => setViewMode("list")} title="Ver como Lista"
+                  className={`p-1.5 rounded transition-all ${viewMode === "list" ? (dark ? 'bg-[#00d1ff] text-black shadow' : 'bg-white text-gray-900 shadow') : 'text-gray-500 hover:text-gray-300'}`}>
+                  <List size={14} />
+                </button>
+                <button onClick={() => setViewMode("grid")} title="Ver como Grade"
+                  className={`p-1.5 rounded transition-all ${viewMode === "grid" ? (dark ? 'bg-[#00d1ff] text-black shadow' : 'bg-white text-gray-900 shadow') : 'text-gray-500 hover:text-gray-300'}`}>
+                  <LayoutGrid size={14} />
+                </button>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full scrollbar-thin">
-            {ROLES.map(r => (
-              <button key={r} onClick={() => setFilterRole(r)}
-                className={`px-3 py-1.5 text-[10px] font-mono tracking-widest uppercase rounded-lg border transition-colors whitespace-nowrap shrink-0 ${
-                  filterRole === r
-                    ? 'bg-[#00d1ff] border-[#00d1ff] text-black font-bold'
-                    : dark ? 'border-[#1a1a1a] text-gray-500 hover:border-gray-500 hover:text-white' : 'border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-900'
-                }`}
-              >{r === "Todas" ? "Todas" : r === "Estrategista de Marketing" ? "Marketing" : r === "Marketing Industrial" ? "Mkt Industrial" : r === "Growth Marketing" ? "Growth" : r === "Redator Publicitário" ? "Red. Pub." : r}</button>
-            ))}
+            {ROLES.map(r => {
+              const count = getRoleCount(r);
+              const label = r === "Todas" ? "Todas" : r === "Estrategista de Marketing" ? "Marketing" : r === "Marketing Industrial" ? "Mkt Industrial" : r === "Growth Marketing" ? "Growth" : r === "Redator Publicitário" ? "Red. Pub." : r;
+              return (
+                <button key={r} onClick={() => setFilterRole(r)}
+                  className={`px-3 py-1.5 text-[10px] font-mono tracking-widest uppercase rounded-lg border transition-colors whitespace-nowrap shrink-0 ${
+                    filterRole === r
+                      ? 'bg-[#00d1ff] border-[#00d1ff] text-black font-bold'
+                      : dark ? 'border-[#1a1a1a] text-gray-500 hover:border-gray-500 hover:text-white' : 'border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-900'
+                  }`}
+                >
+                  {label} ({count})
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {savedLoading && (
           <div className="py-24 text-center">
-            <Loader2 size={28} className="mx-auto text-[#00d1ff] animate-spin mb-4" />
+            <Loader2 size={28} className="mx-auto text-[#00d1ff] mb-4" />
             <p className="text-[#00d1ff] font-mono text-sm tracking-widest">CARREGANDO...</p>
           </div>
         )}
 
-        {!savedLoading && filteredJobs.length === 0 && (
+        {!savedLoading && sortedJobs.length === 0 && (
           <div className={`py-24 text-center border border-dashed rounded-xl ${dark ? 'border-[#1a1a1a] bg-[#0a0a0a]/50' : 'border-gray-200 bg-gray-50'}`}>
             <Bookmark size={48} className="mx-auto text-gray-600 mb-6" />
             <h3 className="text-gray-400 font-mono tracking-widest uppercase mb-2">NENHUMA VAGA ENCONTRADA</h3>
@@ -187,7 +220,7 @@ export default function Piassa() {
 
         {!savedLoading && (
           <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "flex flex-col gap-4"}>
-            {filteredJobs.map(job => (
+            {sortedJobs.map(job => (
               <div key={job.id} 
                 className={`border rounded-lg p-5 relative flex flex-col justify-between ${
                   dark ? 'border-[#1a1a1a] bg-[#0a0a0a]' : 'border-gray-200 bg-white'

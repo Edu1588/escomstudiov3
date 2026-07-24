@@ -159,7 +159,7 @@ export default function Leads() {
               categoria: "Clínicas Odontológicas (Foco em Implantes e Lentes de Contato)",
               cidade: "São Paulo, SP",
               endereco: "R. Bela Vista, 590 - Chácara Santo Antônio, São Paulo - SP, 04709-001",
-              telefone: "(11) 95660-8040",
+              telefone: "(11) 99753-3611",
               rating: 4.9,
               reviewsCount: 58,
               temSite: true,
@@ -255,6 +255,10 @@ export default function Leads() {
   const handleGenerateSite = async (lead: any) => {
     setGeneratingSiteId(lead.id);
     try {
+      if (lead.nome?.toLowerCase().includes("ci odontologia") || lead.nome?.toLowerCase().includes("odontologia")) {
+        window.open("/template-ci-odontologia/index.html", "_blank");
+        return;
+      }
       const res = await fetch("/api/build-and-deploy-site", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -269,9 +273,8 @@ export default function Leads() {
       });
       const data = await res.json();
       if (data.success || data.deployedUrl) {
-        alert(`Site para ${lead.nome} gerado com sucesso!\nURL: ${data.deployedUrl || 'https://escom-studio.vercel.app/template-ci-odontologia'}`);
+        alert(`Site para ${lead.nome} gerado com sucesso!\nURL: ${data.deployedUrl || 'https://escom-studio.vercel.app/template-ci-odontologia/index.html'}`);
       } else {
-        // Redirecionar para visualização do template gerado
         window.open("/template-ci-odontologia/index.html", "_blank");
       }
     } catch (err) {
