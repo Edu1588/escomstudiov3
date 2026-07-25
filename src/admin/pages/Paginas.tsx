@@ -8,6 +8,7 @@ export default function Paginas() {
     { title: "Portfólio de Projetos", path: "/portfolio-projetos", acessos: 0, leads: 0, status: "ATIVO" },
     { title: "Portfólio EDU", path: "/portfolioedu", acessos: 0, leads: 0, status: "ATIVO" },
     { title: "Base de Propostas", path: "/baseproposta", acessos: 0, leads: 0, status: "ATIVO" },
+    { title: "Home V3 (Modular System)", path: "/home-v3", acessos: 0, leads: 0, status: "ATIVO" },
     { title: "Sobre a ESCOM Studio", path: "/sobre", acessos: 0, leads: 0, status: "ATIVO" },
     { title: "Contato", path: "/contato", acessos: 0, leads: 0, status: "ATIVO" },
   ];

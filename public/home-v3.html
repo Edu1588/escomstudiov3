@@ -1,5 +1,93 @@
-<!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en"><head><script id="aura-preview-performance-controller">
+(function() {
+if (window.__auraPreviewPerformanceController) return;
+const nativeRequestAnimationFrame = window.requestAnimationFrame
+? window.requestAnimationFrame.bind(window)
+: function(callback) { return window.setTimeout(function() { callback(Date.now()); }, 16); };
+const nativeCancelAnimationFrame = window.cancelAnimationFrame
+? window.cancelAnimationFrame.bind(window)
+: window.clearTimeout.bind(window);
+const nativeSetInterval = window.setInterval.bind(window);
+let paused = false;
+let nextFrameId = 1;
+const frameRecords = new Map();
+const pausedFrameCallbacks = new Map();
+const style = document.createElement('style');
+style.id = 'aura-preview-performance-style';
+style.textContent = [
+'html[data-aura-preview-paused="true"] *,',
+'html[data-aura-preview-paused="true"] *::before,',
+'html[data-aura-preview-paused="true"] *::after {',
+'  animation-play-state: paused !important;',
+'  transition-duration: 0s !important;',
+'  scroll-behavior: auto !important;',
+'}'
+].join('\n');
+document.head.appendChild(style);
+window.requestAnimationFrame = function(callback) {
+const frameId = nextFrameId++;
+if (paused) {
+pausedFrameCallbacks.set(frameId, callback);
+frameRecords.set(frameId, { paused: true });
+return frameId;
+}
+const nativeFrameId = nativeRequestAnimationFrame(function(timestamp) {
+frameRecords.delete(frameId);
+callback(timestamp);
+});
+frameRecords.set(frameId, { nativeFrameId: nativeFrameId });
+return frameId;
+};
+window.cancelAnimationFrame = function(frameId) {
+const record = frameRecords.get(frameId);
+pausedFrameCallbacks.delete(frameId);
+if (record && typeof record.nativeFrameId !== 'undefined') {
+nativeCancelAnimationFrame(record.nativeFrameId);
+}
+frameRecords.delete(frameId);
+};
+window.setInterval = function(callback, delay) {
+const args = Array.prototype.slice.call(arguments, 2);
+return nativeSetInterval(function() {
+if (paused) return;
+callback.apply(this, args);
+}, delay);
+};
+const flushPausedFrames = function() {
+const callbacks = Array.from(pausedFrameCallbacks.entries());
+pausedFrameCallbacks.clear();
+callbacks.forEach(function(entry) {
+const frameId = entry[0];
+const callback = entry[1];
+const nativeFrameId = nativeRequestAnimationFrame(function(timestamp) {
+frameRecords.delete(frameId);
+callback(timestamp);
+});
+frameRecords.set(frameId, { nativeFrameId: nativeFrameId });
+});
+};
+const setPaused = function(nextPaused) {
+const shouldPause = Boolean(nextPaused);
+if (paused === shouldPause) return;
+paused = shouldPause;
+document.documentElement.toggleAttribute('data-aura-preview-paused', paused);
+if (!paused) {
+flushPausedFrames();
+}
+};
+window.__auraPreviewPerformanceController = {
+setPaused: setPaused,
+get paused() {
+return paused;
+}
+};
+window.addEventListener('message', function(event) {
+if (event.source !== window.parent) return;
+if (!event.data || event.data.type !== 'aura-preview-performance-mode') return;
+setPaused(event.data.paused);
+});
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f3efe5">
@@ -1293,6 +1381,7 @@ padding: 55px 18px 25px
 max-width: 290px
 }
 }
+/* Full-width motion pass: header-safe pinning and explicit depth planes. */
 .conveyor-sticky {
 top: 65px;
 height: calc(100vh - 65px)
@@ -1387,6 +1476,7 @@ align-self: start
 top: 0
 }
 }
+/* Hero v2: one continuous interaction surface with a horizontal commerce rail. */
 .launch {
 display: block;
 overflow: clip
@@ -1639,6 +1729,7 @@ padding: 12px;
 background: rgba(20, 69, 230, .82);
 border: 1px solid currentColor
 }
+/* Transit Shell viewer: quiet fashion-archive field with lateral product energy. */
 .viewer {
 isolation: isolate;
 background: linear-gradient(112deg, var(--paper) 0 17%, var(--muted) 17% 100%)
@@ -1718,6 +1809,7 @@ background: var(--acid);
 border: 1px solid var(--ink);
 padding: 7px 9px
 }
+/* The commerce block is its own complete section after the horizontal lookbook. */
 .launch-pin {
 grid-template-rows: 1fr
 }
@@ -2020,6 +2112,7 @@ font-size: 18vw;
 max-width: 72%
 }
 }
+/* Choreographed first-view entrance. The class is removed after the sequence so scroll transforms take over. */
 body.hero-preload .launch-visual,
 body.hero-preload .launch h1,
 body.hero-preload .launch-copy p,
@@ -2136,6 +2229,7 @@ opacity: 1;
 transform: translateY(-50%)
 }
 }
+/* Horizontal-gallery safe areas keep captions and display type clear of the rail and clipping edges. */
 .slide-stage {
 --slide-safe: clamp(44px, 5vw, 84px)
 }
@@ -2164,6 +2258,7 @@ overflow-wrap: anywhere
 .floating-spec {
 max-width: 220px
 }
+/* Full-width laboratory replaces the repeated ecommerce split layout. */
 .system-lab.workstation {
 display: block;
 min-height: 0;
@@ -2342,6 +2437,7 @@ opacity: 1
 animation: none !important
 }
 }
+/* Section-specific entrance system: one timing engine, several visual gestures. */
 .enter {
 --enter-delay: 0ms;
 opacity: 0;
@@ -2393,6 +2489,7 @@ transform: translateY(-12px)
 .final-cta.enter.active:hover {
 transform: rotate(7deg) scale(1.08)
 }
+/* Display type needs real cap-height breathing room; the tighter values above visually crop glyphs. */
 .launch h1 {
 line-height: .79;
 padding-top: .035em
@@ -2436,6 +2533,7 @@ right: 9%;
 bottom: 4%;
 filter: drop-shadow(24px 28px 0 rgba(19, 36, 60, .17))
 }
+/* The hero image switcher is product UI, not an image-review utility. */
 .product-views {
 right: 24px;
 top: auto;
@@ -2560,6 +2658,7 @@ width: 190px;
 font-size: 12px
 }
 }
+/* Responsive system pass: tablet, phone, touch and short-landscape layouts. */
 .lab-module.enter.active {
 transition: background-color .14s ease, color .14s ease, transform .16s var(--ease), border-color .14s ease
 }
@@ -2974,6 +3073,7 @@ color: var(--paper)
 transform: none
 }
 }
+/* Semantic display type keeps a protected cap-height box at every breakpoint. */
 .launch h1,
 .transit-commerce h2,
 .lab-header h2,
@@ -3079,6 +3179,7 @@ letter-spacing: -.065em
 letter-spacing: -.055em
 }
 }
+/* The campaign finale closes with a complete information footer. */
 .final-left {
 padding-bottom: 18vh
 }
@@ -3178,6 +3279,15 @@ transition: none !important
 }
 }
 </style>
+<script src="https://cdn.tailwindcss.com"></script><!-- aura-ga4-start -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2M6V79H761"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-2M6V79H761');
+</script>
+<!-- aura-ga4-end -->
 </head>
 
 <body class="hero-preload">
@@ -3374,7 +3484,7 @@ transition: none !important
     const clamp=(n,min=0,max=1)=>Math.min(max,Math.max(min,n));
     const heroSurface=document.querySelector('.launch-pin'),heroVisual=document.querySelector('.launch-visual'),heroTitle=document.querySelector('.launch-copy h1'),heroText=document.querySelector('.launch-copy p'),heroEyebrow=document.querySelector('.launch-copy .eyebrow'),heroFoot=document.querySelector('.copy-foot'),heroStamps=heroVisual.querySelector('.poster-stamps');let heroProgress=0;
     function paintSlide(s,local,velocity=0){
-      const px=s._px||0,py=s._py||0,img=s.querySelector('img'),back=s.querySelector('.back-type'),front=s.querySelector('.front-type'),title=s.querySelector('.slide-title'),orbit=s.querySelector('.orbit'),caption=s.querySelector('.slide-caption'),spec=s.querySelector('.floating-spec');
+      const px=s._px||0,py=s._py||0,img=s.querySelector('img'),back=s.querySelector('.back-type'),front=s.querySelector('.front-type'),title=s.querySelector('.slide-title'),orbit=s.querySelector('.orbit'),caption=s.querySelector('.slide-caption'),spec=s.floatingSpec;
       img.style.transform=`translate3d(${local*-7.8+px*-6}%,${Math.sin(local)*4.2+py*-4.8}%,110px) scale(${1.025+velocity*.06}) rotateY(${px*5.8}deg) rotateX(${py*-3.8}deg)`;
       if(back)back.style.transform=`translate3d(${local*-19+px*4.5}%,calc(-50% + ${Math.sin(local)*4.5}vh + ${py*19}px),-150px)`;
       if(front)front.style.transform=`translate3d(${local*16.5+px*9.5}%,calc(${Math.cos(local)*-4.2}vh + ${py*29}px),170px)`;
@@ -3433,4 +3543,6 @@ transition: none !important
     heroSurface._px=0;heroSurface._py=0;heroSurface._targetX=0;heroSurface._targetY=0;heroSurface._pointerVelocity=0;heroSurface._targetVelocity=0;heroSurface._motionFrame=0;heroSurface._tracking=false;heroSurface.addEventListener('pointermove',e=>{if(reduceMotion||e.pointerType==='touch')return;heroSurface._tracking=true;const r=heroSurface.getBoundingClientRect();heroSurface._targetX=((e.clientX-r.left)/r.width-.5)*2;heroSurface._targetY=((e.clientY-r.top)/r.height-.5)*2;followPointer(heroSurface,paintHero)});const leaveHero=()=>{if(!heroSurface._tracking)return;heroSurface._tracking=false;heroSurface._targetX=0;heroSurface._targetY=0;followPointer(heroSurface,paintHero)};heroSurface.addEventListener('pointerleave',leaveHero);heroSurface.addEventListener('mouseleave',leaveHero);addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;slides.forEach(s=>{if(s._tracking&&!s._stage.contains(e.target))s._leave()});if(heroSurface._tracking&&!heroSurface.contains(e.target))leaveHero()});
     const startHeroEntrance=()=>{document.body.classList.remove('hero-preload');if(reduceMotion)return;document.body.classList.add('hero-enter');setTimeout(()=>{document.body.classList.remove('hero-enter');paintHero()},1550)};requestAnimationFrame(()=>requestAnimationFrame(startHeroEntrance));update();
   </script>
+
+
 </body></html>
