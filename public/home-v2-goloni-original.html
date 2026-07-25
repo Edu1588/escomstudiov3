@@ -1,0 +1,648 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GOLONI ÔÇö Mobili├írio Urbano Premium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --red:#d42426;
+  --ink:#101010;
+  --paper:#f3efe5;
+  --acid:#d9ff00;
+  --blue:#123fdd;
+  --rail:86px;
+  --mono:'DM Mono',monospace;
+  --sans:'Inter Tight',sans-serif;
+}
+html{scroll-behavior:auto;overflow-x:hidden;background:var(--ink)}
+body{font-family:var(--sans);color:var(--ink);background:var(--paper);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+/* ÔöÇÔöÇÔöÇ PROGRESS BAR ÔöÇÔöÇÔöÇ */
+.progress-bar{position:fixed;top:0;left:0;width:100%;height:3px;background:var(--red);z-index:9999;transform-origin:left;transform:scaleX(0)}
+
+/* ÔöÇÔöÇÔöÇ SIDE RAIL ÔöÇÔöÇÔöÇ */
+.rail{position:fixed;top:0;left:0;width:var(--rail);height:100vh;z-index:100;background:var(--ink);display:flex;flex-direction:column;align-items:center;padding:24px 0;gap:0}
+.rail-mark{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--paper);letter-spacing:0.05em;width:56px;height:56px;border:1px solid rgba(243,239,229,.2);display:flex;align-items:center;justify-content:center;margin-bottom:auto}
+.rail-name{writing-mode:vertical-rl;text-orientation:mixed;font-family:var(--mono);font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(243,239,229,.45);margin-bottom:16px}
+.rail-count{font-family:var(--mono);font-size:9px;color:var(--red);letter-spacing:0.1em}
+
+/* ÔöÇÔöÇÔöÇ TOPBAR ÔöÇÔöÇÔöÇ */
+.topbar{position:fixed;top:0;left:var(--rail);right:0;height:56px;z-index:99;background:rgba(16,16,16,.92);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;padding:0 32px;border-bottom:1px solid rgba(243,239,229,.08)}
+.topbar-brand{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--paper);letter-spacing:0.15em;text-transform:uppercase}
+.topbar-nav{display:flex;gap:28px}
+.topbar-nav a{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(243,239,229,.5);transition:color .25s}
+.topbar-nav a:hover{color:var(--acid)}
+
+/* ÔöÇÔöÇÔöÇ MAIN CONTENT ÔöÇÔöÇÔöÇ */
+.main{margin-left:var(--rail);padding-top:56px}
+
+/* ÔöÇÔöÇÔöÇ HERO SECTION ÔöÇÔöÇÔöÇ */
+.hero{position:relative;height:200vh;overflow:hidden}
+.hero-inner{position:sticky;top:56px;height:calc(100vh - 56px);display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
+.hero-image-wrap{position:absolute;inset:0;z-index:0}
+.hero-image-wrap img{width:100%;height:100%;object-fit:cover;transform:scale(1.15);will-change:transform;transition:none}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,16,16,.15) 0%,rgba(16,16,16,.65) 60%,rgba(16,16,16,.92) 100%);z-index:1}
+.hero-content{position:relative;z-index:2;padding:0 48px 64px}
+.hero-tag{font-family:var(--mono);font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--red);margin-bottom:12px;opacity:0;transform:translateY(16px)}
+.hero-h1{font-size:clamp(48px,8vw,120px);font-weight:800;line-height:.92;color:var(--paper);text-transform:uppercase;letter-spacing:-0.02em;opacity:0;transform:translateY(40px)}
+.hero-h1 span.outline{-webkit-text-stroke:1.5px var(--paper);color:transparent}
+.hero-subtitle{font-family:var(--mono);font-size:12px;letter-spacing:0.2em;color:rgba(243,239,229,.5);margin-top:16px;text-transform:uppercase;opacity:0;transform:translateY(16px)}
+.hero-commerce{position:relative;z-index:2;margin-top:auto;padding:24px 48px 48px;display:flex;align-items:flex-end;justify-content:space-between;opacity:0;transform:translateY(24px)}
+.hero-price-label{font-family:var(--mono);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(243,239,229,.4)}
+.hero-price{font-size:28px;font-weight:700;color:var(--paper);margin-top:4px}
+.hero-cta{padding:14px 40px;background:var(--red);color:var(--paper);font-family:var(--mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;border:none;cursor:pointer;transition:background .25s,transform .2s}
+.hero-cta:hover{background:#b81e1f;transform:scale(1.03)}
+
+/* ÔöÇÔöÇÔöÇ CONVEYOR / HORIZONTAL GALLERY ÔöÇÔöÇÔöÇ */
+.conveyor-section{position:relative;height:440vh;background:var(--ink)}
+.conveyor-sticky{position:sticky;top:56px;height:calc(100vh - 56px);overflow:hidden}
+.conveyor-track{display:flex;height:100%;will-change:transform}
+.conveyor-slide{position:relative;min-width:100vw;width:100vw;height:100%;flex-shrink:0;overflow:hidden}
+.conveyor-slide img{width:100%;height:100%;object-fit:cover;will-change:transform;transition:none}
+.conveyor-slide-overlay{position:absolute;inset:0;background:rgba(16,16,16,.45);z-index:1}
+.conveyor-slide-content{position:absolute;bottom:64px;left:48px;z-index:2;display:flex;flex-direction:column;gap:8px}
+.conveyor-slide-tag{font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--red)}
+.conveyor-slide-title{font-size:clamp(32px,5vw,72px);font-weight:800;color:var(--paper);text-transform:uppercase;line-height:.95}
+.conveyor-slide-sub{font-family:var(--mono);font-size:11px;color:rgba(243,239,229,.45);letter-spacing:0.12em;margin-top:4px}
+.conveyor-progress{position:absolute;bottom:32px;left:48px;z-index:3;display:flex;gap:8px}
+.conveyor-dot{width:40px;height:2px;background:rgba(243,239,229,.2);transition:background .3s}
+.conveyor-dot.active{background:var(--red)}
+
+/* ÔöÇÔöÇÔöÇ PRODUCT SECTION ÔöÇÔöÇÔöÇ */
+.product-section{position:relative;background:var(--paper);padding:120px 48px 120px calc(48px + var(--rail))}
+.product-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;max-width:1200px;margin:0 auto}
+.product-gallery{display:flex;flex-direction:column;gap:16px}
+.product-main-img{aspect-ratio:4/5;overflow:hidden;background:#e5e0d8;cursor:zoom-in}
+.product-main-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.product-main-img:hover img{transform:scale(1.05)}
+.product-thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.product-thumb{position:relative;aspect-ratio:1;overflow:hidden;background:#e5e0d8;cursor:pointer;border:2px solid transparent;transition:border-color .25s}
+.product-thumb.active{border-color:var(--ink)}
+.product-thumb img{width:100%;height:100%;object-fit:cover}
+.product-info{display:flex;flex-direction:column;justify-content:center}
+.product-tag{font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--red);margin-bottom:12px}
+.product-name{font-size:clamp(28px,4vw,48px);font-weight:800;text-transform:uppercase;line-height:1;margin-bottom:8px}
+.product-sub{font-family:var(--mono);font-size:11px;color:rgba(16,16,16,.45);letter-spacing:0.12em;margin-bottom:32px}
+.product-price-row{display:flex;align-items:baseline;gap:12px;margin-bottom:32px}
+.product-price{font-size:32px;font-weight:700}
+.product-price-note{font-family:var(--mono);font-size:10px;color:rgba(16,16,16,.4);letter-spacing:0.1em}
+.product-specs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px}
+.product-spec{padding:16px;background:rgba(16,16,16,.03)}
+.product-spec-label{font-family:var(--mono);font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(16,16,16,.4);margin-bottom:4px}
+.product-spec-value{font-size:14px;font-weight:600}
+.colorway-row{display:flex;gap:8px;margin-bottom:32px}
+.colorway{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:border-color .25s}
+.colorway.active{border-color:var(--ink)}
+.size-row{display:flex;gap:8px;margin-bottom:32px}
+.size-btn{padding:8px 18px;border:1px solid rgba(16,16,16,.15);font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink);background:transparent;cursor:pointer;transition:all .25s}
+.size-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.add-btn{width:100%;padding:18px;background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:12px;letter-spacing:0.2em;text-transform:uppercase;border:none;cursor:pointer;transition:background .25s,transform .2s;margin-top:16px}
+.add-btn:hover{transform:scale(1.02)}
+.add-btn.added{background:var(--red)}
+
+/* ÔöÇÔöÇÔöÇ SYSTEM LAB ÔöÇÔöÇÔöÇ */
+.lab-section{background:var(--ink);padding:120px 48px 120px calc(48px + var(--rail))}
+.lab-header{max-width:1200px;margin:0 auto 64px}
+.lab-tag{font-family:var(--mono);font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--red);margin-bottom:12px}
+.lab-title{font-size:clamp(32px,5vw,64px);font-weight:800;color:var(--paper);text-transform:uppercase;line-height:.95}
+.lab-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;max-width:1200px;margin:0 auto}
+.lab-module{position:relative;aspect-ratio:3/4;overflow:hidden;background:rgba(243,239,229,.04);cursor:pointer;transition:background .35s}
+.lab-module:hover{background:rgba(243,239,229,.08)}
+.lab-module img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.lab-module:hover img{transform:scale(1.05)}
+.lab-module-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(16,16,16,.8) 100%);z-index:1}
+.lab-module-content{position:absolute;bottom:20px;left:20px;z-index:2}
+.lab-module-tag{font-family:var(--mono);font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--red);margin-bottom:4px}
+.lab-module-name{font-size:16px;font-weight:700;color:var(--paper);text-transform:uppercase}
+
+/* ÔöÇÔöÇÔöÇ DROP INDEX ÔöÇÔöÇÔöÇ */
+.index-section{background:var(--ink);padding:0 48px 120px calc(48px + var(--rail))}
+.index-header{max-width:1200px;margin:0 auto 48px}
+.index-tag{font-family:var(--mono);font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--acid);margin-bottom:12px}
+.index-title{font-size:clamp(28px,4vw,48px);font-weight:800;color:var(--paper);text-transform:uppercase}
+.index-list{max-width:1200px;margin:0 auto}
+.index-row{position:relative;background:rgba(243,239,229,.03);cursor:pointer;overflow:hidden;transition:background .3s}
+.index-row:hover{background:rgba(243,239,229,.06)}
+.index-row-inner{display:grid;grid-template-columns:80px 1fr auto;align-items:center;gap:24px;padding:24px 32px;border-bottom:1px solid rgba(243,239,229,.06)}
+.index-row-num{font-family:var(--mono);font-size:11px;color:rgba(243,239,229,.3)}
+.index-row-name{font-size:18px;font-weight:700;color:var(--paper);text-transform:uppercase;letter-spacing:0.02em}
+.index-row-price{font-family:var(--mono);font-size:14px;color:var(--paper);font-weight:500}
+.index-row-preview{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;opacity:0;transition:opacity .35s;background-size:cover;background-position:center}
+.index-row:hover .index-row-preview{opacity:.15}
+
+/* ÔöÇÔöÇÔöÇ FINALE ÔöÇÔöÇÔöÇ */
+.finale-section{background:var(--acid);padding:160px 48px 160px calc(48px + var(--rail));text-align:center}
+.finale-tag{font-family:var(--mono);font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--ink);margin-bottom:16px;opacity:.5}
+.finale-title{font-size:clamp(40px,7vw,96px);font-weight:900;color:var(--ink);text-transform:uppercase;line-height:.92;margin-bottom:8px}
+.finale-sub{font-family:var(--mono);font-size:12px;letter-spacing:0.15em;color:rgba(16,16,16,.5);text-transform:uppercase;margin-bottom:40px}
+.finale-cta{display:inline-block;margin-top:40px;padding:18px 56px;background:var(--ink);color:var(--acid);font-family:var(--mono);font-size:12px;letter-spacing:0.2em;text-transform:uppercase;border:none;cursor:pointer;transition:background .25s,transform .2s}
+.finale-cta:hover{transform:scale(1.04)}
+
+/* ÔöÇÔöÇÔöÇ FOOTER ÔöÇÔöÇÔöÇ */
+.footer{background:var(--ink);border-top:1px solid rgba(243,239,229,.08);padding:64px 48px 48px calc(48px + var(--rail))}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:48px;max-width:1200px;margin:0 auto}
+.footer-brand-name{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--paper);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:12px}
+.footer-brand-desc{font-size:13px;color:rgba(243,239,229,.35);line-height:1.6;max-width:280px}
+.footer-col-title{font-family:var(--mono);font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--red);margin-bottom:16px}
+.footer-col a{display:block;font-size:13px;color:rgba(243,239,229,.4);padding:4px 0;transition:color .25s}
+.footer-col a:hover{color:var(--paper)}
+.footer-bottom{max-width:1200px;margin:48px auto 0;padding-top:24px;border-top:1px solid rgba(243,239,229,.06);display:flex;justify-content:space-between;align-items:center}
+.footer-copy{font-family:var(--mono);font-size:10px;color:rgba(243,239,229,.25);letter-spacing:0.1em}
+.footer-legal{display:flex;gap:24px}
+.footer-legal a{font-family:var(--mono);font-size:10px;color:rgba(243,239,229,.25);letter-spacing:0.1em;transition:color .25s}
+.footer-legal a:hover{color:var(--paper)}
+
+/* ÔöÇÔöÇÔöÇ ENTRANCE ANIMATIONS ÔöÇÔöÇÔöÇ */
+.entrance{opacity:0;transform:translateY(32px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.entrance.visible{opacity:1;transform:translateY(0)}
+.entrance-delay-1{transition-delay:.1s}
+.entrance-delay-2{transition-delay:.2s}
+.entrance-delay-3{transition-delay:.3s}
+.entrance-delay-4{transition-delay:.4s}
+
+/* ÔöÇÔöÇÔöÇ RESPONSIVE ÔöÇÔöÇÔöÇ */
+@media(max-width:1024px){
+  .rail{display:none}
+  .main,.hero-commerce,.product-section,.lab-section,.index-section,.finale-section,.footer{margin-left:0;padding-left:24px;padding-right:24px}
+  .product-grid{grid-template-columns:1fr;gap:48px}
+  .lab-grid{grid-template-columns:repeat(3,1fr)}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+  .topbar{left:0}
+}
+@media(max-width:640px){
+  .hero-content{padding:0 24px 40px}
+  .hero-commerce{flex-direction:column;gap:24px;align-items:flex-start;padding:24px}
+  .conveyor-slide-content{left:24px;bottom:48px}
+  .conveyor-progress{left:24px}
+  .lab-grid{grid-template-columns:1fr 1fr}
+  .index-row-inner{grid-template-columns:40px 1fr auto;gap:12px;padding:16px 20px}
+  .footer-grid{grid-template-columns:1fr}
+  .finale-section{padding:100px 24px}
+}
+</style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- SIDE RAIL -->
+<nav class="rail" id="rail">
+  <div class="rail-mark">G/</div>
+  <div class="rail-name">Goloni</div>
+  <div class="rail-count" id="railCount">01</div>
+</nav>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-brand">GOLONI</div>
+  <nav class="topbar-nav">
+    <a href="#hero">In├¡cio</a>
+    <a href="#catalogo">Cat├ílogo</a>
+    <a href="#produtos">Produtos</a>
+    <a href="#laboratorio">Laborat├│rio</a>
+    <a href="#index">Index</a>
+    <a href="#contato">Contato</a>
+  </nav>
+</header>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- ÔòÉÔòÉÔòÉ HERO ÔòÉÔòÉÔòÉ -->
+  <section class="hero" id="hero">
+    <div class="hero-inner">
+      <div class="hero-image-wrap">
+        <img src="https://res.cloudinary.com/djw0tqmiw/image/upload/v1784916946/rfwebydhqcjioxuqok21.png" alt="Goloni Mobili├írio Urbano" id="heroImg">
+      </div>
+      <div class="hero-overlay" id="heroOverlay"></div>
+      <div class="hero-content">
+        <div class="hero-tag" id="heroTag">Mobili├írio Urbano Premium</div>
+        <h1 class="hero-h1" id="heroH1">MOBILI├üRIO<br><span class="outline">URBANO</span></h1>
+        <div class="hero-subtitle" id="heroSub">Design ┬À Durabilidade ┬À Sustentabilidade</div>
+      </div>
+      <div class="hero-commerce" id="heroCommerce">
+        <div>
+          <div class="hero-price-label">Sobre consulta</div>
+          <div class="hero-price">Projetos Sob Medida</div>
+        </div>
+        <button class="hero-cta" onclick="document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})">Ver Cat├ílogo</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÔòÉÔòÉÔòÉ CONVEYOR / LOOKBOOK ÔòÉÔòÉÔòÉ -->
+  <section class="conveyor-section" id="catalogo">
+    <div class="conveyor-sticky">
+      <div class="conveyor-track" id="conveyorTrack">
+
+        <div class="conveyor-slide" data-slide="0">
+          <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80" alt="Bancos" data-parallax>
+          <div class="conveyor-slide-overlay"></div>
+          <div class="conveyor-slide-content">
+            <div class="conveyor-slide-tag">01 ÔÇö Mobili├írio</div>
+            <div class="conveyor-slide-title">BANCOS</div>
+            <div class="conveyor-slide-sub">Conforto e design para espa├ºos p├║blicos</div>
+          </div>
+        </div>
+
+        <div class="conveyor-slide" data-slide="1">
+          <img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&q=80" alt="Lixeiras" data-parallax>
+          <div class="conveyor-slide-overlay"></div>
+          <div class="conveyor-slide-content">
+            <div class="conveyor-slide-tag">02 ÔÇö Limpeza</div>
+            <div class="conveyor-slide-title">LIXEIRAS</div>
+            <div class="conveyor-slide-sub">Coleta seletiva com identidade visual</div>
+          </div>
+        </div>
+
+        <div class="conveyor-slide" data-slide="2">
+          <img src="https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&q=80" alt="Biciclet├írios" data-parallax>
+          <div class="conveyor-slide-overlay"></div>
+          <div class="conveyor-slide-content">
+            <div class="conveyor-slide-tag">03 ÔÇö Mobilidade</div>
+            <div class="conveyor-slide-title">BICICLET├üRIOS</div>
+            <div class="conveyor-slide-sub">Estacionamento seguro e elegante</div>
+          </div>
+        </div>
+
+        <div class="conveyor-slide" data-slide="3">
+          <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1200&auto=format&fit=crop" alt="Pontes de Embarque" data-parallax>
+          <div class="conveyor-slide-overlay"></div>
+          <div class="conveyor-slide-content">
+            <div class="conveyor-slide-tag">04 ÔÇö Transporte</div>
+            <div class="conveyor-slide-title">PONTES DE EMBARQUE</div>
+            <div class="conveyor-slide-sub">Prote├º├úo e acessibilidade no transporte p├║blico</div>
+          </div>
+        </div>
+
+      </div>
+      <div class="conveyor-progress">
+        <div class="conveyor-dot active" data-dot="0"></div>
+        <div class="conveyor-dot" data-dot="1"></div>
+        <div class="conveyor-dot" data-dot="2"></div>
+        <div class="conveyor-dot" data-dot="3"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÔòÉÔòÉÔòÉ PRODUCT SECTION ÔòÉÔòÉÔòÉ -->
+  <section class="product-section" id="produtos">
+    <div class="product-grid">
+      <div class="product-gallery entrance">
+        <div class="product-main-img" id="productMainImg">
+          <img src="https://res.cloudinary.com/djw0tqmiw/image/upload/v1784916946/rfwebydhqcjioxuqok21.png" alt="Produto Principal" id="productMainImgTag">
+        </div>
+        <div class="product-thumbs" id="productThumbs">
+          <div class="product-thumb active" data-img="https://res.cloudinary.com/djw0tqmiw/image/upload/v1784916946/rfwebydhqcjioxuqok21.png"><img src="https://res.cloudinary.com/djw0tqmiw/image/upload/v1784916946/rfwebydhqcjioxuqok21.png" alt=""></div>
+          <div class="product-thumb" data-img="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80"><img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80" alt=""></div>
+          <div class="product-thumb" data-img="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&q=80"><img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&q=80" alt=""></div>
+          <div class="product-thumb" data-img="https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&q=80"><img src="https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&q=80" alt=""></div>
+        </div>
+      </div>
+      <div class="product-info">
+        <div class="product-tag entrance">Goloni / S├®rie Premium</div>
+        <h2 class="product-name entrance entrance-delay-1">MOBILI├üRIO URBANO</h2>
+        <div class="product-sub entrance entrance-delay-2">Linha completa para espa├ºos p├║blicos</div>
+        <div class="product-price-row entrance entrance-delay-2">
+          <span class="product-price">Consulte</span>
+          <span class="product-price-note">Projetos sob medida</span>
+        </div>
+        <div class="product-specs entrance entrance-delay-3">
+          <div class="product-spec"><div class="product-spec-label">Material</div><div class="product-spec-value">A├ºo Galvanizado</div></div>
+          <div class="product-spec"><div class="product-spec-label">Acabamento</div><div class="product-spec-value">P├│ Eletrost├ítico</div></div>
+          <div class="product-spec"><div class="product-spec-label">Garantia</div><div class="product-spec-value">10 Anos</div></div>
+          <div class="product-spec"><div class="product-spec-label">Instala├º├úo</div><div class="product-spec-value">Inclusa</div></div>
+        </div>
+        <div class="colorway-row entrance entrance-delay-3">
+          <div class="colorway active" style="background:#101010" title="Preto"></div>
+          <div class="colorway" style="background:#8B7355" title="Bronze"></div>
+          <div class="colorway" style="background:#C0C0C0" title="Prata"></div>
+          <div class="colorway" style="background:#d42426" title="Vermelho"></div>
+        </div>
+        <div class="size-row entrance entrance-delay-4">
+          <button class="size-btn">Essential</button>
+          <button class="size-btn active">Premium</button>
+          <button class="size-btn">Executive</button>
+        </div>
+        <button class="add-btn entrance entrance-delay-4" id="addBtn">Solicitar Or├ºamento</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÔòÉÔòÉÔòÉ SYSTEM LAB ÔòÉÔòÉÔòÉ -->
+  <section class="lab-section" id="laboratorio">
+    <div class="lab-header">
+      <div class="lab-tag entrance">Sistema / Laborat├│rio</div>
+      <h2 class="lab-title entrance entrance-delay-1">CATEGORIAS</h2>
+    </div>
+    <div class="lab-grid">
+      <div class="lab-module entrance">
+        <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80" alt="Bancos">
+        <div class="lab-module-overlay"></div>
+        <div class="lab-module-content"><div class="lab-module-tag">01</div><div class="lab-module-name">Bancos</div></div>
+      </div>
+      <div class="lab-module entrance entrance-delay-1">
+        <img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&q=80" alt="Lixeiras">
+        <div class="lab-module-overlay"></div>
+        <div class="lab-module-content"><div class="lab-module-tag">02</div><div class="lab-module-name">Lixeiras</div></div>
+      </div>
+      <div class="lab-module entrance entrance-delay-2">
+        <img src="https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&q=80" alt="Biciclet├írios">
+        <div class="lab-module-overlay"></div>
+        <div class="lab-module-content"><div class="lab-module-tag">03</div><div class="lab-module-name">Biciclet├írios</div></div>
+      </div>
+      <div class="lab-module entrance entrance-delay-3">
+        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1200&auto=format&fit=crop" alt="Pontes de Embarque">
+        <div class="lab-module-overlay"></div>
+        <div class="lab-module-content"><div class="lab-module-tag">04</div><div class="lab-module-name">Pontes de Embarque</div></div>
+      </div>
+      <div class="lab-module entrance entrance-delay-4">
+        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1200&auto=format&fit=crop" alt="Ilumina├º├úo">
+        <div class="lab-module-overlay"></div>
+        <div class="lab-module-content"><div class="lab-module-tag">05</div><div class="lab-module-name">Ilumina├º├úo</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÔòÉÔòÉÔòÉ DROP INDEX ÔòÉÔòÉÔòÉ -->
+  <section class="index-section" id="index">
+    <div class="index-header">
+      <div class="index-tag entrance">Drop / Index</div>
+      <h2 class="index-title entrance entrance-delay-1">PRODUTOS EM DESTAQUE</h2>
+    </div>
+    <div class="index-list">
+      <div class="index-row entrance">
+        <div class="index-row-preview" style="background-image:url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80')"></div>
+        <div class="index-row-inner">
+          <div class="index-row-num">01</div>
+          <div class="index-row-name">Banco Orbital</div>
+          <div class="index-row-price">R$ 2.480</div>
+        </div>
+      </div>
+      <div class="index-row entrance entrance-delay-1">
+        <div class="index-row-preview" style="background-image:url('https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&q=80')"></div>
+        <div class="index-row-inner">
+          <div class="index-row-num">02</div>
+          <div class="index-row-name">Lixeira EcoRing</div>
+          <div class="index-row-price">R$ 890</div>
+        </div>
+      </div>
+      <div class="index-row entrance entrance-delay-2">
+        <div class="index-row-preview" style="background-image:url('https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&q=80')"></div>
+        <div class="index-row-inner">
+          <div class="index-row-num">03</div>
+          <div class="index-row-name">Biciclet├írio Helix</div>
+          <div class="index-row-price">R$ 1.340</div>
+        </div>
+      </div>
+      <div class="index-row entrance entrance-delay-3">
+        <div class="index-row-preview" style="background-image:url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1200&auto=format&fit=crop')"></div>
+        <div class="index-row-inner">
+          <div class="index-row-num">04</div>
+          <div class="index-row-name">Ponte de Embarque Aero</div>
+          <div class="index-row-price">R$ 5.720</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÔòÉÔòÉÔòÉ FINALE ÔòÉÔòÉÔòÉ -->
+  <section class="finale-section" id="contato">
+    <div class="finale-tag entrance">Goloni / Contato</div>
+    <h2 class="finale-title entrance entrance-delay-1">GOLONI<br>URBANO</h2>
+    <div class="finale-sub entrance entrance-delay-2">Solu├º├Áes completas para espa├ºos p├║blicos</div>
+    <a href="https://wa.me/5511999999999" target="_blank" class="finale-cta entrance entrance-delay-3">Fale Conosco</a>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">GOLONI</div>
+      <p class="footer-brand-desc">Mobili├írio urbano de alta qualidade. Design, durabilidade e sustentabilidade para cidades modernas.</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Institucional</div>
+      <a href="#">Sobre</a>
+      <a href="#">Equipe</a>
+      <a href="#">Miss├úo</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Produtos</div>
+      <a href="#">Bancos</a>
+      <a href="#">Lixeiras</a>
+      <a href="#">Biciclet├írios</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Projetos</div>
+      <a href="#">Portf├│lio</a>
+      <a href="#">Casos de Sucesso</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Contato</div>
+      <a href="#">WhatsApp</a>
+      <a href="#">Email</a>
+      <a href="#">Instagram</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">┬® 2026 GOLONI. Todos os direitos reservados.</div>
+    <div class="footer-legal">
+      <a href="#">Privacidade</a>
+      <a href="#">Termos</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+  function $(s,ctx){return(ctx||document).querySelector(s)}
+  function $$(s,ctx){return Array.from((ctx||document).querySelectorAll(s))}
+
+  var progressBar=$('#progressBar');
+  var railCount=$('#railCount');
+  var heroImg=$('#heroImg');
+  var heroOverlay=$('#heroOverlay');
+  var heroTag=$('#heroTag');
+  var heroH1=$('#heroH1');
+  var heroSub=$('#heroSub');
+  var heroCommerce=$('#heroCommerce');
+  var conveyorTrack=$('#conveyorTrack');
+  var conveyorSection=$('#catalogo');
+  var slides=$$('.conveyor-slide');
+  var dots=$$('.conveyor-dot');
+  var entranceEls=$$('.entrance');
+  var pointerX=window.innerWidth/2;
+  var pointerY=window.innerHeight/2;
+  var currentSection='01';
+  var totalSlides=slides.length;
+
+  /* ÔöÇÔöÇÔöÇ Pointer tracking ÔöÇÔöÇÔöÇ */
+  window.addEventListener('pointermove',function(e){
+    pointerX=e.clientX;
+    pointerY=e.clientY;
+  },{passive:true});
+
+  /* ÔöÇÔöÇÔöÇ Smooth scroll lerp ÔöÇÔöÇÔöÇ */
+  var scrollTarget=window.scrollY;
+  var scrollCurrent=window.scrollY;
+  window.addEventListener('scroll',function(){scrollTarget=window.scrollY},{passive:true});
+
+  function clamp(v,min,max){return Math.min(Math.max(v,min),max)}
+
+  function tick(){
+    scrollCurrent+=(scrollTarget-scrollCurrent)*0.1;
+    var scrollY=scrollCurrent;
+    var maxScroll=document.documentElement.scrollHeight-window.innerHeight;
+    var progress=clamp(scrollY/maxScroll,0,1);
+
+    progressBar.style.transform='scaleX('+progress+')';
+
+    /* ÔöÇÔöÇÔöÇ Section counter ÔöÇÔöÇÔöÇ */
+    var heroH=$('#hero').offsetHeight;
+    var convH=conveyorSection.offsetHeight;
+    var prodH=$('#produtos').offsetHeight;
+    if(scrollY<heroH*0.5){currentSection='01'}
+    else if(scrollY<heroH+convH*0.7){currentSection='02'}
+    else if(scrollY<heroH+convH+prodH*0.5){currentSection='03'}
+    else{currentSection='04'}
+    railCount.textContent=currentSection;
+
+    /* ÔöÇÔöÇÔöÇ HERO parallax ÔöÇÔöÇÔöÇ */
+    var heroProgress=clamp(scrollY/(window.innerHeight*0.8),0,1);
+    heroImg.style.transform='scale('+(1.15+heroProgress*0.1)+') translateY('+(heroProgress*-40)+'px)';
+    heroOverlay.style.opacity=heroProgress*0.4;
+
+    /* ÔöÇÔöÇÔöÇ HERO entrance on load ÔöÇÔöÇÔöÇ */
+    var heroEntrance=clamp(scrollY/(window.innerHeight*0.3),0,1);
+    heroTag.style.opacity=heroEntrance;
+    heroTag.style.transform='translateY('+(16*(1-heroEntrance))+'px)';
+    heroH1.style.opacity=heroEntrance;
+    heroH1.style.transform='translateY('+(40*(1-heroEntrance))+'px)';
+    heroSub.style.opacity=heroEntrance;
+    heroSub.style.transform='translateY('+(16*(1-heroEntrance))+'px)';
+    heroCommerce.style.opacity=clamp((scrollY-window.innerHeight*0.2)/(window.innerHeight*0.3),0,1);
+    heroCommerce.style.transform='translateY('+(24*(1-clamp((scrollY-window.innerHeight*0.2)/(window.innerHeight*0.3),0,1)))+'px)';
+
+    /* ÔöÇÔöÇÔöÇ CONVEYOR horizontal drive ÔöÇÔöÇÔöÇ */
+    var convRect=conveyorSection.getBoundingClientRect();
+    var convSectionTop=conveyorSection.offsetTop;
+    var convSectionH=conveyorSection.offsetHeight;
+    var convScrollStart=convSectionTop-window.innerHeight;
+    var convScrollEnd=convSectionTop+convSectionH-window.innerHeight;
+    var convProgress=clamp((scrollY-convScrollStart)/(convScrollEnd-convScrollStart),0,1);
+    var trackOffset=convProgress*(totalSlides-1)*window.innerWidth;
+    conveyorTrack.style.transform='translateX('+(-trackOffset)+'px)';
+
+    /* Active dot */
+    var activeSlideIdx=Math.round(convProgress*(totalSlides-1));
+    dots.forEach(function(dot,i){
+      dot.classList.toggle('active',i===activeSlideIdx);
+    });
+
+    /* Slide parallax */
+    slides.forEach(function(slide,i){
+      var slideStart=i/(totalSlides-1);
+      var slideLocalProgress=clamp((convProgress-slideStart)*(totalSlides-1),-1,1);
+      var img=$('[data-parallax]',slide);
+      if(img){
+        var px=(pointerX/window.innerWidth-0.5)*20;
+        var py=(pointerY/window.innerHeight-0.5)*20;
+        var parallaxX=px*(1-Math.abs(slideLocalProgress-0.5)*2);
+        var parallaxY=py*(1-Math.abs(slideLocalProgress-0.5)*2);
+        img.style.transform='scale(1.15) translate('+parallaxX+'px,'+parallaxY+'px)';
+      }
+    });
+
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  /* ÔöÇÔöÇÔöÇ Intersection Observer (entrance animations) ÔöÇÔöÇÔöÇ */
+  var entranceObserver=new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+        entranceObserver.unobserve(entry.target);
+      }
+    });
+  },{threshold:0.15});
+  entranceEls.forEach(function(el){entranceObserver.observe(el)});
+
+  /* ÔöÇÔöÇÔöÇ Product thumbnails ÔöÇÔöÇÔöÇ */
+  var thumbs=$$('.product-thumb');
+  var mainImg=$('#productMainImgTag');
+  thumbs.forEach(function(thumb){
+    thumb.addEventListener('click',function(){
+      thumbs.forEach(function(t){t.classList.remove('active')});
+      thumb.classList.add('active');
+      mainImg.src=thumb.getAttribute('data-img');
+    });
+  });
+
+  /* ÔöÇÔöÇÔöÇ Colorway selector ÔöÇÔöÇÔöÇ */
+  var colorways=$$('.colorway');
+  colorways.forEach(function(cw){
+    cw.addEventListener('click',function(){
+      colorways.forEach(function(c){c.classList.remove('active')});
+      cw.classList.add('active');
+    });
+  });
+
+  /* ÔöÇÔöÇÔöÇ Size selector ÔöÇÔöÇÔöÇ */
+  var sizeBtns=$$('.size-btn');
+  sizeBtns.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      sizeBtns.forEach(function(b){b.classList.remove('active')});
+      btn.classList.add('active');
+    });
+  });
+
+  /* ÔöÇÔöÇÔöÇ Add to bag ÔöÇÔöÇÔöÇ */
+  var addBtn=$('#addBtn');
+  addBtn.addEventListener('click',function(){
+    addBtn.classList.toggle('added');
+    addBtn.textContent=addBtn.classList.contains('added')?'Ô£ô Solicitado':'Solicitar Or├ºamento';
+  });
+
+  /* ÔöÇÔöÇÔöÇ Lab module hover parallax ÔöÇÔöÇÔöÇ */
+  $$('.lab-module').forEach(function(mod){
+    mod.addEventListener('pointermove',function(e){
+      var rect=mod.getBoundingClientRect();
+      var x=(e.clientX-rect.left)/rect.width-0.5;
+      var y=(e.clientY-rect.top)/rect.height-0.5;
+      var img=$('img',mod);
+      if(img) img.style.transform='scale(1.08) translate('+(x*12)+'px,'+(y*12)+'px)';
+    });
+    mod.addEventListener('pointerleave',function(){
+      var img=$('img',mod);
+      if(img) img.style.transform='';
+    });
+  });
+
+  /* ÔöÇÔöÇÔöÇ Nav smooth scroll ÔöÇÔöÇÔöÇ */
+  $$('.topbar-nav a').forEach(function(a){
+    a.addEventListener('click',function(e){
+      e.preventDefault();
+      var target=$(a.getAttribute('href'));
+      if(target) target.scrollIntoView({behavior:'smooth'});
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>
