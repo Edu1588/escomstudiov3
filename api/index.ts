@@ -49,14 +49,16 @@ ensureAuth().catch(err => console.error("Initial auth failed:", err));
 app.get(["/home-v3", "/home-v3.html", "/home-v3/index.html"], (req, res) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0");
   res.setHeader("Content-Type", "text/html; charset=utf-8");
-  const p1 = path.join(process.cwd(), "public", "home-v3", "index.html");
-  if (fs.existsSync(p1)) return res.sendFile(p1);
-  const p2 = path.join(process.cwd(), "public", "home-v3.html");
-  if (fs.existsSync(p2)) return res.sendFile(p2);
-  const p3 = path.join(process.cwd(), "dist", "home-v3", "index.html");
-  if (fs.existsSync(p3)) return res.sendFile(p3);
-  const p4 = path.join(process.cwd(), "dist", "home-v3.html");
-  if (fs.existsSync(p4)) return res.sendFile(p4);
+  const candidates = [
+    path.join(process.cwd(), "public", "home-v3", "index.html"),
+    path.join(process.cwd(), "public", "home-v3.html"),
+    path.join(process.cwd(), "home-v3", "index.html"),
+    path.join(process.cwd(), "dist", "home-v3", "index.html"),
+    path.join(process.cwd(), "dist", "home-v3.html")
+  ];
+  for (const c of candidates) {
+    if (fs.existsSync(c)) return res.sendFile(c);
+  }
   res.status(404).send("Home V3 não encontrada.");
 });
 

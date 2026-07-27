@@ -1,6 +1,9 @@
 {
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/home-v3", "destination": "/api" },
+    { "source": "/home-v3.html", "destination": "/api" },
+    { "source": "/home-v3/index.html", "destination": "/api" },
     { "source": "/template-ci-odontologia", "destination": "/api" },
     { "source": "/template-ci-odontologia/index.html", "destination": "/api" },
     { "source": "/template-ci-odontologia/dossie", "destination": "/api" },
