@@ -34,7 +34,7 @@ export default function Prospect() {
     {
       id: "crm-2",
       indexNum: 20,
-      nome: "YOKOTA & XAVIER, Dentista Zona Leste SP, Clinica Vila Matilde, Especialista, Melhor: Implante Dentario Canal BucoMaxilo Siso",
+      nome: "YOKOTA & XAVIER, Dentista Zona Leste SP, Clinica Vila Matilde",
       categoria: "Clínicas Odontológicas (Foco em Implantes e Lentes de Contato)",
       cidade: "São Paulo, SP",
       endereco: "Rua Demétrio Ribeiro, 1000 - Tatuapé, São Paulo - SP",
@@ -128,316 +128,193 @@ export default function Prospect() {
   const columns = ["Base", "Abordado", "Agendado", "Follow Up", "Convertido"];
 
   return (
-    <div className="flex-1 overflow-y-auto w-full bg-[#f8fafc] dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 min-h-screen p-6 md:p-8">
-      {/* HEADER CRM */}
-      <div className="mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">CRM</h1>
-        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Filtre, priorize e gerencie o contato com cada lead</p>
-      </div>
+    <div className="flex-1 overflow-y-auto w-full bg-[#f6f5f0] text-slate-900 min-h-screen pb-20 font-sans">
+      <Header 
+        title="Gestão de Clientes ✦ CRM Comercial" 
+        subtitle="Filtre, priorize e acompanhe a jornada de prospecção e vendas de cada cliente." 
+      />
 
-      {/* CAMPO DE BUSCA */}
-      <div className="relative mb-4">
-        <Search className="absolute left-4 top-3.5 text-slate-400" size={18} />
-        <input
-          type="text"
-          placeholder="Buscar por nome, categoria, cidade ou telefone..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-xl pl-11 pr-4 py-3 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-        />
-      </div>
+      <div className="p-4 md:p-8 max-w-[1400px] mx-auto space-y-6">
 
-      {/* CHIPS DE FILTRO */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-6 custom-scrollbar">
-        {["Todos", "Sem site", "Tier 3 (Quente)", "Tier 2 (Morno)", "Score 50+", "Com telefone", "Com WhatsApp"].map(tag => (
-          <button
-            key={tag}
-            onClick={() => setFilterTag(tag)}
-            className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border ${
-              filterTag === tag
-                ? "bg-[#0F172A] text-white dark:bg-slate-800 border-slate-700"
-                : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-400"
-            }`}
-          >
-            {tag}
-          </button>
-        ))}
-      </div>
+        {/* CAMPO DE BUSCA COM NOVO DESIGN DE BORDA PRETA */}
+        <div className="bg-white border-2 border-slate-900 rounded-xl p-4 shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] flex items-center gap-3">
+          <Search className="text-slate-400 shrink-0" size={20} />
+          <input
+            type="text"
+            placeholder="Buscar por nome, categoria, cidade ou telefone..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-transparent text-slate-900 text-sm md:text-base font-medium focus:outline-none placeholder:text-slate-400"
+          />
+        </div>
 
-      {/* KANBAN BOARD */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 items-start">
-        {columns.map(colName => {
-          const colLeads = filteredLeads.filter(l => (l.etapa || "Base") === colName);
-          const dotColor = colName === "Base" ? "bg-slate-400" : colName === "Abordado" ? "bg-blue-500" : colName === "Agendado" ? "bg-emerald-500" : "bg-amber-500";
+        {/* CHIPS DE FILTRO COM DESIGN DE BOTÃO QUADRADO (AZUL ESCOM) */}
+        <div className="flex items-center gap-2.5 overflow-x-auto pb-2 custom-scrollbar">
+          {["Todos", "Sem site", "Tier 3 (Quente)", "Tier 2 (Morno)", "Score 50+", "Com telefone", "Com WhatsApp"].map(tag => (
+            <button
+              key={tag}
+              onClick={() => setFilterTag(tag)}
+              className={`px-4 py-2 rounded-lg text-xs font-extrabold whitespace-nowrap transition-all border-2 border-slate-900 ${
+                filterTag === tag
+                  ? "bg-[#2563eb] text-white shadow-[2px_2px_0px_0px_rgba(15,23,42,1)]"
+                  : "bg-white text-slate-800 hover:bg-slate-100 shadow-sm"
+              }`}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
 
-          return (
-            <div key={colName} className="bg-slate-100/70 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-4 min-h-[500px]">
-              {/* Header Coluna */}
-              <div className="flex items-center justify-between mb-4 px-1">
-                <div className="flex items-center gap-2">
-                  <span className={`w-2.5 h-2.5 rounded-full ${dotColor}`}></span>
-                  <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">{colName}</h3>
+        {/* KANBAN BOARD EM CARDS BRANCOS E BORDAS FORTES */}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 items-start">
+          {columns.map(colName => {
+            const colLeads = filteredLeads.filter(l => (l.etapa || "Base") === colName);
+            const dotColor = colName === "Base" ? "bg-[#2563eb]" : colName === "Abordado" ? "bg-cyan-500" : colName === "Agendado" ? "bg-emerald-500" : "bg-amber-500";
+
+            return (
+              <div key={colName} className="bg-white border-2 border-slate-900 rounded-2xl p-4 min-h-[550px] shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] flex flex-col">
+                
+                {/* Header Coluna */}
+                <div className="flex items-center justify-between mb-4 pb-3 border-b-2 border-slate-200 px-1">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-3 h-3 rounded-full ${dotColor} border border-slate-900`}></span>
+                    <h3 className="font-extrabold text-sm text-slate-900 uppercase tracking-wide">{colName}</h3>
+                  </div>
+                  <span className="text-xs font-mono bg-slate-100 text-slate-900 font-bold px-2 py-0.5 rounded-md border border-slate-300">
+                    {colLeads.length}
+                  </span>
                 </div>
-                <span className="text-xs font-mono text-slate-400 font-semibold">{colLeads.length}</span>
-              </div>
 
-              {/* Cards na Coluna */}
-              <div className="space-y-3">
-                {colLeads.length === 0 ? (
-                  <div className="py-12 text-center text-xs text-slate-400 italic">
-                    Sem leads
-                  </div>
-                ) : (
-                  colLeads.map(lead => (
-                    <div
-                      key={lead.id}
-                      onClick={() => { setSelectedLead(lead); setActiveModalTab("Informações"); }}
-                      className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 hover:border-blue-500 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all cursor-pointer space-y-3"
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400">
-                          {lead.indexNum || 21}
-                        </span>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                          {lead.temp || "Frio"}
-                        </span>
-                      </div>
-
-                      <div>
-                        <h4 className="font-bold text-sm text-slate-900 dark:text-white leading-snug line-clamp-2">
-                          {lead.nome}
-                        </h4>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
-                          {lead.categoria} • {lead.cidade}
-                        </p>
-                      </div>
-
-                      <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-                        <a
-                          href={`tel:${lead.telefone}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="w-full bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold py-2 rounded-xl text-center border border-slate-200 dark:border-slate-800 transition-colors"
-                        >
-                          Ligar
-                        </a>
-                      </div>
+                {/* Cards na Coluna */}
+                <div className="space-y-3 flex-1">
+                  {colLeads.length === 0 ? (
+                    <div className="py-16 text-center text-xs text-slate-400 italic">
+                      Sem leads
                     </div>
-                  ))
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* LEAD DETAILS MODAL (IGUAL AO PRINT) */}
-      {selectedLead && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col">
-            
-            {/* Header Modal */}
-            <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-900/60">
-              <div className="flex items-center gap-3">
-                <button onClick={() => setSelectedLead(null)} className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500">
-                  <ChevronLeft size={20} />
-                </button>
-                <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400">
-                  {selectedLead.indexNum || 21}
-                </span>
-                <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                  {selectedLead.temp || "Frio"}
-                </span>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white truncate max-w-md">
-                  {selectedLead.nome}
-                </h2>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono text-slate-400">1 / 2</span>
-                <button onClick={() => setSelectedLead(null)} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400">
-                  <X size={20} />
-                </button>
-              </div>
-            </div>
-
-            {/* Abas Modal */}
-            <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 px-6 bg-slate-50/50 dark:bg-slate-900/30">
-              {(["Informações", "Scripts", "Objeções", "Site", "Venda", "Agendar"] as const).map(tab => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveModalTab(tab)}
-                  className={`py-3.5 px-4 text-xs font-bold transition-all relative border-b-2 ${
-                    activeModalTab === tab
-                      ? "text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400"
-                      : "text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-800 dark:hover:text-slate-200"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-
-            {/* Conteúdo das Abas */}
-            <div className="p-6 md:p-8 overflow-y-auto flex-1 custom-scrollbar">
-              
-              {/* TAB 1: INFORMAÇÕES */}
-              {activeModalTab === "Informações" && (
-                <div className="space-y-6">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">INFORMAÇÕES DO LEAD</h3>
-                  
-                  <div className="bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-200 dark:border-slate-800 divide-y divide-slate-200 dark:divide-slate-800 text-sm">
-                    <div className="p-4 grid grid-cols-1 md:grid-cols-4 gap-2">
-                      <span className="text-slate-500 font-medium">Categoria</span>
-                      <span className="md:col-span-3 font-semibold text-slate-800 dark:text-slate-200">{selectedLead.categoria}</span>
-                    </div>
-
-                    <div className="p-4 grid grid-cols-1 md:grid-cols-4 gap-2">
-                      <span className="text-slate-500 font-medium">Cidade</span>
-                      <span className="md:col-span-3 font-semibold text-slate-800 dark:text-slate-200">{selectedLead.cidade}</span>
-                    </div>
-
-                    <div className="p-4 grid grid-cols-1 md:grid-cols-4 gap-2 items-center">
-                      <span className="text-slate-500 font-medium">Telefone</span>
-                      <div className="md:col-span-3 flex items-center gap-3">
-                        <span className="font-semibold text-slate-800 dark:text-slate-200">{selectedLead.telefone || "(11) 95660-8040"}</span>
-                        <a href={`tel:${selectedLead.telefone}`} className="bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-xs font-bold px-3 py-1 rounded-lg">
-                          Ligar
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="p-4 grid grid-cols-1 md:grid-cols-4 gap-2">
-                      <span className="text-slate-500 font-medium">Endereço</span>
-                      <span className="md:col-span-3 text-slate-700 dark:text-slate-300">{selectedLead.endereco || "R. Bela Vista, 590 - Chácara Santo Antônio, São Paulo - SP"}</span>
-                    </div>
-
-                    <div className="p-4 grid grid-cols-1 md:grid-cols-4 gap-2">
-                      <span className="text-slate-500 font-medium">Avaliação</span>
-                      <span className="md:col-span-3 font-semibold text-amber-500">{selectedLead.rating || 4.9}/5 - {selectedLead.reviewsCount || 58} avaliações</span>
-                    </div>
-
-                    <div className="p-4 grid grid-cols-1 md:grid-cols-4 gap-2 items-center">
-                      <span className="text-slate-500 font-medium">Etapa</span>
-                      <div className="md:col-span-3 flex items-center gap-2 flex-wrap">
-                        {columns.map(et => (
-                          <button
-                            key={et}
-                            onClick={() => handleUpdateEtapa(selectedLead.id, et)}
-                            className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
-                              (selectedLead.etapa || "Base") === et
-                                ? "bg-blue-600 text-white shadow-sm"
-                                : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-300"
-                            }`}
-                          >
-                            {et}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="p-4 grid grid-cols-1 md:grid-cols-4 gap-2 items-center">
-                      <span className="text-slate-500 font-medium">Site</span>
-                      <span className="md:col-span-3 font-semibold text-emerald-500 flex items-center gap-1.5">
-                        {selectedLead.temSite ? "Tem site 🌐" : "Sem site ⚠️"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 2: SCRIPTS */}
-              {activeModalTab === "Scripts" && (
-                <div className="space-y-4">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">SCRIPTS DE ABORDAÇÃO COMERCIAL</h3>
-                  <div className="bg-slate-900 text-slate-100 p-6 rounded-2xl border border-slate-800 font-sans text-sm space-y-4">
-                    <p className="text-cyan-400 font-bold">Script de WhatsApp para {selectedLead.nome}:</p>
-                    <p className="italic text-slate-300 leading-relaxed">
-                      "Olá, equipe da {selectedLead.nome}! Tudo bem? Gostei bastante da estrutura da empresa de vocês na {selectedLead.cidade}. Notei uma grande oportunidade de reestruturação digital para atrair mais pacientes de ticket alto. Desenvolvemos uma demonstração exclusiva com 15 seções de alta conversão. Podemos agendar 5 minutos?"
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 3: OBJEÇÕES */}
-              {activeModalTab === "Objeções" && (
-                <div className="space-y-4">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">QUEBRA DE OBJEÇÕES</h3>
-                  <div className="space-y-3">
-                    <div className="p-4 rounded-xl bg-slate-900 border border-slate-800">
-                      <h4 className="font-bold text-white text-sm">"Já temos agência/site"</h4>
-                      <p className="text-xs text-slate-400 mt-1">Resposta: "Excelente! Nosso modelo não substitui sua agência, ele aplica engenharia de conversão de 15 seções focada em ROI direto em 3 dias."</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 4: SITE (CRIAR SITE NO PADRÃO 15 SEÇÕES) */}
-              {activeModalTab === "Site" && (
-                <div className="space-y-6 text-center py-6">
-                  <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mx-auto text-cyan-400">
-                    <Sparkles size={32} />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">Gerador de Site Benchmark (15 Seções)</h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 max-w-lg mx-auto mt-2">
-                      Gere a Landing Page de Alta Conversão para <strong>{selectedLead.nome}</strong> aplicando a Skill <code className="text-cyan-400 font-mono">escom-site-builder</code> com mineração de dados reais.
-                    </p>
-                  </div>
-
-                  {selectedLead.generatedSiteUrl ? (
-                    <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/40 text-emerald-400 text-sm max-w-md mx-auto space-y-2">
-                      <p className="font-bold">✓ Landing Page Gerada com Sucesso!</p>
-                      <a
-                        href={selectedLead.generatedSiteUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-2 underline text-white font-semibold"
+                  ) : (
+                    colLeads.map(lead => (
+                      <div
+                        key={lead.id}
+                        onClick={() => { setSelectedLead(lead); setActiveModalTab("Informações"); }}
+                        className="bg-slate-50 border-2 border-slate-900 hover:border-[#2563eb] hover:bg-white rounded-xl p-4 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[4px_4px_0px_0px_rgba(37,99,235,1)] transition-all cursor-pointer space-y-3 group"
                       >
-                        <Globe size={16} /> Abrir Landing Page
-                      </a>
-                    </div>
-                  ) : null}
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-[#2563eb] text-white border border-slate-900">
+                            #{lead.indexNum || 21}
+                          </span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-200 text-slate-800 border border-slate-400">
+                            {lead.temp || "Frio"}
+                          </span>
+                        </div>
 
-                  <div>
+                        <div>
+                          <h4 className="font-extrabold text-sm text-slate-900 group-hover:text-[#2563eb] leading-snug line-clamp-2 transition-colors">
+                            {lead.nome}
+                          </h4>
+                          <p className="text-[11px] text-slate-600 mt-1 line-clamp-2">
+                            {lead.categoria} &bull; {lead.cidade}
+                          </p>
+                        </div>
+
+                        {/* Botão de Ligar em Azul ESCOM */}
+                        <div className="pt-2 border-t border-slate-200">
+                          <a
+                            href={`tel:${lead.telefone}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-xs font-extrabold py-2.5 rounded-lg text-center border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] transition-all block uppercase tracking-wide"
+                          >
+                            Ligar
+                          </a>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* LEAD DETAILS MODAL */}
+        {selectedLead && (
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-[#f6f5f0] border-2 border-slate-900 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] flex flex-col">
+              
+              {/* Header Modal */}
+              <div className="p-6 border-b-2 border-slate-900 flex items-center justify-between bg-white">
+                <div className="flex items-center gap-3">
+                  <button onClick={() => setSelectedLead(null)} className="p-1.5 rounded-lg border-2 border-slate-900 hover:bg-slate-100 text-slate-800">
+                    <ChevronLeft size={20} />
+                  </button>
+                  <span className="text-xs font-extrabold px-2.5 py-1 rounded-md bg-[#2563eb] text-white border border-slate-900">
+                    #{selectedLead.indexNum || 21}
+                  </span>
+                  <h2 className="text-lg font-extrabold text-slate-900 truncate max-w-md">
+                    {selectedLead.nome}
+                  </h2>
+                </div>
+
+                <button onClick={() => setSelectedLead(null)} className="p-2 rounded-lg border-2 border-slate-900 bg-white hover:bg-slate-100 text-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)]">
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Abas Modal */}
+              <div className="flex items-center gap-2 border-b-2 border-slate-300 px-6 bg-slate-100/80">
+                {(["Informações", "Scripts", "Objeções", "Site", "Venda", "Agendar"] as const).map(tab => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveModalTab(tab)}
+                    className={`py-3.5 px-4 text-xs font-extrabold transition-all relative border-b-4 ${
+                      activeModalTab === tab
+                        ? "text-[#2563eb] border-[#2563eb]"
+                        : "text-slate-600 border-transparent hover:text-slate-900"
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+
+              {/* Conteúdo da Aba */}
+              <div className="p-6 overflow-y-auto space-y-6 flex-1 bg-white">
+                {activeModalTab === "Informações" && (
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-slate-50 border-2 border-slate-900 p-4 rounded-xl space-y-1">
+                        <span className="text-xs font-mono text-slate-500 font-bold uppercase">CATEGORIA</span>
+                        <div className="text-sm font-bold text-slate-900">{selectedLead.categoria}</div>
+                      </div>
+
+                      <div className="bg-slate-50 border-2 border-slate-900 p-4 rounded-xl space-y-1">
+                        <span className="text-xs font-mono text-slate-500 font-bold uppercase">TELEFONE</span>
+                        <div className="text-sm font-bold text-[#2563eb]">{selectedLead.telefone || "Não informado"}</div>
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-50 border-2 border-slate-900 p-4 rounded-xl space-y-1">
+                      <span className="text-xs font-mono text-slate-500 font-bold uppercase">ENDEREÇO</span>
+                      <div className="text-sm font-bold text-slate-900">{selectedLead.endereco || selectedLead.cidade}</div>
+                    </div>
+
+                    {/* Botão Gerar Site em Azul ESCOM com Sombra Deslocada */}
                     <button
                       onClick={() => handleGenerateSiteFromCrm(selectedLead)}
                       disabled={isGeneratingSite}
-                      className="bg-gradient-to-r from-cyan-600 via-sky-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-base px-8 py-4 rounded-full shadow-xl shadow-cyan-500/20 transition-all hover:scale-105 inline-flex items-center gap-2"
+                      className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-extrabold text-sm py-4 rounded-lg border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2 uppercase tracking-wide"
                     >
-                      {isGeneratingSite ? <Loader2 className="animate-spin" size={20} /> : <Sparkles size={20} />}
-                      <span>Criar Site Benchmark (R$ 990)</span>
+                      {isGeneratingSite ? <Loader2 className="animate-spin" size={18} /> : <Sparkles size={18} />}
+                      <span>Gerar Landing Page Personalizada para {selectedLead.nome}</span>
                     </button>
                   </div>
-                </div>
-              )}
-
-              {/* TAB 5: VENDA */}
-              {activeModalTab === "Venda" && (
-                <div className="space-y-4">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">PROPOSTA COMERCIAL</h3>
-                  <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 text-white space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-lg">Landing Page High-End ESCOM</span>
-                      <span className="text-2xl font-extrabold text-cyan-400">R$ 990</span>
-                    </div>
-                    <p className="text-xs text-slate-400">Implementação completa em 3 dias com hospedagem e código-fonte entregue.</p>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 6: AGENDAR */}
-              {activeModalTab === "Agendar" && (
-                <div className="space-y-4 text-center py-6">
-                  <Calendar className="mx-auto text-blue-500" size={36} />
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Agendar Reunião / Apresentação</h3>
-                  <p className="text-xs text-slate-500">Agende diretamente no Google Calendar ou WhatsApp do cliente.</p>
-                </div>
-              )}
+                )}
+              </div>
 
             </div>
           </div>
-        </div>
-      )}
+        )}
+
+      </div>
     </div>
   );
 }
