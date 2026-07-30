@@ -50,15 +50,12 @@ import { VoicePoweredOrb } from "../components/ui/voice-powered-orb";
 
 function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: boolean) => void }) {
   const location = useLocation();
-  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
   React.useEffect(() => {
     if (window.innerWidth < 1280) {
       setIsOpen(false);
     } else {
-      if (location.pathname !== '/mineracao') {
-        setIsOpen(true);
-      }
+      setIsOpen(true);
     }
   }, [location.pathname, setIsOpen]);
 
@@ -79,28 +76,19 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
       window.dispatchEvent(new Event('app-audio-active'));
     }
   };
-
   const navItems = [
     { name: "Resumo Geral", path: "/", icon: <LayoutDashboard size={18} /> },
     { name: "Leads", path: "/leads", icon: <Users size={18} /> },
     { name: "Propostas", path: "/propostas", icon: <FileText size={18} /> },
     { name: "Clientes", path: "/prospect", icon: <Briefcase size={18} /> },
+    { name: "Gestão de Páginas", path: "/paginas", icon: <Layers size={18} /> },
+    { name: "Contratos", path: "/contratos", icon: <FileSignature size={18} /> },
+    { name: "Portfólio", path: "/portfolio", icon: <Briefcase size={18} /> },
+    { name: "Instagram GEM", path: "/instagram", icon: <Instagram size={18} /> },
     { name: "Tarefas", path: "/agendamentos", icon: <CheckSquare size={18} /> },
     { name: "Relatórios", path: "/projetos-no-ar", icon: <BarChart2 size={18} /> },
     { name: "Integrações", path: "/servicos", icon: <Plug size={18} /> },
     { name: "Configurações", path: "/configuracoes", icon: <Settings size={18} /> },
-  ];
-
-  const extraTools = [
-    { name: "Gestão de Páginas", path: "/paginas", icon: <Layers size={16} /> },
-    { name: "Contratos", path: "/contratos", icon: <FileSignature size={16} /> },
-    { name: "Portfólio", path: "/portfolio", icon: <Briefcase size={16} /> },
-    { name: "Trajetória", path: "/trajetoria", icon: <Briefcase size={16} /> },
-    { name: "Instagram GEM", path: "/instagram", icon: <Instagram size={16} /> },
-    { name: "Mineração de Sites", path: "/mineracao", icon: <Target size={16} /> },
-    { name: "Saúde", path: "/saude", icon: <HeartPulse size={16} /> },
-    { name: "Finanças", path: "/financas", icon: <DollarSign size={16} /> },
-    { name: "Escritório 3D", path: "/escritorio", icon: <Building size={16} /> },
   ];
 
   return (
@@ -148,36 +136,6 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
               );
             })}
           </ul>
-
-          {/* Submenu de Ferramentas Adicionais */}
-          <div className="pt-2 border-t border-[#15223a]">
-            <button 
-              onClick={() => setOpenSubmenu(openSubmenu === "Ferramentas" ? null : "Ferramentas")}
-              className="flex items-center justify-between w-full px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider hover:text-white transition-colors"
-            >
-              <span>Ferramentas & Páginas</span>
-              {openSubmenu === "Ferramentas" ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-            </button>
-
-            {openSubmenu === "Ferramentas" && (
-              <ul className="mt-1 space-y-1 pl-2">
-                {extraTools.map((tool) => (
-                  <li key={tool.name}>
-                    <Link
-                      to={tool.path}
-                      onClick={() => handleMenuClick(tool.name)}
-                      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                        location.pathname === tool.path ? "text-[#3b82f6] bg-[#12213d]" : "text-gray-400 hover:text-white hover:bg-[#101c33]"
-                      }`}
-                    >
-                      {tool.icon}
-                      <span className="truncate">{tool.name}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
         </div>
 
         {/* Card do Plano Atual */}
