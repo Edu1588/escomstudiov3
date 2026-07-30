@@ -20,7 +20,12 @@ import {
   DollarSign,
   Building,
   ExternalLink,
-  Wrench
+  Wrench,
+  CheckSquare,
+  Plug,
+  Crown,
+  Box,
+  Globe
 } from "lucide-react";
 
 import Dashboard from "./pages/Dashboard";
@@ -45,7 +50,7 @@ import { VoicePoweredOrb } from "../components/ui/voice-powered-orb";
 
 function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: boolean) => void }) {
   const location = useLocation();
-  const [openSubmenu, setOpenSubmenu] = useState<string | null>("Prospect");
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
   React.useEffect(() => {
     if (window.innerWidth < 1280) {
@@ -75,189 +80,148 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
     }
   };
 
-  const menuPrincipal = [
-    { name: "Dashboard", path: "/", icon: <LayoutDashboard size={18} /> },
-    { name: "Valores & Serviços", path: "/servicos", icon: <Tags size={18} /> },
-    { name: "Gestão de Páginas", path: "/paginas", icon: <Layers size={18} /> },
-    { name: "Gerar Propostas", path: "/propostas", icon: <FileText size={18} /> },
-    { 
-      name: "Prospect", 
-      icon: <Target size={18} />,
-      subItems: [
-        { name: "Dashboard", path: "/" },
-        { name: "Leads", path: "/leads" },
-        { name: "CRM", path: "/prospect" },
-        { name: "Agendamentos", path: "/agendamentos" },
-        { name: "Mineração de Sites", path: "/mineracao" },
-        { name: "WhatsApp CRM ↗", path: "https://escom-crm.vercel.app", isExternal: true }
-      ]
-    },
-    { name: "Onward Consultoria", path: "/onward-modelo-site", icon: <Briefcase size={18} />, isExternal: true, url: "/onward-modelo-site" },
-    { name: "Contratos", path: "/contratos", icon: <FileSignature size={18} /> },
-    { name: "Projetos do Portfolio", path: "/portfolio", icon: <Briefcase size={18} /> },
-    { name: "Trajetória Profissional", path: "/trajetoria", icon: <Briefcase size={18} /> },
-    { name: "Instagram GEM", path: "/instagram", icon: <Instagram size={18} /> },
-    { name: "Saúde", path: "/saude", icon: <HeartPulse size={18} /> },
-    { name: "Finanças", path: "/financas", icon: <DollarSign size={18} /> },
-    { name: "Escritório 3D", path: "/escritorio", icon: <Building size={18} /> },
-    {
-      name: "Ferramentas",
-      icon: <Wrench size={18} />,
-      subItems: [
-        { name: "Fooocus (Cria imagens de IA) ↗", path: "https://github.com/lllyasviel/Fooocus.git", isExternal: true },
-        { name: "Análise Plausível ↗", path: "https://github.com/plausible/analytics.git", isExternal: true },
-        { name: "AppFlowy (Alt. Notion) ↗", path: "https://github.com/AppFlowy-IO/AppFlowy-Cloud.git", isExternal: true },
-        { name: "Penpot (Design/Prototipagem) ↗", path: "https://github.com/penpot/penpot.git", isExternal: true }
-      ]
-    },
+  const navItems = [
+    { name: "Resumo Geral", path: "/", icon: <LayoutDashboard size={18} /> },
+    { name: "Leads", path: "/leads", icon: <Users size={18} /> },
+    { name: "Propostas", path: "/propostas", icon: <FileText size={18} /> },
+    { name: "Clientes", path: "/prospect", icon: <Briefcase size={18} /> },
+    { name: "Tarefas", path: "/agendamentos", icon: <CheckSquare size={18} /> },
+    { name: "Relatórios", path: "/projetos-no-ar", icon: <BarChart2 size={18} /> },
+    { name: "Integrações", path: "/servicos", icon: <Plug size={18} /> },
+    { name: "Configurações", path: "/configuracoes", icon: <Settings size={18} /> },
   ];
 
-  const sistema = [
-    { name: "Projetos no ar", path: "/projetos-no-ar", icon: <BarChart2 size={18} /> },
-    { name: "Configurações", path: "/configuracoes", icon: <Settings size={18} /> },
+  const extraTools = [
+    { name: "Gestão de Páginas", path: "/paginas", icon: <Layers size={16} /> },
+    { name: "Contratos", path: "/contratos", icon: <FileSignature size={16} /> },
+    { name: "Portfólio", path: "/portfolio", icon: <Briefcase size={16} /> },
+    { name: "Trajetória", path: "/trajetoria", icon: <Briefcase size={16} /> },
+    { name: "Instagram GEM", path: "/instagram", icon: <Instagram size={16} /> },
+    { name: "Mineração de Sites", path: "/mineracao", icon: <Target size={16} /> },
+    { name: "Saúde", path: "/saude", icon: <HeartPulse size={16} /> },
+    { name: "Finanças", path: "/financas", icon: <DollarSign size={16} /> },
+    { name: "Escritório 3D", path: "/escritorio", icon: <Building size={16} /> },
   ];
 
   return (
     <>
       {/* Mobile overlay */}
       {isOpen && (
-        <div className="fixed inset-0 bg-black/60 z-40 lg:hidden" onClick={() => setIsOpen(false)} />
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 xl:hidden" onClick={() => setIsOpen(false)} />
       )}
-      <div className={`fixed inset-y-0 left-0 z-50 transform ${isOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 w-64 h-full bg-[#0a0a0a] border-r border-[#1a1a1a] flex flex-col pt-6 pb-4 shrink-0 overflow-hidden ${isOpen ? 'xl:relative xl:translate-x-0' : ''}`}>
-        <div className="px-6 mb-6 flex items-center justify-between shrink-0">
-          <span className="font-bold text-xl text-white tracking-wider flex items-center">
-            EDU<span className="text-[#00d1ff]">SANTOS</span>
-          </span>
+      <div className={`fixed inset-y-0 left-0 z-50 transform ${isOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 w-64 h-full bg-[#0b1324] border-r border-[#16233b] flex flex-col pt-5 pb-4 shrink-0 overflow-hidden ${isOpen ? 'xl:relative xl:translate-x-0' : ''}`}>
+        
+        {/* Brand Header */}
+        <div className="px-5 mb-6 flex items-center justify-between shrink-0">
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#2563eb] to-[#38bdf8] flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+              <Box size={18} className="text-white fill-white/20" />
+            </div>
+            <span className="font-bold text-lg text-white tracking-tight">
+              ESCOM Studio
+            </span>
+          </Link>
         </div>
 
-        <div className="flex-1 overflow-y-auto min-h-0 px-4 custom-scrollbar">
-          <div className="text-[10px] text-gray-500 font-mono tracking-widest mb-4 px-2">MENU PRINCIPAL</div>
-          <ul className="space-y-1 mb-8">
-            {menuPrincipal.map((item) => (
-              <li key={item.name}>
-                {item.subItems ? (
-                  <div className="flex flex-col">
-                    <button 
-                      onClick={() => setOpenSubmenu(openSubmenu === item.name ? null : item.name)}
-                      className={`flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                        item.subItems.some(sub => location.pathname === sub.path) || openSubmenu === item.name ? "text-white" : "text-gray-400 hover:text-white hover:bg-white/5"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        {item.icon}
-                        <span>{item.name}</span>
-                      </div>
-                      {openSubmenu === item.name ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                    </button>
-                    {openSubmenu === item.name && (
-                      <ul className="mt-1 ml-9 space-y-1">
-                        {item.subItems.map((subItem: any) => (
-                          <li key={subItem.name}>
-                            {subItem.isExternal ? (
-                              <a 
-                                href={subItem.path}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center px-3 py-2 rounded-lg text-sm text-gray-500 hover:text-[#00d1ff] hover:bg-white/5 transition-colors font-medium"
-                              >
-                                <span>{subItem.name}</span>
-                              </a>
-                            ) : (
-                              <Link 
-                                to={subItem.path} 
-                                onClick={() => handleMenuClick(subItem.name)}
-                                className={`flex items-center px-3 py-2 rounded-lg text-sm transition-colors ${
-                                  location.pathname === subItem.path ? "bg-[#00d1ff]/10 text-[#00d1ff] font-semibold" : "text-gray-500 hover:text-gray-300 hover:bg-white/5"
-                                }`}
-                              >
-                                <span>{subItem.name}</span>
-                              </Link>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ) : item.isExternal ? (
-                  <a 
-                    href={item.url || item.path}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-gray-400 hover:text-white hover:bg-white/5"
-                  >
-                    <div className="flex items-center gap-3">
-                      {item.icon}
-                      <span>{item.name}</span>
-                    </div>
-                    <ExternalLink size={12} className="text-gray-600" />
-                  </a>
-                ) : (
+        {/* Navigation List */}
+        <div className="flex-1 overflow-y-auto min-h-0 px-3 custom-scrollbar space-y-6">
+          <ul className="space-y-1">
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <li key={item.name}>
                   <Link 
-                    to={item.path!} 
+                    to={item.path} 
                     onClick={() => handleMenuClick(item.name)}
-                    className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                      location.pathname === item.path ? "bg-[#00d1ff]/10 text-[#00d1ff] border border-[#00d1ff]/20" : "text-gray-400 hover:text-white hover:bg-white/5"
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                      isActive 
+                        ? "bg-[#132342] text-white border-l-4 border-[#2563eb] shadow-sm" 
+                        : "text-gray-400 hover:text-white hover:bg-[#101b33]"
                     }`}
                   >
-                    <div className="flex items-center gap-3">
+                    <span className={isActive ? "text-[#3b82f6]" : "text-gray-400"}>
                       {item.icon}
-                      <span>{item.name}</span>
-                    </div>
+                    </span>
+                    <span>{item.name}</span>
                   </Link>
-                )}
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
 
-          <div className="text-[10px] text-gray-500 font-mono tracking-widest mb-4 px-2">SISTEMA</div>
-          <ul className="space-y-1 mb-8">
-            {sistema.map((item) => (
-              <li key={item.name}>
-                <Link 
-                  to={item.path} 
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    location.pathname === item.path ? "bg-[#00d1ff]/10 text-[#00d1ff] border border-[#00d1ff]/20" : "text-gray-400 hover:text-white hover:bg-white/5"
-                  }`}
-                >
-                  {item.icon}
-                  <span>{item.name}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          {/* Submenu de Ferramentas Adicionais */}
+          <div className="pt-2 border-t border-[#15223a]">
+            <button 
+              onClick={() => setOpenSubmenu(openSubmenu === "Ferramentas" ? null : "Ferramentas")}
+              className="flex items-center justify-between w-full px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider hover:text-white transition-colors"
+            >
+              <span>Ferramentas & Páginas</span>
+              {openSubmenu === "Ferramentas" ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+            </button>
+
+            {openSubmenu === "Ferramentas" && (
+              <ul className="mt-1 space-y-1 pl-2">
+                {extraTools.map((tool) => (
+                  <li key={tool.name}>
+                    <Link
+                      to={tool.path}
+                      onClick={() => handleMenuClick(tool.name)}
+                      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                        location.pathname === tool.path ? "text-[#3b82f6] bg-[#12213d]" : "text-gray-400 hover:text-white hover:bg-[#101c33]"
+                      }`}
+                    >
+                      {tool.icon}
+                      <span className="truncate">{tool.name}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
 
-        {/* Card do Usuário Fixo no Bottom da Sidebar */}
-        <div className="px-4 mt-auto shrink-0">
-          <div className="relative">
-            <div className="absolute -inset-3 z-0 opacity-60 blur-sm pointer-events-none">
-              <VoicePoweredOrb
-                enableVoiceControl={false}
-                hue={120}
-                voiceSensitivity={2.5}
-                maxRotationSpeed={1.8}
-                className="w-20 h-20 rounded-full overflow-hidden"
-              />
+        {/* Card do Plano Atual */}
+        <div className="px-3 my-3 shrink-0">
+          <div className="bg-[#0e1930] border border-[#1b2b4a] rounded-2xl p-3.5 relative overflow-hidden">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[11px] text-gray-400 font-medium">Plano Atual</span>
+              <Crown size={14} className="text-[#3b82f6]" />
             </div>
-            <div className="relative z-10 flex items-center gap-3 bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl px-3 py-3 shadow-lg hover:border-[#00d1ff]/30 transition-all duration-300 group">
-              <div className="w-10 h-10 rounded-full bg-[#00d1ff] flex items-center justify-center text-black font-bold text-xs shrink-0 relative ring-2 ring-[#00d1ff]/30 ring-offset-2 ring-offset-black">
-                <img src="https://res.cloudinary.com/djw0tqmiw/image/upload/v1781623854/dson8tpoeb04giyqooqd.png" alt="Edu Santos" className="w-full h-full object-cover rounded-full" />
+            <div className="text-sm font-bold text-[#3b82f6] flex items-center gap-1.5">
+              Profissional
+            </div>
+            <div className="text-[10px] text-emerald-400 mt-1 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              Status: Ativo
+            </div>
+            <button className="w-full mt-2.5 bg-transparent border border-[#1d3257] hover:bg-[#152442] text-white text-xs py-1.5 rounded-xl font-medium transition-colors">
+              Ver Detalhes
+            </button>
+          </div>
+        </div>
+
+        {/* User Profile Info Footer */}
+        <div className="px-3 shrink-0 pt-2 border-t border-[#15223a]">
+          <div className="flex items-center justify-between bg-[#0e1930] border border-[#1b2b4a] rounded-2xl p-2.5">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-full bg-[#1e2e4a] border border-[#2b4168] flex items-center justify-center text-xs font-bold text-white shrink-0">
+                ES
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-bold text-white truncate">Edu Santos</div>
-                <div className="text-[10px] text-gray-400 truncate flex items-center gap-1.5">
-                  Admin
-                  <span className="w-1.5 h-1.5 bg-[#00d1ff] rounded-full inline-block animate-pulse"></span>
-                  <span className="text-[#00d1ff] font-semibold">ONLINE</span>
-                </div>
+                <div className="text-xs font-bold text-white truncate">Eduardo Santos</div>
+                <div className="text-[10px] text-gray-400 truncate">admin@escom.studio</div>
               </div>
-              <button onClick={() => {
+            </div>
+            <button 
+              onClick={() => {
                 localStorage.removeItem("admin_auth");
                 window.location.reload();
-              }} className="text-gray-500 hover:text-red-400 transition-colors ml-1" title="Sair">
-                <LogOut size={16} />
-              </button>
-            </div>
+              }}
+              className="text-gray-400 hover:text-white p-1 rounded-lg transition-colors"
+              title="Opções / Sair"
+            >
+              <ChevronDown size={16} />
+            </button>
           </div>
         </div>
       </div>
@@ -315,7 +279,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex h-screen bg-[#050505] text-white overflow-hidden font-sans relative">
+    <div className="flex h-screen bg-[#070c18] text-white overflow-hidden font-sans relative">
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
       <main className="flex-1 h-full overflow-hidden flex flex-col relative w-full">
         <Routes>
