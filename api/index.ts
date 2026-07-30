@@ -1721,9 +1721,9 @@ app.all("/api/piassa-cron", async (req, res) => {
     let fallbackJobs: any[] = [];
     
     if (pendingJobs.length > 0) {
-      const resendApiKey = process.env.RESEND_API_KEY || "re_Hmg78ECH_8JJ7LJUeQ92FUfMwWwUyzPqY";
+      const resendApiKey = process.env.RESEND_API_KEY || "";
       const resend = new Resend(resendApiKey);
-      const receiverEmails = ["vamosvencerjuntos@gmail.com", "es.comunicacao@outlook.com"];
+      const receiverEmail = "es.comunicacao@outlook.com";
 
       const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
 
@@ -1737,7 +1737,6 @@ app.all("/api/piassa-cron", async (req, res) => {
           const mailOptions: any = {
             from: "Rodrigo Piassa <onboarding@resend.dev>",
             to: vagaEmail,
-            cc: receiverEmails,
             subject: "RE: Risco Zero para aumentar o lucro da sua empresa",
             html: `
               <div style="font-family: sans-serif; line-height: 1.6; color: #111; max-width: 600px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #fff;">
@@ -1778,7 +1777,7 @@ app.all("/api/piassa-cron", async (req, res) => {
               emailSentAt: Date.now()
             });
             
-            console.log(`[PIASSA_CRON] E-mail enviado diretamente para a vaga: ${vagaEmail} (cc: ${receiverEmails.join(", ")}) e marcada como 'Inscrito'`);
+            console.log(`[PIASSA_CRON] E-mail enviado diretamente para a vaga: ${vagaEmail} e marcada como 'Inscrito'`);
           } catch (err: any) {
             console.error(`[PIASSA_CRON] Falha ao enviar para ${vagaEmail}:`, err.message);
           }
@@ -1804,7 +1803,7 @@ app.all("/api/piassa-cron", async (req, res) => {
 
         await resend.emails.send({
           from: "Piassa Vagas <onboarding@resend.dev>",
-          to: receiverEmails,
+          to: receiverEmail,
           subject: `📢 ${fallbackJobs.length} Nova(s) Vaga(s) Sem E-mail Direto - Piassa`,
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
@@ -1817,7 +1816,7 @@ app.all("/api/piassa-cron", async (req, res) => {
             </div>
           `
         });
-        console.log(`[PIASSA_CRON] E-mail de resumo enviado para ${receiverEmails.join(", ")} com ${fallbackJobs.length} vagas.`);
+        console.log(`[PIASSA_CRON] E-mail de resumo enviado para ${receiverEmail} com ${fallbackJobs.length} vagas.`);
       }
     }
     
@@ -1844,9 +1843,9 @@ app.all("/api/piassa/send-all-jobs", async (req, res) => {
       return res.json({ success: true, message: "Nenhuma vaga encontrada.", sent: 0 });
     }
 
-    const resendApiKey = process.env.RESEND_API_KEY || "re_Hmg78ECH_8JJ7LJUeQ92FUfMwWwUyzPqY";
+    const resendApiKey = process.env.RESEND_API_KEY || "";
     const resend = new Resend(resendApiKey);
-    const receiverEmails = ["vamosvencerjuntos@gmail.com", "es.comunicacao@outlook.com"];
+    const receiverEmail = "es.comunicacao@outlook.com";
     const BATCH_SIZE = 30;
     const totalBatches = Math.ceil(allJobs.length / BATCH_SIZE);
     let sentBatches = 0;
@@ -1870,7 +1869,7 @@ app.all("/api/piassa/send-all-jobs", async (req, res) => {
 
       await resend.emails.send({
         from: "Piassa Vagas <onboarding@resend.dev>",
-        to: receiverEmails,
+        to: receiverEmail,
         subject: `📋 Lote ${batchNum}/${totalBatches} - ${batch.length} Vagas Piassa (${allJobs.length} total)`,
         html: `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
