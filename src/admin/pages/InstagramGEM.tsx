@@ -205,7 +205,8 @@ export default function InstagramGEM() {
       desc: "Modelo futurista com vidro fosco e detalhes neon de alto impacto.",
       tag: "Mais Usado",
       badgeBg: "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
-      sampleTitle: "Você está cometendo esse erro sem perceber?",
+      sampleTitle: "VOCÊ ESTÁ COMETENDO ESSE ERRO SEM PERCEBER?",
+      coverImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
       theme: "dark"
     },
     {
@@ -214,7 +215,8 @@ export default function InstagramGEM() {
       desc: "Estilo sofisticado bege e creme com tipografia em contraste.",
       tag: "Editorial",
       badgeBg: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-      sampleTitle: "O método que permite publicar 30 posts por semana.",
+      sampleTitle: "O MÉTODO QUE PERMITE PUBLICAR 30 POSTS POR SEMANA.",
+      coverImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80",
       theme: "light"
     },
     {
@@ -223,7 +225,8 @@ export default function InstagramGEM() {
       desc: "Visual focado em imagens imersivas com vinhetas e botões de chamada.",
       tag: "Engajamento",
       badgeBg: "bg-red-500/20 text-red-400 border-red-500/30",
-      sampleTitle: "A estratégia secreta por trás das marcas que vendem diariamente.",
+      sampleTitle: "A ESTRATÉGIA SECRETA POR TRÁS DAS MARCAS QUE VENDEM.",
+      coverImage: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80",
       theme: "dark"
     },
     {
@@ -232,7 +235,8 @@ export default function InstagramGEM() {
       desc: "Gradientes azul e roxo perfeitos para nichos de tecnologia e IA.",
       tag: "Tech & IA",
       badgeBg: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-      sampleTitle: "5 Ferramentas de Inteligência Artificial indispensáveis.",
+      sampleTitle: "5 FERRAMENTAS DE IA INDISPENSÁVEIS PARA 2026.",
+      coverImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
       theme: "dark"
     },
     {
@@ -241,7 +245,8 @@ export default function InstagramGEM() {
       desc: "Visual escuro limpo focado em tipografia serifada e leitura direta.",
       tag: "Minimal",
       badgeBg: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-      sampleTitle: "Como construir uma audiência altamente qualificada.",
+      sampleTitle: "COMO CONSTRUIR UMA AUDIÊNCIA QUALIFICADA.",
+      coverImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80",
       theme: "dark"
     }
   ];
@@ -266,6 +271,7 @@ export default function InstagramGEM() {
   const handleSelectTemplate = (tpl: any) => {
     setSelectedTemplate(tpl.id);
     setCardTheme(tpl.theme);
+    setUploadedImages((prev: any) => ({ 0: tpl.coverImage, ...prev }));
     setPreviewModalOpen(true);
   };
 
@@ -531,12 +537,20 @@ export default function InstagramGEM() {
                     </div>
 
                     {/* Preview Miniatura do Card */}
-                    <div className="relative aspect-[4/5] rounded-xl overflow-hidden bg-black p-4 flex flex-col justify-end group-hover:scale-[1.02] transition-transform border border-white/10">
-                      <div className="absolute top-2 left-2 text-[6px] font-mono text-white/50">ESCOM STUDIO</div>
-                      <h4 className="text-[10px] font-bold text-white leading-tight uppercase mb-1">
-                        {tpl.sampleTitle}
-                      </h4>
-                      <div className="w-full bg-[#00d1ff] h-1 rounded-full mt-2"></div>
+                    <div className="relative aspect-[4/5] rounded-xl overflow-hidden bg-black p-4 flex flex-col justify-end group-hover:scale-[1.02] transition-transform border border-white/10 shadow-lg">
+                      <img 
+                        src={tpl.coverImage} 
+                        className="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-300 group-hover:scale-105" 
+                        alt={tpl.name} 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/30 z-10 pointer-events-none"></div>
+                      <div className="relative z-20 space-y-1">
+                        <div className="text-[7px] font-mono text-cyan-400 font-bold uppercase tracking-wider">ESCOM STUDIO</div>
+                        <h4 className="text-[10px] font-extrabold text-white leading-tight uppercase drop-shadow-md">
+                          {tpl.sampleTitle}
+                        </h4>
+                        <div className="w-full bg-[#00d1ff] h-1 rounded-full mt-2 shadow-sm shadow-cyan-400/50"></div>
+                      </div>
                     </div>
 
                     <div>
@@ -583,8 +597,11 @@ export default function InstagramGEM() {
               {/* Preview do Slide do Template */}
               <div className="flex justify-center py-4">
                 <SlidePreview 
-                  slide={{ titulo: "O MÉTODO QUE PERMITE PUBLICAR 30 POSTS POR SEMANA EM MENOS DE 2 HORAS.", texto: "Descubra como a IA acelera sua produção de conteúdo sem perder a qualidade." }}
-                  image="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80"
+                  slide={{ 
+                    titulo: templates.find(t => t.id === selectedTemplate)?.sampleTitle || "O MÉTODO QUE PERMITE PUBLICAR 30 POSTS POR SEMANA.", 
+                    texto: "Descubra como a IA acelera sua produção de conteúdo sem perder a qualidade." 
+                  }}
+                  image={templates.find(t => t.id === selectedTemplate)?.coverImage}
                   index={0}
                   selectedTemplate={selectedTemplate}
                   cardTheme={cardTheme}
