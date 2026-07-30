@@ -128,7 +128,7 @@ export default function Prospect() {
   const columns = ["Base", "Abordado", "Agendado", "Follow Up", "Convertido"];
 
   return (
-    <div className="flex-1 overflow-y-auto w-full bg-[#f6f5f0] text-slate-900 min-h-screen pb-20 font-sans">
+    <div className="flex-1 overflow-y-auto w-full bg-[#070c18] text-white min-h-screen pb-20 font-sans">
       <Header 
         title="Gestão de Clientes ✦ CRM Comercial" 
         subtitle="Filtre, priorize e acompanhe a jornada de prospecção e vendas de cada cliente." 
@@ -136,8 +136,8 @@ export default function Prospect() {
 
       <div className="p-4 md:p-8 max-w-[1400px] mx-auto space-y-6">
 
-        {/* CAMPO DE BUSCA COM NOVO DESIGN DE BORDA PRETA */}
-        <div className="bg-white border-2 border-slate-900 rounded-xl p-4 shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] flex items-center gap-3">
+        {/* CAMPO DE BUSCA EM CARD BRANCO */}
+        <div className="bg-white text-slate-900 border-2 border-slate-900 rounded-xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] flex items-center gap-3">
           <Search className="text-slate-400 shrink-0" size={20} />
           <input
             type="text"
@@ -156,7 +156,7 @@ export default function Prospect() {
               onClick={() => setFilterTag(tag)}
               className={`px-4 py-2 rounded-lg text-xs font-extrabold whitespace-nowrap transition-all border-2 border-slate-900 ${
                 filterTag === tag
-                  ? "bg-[#2563eb] text-white shadow-[2px_2px_0px_0px_rgba(15,23,42,1)]"
+                  ? "bg-[#2563eb] text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                   : "bg-white text-slate-800 hover:bg-slate-100 shadow-sm"
               }`}
             >
@@ -165,14 +165,14 @@ export default function Prospect() {
           ))}
         </div>
 
-        {/* KANBAN BOARD EM CARDS BRANCOS E BORDAS FORTES */}
+        {/* KANBAN BOARD EM CARDS BRANCOS E BORDAS FORTES SOBRE FUNDO ESCURO */}
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 items-start">
           {columns.map(colName => {
             const colLeads = filteredLeads.filter(l => (l.etapa || "Base") === colName);
             const dotColor = colName === "Base" ? "bg-[#2563eb]" : colName === "Abordado" ? "bg-cyan-500" : colName === "Agendado" ? "bg-emerald-500" : "bg-amber-500";
 
             return (
-              <div key={colName} className="bg-white border-2 border-slate-900 rounded-2xl p-4 min-h-[550px] shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] flex flex-col">
+              <div key={colName} className="bg-white text-slate-900 border-2 border-slate-900 rounded-2xl p-4 min-h-[550px] shadow-[4px_4px_0px_0px_rgba(0,0,0,0.9)] flex flex-col">
                 
                 {/* Header Coluna */}
                 <div className="flex items-center justify-between mb-4 pb-3 border-b-2 border-slate-200 px-1">
@@ -196,7 +196,7 @@ export default function Prospect() {
                       <div
                         key={lead.id}
                         onClick={() => { setSelectedLead(lead); setActiveModalTab("Informações"); }}
-                        className="bg-slate-50 border-2 border-slate-900 hover:border-[#2563eb] hover:bg-white rounded-xl p-4 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] hover:shadow-[4px_4px_0px_0px_rgba(37,99,235,1)] transition-all cursor-pointer space-y-3 group"
+                        className="bg-slate-50 border-2 border-slate-900 hover:border-[#2563eb] hover:bg-white rounded-xl p-4 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(37,99,235,1)] transition-all cursor-pointer space-y-3 group"
                       >
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-[#2563eb] text-white border border-slate-900">
@@ -221,7 +221,7 @@ export default function Prospect() {
                           <a
                             href={`tel:${lead.telefone}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-xs font-extrabold py-2.5 rounded-lg text-center border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] transition-all block uppercase tracking-wide"
+                            className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-xs font-extrabold py-2.5 rounded-lg text-center border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all block uppercase tracking-wide"
                           >
                             Ligar
                           </a>
@@ -235,15 +235,15 @@ export default function Prospect() {
           })}
         </div>
 
-        {/* LEAD DETAILS MODAL */}
+        {/* LEAD DETAILS MODAL EM CARD BRANCO */}
         {selectedLead && (
-          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-[#f6f5f0] border-2 border-slate-900 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] flex flex-col">
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white text-slate-900 border-2 border-slate-900 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col">
               
               {/* Header Modal */}
-              <div className="p-6 border-b-2 border-slate-900 flex items-center justify-between bg-white">
+              <div className="p-6 border-b-2 border-slate-900 flex items-center justify-between bg-slate-50">
                 <div className="flex items-center gap-3">
-                  <button onClick={() => setSelectedLead(null)} className="p-1.5 rounded-lg border-2 border-slate-900 hover:bg-slate-100 text-slate-800">
+                  <button onClick={() => setSelectedLead(null)} className="p-1.5 rounded-lg border-2 border-slate-900 hover:bg-slate-200 text-slate-800">
                     <ChevronLeft size={20} />
                   </button>
                   <span className="text-xs font-extrabold px-2.5 py-1 rounded-md bg-[#2563eb] text-white border border-slate-900">
@@ -254,7 +254,7 @@ export default function Prospect() {
                   </h2>
                 </div>
 
-                <button onClick={() => setSelectedLead(null)} className="p-2 rounded-lg border-2 border-slate-900 bg-white hover:bg-slate-100 text-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)]">
+                <button onClick={() => setSelectedLead(null)} className="p-2 rounded-lg border-2 border-slate-900 bg-white hover:bg-slate-100 text-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                   <X size={18} />
                 </button>
               </div>
@@ -297,11 +297,11 @@ export default function Prospect() {
                       <div className="text-sm font-bold text-slate-900">{selectedLead.endereco || selectedLead.cidade}</div>
                     </div>
 
-                    {/* Botão Gerar Site em Azul ESCOM com Sombra Deslocada */}
+                    {/* Botão Gerar Site em Azul ESCOM */}
                     <button
                       onClick={() => handleGenerateSiteFromCrm(selectedLead)}
                       disabled={isGeneratingSite}
-                      className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-extrabold text-sm py-4 rounded-lg border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2 uppercase tracking-wide"
+                      className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-extrabold text-sm py-4 rounded-lg border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2 uppercase tracking-wide"
                     >
                       {isGeneratingSite ? <Loader2 className="animate-spin" size={18} /> : <Sparkles size={18} />}
                       <span>Gerar Landing Page Personalizada para {selectedLead.nome}</span>

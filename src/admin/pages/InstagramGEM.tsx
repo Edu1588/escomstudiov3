@@ -439,7 +439,7 @@ export default function InstagramGEM() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto w-full bg-[#f6f5f0] text-slate-900 pb-20 font-sans">
+    <div className="flex-1 overflow-y-auto w-full bg-[#070c18] text-white pb-20 font-sans">
       <Header 
         title="Instagram GEM ✦ Carrossel Studio" 
         subtitle="Crie carrosséis de alto engajamento em 4 passos simples alimentados por IA." 
@@ -447,8 +447,8 @@ export default function InstagramGEM() {
 
       <div className="p-4 md:p-8 max-w-[1400px] mx-auto space-y-8">
         
-        {/* WIZARD STEP INDICATOR - NOVO ESTILO AZUL COM BORDA DESLOCADA */}
-        <div className="bg-white border-2 border-slate-900 rounded-xl p-4 md:p-6 shadow-[3px_3px_0px_0px_rgba(15,23,42,1)]">
+        {/* WIZARD STEP INDICATOR - CARD BRANCO SOBRE FUNDO ESCURO DO ADMIN */}
+        <div className="bg-white text-slate-900 border-2 border-slate-900 rounded-xl p-4 md:p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]">
           <div className="flex items-center justify-between gap-2 overflow-x-auto pb-2 md:pb-0">
             {[
               { num: 1, label: "Escolha um Template" },
@@ -464,7 +464,7 @@ export default function InstagramGEM() {
                   onClick={() => isDone && setCurrentStep(s.num)}
                   className={`flex items-center gap-3 px-4 py-2.5 rounded-lg border-2 transition-all cursor-pointer whitespace-nowrap ${
                     isActive 
-                      ? "bg-[#2563eb] text-white border-slate-900 font-extrabold shadow-[2px_2px_0px_0px_rgba(15,23,42,1)]" 
+                      ? "bg-[#2563eb] text-white border-slate-900 font-extrabold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" 
                       : isDone 
                       ? "bg-blue-50 text-[#2563eb] font-bold border-blue-300" 
                       : "bg-slate-100 text-slate-400 border-slate-200 font-medium"
@@ -489,28 +489,28 @@ export default function InstagramGEM() {
           <div className="space-y-8 animate-in fade-in duration-300">
             
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 px-3.5 py-1 rounded-full">
+              <div className="inline-flex items-center gap-2 bg-[#2563eb]/20 border border-[#2563eb]/40 px-3.5 py-1 rounded-full">
                 <span className="w-2 h-2 rounded-full bg-[#2563eb]"></span>
-                <span className="text-xs font-bold text-[#2563eb] uppercase tracking-wider">
+                <span className="text-xs font-bold text-[#00d1ff] uppercase tracking-wider">
                   PASSO 1 DE 4
                 </span>
               </div>
-              <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
+              <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight">
                 Escolha um template
               </h2>
-              <p className="text-slate-600 text-sm md:text-base max-w-3xl leading-relaxed">
+              <p className="text-gray-300 text-sm md:text-base max-w-3xl leading-relaxed">
                 É o visual do seu carrossel. A IA escreve o conteúdo em cima do template que você escolher. Alguns têm capa gerada por IA.
               </p>
             </div>
 
-            {/* Grid de 5 Templates em Cards Brancos com Borda Forte */}
+            {/* Grid de 5 Templates em Cards Brancos sobre fundo escuro */}
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
               {templates.map((tpl) => (
                 <div 
                   key={tpl.id}
                   onClick={() => handleSelectTemplate(tpl)}
-                  className={`bg-white border-2 border-slate-900 rounded-2xl p-4 space-y-4 hover:shadow-[4px_4px_0px_0px_rgba(37,99,235,1)] transition-all cursor-pointer group flex flex-col justify-between shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] ${
-                    selectedTemplate === tpl.id ? "ring-2 ring-[#2563eb]" : ""
+                  className={`bg-white text-slate-900 border-2 border-slate-900 rounded-2xl p-4 space-y-4 hover:shadow-[6px_6px_0px_0px_rgba(37,99,235,1)] transition-all cursor-pointer group flex flex-col justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,0.9)] ${
+                    selectedTemplate === tpl.id ? "ring-4 ring-[#2563eb]" : ""
                   }`}
                 >
                   <div className="space-y-3">
@@ -542,14 +542,14 @@ export default function InstagramGEM() {
                       <h3 className="font-bold text-base text-slate-900 group-hover:text-[#2563eb] transition-colors">
                         {tpl.name}
                       </h3>
-                      <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                      <p className="text-xs text-slate-600 mt-1 leading-relaxed">
                         {tpl.desc}
                       </p>
                     </div>
                   </div>
 
-                  {/* BOTÃO AZUL QUADRADO COM BORDA PRETA E SOMBRA DESLOCADA (IGUAL AO PRINT DO USUÁRIO) */}
-                  <button className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-xs font-extrabold py-3.5 px-4 rounded-lg border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-1.5 uppercase tracking-wide">
+                  {/* BOTÃO AZUL QUADRADO COM BORDA PRETA E SOMBRA DESLOCADA */}
+                  <button className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-xs font-extrabold py-3.5 px-4 rounded-lg border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-1.5 uppercase tracking-wide">
                     <span>Ver Opções</span>
                     <ArrowRight size={14} />
                   </button>
@@ -559,14 +559,14 @@ export default function InstagramGEM() {
           </div>
         )}
 
-        {/* MODAL / PAINEL DE CONFIGURAÇÃO ADICIONAL DO TEMPLATE (BOTÕES IGUAIS À IMAGEM DO USUÁRIO) */}
+        {/* MODAL / PAINEL DE CONFIGURAÇÃO ADICIONAL DO TEMPLATE (CARD BRANCO) */}
         {previewModalOpen && (
-          <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-[#f6f5f0] border-2 border-slate-900 rounded-3xl max-w-2xl w-full p-6 md:p-8 space-y-6 shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] relative animate-in zoom-in-95 duration-200">
+          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+            <div className="bg-white text-slate-900 border-2 border-slate-900 rounded-3xl max-w-2xl w-full p-6 md:p-8 space-y-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] relative animate-in zoom-in-95 duration-200">
               
               <button 
                 onClick={() => setPreviewModalOpen(false)}
-                className="absolute top-6 right-6 text-slate-500 hover:text-slate-900 p-2 rounded-full hover:bg-slate-200 transition-colors"
+                className="absolute top-6 right-6 text-slate-500 hover:text-slate-900 p-2 rounded-full hover:bg-slate-100 transition-colors"
               >
                 <X size={20} />
               </button>
@@ -595,16 +595,16 @@ export default function InstagramGEM() {
               </div>
 
               {/* Opção de Configuração Adicional: Fundo dos Cards */}
-              <div className="space-y-3 pt-4 border-t-2 border-slate-300">
+              <div className="space-y-3 pt-4 border-t-2 border-slate-200">
                 <label className="text-xs font-extrabold text-slate-700 uppercase tracking-wider block text-center">
                   Fundo dos cards (escolha um pra continuar)
                 </label>
                 <div className="grid grid-cols-2 gap-4">
                   
-                  {/* BOTÃO Fundo Preto (AZUL DA ESCOM COM BORDA PRETA E SOMBRA FIEL DO PRINT DO USUÁRIO) */}
+                  {/* BOTÃO Fundo Preto */}
                   <button
                     onClick={() => setCardTheme("dark")}
-                    className={`py-3.5 px-6 rounded-lg font-extrabold text-sm border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] transition-all ${
+                    className={`py-3.5 px-6 rounded-lg font-extrabold text-sm border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all ${
                       cardTheme === "dark" 
                         ? "bg-[#2563eb] text-white" 
                         : "bg-white text-slate-900 hover:bg-slate-50"
@@ -613,10 +613,10 @@ export default function InstagramGEM() {
                     Fundo preto
                   </button>
 
-                  {/* BOTÃO Fundo Branco (BRANCO PURO COM BORDA PRETA E SOMBRA FIEL DO PRINT DO USUÁRIO) */}
+                  {/* BOTÃO Fundo Branco */}
                   <button
                     onClick={() => setCardTheme("light")}
-                    className={`py-3.5 px-6 rounded-lg font-extrabold text-sm border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] transition-all ${
+                    className={`py-3.5 px-6 rounded-lg font-extrabold text-sm border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all ${
                       cardTheme === "light" 
                         ? "bg-[#2563eb] text-white" 
                         : "bg-white text-slate-900 hover:bg-slate-50"
@@ -627,10 +627,10 @@ export default function InstagramGEM() {
                 </div>
               </div>
 
-              {/* BOTÃO PRINCIPAL "Usar esse template" (AZUL ESCOM COM BORDA PRETA E SOMBRA DESLOCADA) */}
+              {/* BOTÃO PRINCIPAL "Usar esse template" */}
               <button 
                 onClick={handleConfirmTemplate}
-                className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-extrabold text-base py-4 px-6 rounded-lg border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2 uppercase tracking-wider"
+                className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-extrabold text-base py-4 px-6 rounded-lg border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2 uppercase tracking-wider"
               >
                 <span>Usar esse template</span>
                 <Check size={18} />
@@ -645,22 +645,22 @@ export default function InstagramGEM() {
           <div className="space-y-8 animate-in fade-in duration-300 max-w-4xl mx-auto">
             
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 px-3.5 py-1 rounded-full">
+              <div className="inline-flex items-center gap-2 bg-[#2563eb]/20 border border-[#2563eb]/40 px-3.5 py-1 rounded-full">
                 <span className="w-2 h-2 rounded-full bg-[#2563eb]"></span>
-                <span className="text-xs font-bold text-[#2563eb] uppercase tracking-wider">
+                <span className="text-xs font-bold text-[#00d1ff] uppercase tracking-wider">
                   PASSO 2 DE 4
                 </span>
               </div>
-              <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
+              <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight">
                 Sobre o que é o carrossel?
               </h2>
-              <p className="text-slate-600 text-sm md:text-base leading-relaxed">
+              <p className="text-gray-300 text-sm md:text-base leading-relaxed">
                 Escreva o tema, cole um texto ou o link de uma matéria, a IA lê o conteúdo e desenvolve o roteiro no visual do template.
               </p>
             </div>
 
             {/* Badge do Template Selecionado em Card Branco */}
-            <div className="bg-white border-2 border-slate-900 rounded-xl p-4 flex items-center justify-between shadow-[3px_3px_0px_0px_rgba(15,23,42,1)]">
+            <div className="bg-white text-slate-900 border-2 border-slate-900 rounded-xl p-4 flex items-center justify-between shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-blue-100 text-[#2563eb] flex items-center justify-center font-bold">
                   <Layout size={20} />
@@ -678,7 +678,7 @@ export default function InstagramGEM() {
             </div>
 
             {/* Formulário Principal em Card Branco */}
-            <div className="bg-white border-2 border-slate-900 rounded-2xl p-6 md:p-8 space-y-6 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)]">
+            <div className="bg-white text-slate-900 border-2 border-slate-900 rounded-2xl p-6 md:p-8 space-y-6 shadow-[5px_5px_0px_0px_rgba(0,0,0,0.9)]">
               
               {/* Tema do Carrossel */}
               <div className="space-y-2">
@@ -729,7 +729,7 @@ export default function InstagramGEM() {
                       onClick={() => setTomDeVoz(tom)}
                       className={`p-3 rounded-lg text-xs font-extrabold border-2 transition-all ${
                         tomDeVoz === tom 
-                          ? "bg-[#2563eb] text-white border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)]" 
+                          ? "bg-[#2563eb] text-white border-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" 
                           : "bg-white text-slate-800 border-slate-300 hover:bg-slate-50"
                       }`}
                     >
@@ -743,7 +743,7 @@ export default function InstagramGEM() {
               <div className="pt-4 flex items-center justify-between gap-4">
                 <button
                   onClick={() => setCurrentStep(1)}
-                  className="px-6 py-3.5 rounded-lg border-2 border-slate-900 bg-white text-slate-800 font-extrabold text-xs shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] transition-all"
+                  className="px-6 py-3.5 rounded-lg border-2 border-slate-900 bg-white text-slate-800 font-extrabold text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
                 >
                   &larr; Voltar ao Passo 1
                 </button>
@@ -751,7 +751,7 @@ export default function InstagramGEM() {
                 <button
                   onClick={handleGenerateIdeas}
                   disabled={isGeneratingIdeas}
-                  className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-extrabold text-sm px-8 py-3.5 rounded-lg border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center gap-2 uppercase tracking-wide"
+                  className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-extrabold text-sm px-8 py-3.5 rounded-lg border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center gap-2 uppercase tracking-wide"
                 >
                   {isGeneratingIdeas ? (
                     <>
@@ -775,16 +775,16 @@ export default function InstagramGEM() {
         {currentStep === 3 && (
           <div className="space-y-8 animate-in fade-in duration-300 max-w-4xl mx-auto">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 px-3.5 py-1 rounded-full">
+              <div className="inline-flex items-center gap-2 bg-[#2563eb]/20 border border-[#2563eb]/40 px-3.5 py-1 rounded-full">
                 <span className="w-2 h-2 rounded-full bg-[#2563eb]"></span>
-                <span className="text-xs font-bold text-[#2563eb] uppercase tracking-wider">
+                <span className="text-xs font-bold text-[#00d1ff] uppercase tracking-wider">
                   PASSO 3 DE 4
                 </span>
               </div>
-              <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
+              <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight">
                 Escolha o Ângulo do Carrossel
               </h2>
-              <p className="text-slate-600 text-sm md:text-base leading-relaxed">
+              <p className="text-gray-300 text-sm md:text-base leading-relaxed">
                 Selecione a ideia aprovada para estruturar os 5 slides em alta definição.
               </p>
             </div>
@@ -794,8 +794,8 @@ export default function InstagramGEM() {
               {ideas.map((idea, idx) => (
                 <div 
                   key={idx}
-                  className={`bg-white border-2 border-slate-900 rounded-2xl p-6 transition-all space-y-3 shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] ${
-                    selectedIdeaIndex === idx ? "ring-2 ring-[#2563eb]" : ""
+                  className={`bg-white text-slate-900 border-2 border-slate-900 rounded-2xl p-6 transition-all space-y-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.9)] ${
+                    selectedIdeaIndex === idx ? "ring-4 ring-[#2563eb]" : ""
                   }`}
                 >
                   <div className="flex items-center justify-between">
@@ -817,7 +817,7 @@ export default function InstagramGEM() {
                   <div className="pt-2 flex justify-end">
                     <button
                       onClick={() => handleApproveIdea(idea, idx)}
-                      className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-extrabold text-xs px-6 py-3 rounded-lg border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] transition-all flex items-center gap-2 uppercase"
+                      className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-extrabold text-xs px-6 py-3 rounded-lg border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center gap-2 uppercase"
                     >
                       <span>Aprovar essa ideia & Gerar Slides</span>
                       <ArrowRight size={14} />
@@ -830,7 +830,7 @@ export default function InstagramGEM() {
             <div className="flex justify-between items-center pt-4">
               <button
                 onClick={() => setCurrentStep(2)}
-                className="px-6 py-3 rounded-lg border-2 border-slate-900 bg-white text-slate-800 font-extrabold text-xs shadow-[2px_2px_0px_0px_rgba(15,23,42,1)]"
+                className="px-6 py-3 rounded-lg border-2 border-slate-900 bg-white text-slate-800 font-extrabold text-xs shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
               >
                 &larr; Voltar ao Passo 2
               </button>
@@ -843,13 +843,13 @@ export default function InstagramGEM() {
           <div className="space-y-8 animate-in fade-in duration-300">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 px-3.5 py-1 rounded-full mb-2">
+                <div className="inline-flex items-center gap-2 bg-[#2563eb]/20 border border-[#2563eb]/40 px-3.5 py-1 rounded-full mb-2">
                   <span className="w-2 h-2 rounded-full bg-[#2563eb]"></span>
-                  <span className="text-xs font-bold text-[#2563eb] uppercase tracking-wider">
+                  <span className="text-xs font-bold text-[#00d1ff] uppercase tracking-wider">
                     PASSO 4 DE 4
                   </span>
                 </div>
-                <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+                <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
                   Edição Visual & Download Final
                 </h2>
               </div>
@@ -859,7 +859,7 @@ export default function InstagramGEM() {
                 <button
                   onClick={handleDownloadPNG}
                   disabled={isDownloading}
-                  className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-extrabold text-xs md:text-sm px-6 py-3.5 rounded-lg border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center gap-2 uppercase tracking-wide"
+                  className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-extrabold text-xs md:text-sm px-6 py-3.5 rounded-lg border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center gap-2 uppercase tracking-wide"
                 >
                   <Download size={16} />
                   <span>{isDownloading ? "Gerando PNG..." : "Baixar em PNG"}</span>
@@ -868,7 +868,7 @@ export default function InstagramGEM() {
                 <button
                   onClick={handleDownloadPDF}
                   disabled={isDownloading}
-                  className="bg-white text-slate-900 hover:bg-slate-100 font-extrabold text-xs md:text-sm px-6 py-3.5 rounded-lg border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(15,23,42,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center gap-2 uppercase tracking-wide"
+                  className="bg-white text-slate-900 hover:bg-slate-100 font-extrabold text-xs md:text-sm px-6 py-3.5 rounded-lg border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center gap-2 uppercase tracking-wide"
                 >
                   <FileText size={16} />
                   <span>{isDownloading ? "Gerando PDF..." : "Baixar em PDF"}</span>
@@ -882,7 +882,7 @@ export default function InstagramGEM() {
               <div className="lg:col-span-7 space-y-6">
                 
                 {/* Miniaturas dos Slides */}
-                <div className="bg-white border-2 border-slate-900 rounded-xl p-4 space-y-3 shadow-[3px_3px_0px_0px_rgba(15,23,42,1)]">
+                <div className="bg-white text-slate-900 border-2 border-slate-900 rounded-xl p-4 space-y-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]">
                   <span className="text-xs font-mono font-bold text-slate-500 uppercase">
                     SELECIONE O SLIDE PARA EDITAR (SLIDE 0{currentSlideIndex + 1})
                   </span>
@@ -903,7 +903,7 @@ export default function InstagramGEM() {
                 </div>
 
                 {/* Painel de Edição do Slide Selecionado em Card Branco */}
-                <div className="bg-white border-2 border-slate-900 rounded-2xl p-6 space-y-5 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)]">
+                <div className="bg-white text-slate-900 border-2 border-slate-900 rounded-2xl p-6 space-y-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]">
                   <div className="flex items-center justify-between border-b-2 border-slate-200 pb-4">
                     <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
                       <Edit3 size={16} className="text-[#2563eb]" />
@@ -949,7 +949,7 @@ export default function InstagramGEM() {
                       IMAGEM DE FUNDO DO SLIDE
                     </label>
                     <div className="flex flex-wrap items-center gap-3">
-                      <label className="flex-1 bg-white hover:bg-slate-50 text-slate-900 text-xs font-extrabold px-4 py-3 rounded-lg border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] cursor-pointer transition-all flex items-center justify-center gap-2">
+                      <label className="flex-1 bg-white hover:bg-slate-50 text-slate-900 text-xs font-extrabold px-4 py-3 rounded-lg border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer transition-all flex items-center justify-center gap-2">
                         <Upload size={14} />
                         <span>Subir Imagem Própria</span>
                         <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
@@ -958,7 +958,7 @@ export default function InstagramGEM() {
                       <button
                         onClick={handleGenerateAIImage}
                         disabled={isGeneratingImage}
-                        className="flex-1 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-xs font-extrabold px-4 py-3 rounded-lg border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(15,23,42,1)] transition-all flex items-center justify-center gap-2"
+                        className="flex-1 bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-xs font-extrabold px-4 py-3 rounded-lg border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-2"
                       >
                         {isGeneratingImage ? <Loader size={14} className="animate-spin" /> : <Wand2 size={14} />}
                         <span>Gerar Imagem com IA</span>
@@ -969,7 +969,7 @@ export default function InstagramGEM() {
                 </div>
 
                 {/* Legenda Pronta do Instagram em Card Branco */}
-                <div className="bg-white border-2 border-slate-900 rounded-2xl p-6 space-y-3 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)]">
+                <div className="bg-white text-slate-900 border-2 border-slate-900 rounded-2xl p-6 space-y-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-2">
                       <FileText size={16} className="text-[#2563eb]" />
@@ -998,9 +998,9 @@ export default function InstagramGEM() {
 
               {/* Coluna Direita: Preview Interativo do Slide */}
               <div className="lg:col-span-5 flex flex-col items-center justify-center sticky top-24 space-y-4">
-                <div className="text-xs font-mono font-bold text-slate-600 uppercase tracking-wider flex items-center gap-2">
+                <div className="text-xs font-mono font-bold text-gray-300 uppercase tracking-wider flex items-center gap-2">
                   <span>PREVIEW INTERATIVO</span>
-                  <span className="text-[#2563eb] font-bold">SLIDE 0{currentSlideIndex + 1} DE 05</span>
+                  <span className="text-[#00d1ff] font-bold">SLIDE 0{currentSlideIndex + 1} DE 05</span>
                 </div>
 
                 <div className="relative">
@@ -1019,17 +1019,17 @@ export default function InstagramGEM() {
                   <button
                     onClick={() => setCurrentSlideIndex(prev => Math.max(0, prev - 1))}
                     disabled={currentSlideIndex === 0}
-                    className="p-3 rounded-full bg-white border-2 border-slate-900 text-slate-900 hover:bg-[#2563eb] hover:text-white disabled:opacity-30 transition-colors shadow-[2px_2px_0px_0px_rgba(15,23,42,1)]"
+                    className="p-3 rounded-full bg-white border-2 border-slate-900 text-slate-900 hover:bg-[#2563eb] hover:text-white disabled:opacity-30 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                   >
                     <ChevronLeft size={20} />
                   </button>
-                  <span className="text-xs font-mono font-bold text-slate-700">
+                  <span className="text-xs font-mono font-bold text-gray-300">
                     0{currentSlideIndex + 1} / 05
                   </span>
                   <button
                     onClick={() => setCurrentSlideIndex(prev => Math.min(slides.length - 1, prev + 1))}
                     disabled={currentSlideIndex === slides.length - 1}
-                    className="p-3 rounded-full bg-white border-2 border-slate-900 text-slate-900 hover:bg-[#2563eb] hover:text-white disabled:opacity-30 transition-colors shadow-[2px_2px_0px_0px_rgba(15,23,42,1)]"
+                    className="p-3 rounded-full bg-white border-2 border-slate-900 text-slate-900 hover:bg-[#2563eb] hover:text-white disabled:opacity-30 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                   >
                     <ChevronRight size={20} />
                   </button>
