@@ -94,6 +94,12 @@ export default function Financas() {
   const [formDate, setFormDate] = useState(new Date().toISOString().split("T")[0]);
   const [formStatus, setFormStatus] = useState<"paid" | "pending">("paid");
 
+  // State Específico de Cartão & Parcelamento
+  const [isCardExpense, setIsCardExpense] = useState(false);
+  const [selectedCardId, setSelectedCardId] = useState("");
+  const [isInstallment, setIsInstallment] = useState(false);
+  const [installmentsCount, setInstallmentsCount] = useState(2);
+
   // State Form Cartão
   const [cardName, setCardName] = useState("");
   const [cardLast4, setCardLast4] = useState("");
@@ -253,6 +259,10 @@ export default function Financas() {
     setFormCategory(CATEGORIES[0]);
     setFormDate(new Date().toISOString().split("T")[0]);
     setFormStatus("paid");
+    setIsCardExpense(false);
+    setSelectedCardId("");
+    setIsInstallment(false);
+    setInstallmentsCount(2);
     setShowAddModal(true);
   };
 
@@ -266,10 +276,12 @@ export default function Financas() {
     setFormCategory(tx.category);
     setFormDate(tx.date);
     setFormStatus(tx.status);
+    setIsCardExpense(false);
+    setIsInstallment(false);
     setShowAddModal(true);
   };
 
-  // Salvar no Firebase Firestore (Novo ou Edição)
+  // Salvar no Firebase Firestore (Novo ou Edição com Gerador de Parcelas)
   const handleSaveTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formTitle || !formAmount) return;
@@ -291,8 +303,48 @@ export default function Financas() {
       } catch (err) {
         console.error("Erro ao atualizar no Firebase:", err);
       }
+    } else if (formFlow === "expense" && isCardExpense && isInstallment && installmentsCount > 1) {
+      // COMPRA PARCELADA NO CARTÃO: GERAR N PARCELAS RECORRENTES AUTOMATICAMENTE!
+      const totalAmount = amountNum;
+      const installmentVal = parseFloat((totalAmount / installmentsCount).toFixed(2));
+
+      for (let i = 1; i <= installmentsCount; i++) {
+        // Calcular data incrementando mês a mês
+        const baseDate = new Date(formDate + "T12:00:00");
+        baseDate.setMonth(baseDate.getMonth() + (i - 1));
+        const installmentDateStr = baseDate.toISOString().split("T")[0];
+
+        const installmentTx = {
+          title: `${formTitle} (${i}/${installmentsCount})`,
+          amount: installmentVal,
+          flow: "expense",
+          type: "recurring", // Parcela recorrente mensal
+          category: formCategory,
+          date: installmentDateStr,
+          status: i === 1 ? formStatus : "pending", // 1ª parcela fica com status escolhido, demais ficam pendentes
+          cardId: selectedCardId || null,
+          createdAt: new Date().toISOString()
+        };
+
+        try {
+          await addDoc(collection(db, "financas"), installmentTx);
+        } catch (err) {
+          console.error("Erro ao gerar parcela no Firebase:", err);
+        }
+      }
+
+      // Atualizar limite usado do cartão se selecionado
+      if (selectedCardId) {
+        const targetCard = cards.find(c => c.id === selectedCardId);
+        if (targetCard) {
+          const newUsed = (Number(targetCard.used) || 0) + totalAmount;
+          try {
+            await updateDoc(doc(db, "cartoes", selectedCardId), { used: newUsed });
+          } catch (err) {}
+        }
+      }
     } else {
-      // Criar Novo Registro no Firestore
+      // Criar Novo Registro Único no Firestore
       const newTxData = {
         title: formTitle,
         amount: amountNum,
@@ -861,6 +913,86 @@ export default function Financas() {
                     </select>
                   </div>
                 </div>
+
+                {/* OPÇÃO DE CARTÃO DE CRÉDITO E PARCELAMENTO DE RECORRÊNCIA */}
+                {formFlow === "expense" && !editingTx && (
+                  <div className="p-3 bg-slate-50 border-2 border-slate-900 rounded-xl space-y-3">
+                    <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-900">
+                      <input
+                        type="checkbox"
+                        checked={isCardExpense}
+                        onChange={(e) => setIsCardExpense(e.target.checked)}
+                        className="w-4 h-4 text-[#2563eb] rounded border-slate-900 focus:ring-0 cursor-pointer"
+                      />
+                      <span>💳 Pagamento com Cartão de Crédito?</span>
+                    </label>
+
+                    {isCardExpense && (
+                      <div className="space-y-3 pt-2 border-t border-slate-300">
+                        {cards.length > 0 && (
+                          <div>
+                            <label className="block text-[11px] font-bold uppercase text-slate-600 mb-1">
+                              Selecione o Cartão Utilizado
+                            </label>
+                            <select
+                              value={selectedCardId}
+                              onChange={(e) => setSelectedCardId(e.target.value)}
+                              className="w-full px-3 py-2 bg-white border-2 border-slate-900 rounded-xl text-xs font-semibold text-slate-900"
+                            >
+                              <option value="">Nenhum / Cartão Geral</option>
+                              {cards.map((c) => (
+                                <option key={c.id} value={c.id}>
+                                  {c.name} (•••• {c.last4})
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+
+                        <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-900">
+                          <input
+                            type="checkbox"
+                            checked={isInstallment}
+                            onChange={(e) => setIsInstallment(e.target.checked)}
+                            className="w-4 h-4 text-[#2563eb] rounded border-slate-900 focus:ring-0 cursor-pointer"
+                          />
+                          <span>É Compra Parcelada? (Lançar parcelas recorrentes automaticamente)</span>
+                        </label>
+
+                        {isInstallment && (
+                          <div className="space-y-2 pt-1">
+                            <label className="block text-[11px] font-bold uppercase text-slate-600">
+                              Número de Parcelas
+                            </label>
+                            <select
+                              value={installmentsCount}
+                              onChange={(e) => setInstallmentsCount(parseInt(e.target.value, 10))}
+                              className="w-full px-3 py-2 bg-white border-2 border-slate-900 rounded-xl text-xs font-bold text-slate-900"
+                            >
+                              {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 18, 24, 36, 48].map((n) => (
+                                <option key={n} value={n}>
+                                  {n}x parcelas mensais
+                                </option>
+                              ))}
+                            </select>
+
+                            {formAmount && parseFloat(formAmount.replace(",", ".")) > 0 && (
+                              <div className="p-2.5 bg-blue-50 border-2 border-blue-900 rounded-xl text-xs font-bold text-blue-900 space-y-1">
+                                <div className="flex items-center gap-1.5">
+                                  <Zap size={14} className="text-[#2563eb]" />
+                                  <span>Geração de Parcelas Automáticas:</span>
+                                </div>
+                                <p className="text-[11px] font-semibold text-slate-700 leading-snug">
+                                  Serão criadas <strong>{installmentsCount} parcelas de R$ {(parseFloat(formAmount.replace(",", ".")) / installmentsCount).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mês</strong> sequenciais mês a mês no seu extrato.
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
