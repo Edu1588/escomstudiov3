@@ -23,11 +23,12 @@ import {
   Wallet,
   Search,
   ChevronRight,
-  BarChart2
+  BarChart2,
+  Inbox
 } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, CartesianGrid } from "recharts";
 import { db } from "../../lib/firebase";
-import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc } from "firebase/firestore";
 
 interface Transaction {
   id: string;
@@ -62,118 +63,10 @@ const CATEGORIES = [
   "Outros"
 ];
 
-const DEFAULT_CARDS: CardItem[] = [
-  {
-    id: "c1",
-    name: "Itaú Corporate Black",
-    last4: "6782",
-    expiry: "08/29",
-    limit: 35000,
-    used: 4200,
-    color: "from-slate-950 via-[#0e172a] to-slate-900",
-    brand: "Mastercard"
-  },
-  {
-    id: "c2",
-    name: "Nubank ESCOM Pro",
-    last4: "4358",
-    expiry: "11/28",
-    limit: 18000,
-    used: 2150,
-    color: "from-[#2563eb] via-[#1d4ed8] to-[#1e3a8a]",
-    brand: "Visa"
-  },
-  {
-    id: "c3",
-    name: "Reserva Estratégica",
-    last4: "9102",
-    expiry: "12/30",
-    limit: 50000,
-    used: 0,
-    color: "from-emerald-700 via-emerald-800 to-slate-900",
-    brand: "Elo"
-  }
-];
-
-const DEFAULT_TRANSACTIONS: Transaction[] = [
-  {
-    id: "tx-1",
-    title: "Salário & Retainer - Cliente Alpha",
-    amount: 8500,
-    flow: "income",
-    type: "recurring",
-    category: "Clientes & Contratos",
-    date: "2026-07-05",
-    status: "paid"
-  },
-  {
-    id: "tx-2",
-    title: "Servidor Vercel & Cloudflare",
-    amount: 140,
-    flow: "expense",
-    type: "recurring",
-    category: "Infraestrutura & Servidores",
-    date: "2026-07-10",
-    status: "paid"
-  },
-  {
-    id: "tx-3",
-    title: "Assinatura Resend & Groq API",
-    amount: 220,
-    flow: "expense",
-    type: "recurring",
-    category: "Software & Ferramentas SaaS",
-    date: "2026-07-12",
-    status: "paid"
-  },
-  {
-    id: "tx-4",
-    title: "Desenvolvimento Landing Page Beta",
-    amount: 4500,
-    flow: "income",
-    type: "single",
-    category: "Clientes & Contratos",
-    date: "2026-07-18",
-    status: "paid"
-  },
-  {
-    id: "tx-5",
-    title: "Anúncios Meta Ads Prospecção",
-    amount: 800,
-    flow: "expense",
-    type: "single",
-    category: "Marketing & Anúncios",
-    date: "2026-07-20",
-    status: "paid"
-  }
-];
-
-// Dados simulados para o gráfico histórico dos últimos meses
-const CHART_DATA = [
-  { month: "Fev", ganho: 9800, gasto: 3200 },
-  { month: "Mar", ganho: 11500, gasto: 4100 },
-  { month: "Abr", ganho: 10200, gasto: 3800 },
-  { month: "Mai", ganho: 12800, gasto: 4500 },
-  { month: "Jun", ganho: 14000, gasto: 4900 },
-  { month: "Jul", ganho: 13000, gasto: 3160 }
-];
-
 export default function Financas() {
-  const [transactions, setTransactions] = useState<Transaction[]>(() => {
-    const saved = localStorage.getItem("escom_financas_data");
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) {}
-    }
-    return DEFAULT_TRANSACTIONS;
-  });
-
-  const [cards, setCards] = useState<CardItem[]>(() => {
-    const savedCards = localStorage.getItem("escom_financas_cards");
-    if (savedCards) {
-      try { return JSON.parse(savedCards); } catch (e) {}
-    }
-    return DEFAULT_CARDS;
-  });
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [cards, setCards] = useState<CardItem[]>([]);
+  const [loadingData, setLoadingData] = useState(true);
 
   const [filterType, setFilterType] = useState<"all" | "income" | "expense" | "recurring" | "single">("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -202,50 +95,96 @@ export default function Financas() {
   const [aiAnalyzing, setAiAnalyzing] = useState(false);
   const [aiResult, setAiResult] = useState<any>(null);
 
-  // Persistir LocalStorage
+  // Escutar Firebase Firestore em Tempo Real (financas & cartoes)
   useEffect(() => {
-    localStorage.setItem("escom_financas_data", JSON.stringify(transactions));
-  }, [transactions]);
+    setLoadingData(true);
 
-  useEffect(() => {
-    localStorage.setItem("escom_financas_cards", JSON.stringify(cards));
-  }, [cards]);
+    // 1. Escutar Lançamentos no Firestore
+    const unsubFinancas = onSnapshot(
+      collection(db, "financas"),
+      (snap) => {
+        const list: Transaction[] = snap.docs.map((d) => ({
+          id: d.id,
+          ...d.data()
+        })) as Transaction[];
+        setTransactions(list);
+        setLoadingData(false);
+      },
+      (err) => {
+        console.warn("Aviso ao escutar financas no Firebase:", err);
+        setLoadingData(false);
+      }
+    );
 
-  useEffect(() => {
-    fetchFirestoreTransactions();
+    // 2. Escutar Cartões no Firestore
+    const unsubCartoes = onSnapshot(
+      collection(db, "cartoes"),
+      (snap) => {
+        const cardList: CardItem[] = snap.docs.map((d) => ({
+          id: d.id,
+          ...d.data()
+        })) as CardItem[];
+        setCards(cardList);
+      },
+      (err) => {
+        console.warn("Aviso ao escutar cartoes no Firebase:", err);
+      }
+    );
+
+    return () => {
+      unsubFinancas();
+      unsubCartoes();
+    };
   }, []);
 
-  const fetchFirestoreTransactions = async () => {
-    try {
-      const snap = await getDocs(collection(db, "financas"));
-      if (!snap.empty) {
-        const firestoreList = snap.docs.map(d => ({ id: d.id, ...d.data() } as Transaction));
-        setTransactions(firestoreList);
-      }
-    } catch (e) {
-      console.log("Usando dados locais de finanças.");
-    }
-  };
+  // Gráfico Dinâmico baseado EXCLUSIVAMENTE em Lançamentos Reais
+  const chartData = useMemo(() => {
+    const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    const map: Record<string, { month: string; ganho: number; gasto: number }> = {};
 
-  // Métricas Principais
+    // Inicializar os últimos 6 meses
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      const mName = monthNames[d.getMonth()];
+      map[mName] = { month: mName, ganho: 0, gasto: 0 };
+    }
+
+    transactions.forEach((t) => {
+      if (!t.date) return;
+      const parts = t.date.split("-");
+      if (parts.length >= 2) {
+        const monthIdx = parseInt(parts[1], 10) - 1;
+        const mName = monthNames[monthIdx];
+        if (map[mName]) {
+          if (t.flow === "income") map[mName].ganho += Number(t.amount || 0);
+          if (t.flow === "expense") map[mName].gasto += Number(t.amount || 0);
+        }
+      }
+    });
+
+    return Object.values(map);
+  }, [transactions]);
+
+  // Métricas Principais Calculadas dos Dados Reais do Firestore
   const metrics = useMemo(() => {
     const totalIncome = transactions
-      .filter(t => t.flow === "income")
+      .filter((t) => t.flow === "income")
       .reduce((acc, t) => acc + Number(t.amount || 0), 0);
 
     const totalExpense = transactions
-      .filter(t => t.flow === "expense")
+      .filter((t) => t.flow === "expense")
       .reduce((acc, t) => acc + Number(t.amount || 0), 0);
 
     const netProfit = totalIncome - totalExpense;
     const profitMargin = totalIncome > 0 ? ((netProfit / totalIncome) * 100).toFixed(1) : "0";
 
     const recurringIncome = transactions
-      .filter(t => t.flow === "income" && t.type === "recurring")
+      .filter((t) => t.flow === "income" && t.type === "recurring")
       .reduce((acc, t) => acc + Number(t.amount || 0), 0);
 
     const recurringExpense = transactions
-      .filter(t => t.flow === "expense" && t.type === "recurring")
+      .filter((t) => t.flow === "expense" && t.type === "recurring")
       .reduce((acc, t) => acc + Number(t.amount || 0), 0);
 
     const totalCardLimit = cards.reduce((acc, c) => acc + Number(c.limit || 0), 0);
@@ -265,9 +204,10 @@ export default function Financas() {
 
   // Lançamentos Filtrados
   const filteredTransactions = useMemo(() => {
-    return transactions.filter(t => {
-      const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            t.category.toLowerCase().includes(searchQuery.toLowerCase());
+    return transactions.filter((t) => {
+      const matchesSearch =
+        t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.category.toLowerCase().includes(searchQuery.toLowerCase());
       if (!matchesSearch) return false;
       if (filterType === "income") return t.flow === "income";
       if (filterType === "expense") return t.flow === "expense";
@@ -277,7 +217,7 @@ export default function Financas() {
     });
   }, [transactions, filterType, searchQuery]);
 
-  // Abrir Modal para Criar Novo
+  // Abrir Modal para Criar Novo Lançamento
   const openNewModal = () => {
     setEditingTx(null);
     setFormTitle("");
@@ -303,7 +243,7 @@ export default function Financas() {
     setShowAddModal(true);
   };
 
-  // Salvar (Novo ou Edição)
+  // Salvar no Firebase Firestore (Novo ou Edição)
   const handleSaveTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formTitle || !formAmount) return;
@@ -311,24 +251,7 @@ export default function Financas() {
     const amountNum = parseFloat(formAmount.replace(",", "."));
 
     if (editingTx) {
-      // Atualizar Existente
-      const updatedList = transactions.map(t => {
-        if (t.id === editingTx.id) {
-          return {
-            ...t,
-            title: formTitle,
-            amount: amountNum,
-            flow: formFlow,
-            type: formType,
-            category: formCategory,
-            date: formDate,
-            status: formStatus
-          };
-        }
-        return t;
-      });
-      setTransactions(updatedList);
-
+      // Atualizar Registro Existente no Firestore
       try {
         await updateDoc(doc(db, "financas", editingTx.id), {
           title: formTitle,
@@ -339,47 +262,54 @@ export default function Financas() {
           date: formDate,
           status: formStatus
         });
-      } catch (err) {}
+      } catch (err) {
+        console.error("Erro ao atualizar no Firebase:", err);
+      }
     } else {
-      // Criar Novo
-      const newTx: Transaction = {
-        id: "tx-" + Date.now(),
+      // Criar Novo Registro no Firestore
+      const newTxData = {
         title: formTitle,
         amount: amountNum,
         flow: formFlow,
         type: formType,
         category: formCategory,
         date: formDate,
-        status: formStatus
+        status: formStatus,
+        createdAt: new Date().toISOString()
       };
 
-      setTransactions(prev => [newTx, ...prev]);
-
       try {
-        await addDoc(collection(db, "financas"), newTx);
-      } catch (err) {}
+        await addDoc(collection(db, "financas"), newTxData);
+      } catch (err) {
+        console.error("Erro ao salvar no Firebase:", err);
+      }
     }
 
     setShowAddModal(false);
   };
 
-  // Adicionar Cartão
-  const handleSaveCard = (e: React.FormEvent) => {
+  // Salvar Novo Cartão no Firebase Firestore (collection: "cartoes")
+  const handleSaveCard = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!cardName || !cardLast4) return;
 
-    const newCard: CardItem = {
-      id: "card-" + Date.now(),
+    const newCardData = {
       name: cardName,
       last4: cardLast4,
       expiry: cardExpiry || "12/28",
-      limit: parseFloat(cardLimit || "10000"),
+      limit: parseFloat(cardLimit || "0"),
       used: parseFloat(cardUsed || "0"),
       color: cardColor,
-      brand: "Mastercard"
+      brand: "Mastercard",
+      createdAt: new Date().toISOString()
     };
 
-    setCards(prev => [...prev, newCard]);
+    try {
+      await addDoc(collection(db, "cartoes"), newCardData);
+    } catch (err) {
+      console.error("Erro ao salvar cartão no Firebase:", err);
+    }
+
     setCardName("");
     setCardLast4("");
     setCardLimit("");
@@ -387,42 +317,49 @@ export default function Financas() {
     setShowAddCardModal(false);
   };
 
-  // Alternar Status
-  const toggleStatus = async (id: string) => {
-    setTransactions(prev =>
-      prev.map(t => {
-        if (t.id === id) {
-          const nextStatus = t.status === "paid" ? "pending" : "paid";
-          return { ...t, status: nextStatus };
-        }
-        return t;
-      })
-    );
+  // Alternar Status no Firebase
+  const toggleStatus = async (id: string, currentStatus: "paid" | "pending") => {
+    const nextStatus = currentStatus === "paid" ? "pending" : "paid";
+    try {
+      await updateDoc(doc(db, "financas", id), { status: nextStatus });
+    } catch (err) {
+      console.error("Erro ao atualizar status no Firebase:", err);
+    }
   };
 
-  // Deletar Transação
+  // Deletar Lançamento do Firebase
   const handleDeleteTx = async (id: string) => {
-    setTransactions(prev => prev.filter(t => t.id !== id));
     try {
       await deleteDoc(doc(db, "financas", id));
-    } catch (e) {}
+    } catch (err) {
+      console.error("Erro ao deletar lançamento do Firebase:", err);
+    }
   };
 
-  // Deletar Cartão
-  const handleDeleteCard = (id: string) => {
-    setCards(prev => prev.filter(c => c.id !== id));
+  // Deletar Cartão do Firebase
+  const handleDeleteCard = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, "cartoes", id));
+    } catch (err) {
+      console.error("Erro ao deletar cartão do Firebase:", err);
+    }
   };
 
   // IA Otimizadora
   const handleAnalyzeWithAI = async () => {
+    if (transactions.length === 0) {
+      alert("Cadastre pelo menos 1 lançamento antes de solicitar a análise da IA.");
+      return;
+    }
+
     setAiAnalyzing(true);
     try {
       const res = await fetch("/api/analyze-finances", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          incomes: transactions.filter(t => t.flow === "income"),
-          expenses: transactions.filter(t => t.flow === "expense"),
+          incomes: transactions.filter((t) => t.flow === "income"),
+          expenses: transactions.filter((t) => t.flow === "expense"),
           month: "Mês Atual"
         })
       });
@@ -562,55 +499,65 @@ export default function Financas() {
             </div>
 
             <div className="space-y-4 max-h-[380px] overflow-y-auto pr-1 custom-scrollbar">
-              {cards.map(card => {
-                const percentUsed = card.limit > 0 ? Math.min(100, Math.round((card.used / card.limit) * 100)) : 0;
-                return (
-                  <div
-                    key={card.id}
-                    className={`relative bg-gradient-to-br ${card.color} text-white p-5 rounded-2xl border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden space-y-3`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold uppercase tracking-wider text-white/80">{card.name}</span>
-                      <button
-                        onClick={() => handleDeleteCard(card.id)}
-                        className="text-white/60 hover:text-rose-300 text-xs font-bold"
-                        title="Remover Cartão"
-                      >
-                        ✕
-                      </button>
-                    </div>
-
-                    <div className="text-lg font-mono tracking-widest font-bold">
-                      •••• •••• •••• {card.last4}
-                    </div>
-
-                    <div className="flex items-center justify-between text-xs font-semibold pt-1">
-                      <div>
-                        <span className="block text-[10px] text-white/60 uppercase">Validade</span>
-                        <span>{card.expiry}</span>
+              {cards.length === 0 ? (
+                <div className="py-12 text-center text-slate-500 space-y-2">
+                  <Inbox size={32} className="mx-auto text-slate-400" />
+                  <p className="text-xs font-bold text-slate-700">Nenhum cartão cadastrado.</p>
+                  <p className="text-[11px] text-slate-500 max-w-[200px] mx-auto">
+                    Clique em <strong className="text-slate-900">+ Adicionar</strong> acima para cadastrar seu primeiro cartão.
+                  </p>
+                </div>
+              ) : (
+                cards.map(card => {
+                  const percentUsed = card.limit > 0 ? Math.min(100, Math.round((card.used / card.limit) * 100)) : 0;
+                  return (
+                    <div
+                      key={card.id}
+                      className={`relative bg-gradient-to-br ${card.color} text-white p-5 rounded-2xl border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] overflow-hidden space-y-3`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold uppercase tracking-wider text-white/80">{card.name}</span>
+                        <button
+                          onClick={() => handleDeleteCard(card.id)}
+                          className="text-white/60 hover:text-rose-300 text-xs font-bold"
+                          title="Remover Cartão"
+                        >
+                          ✕
+                        </button>
                       </div>
-                      <div className="text-right">
-                        <span className="block text-[10px] text-white/60 uppercase">Limite Usado</span>
-                        <span className="font-bold">R$ {card.used.toLocaleString()} / R$ {card.limit.toLocaleString()}</span>
+
+                      <div className="text-lg font-mono tracking-widest font-bold">
+                        •••• •••• •••• {card.last4}
+                      </div>
+
+                      <div className="flex items-center justify-between text-xs font-semibold pt-1">
+                        <div>
+                          <span className="block text-[10px] text-white/60 uppercase">Validade</span>
+                          <span>{card.expiry}</span>
+                        </div>
+                        <div className="text-right">
+                          <span className="block text-[10px] text-white/60 uppercase">Limite Usado</span>
+                          <span className="font-bold">R$ {card.used.toLocaleString()} / R$ {card.limit.toLocaleString()}</span>
+                        </div>
+                      </div>
+
+                      {/* Barra de Progresso do Limite */}
+                      <div className="w-full bg-black/40 h-2 rounded-full overflow-hidden border border-white/20">
+                        <div
+                          className={`h-full transition-all ${
+                            percentUsed > 80 ? "bg-rose-500" : percentUsed > 50 ? "bg-amber-400" : "bg-emerald-400"
+                          }`}
+                          style={{ width: `${percentUsed}%` }}
+                        ></div>
                       </div>
                     </div>
-
-                    {/* Barra de Progresso do Limite */}
-                    <div className="w-full bg-black/40 h-2 rounded-full overflow-hidden border border-white/20">
-                      <div
-                        className={`h-full transition-all ${
-                          percentUsed > 80 ? "bg-rose-500" : percentUsed > 50 ? "bg-amber-400" : "bg-emerald-400"
-                        }`}
-                        style={{ width: `${percentUsed}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
           </div>
 
-          {/* GRÁFICO COMPARATIVO MENSAL (RECHARTS) */}
+          {/* GRÁFICO COMPARATIVO MENSAL (RECHARTS DINÂMICO REAL) */}
           <div className="lg:col-span-2 bg-white border-2 border-slate-900 rounded-2xl p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] space-y-4 flex flex-col justify-between">
             <div className="flex items-center justify-between border-b-2 border-slate-900 pb-3">
               <div className="flex items-center gap-2">
@@ -629,7 +576,7 @@ export default function Financas() {
 
             <div className="h-[280px] w-full pt-2">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={CHART_DATA} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                <BarChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis dataKey="month" tick={{ fill: "#334155", fontSize: 12, fontWeight: "bold" }} />
                   <YAxis tick={{ fill: "#334155", fontSize: 11 }} />
@@ -808,7 +755,7 @@ export default function Financas() {
 
                       <td className="py-3.5 px-3 text-center">
                         <button
-                          onClick={() => toggleStatus(item.id)}
+                          onClick={() => toggleStatus(item.id, item.status)}
                           className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-900 transition-all ${
                             item.status === "paid"
                               ? "bg-emerald-500 text-white"
