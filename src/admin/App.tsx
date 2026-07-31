@@ -83,6 +83,8 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
     { name: "Clientes", path: "/prospect", icon: <Briefcase size={18} /> },
     { name: "Gestão de Páginas", path: "/paginas", icon: <Layers size={18} /> },
     { name: "Contratos", path: "/contratos", icon: <FileSignature size={18} /> },
+    { name: "Finanças", path: "/financas", icon: <DollarSign size={18} /> },
+    { name: "Saúde", path: "/saude", icon: <HeartPulse size={18} /> },
     { name: "Portfólio", path: "/portfolio", icon: <Briefcase size={18} /> },
     { name: "Instagram GEM", path: "/instagram", icon: <Instagram size={18} /> },
     { name: "Tarefas", path: "/agendamentos", icon: <CheckSquare size={18} /> },
@@ -136,26 +138,6 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
               );
             })}
           </ul>
-        </div>
-
-        {/* Card do Plano Atual */}
-        <div className="px-3 my-3 shrink-0">
-          <div className="bg-[#0e1930] border border-[#1b2b4a] rounded-2xl p-3.5 relative overflow-hidden">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[11px] text-gray-400 font-medium">Plano Atual</span>
-              <Crown size={14} className="text-[#3b82f6]" />
-            </div>
-            <div className="text-sm font-bold text-[#3b82f6] flex items-center gap-1.5">
-              Profissional
-            </div>
-            <div className="text-[10px] text-emerald-400 mt-1 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              Status: Ativo
-            </div>
-            <button className="w-full mt-2.5 bg-transparent border border-[#1d3257] hover:bg-[#152442] text-white text-xs py-1.5 rounded-xl font-medium transition-colors">
-              Ver Detalhes
-            </button>
-          </div>
         </div>
 
         {/* User Profile Info Footer */}

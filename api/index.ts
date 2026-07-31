@@ -1564,7 +1564,72 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 
-// --- End of Piassa Endpoints ---
+// --- Rota de Análise Financeira Inteligente via IA (Groq Llama 3.3) ---
+app.post("/api/analyze-finances", async (req, res) => {
+  try {
+    const { incomes = [], expenses = [], month = "" } = req.body;
+    if (!process.env.GROQ_API_KEY) {
+      return res.status(500).json({ error: "GROQ_API_KEY não configurada no servidor." });
+    }
+
+    const totalIncome = incomes.reduce((acc: number, item: any) => acc + (Number(item.amount) || 0), 0);
+    const totalExpense = expenses.reduce((acc: number, item: any) => acc + (Number(item.amount) || 0), 0);
+    const netProfit = totalIncome - totalExpense;
+    const margin = totalIncome > 0 ? ((netProfit / totalIncome) * 100).toFixed(1) : "0";
+
+    const prompt = `
+Analise o seguinte balanço financeiro pessoal/empresarial para o mês de ${month || "Mês Atual"}:
+
+FATURAMENTO/GANHOS TOTAL: R$ ${totalIncome.toFixed(2)}
+ENTRADAS (${incomes.length} itens):
+${incomes.map((i: any) => `- ${i.title} (${i.type === "recurring" ? "Recorrente" : "Único"}): R$ ${Number(i.amount).toFixed(2)} [Cat: ${i.category || "Geral"}]`).join("\n")}
+
+DESPESAS TOTAL: R$ ${totalExpense.toFixed(2)}
+SAÍDAS (${expenses.length} itens):
+${expenses.map((e: any) => `- ${e.title} (${e.type === "recurring" ? "Recorrente" : "Único"}): R$ ${Number(e.amount).toFixed(2)} [Cat: ${e.category || "Geral"}]`).join("\n")}
+
+LUCRO LÍQUIDO: R$ ${netProfit.toFixed(2)} (${margin}% de Margem)
+
+Como CFO Virtual especialista em finanças pessoais e empresariais, faça uma auditoria minuciosa e forneça recomendações práticas e diretas para cortar custos desnecessários, renegociar despesas recorrentes e acelerar o acúmulo de capital.
+
+Responda ESTRITAMENTE em formato JSON com o esquema:
+{
+  "healthScore": number (0 a 100),
+  "statusLabel": string (ex: "Excelente", "Saudável", "Atenção", "Crítico"),
+  "summary": string (resumo executivo direto de 2-3 frases),
+  "savingsOpportunityTotal": number (estimativa total de economia mensal em R$),
+  "recommendations": [
+    {
+      "title": string,
+      "description": string,
+      "category": string,
+      "priority": "alta" | "media" | "baixa",
+      "impactEstimate": string
+    }
+  ],
+  "actionPlan": [string] (passos práticos em tópicos)
+}
+    `;
+
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const completion = await groq.chat.completions.create({
+      messages: [
+        { role: "system", content: "Você é um consultor financeiro CFO sênior. Responda apenas com JSON válido." },
+        { role: "user", content: prompt }
+      ],
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.5,
+      response_format: { type: "json_object" }
+    });
+
+    const content = completion.choices[0]?.message?.content || "{}";
+    const result = JSON.parse(content);
+    res.json({ success: true, data: result });
+  } catch (e: any) {
+    console.error("[FINANCE_AI_API] Erro ao analisar finanças:", e);
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
 
 // --- Rotas de Cron Adicionais para Evitar 404 do Vercel Scheduler ---
 app.all("/api/trigger-cron", async (req, res) => {
