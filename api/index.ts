@@ -1631,6 +1631,105 @@ Responda ESTRITAMENTE em formato JSON com o esquema:
   }
 });
 
+// --- Função Auxiliar para Gerar as 5 Dicas do Dia com IA Groq ---
+async function generateDailyFinanceTips() {
+  await ensureAuth();
+  const snap = await getDocs(collection(db, "financas"));
+  const transactions: any[] = [];
+  snap.forEach(d => transactions.push(d.data()));
+
+  const incomes = transactions.filter(t => t.flow === "income");
+  const expenses = transactions.filter(t => t.flow === "expense");
+  const totalIncome = incomes.reduce((acc, i) => acc + (Number(i.amount) || 0), 0);
+  const totalExpense = expenses.reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
+
+  const todayStr = new Date().toISOString().split("T")[0];
+
+  const prompt = `
+Analise os lançamentos financeiros atuais da empresa/pessoal:
+- Ganhos Totais (Entradas): R$ ${totalIncome.toFixed(2)} (${incomes.length} itens)
+- Gastos Totais (Saídas): R$ ${totalExpense.toFixed(2)} (${expenses.length} itens)
+- Balanço Líquido: R$ ${(totalIncome - totalExpense).toFixed(2)}
+
+Lançamentos cadastrados:
+${transactions.map(t => `- [${t.flow === "income" ? "GANHO" : "GASTO"}] ${t.title}: R$ ${Number(t.amount).toFixed(2)} (${t.category || "Geral"})`).join("\n")}
+
+Forneça EXATAMENTE 5 DICAS PRÁTICAS E DIRETAS DO DIA para otimizar os ganhos, cortar desperdícios e organizar o fluxo de caixa hoje.
+
+Responda ESTRITAMENTE em formato JSON com o seguinte esquema:
+{
+  "date": "${todayStr}",
+  "dicas": [
+    {
+      "id": 1,
+      "title": "string curto e chamativo",
+      "description": "explicacao pratica de 2 frases",
+      "category": "string",
+      "priority": "alta" | "media" | "baixa",
+      "impact": "estimativa em R$ ou beneficio claro"
+    }
+  ]
+}
+  `;
+
+  const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+  const completion = await groq.chat.completions.create({
+    messages: [
+      { role: "system", content: "Você é um consultor financeiro CFO estratégico. Responda apenas em JSON válido com exatamente 5 dicas." },
+      { role: "user", content: prompt }
+    ],
+    model: "llama-3.3-70b-versatile",
+    temperature: 0.6,
+    response_format: { type: "json_object" }
+  });
+
+  const content = completion.choices[0]?.message?.content || "{}";
+  const parsed = JSON.parse(content);
+  const dicasData = {
+    date: todayStr,
+    updatedAt: new Date().toISOString(),
+    dicas: parsed.dicas || []
+  };
+
+  // Salvar no Firestore
+  await setDoc(doc(db, "financas_dicas_diarias", "latest"), dicasData);
+  await setDoc(doc(db, "financas_dicas_diarias", `dica_${todayStr}`), dicasData);
+
+  return dicasData;
+}
+
+// --- Rota do Cron Diário de Finanças (Dispara diariamente às 08h) ---
+app.all("/api/financas-cron", async (req, res) => {
+  try {
+    console.log("[FINANCAS_CRON] Executando análise diária e gerando 5 dicas do dia...");
+    const dicasData = await generateDailyFinanceTips();
+    res.json({ success: true, message: "5 Dicas do Dia geradas e salvas com sucesso!", data: dicasData });
+  } catch (e: any) {
+    console.error("[FINANCAS_CRON] Erro ao disparar cron de finanças:", e);
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+// --- Rota de Busca / Geração Manual das 5 Dicas do Dia ---
+app.get("/api/financas-dicas", async (req, res) => {
+  try {
+    await ensureAuth();
+    const todayStr = new Date().toISOString().split("T")[0];
+    const docSnap = await getDoc(doc(db, "financas_dicas_diarias", "latest"));
+
+    if (docSnap.exists() && docSnap.data().date === todayStr) {
+      return res.json({ success: true, data: docSnap.data() });
+    }
+
+    // Se não existir dica para hoje, gera uma nova na hora
+    const newDicas = await generateDailyFinanceTips();
+    res.json({ success: true, data: newDicas });
+  } catch (e: any) {
+    console.error("[FINANCAS_DICAS_API] Erro ao buscar dicas:", e);
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
 // --- Rotas de Cron Adicionais para Evitar 404 do Vercel Scheduler ---
 app.all("/api/trigger-cron", async (req, res) => {
   res.json({ success: true, message: "Cron trigger-cron executed successfully" });

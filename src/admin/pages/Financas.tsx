@@ -24,11 +24,13 @@ import {
   Search,
   ChevronRight,
   BarChart2,
-  Inbox
+  Inbox,
+  Lightbulb,
+  CheckSquare
 } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, CartesianGrid } from "recharts";
 import { db } from "../../lib/firebase";
-import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, getDoc } from "firebase/firestore";
 
 interface Transaction {
   id: string;
@@ -50,6 +52,15 @@ interface CardItem {
   used: number;
   color: string;
   brand: string;
+}
+
+interface DailyTip {
+  id: number;
+  title: string;
+  description: string;
+  category: string;
+  priority: "alta" | "media" | "baixa";
+  impact: string;
 }
 
 const CATEGORIES = [
@@ -91,9 +102,10 @@ export default function Financas() {
   const [cardUsed, setCardUsed] = useState("");
   const [cardColor, setCardColor] = useState("from-[#2563eb] via-[#1d4ed8] to-[#1e3a8a]");
 
-  // AI State
-  const [aiAnalyzing, setAiAnalyzing] = useState(false);
-  const [aiResult, setAiResult] = useState<any>(null);
+  // State das 5 Dicas do Dia do Cron / IA
+  const [showTipsModal, setShowTipsModal] = useState(false);
+  const [loadingTips, setLoadingTips] = useState(false);
+  const [dailyTipsData, setDailyTipsData] = useState<{ date: string; dicas: DailyTip[] } | null>(null);
 
   // Escutar Firebase Firestore em Tempo Real (financas & cartoes)
   useEffect(() => {
@@ -131,9 +143,23 @@ export default function Financas() {
       }
     );
 
+    // 3. Escutar Dicas do Dia no Firestore (financas_dicas_diarias/latest)
+    const unsubTips = onSnapshot(
+      doc(db, "financas_dicas_diarias", "latest"),
+      (docSnap) => {
+        if (docSnap.exists()) {
+          setDailyTipsData(docSnap.data() as any);
+        }
+      },
+      (err) => {
+        console.warn("Aviso ao escutar dicas no Firebase:", err);
+      }
+    );
+
     return () => {
       unsubFinancas();
       unsubCartoes();
+      unsubTips();
     };
   }, []);
 
@@ -345,33 +371,38 @@ export default function Financas() {
     }
   };
 
-  // IA Otimizadora
-  const handleAnalyzeWithAI = async () => {
-    if (transactions.length === 0) {
-      alert("Cadastre pelo menos 1 lançamento antes de solicitar a análise da IA.");
-      return;
-    }
-
-    setAiAnalyzing(true);
-    try {
-      const res = await fetch("/api/analyze-finances", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          incomes: transactions.filter((t) => t.flow === "income"),
-          expenses: transactions.filter((t) => t.flow === "expense"),
-          month: "Mês Atual"
-        })
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        setAiResult(data.data);
+  // Abrir Modal de Sugestões (5 Dicas do Dia)
+  const handleOpenSuggestions = async () => {
+    setShowTipsModal(true);
+    if (!dailyTipsData) {
+      setLoadingTips(true);
+      try {
+        const res = await fetch("/api/financas-dicas");
+        const data = await res.json();
+        if (data.success && data.data) {
+          setDailyTipsData(data.data);
+        }
+      } catch (e) {
+        console.error("Erro ao carregar dicas do dia:", e);
+      } finally {
+        setLoadingTips(false);
       }
-    } catch (err) {
-      console.error(err);
+    }
+  };
+
+  // Forçar Atualização Manual das 5 Dicas
+  const handleRefreshDailyTips = async () => {
+    setLoadingTips(true);
+    try {
+      const res = await fetch("/api/financas-cron");
+      const data = await res.json();
+      if (data.success && data.data) {
+        setDailyTipsData(data.data);
+      }
+    } catch (e) {
+      console.error("Erro ao regerar dicas do dia:", e);
     } finally {
-      setAiAnalyzing(false);
+      setLoadingTips(false);
     }
   };
 
@@ -391,22 +422,23 @@ export default function Financas() {
               </h1>
             </div>
             <p className="text-slate-600 text-sm font-medium">
-              Controle completo de fluxo de caixa, cartões corporativos, edições de lançamentos e análise em tempo real com IA.
+              Controle completo de fluxo de caixa, cartões corporativos, edições de lançamentos e 5 dicas diárias com IA.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
+            {/* BOTÃO SUGESTÕES (5 DICAS DO DIA DO CRON DIÁRIO) */}
             <button
-              onClick={handleAnalyzeWithAI}
-              disabled={aiAnalyzing}
+              onClick={handleOpenSuggestions}
+              disabled={loadingTips}
               className="flex items-center gap-2 bg-[#2563eb] hover:bg-blue-700 text-white font-bold text-sm px-5 py-3 rounded-xl border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all disabled:opacity-50"
             >
-              {aiAnalyzing ? (
+              {loadingTips ? (
                 <RefreshCw size={18} className="animate-spin text-white" />
               ) : (
-                <Sparkles size={18} className="text-yellow-300 fill-yellow-300" />
+                <Lightbulb size={18} className="text-yellow-300 fill-yellow-300" />
               )}
-              <span>{aiAnalyzing ? "Analisando com IA..." : "Otimizar com IA"}</span>
+              <span>Sugestões</span>
             </button>
 
             <button
@@ -592,74 +624,7 @@ export default function Financas() {
           </div>
         </div>
 
-        {/* RELATÓRIO DA IA (QUANDO SOLICITADO) */}
-        {aiResult && (
-          <div className="bg-white border-2 border-slate-900 rounded-2xl p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] space-y-6">
-            <div className="flex items-center justify-between border-b-2 border-slate-900 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-900 flex items-center justify-center font-bold border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                  <Sparkles size={22} className="fill-slate-900" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-black text-slate-900">
-                    Relatório de Otimização Financeira IA (Groq Llama 3.3)
-                  </h3>
-                  <p className="text-xs font-medium text-slate-600">
-                    Auditoria inteligente dos seus lançamentos para aumento de lucro.
-                  </p>
-                </div>
-              </div>
 
-              <div className="flex items-center gap-3">
-                <span className="px-3 py-1 bg-blue-100 text-blue-800 border border-blue-900 rounded-lg text-xs font-bold">
-                  Health Score: {aiResult.healthScore}% ({aiResult.statusLabel})
-                </span>
-                <button onClick={() => setAiResult(null)} className="text-xs font-bold text-slate-500 hover:text-slate-900">
-                  Fechar
-                </button>
-              </div>
-            </div>
-
-            {aiResult.savingsOpportunityTotal > 0 && (
-              <div className="p-4 bg-emerald-50 border-2 border-emerald-900 rounded-xl flex items-center gap-4">
-                <div className="w-10 h-10 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold">
-                  <Zap size={20} />
-                </div>
-                <div>
-                  <div className="text-xs font-bold uppercase tracking-wider text-emerald-800">Economia Estimada Identificada</div>
-                  <div className="text-lg font-black text-emerald-900">
-                    R$ {Number(aiResult.savingsOpportunityTotal).toLocaleString("pt-BR", { minimumFractionDigits: 2 })} / mês
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="p-4 bg-slate-50 border-2 border-slate-900 rounded-xl">
-              <h4 className="text-xs font-bold uppercase text-slate-500 mb-1">Resumo Executivo</h4>
-              <p className="text-sm font-semibold text-slate-800 leading-relaxed">{aiResult.summary}</p>
-            </div>
-
-            {aiResult.recommendations && aiResult.recommendations.length > 0 && (
-              <div>
-                <h4 className="text-xs font-bold uppercase text-slate-500 mb-3">Recomendações da IA</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {aiResult.recommendations.map((rec: any, idx: number) => (
-                    <div key={idx} className="p-4 bg-white border-2 border-slate-900 rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-[#2563eb] uppercase">{rec.category}</span>
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-900">
-                          {rec.priority}
-                        </span>
-                      </div>
-                      <h5 className="font-black text-sm text-slate-900">{rec.title}</h5>
-                      <p className="text-xs text-slate-600 leading-relaxed">{rec.description}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
 
         {/* SEÇÃO 3: TABELA DE LANÇAMENTOS (COM EDIÇÃO E EXCLUSÃO) */}
         <div className="bg-white border-2 border-slate-900 rounded-2xl p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] space-y-6">
@@ -1047,6 +1012,121 @@ export default function Financas() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL 💡 5 DICAS DO DIA (DISPARADAS PELO CRON DIÁRIO / IA GROQ) */}
+        {showTipsModal && (
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white border-2 border-slate-900 rounded-2xl p-6 max-w-2xl w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar animate-in fade-in zoom-in duration-200">
+              
+              {/* Header Modal */}
+              <div className="flex items-center justify-between border-b-2 border-slate-900 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-amber-400 text-slate-900 flex items-center justify-center font-bold border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                    <Lightbulb size={24} className="fill-slate-900 text-slate-900" />
+                  </div>
+                  <div>
+                    <h3 className="font-black text-xl text-slate-900 flex items-center gap-2">
+                      5 Dicas do Dia
+                      <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-900 border border-blue-900 font-bold">
+                        Cron Diário 08h ⚡
+                      </span>
+                    </h3>
+                    <p className="text-xs font-semibold text-slate-500">
+                      {dailyTipsData?.date ? `Análise realizada em: ${dailyTipsData.date}` : "Análise em tempo real do seu balanço"}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setShowTipsModal(false)}
+                  className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-black flex items-center justify-center border-2 border-slate-900"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Lista de 5 Dicas */}
+              {loadingTips ? (
+                <div className="py-16 text-center space-y-3">
+                  <RefreshCw size={36} className="animate-spin text-[#2563eb] mx-auto" />
+                  <p className="text-sm font-bold text-slate-800">Processando análise financeira com IA...</p>
+                  <p className="text-xs text-slate-500">Avaliando lançamentos, recorrentes e fluxo de caixa.</p>
+                </div>
+              ) : dailyTipsData?.dicas && dailyTipsData.dicas.length > 0 ? (
+                <div className="space-y-4">
+                  {dailyTipsData.dicas.map((tip, idx) => (
+                    <div
+                      key={tip.id || idx}
+                      className="p-4 bg-slate-50 border-2 border-slate-900 rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] space-y-2 hover:bg-white transition-all"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="w-6 h-6 rounded-full bg-slate-900 text-white font-black text-xs flex items-center justify-center">
+                            #{idx + 1}
+                          </span>
+                          <span className="text-xs font-bold text-[#2563eb] uppercase tracking-wider">
+                            {tip.category || "Geral"}
+                          </span>
+                        </div>
+
+                        <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase border border-slate-900 ${
+                          tip.priority === "alta"
+                            ? "bg-rose-500 text-white"
+                            : tip.priority === "media"
+                            ? "bg-amber-400 text-slate-900"
+                            : "bg-emerald-400 text-slate-900"
+                        }`}>
+                          Prioridade {tip.priority}
+                        </span>
+                      </div>
+
+                      <h4 className="font-black text-base text-slate-900">{tip.title}</h4>
+                      <p className="text-xs text-slate-700 font-medium leading-relaxed">{tip.description}</p>
+
+                      {tip.impact && (
+                        <div className="text-xs font-extrabold text-emerald-700 bg-emerald-100/70 border border-emerald-800 px-3 py-1 rounded-lg inline-block mt-1">
+                          💡 Impacto Estimado: {tip.impact}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-12 text-center text-slate-500 space-y-2">
+                  <Inbox size={32} className="mx-auto text-slate-400" />
+                  <p className="text-sm font-bold text-slate-800">Nenhuma dica gerada ainda.</p>
+                  <p className="text-xs text-slate-500">Cadastre seus lançamentos e clique abaixo para gerar suas 5 dicas do dia.</p>
+                </div>
+              )}
+
+              {/* Footer Modal com Botão de Regeneração */}
+              <div className="pt-4 border-t-2 border-slate-900 flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500">
+                  Automação disposta diariamente às 08:00
+                </span>
+
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={handleRefreshDailyTips}
+                    disabled={loadingTips}
+                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold text-xs rounded-xl border-2 border-slate-900 flex items-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50"
+                  >
+                    <RefreshCw size={14} className={loadingTips ? "animate-spin" : ""} />
+                    <span>Recalcular Dicas Agora</span>
+                  </button>
+
+                  <button
+                    onClick={() => setShowTipsModal(false)}
+                    className="px-5 py-2 bg-[#2563eb] text-white font-bold text-xs rounded-xl border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                  >
+                    Fechar
+                  </button>
+                </div>
+              </div>
+
             </div>
           </div>
         )}
