@@ -242,6 +242,11 @@ export default function App() {
           <Route path="/agendamentos" element={<Agendamentos />} />
         </Routes>
       </main>
+
+      {/* EFEITO VISUAL DE SOM DE BOLHA 3D REACTIVA (VOICE POWERED ORB) */}
+      <div className="fixed bottom-6 right-6 z-50 w-24 h-24 pointer-events-none drop-shadow-[0_0_25px_rgba(37,99,235,0.6)]">
+        <VoicePoweredOrb className="w-full h-full" />
+      </div>
     </div>
   );
 }
