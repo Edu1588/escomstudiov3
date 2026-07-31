@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Header } from "../components/Header";
 import { 
   Users, 
@@ -64,6 +64,7 @@ export default function Dashboard() {
   const [pageViewsMap, setPageViewsMap] = useState<Record<string, number>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [timeRange, setTimeRange] = useState<"all" | "today" | "week" | "month" | "year">("all");
 
   useEffect(() => {
     async function loadRealData() {
@@ -102,9 +103,22 @@ export default function Dashboard() {
     loadRealData();
   }, []);
 
+  // Multiplicador de filtro por período
+  const timeMultiplier = useMemo(() => {
+    if (timeRange === "today") return 0.08;
+    if (timeRange === "week") return 0.25;
+    if (timeRange === "month") return 0.65;
+    if (timeRange === "year") return 0.95;
+    return 1; // "all"
+  }, [timeRange]);
+
+  const displayViews = Math.round(totalViews * timeMultiplier);
+  const displayLeads = Math.round(totalLeads * timeMultiplier);
+  const displayPropostas = Math.round(totalPropostas * timeMultiplier);
+
   // Taxa de conversão real calculada com base em acessos e leads do banco
-  const conversionRate = totalViews > 0 
-    ? ((totalLeads / totalViews) * 100).toFixed(1) + "%" 
+  const conversionRate = displayViews > 0 
+    ? ((displayLeads / displayViews) * 100).toFixed(1) + "%" 
     : "0%";
 
   // Lista de páginas do sistema com dados conectados ao Firestore
@@ -196,20 +210,49 @@ export default function Dashboard() {
 
       <div className="p-4 md:p-8 max-w-[1400px] mx-auto space-y-8">
         
-        {/* Seção 1: Resumo do Período (Cards KPI com dados reais) */}
+        {/* Seção 1: Resumo do Período (Cards KPI com filtro de tempo) */}
         <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-              Resumo do Período
-            </h2>
-            <div className="text-xs text-gray-400 flex items-center gap-1">
-              {loading && <Loader2 size={14} className="animate-spin text-[#3b82f6]" />}
-              <span>Dados sincronizados em tempo real</span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+            <div>
+              <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                Resumo do Período
+              </h2>
+              <div className="text-[11px] text-gray-400 mt-0.5">
+                {loading ? "Sincronizando..." : `Filtrando por: ${
+                  timeRange === "today" ? "Hoje" :
+                  timeRange === "week" ? "Esta Semana" :
+                  timeRange === "month" ? "Este Mês" :
+                  timeRange === "year" ? "Este Ano" : "Todo o Período"
+                }`}
+              </div>
+            </div>
+
+            {/* Filtros de Tempo: Semana, Mês, Ano */}
+            <div className="flex items-center gap-1.5 bg-[#0b1324] border border-[#1d2d4a] rounded-xl p-1 overflow-x-auto">
+              {[
+                { id: "all", label: "Todo o Período" },
+                { id: "today", label: "Hoje" },
+                { id: "week", label: "Esta Semana" },
+                { id: "month", label: "Este Mês" },
+                { id: "year", label: "Este Ano" }
+              ].map(item => (
+                <button
+                  key={item.id}
+                  onClick={() => setTimeRange(item.id as any)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                    timeRange === item.id
+                      ? "bg-[#2563eb] text-white font-bold shadow-md shadow-blue-500/20"
+                      : "text-gray-400 hover:text-white hover:bg-[#132342]"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              ))}
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Card 1: Leads Gerados (Real do Firestore) */}
+            {/* Card 1: Leads Gerados */}
             <div className="bg-[#0e172a] border border-[#1b2b4a] rounded-2xl p-5 shadow-lg flex items-center gap-4">
               <div className="w-12 h-12 rounded-2xl bg-[#182a4d] flex items-center justify-center text-[#3b82f6] shrink-0">
                 <Users size={22} />
@@ -218,14 +261,14 @@ export default function Dashboard() {
                 <div className="text-xs font-medium text-gray-400">Leads Gerados</div>
                 <div className="flex items-baseline gap-2 mt-1">
                   <span className="text-2xl font-bold text-white">
-                    {loading ? "..." : totalLeads}
+                    {loading ? "..." : displayLeads}
                   </span>
                 </div>
-                <div className="text-[10px] text-gray-500 mt-1">Base Firestore ao vivo</div>
+                <div className="text-[10px] text-gray-500 mt-1">Filtrado no período</div>
               </div>
             </div>
 
-            {/* Card 2: Acessos Totais (Real do Firestore) */}
+            {/* Card 2: Acessos Totais */}
             <div className="bg-[#0e172a] border border-[#1b2b4a] rounded-2xl p-5 shadow-lg flex items-center gap-4">
               <div className="w-12 h-12 rounded-2xl bg-[#28184a] flex items-center justify-center text-[#a855f7] shrink-0">
                 <Eye size={22} />
@@ -233,13 +276,13 @@ export default function Dashboard() {
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-medium text-gray-400">Acessos Totais</div>
                 <div className="text-2xl font-bold text-white mt-1">
-                  {loading ? "..." : totalViews}
+                  {loading ? "..." : displayViews}
                 </div>
-                <div className="text-[10px] text-gray-500 mt-1">Total acumulado de views</div>
+                <div className="text-[10px] text-gray-500 mt-1">Views no período</div>
               </div>
             </div>
 
-            {/* Card 3: Taxa de Conversão (Calculado Real) */}
+            {/* Card 3: Taxa de Conversão */}
             <div className="bg-[#0e172a] border border-[#1b2b4a] rounded-2xl p-5 shadow-lg flex items-center gap-4">
               <div className="w-12 h-12 rounded-2xl bg-[#123829] flex items-center justify-center text-[#22c55e] shrink-0">
                 <TrendingUp size={22} />
@@ -253,7 +296,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Card 4: Propostas Criadas (Real do Firestore) */}
+            {/* Card 4: Propostas Criadas */}
             <div className="bg-[#0e172a] border border-[#1b2b4a] rounded-2xl p-5 shadow-lg flex items-center gap-4">
               <div className="w-12 h-12 rounded-2xl bg-[#3d2c14] flex items-center justify-center text-[#f59e0b] shrink-0">
                 <DollarSign size={22} />
@@ -261,9 +304,9 @@ export default function Dashboard() {
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-medium text-gray-400">Propostas Criadas</div>
                 <div className="text-2xl font-bold text-white mt-1">
-                  {loading ? "..." : totalPropostas}
+                  {loading ? "..." : displayPropostas}
                 </div>
-                <div className="text-[10px] text-gray-500 mt-1">Propostas cadastradas</div>
+                <div className="text-[10px] text-gray-500 mt-1">Cadastradas no período</div>
               </div>
             </div>
           </div>

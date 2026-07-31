@@ -242,15 +242,6 @@ export default function App() {
           <Route path="/agendamentos" element={<Agendamentos />} />
         </Routes>
       </main>
-      <div className="fixed bottom-6 right-6 z-[100] w-20 h-20 pointer-events-none">
-        <VoicePoweredOrb
-          enableVoiceControl={false}
-          voiceSensitivity={3}
-          maxRotationSpeed={2}
-          maxHoverIntensity={1.2}
-          className="w-full h-full"
-        />
-      </div>
     </div>
   );
 }

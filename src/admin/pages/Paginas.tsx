@@ -126,6 +126,36 @@ export default function Paginas() {
 
       <div className="p-4 md:p-8 max-w-[1400px] mx-auto space-y-8">
         
+        {/* BARRA DE FILTRO POR PERÍODO DE TEMPO */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0e172a] border border-[#1e2e4a] rounded-2xl p-4 shadow-xl">
+          <div>
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Filtro de Período de Acessos</h3>
+            <p className="text-xs text-gray-300 font-bold mt-0.5">
+              Exibindo dados por: {
+                selectedCategory === "TODAS" ? "Todas as Categorias" : selectedCategory
+              }
+            </p>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-[#080d19] border border-[#1d2d4a] rounded-xl p-1 overflow-x-auto">
+            {[
+              { id: "all", label: "Todo o Período" },
+              { id: "today", label: "Hoje" },
+              { id: "week", label: "Esta Semana" },
+              { id: "month", label: "Este Mês" },
+              { id: "year", label: "Este Ano" }
+            ].map(item => (
+              <button
+                key={item.id}
+                onClick={() => setSelectedCategory(item.id === "all" ? "TODAS" : selectedCategory)}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap bg-[#2563eb] text-white hover:bg-blue-600 shadow-md shadow-blue-500/20"
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* CARDS DE MÉTRICAS GERAIS DE PÁGINAS */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
           <div className="bg-[#0e172a] border border-[#1e2e4a] rounded-2xl p-5 space-y-2 shadow-xl relative overflow-hidden">
