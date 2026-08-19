@@ -9,6 +9,7 @@ import { logPageView } from "./lib/analytics";
 // Components
 import LoadingScreen from "./components/LoadingScreen";
 import BrillianceHome from "./components/ui/brilliance-home";
+import LanguageSwitcher from "./components/LanguageSwitcher";
 
 const WELCOME_AUDIO_URL =
   "https://res.cloudinary.com/djw0tqmiw/video/upload/v1780445623/sxzx7zsuj1tgmtwbfovu.mp3";
@@ -42,6 +43,9 @@ export default function App() {
 
   return (
     <main className="relative">
+      <LanguageSwitcher />
+
+      {/* video em vez de audio — muted autoplay é SEMPRE permitido pelo browser */}
       {/* video em vez de audio — muted autoplay é SEMPRE permitido pelo browser */}
       <video
         ref={audioRef}
