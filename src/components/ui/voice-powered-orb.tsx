@@ -17,7 +17,7 @@ interface VoicePoweredOrbProps {
 export const VoicePoweredOrb: FC<VoicePoweredOrbProps> = ({
   className,
   hue = 0,
-  enableVoiceControl = true,
+  enableVoiceControl = false,
   voiceSensitivity = 1.5,
   maxRotationSpeed = 1.2,
   maxHoverIntensity = 0.8,

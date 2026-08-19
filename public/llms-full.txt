@@ -1,0 +1,52 @@
+# Documentação Completa ESCOM Studio para Agentes e LLMs (llms-full.txt)
+
+## 1. Identidade & Proposta de Valor
+A **ESCOM Studio** é uma empresa especializada em **Engenharia de Conversão**, **Inteligência Artificial aplicada a Negócios** e **Desenvolvimento Web de Performance Superior**. Nosso foco principal é construir ativos digitais que transformam tráfego em receita previsível para clientes nos segmentos B2B e serviços premium.
+
+---
+
+## 2. Metodologia de Engenharia de Conversão (Arquitetura de 15 Blocos)
+Todas as landing pages produzidas pela ESCOM Studio seguem uma estrutura científica rigorosa com 15 blocos obrigatórios de alta conversão:
+
+1. **Header Futurista & Navegação Limpa**: Logotipo HD, links diretos e CTA destacado.
+2. **Hero Section de Alto Impacto**: Headline irresistível, sub-headline persuasiva, prova social imediata e CTA principal.
+3. **Barra de Marquee & Logotipos de Autoridade**: Marcas parceiras e selos de validação.
+4. **Bloco de Diagnóstico de Dores (Agitação do Problema)**: Apresentação clara dos desafios enfrentados pelo cliente final.
+5. **Solução Definitiva & Mecanismo Único**: Revelação da metodologia ou produto exclusivo.
+6. **Módulo de Demonstração Interativa**: Componentes visuais, vídeos ou interatividade 3D.
+7. **Benefícios Estruturados & Pilares do Serviço**: Cards interativos destacando retornos tangíveis.
+8. **Engenharia de Prova Social & Depoimentos**: Relatos reais, prints e validação de clientes.
+9. **Simulador / Calculadora de ROI**: Ferramenta de estimativa de ganhos ou redução de custos.
+10. **Matriz Comparativa (Nós vs Concorrência)**: Tabela demonstrando a superioridade da oferta.
+11. **Garantia & Eliminação de Risco**: Selos de segurança e termos claros.
+12. **Planos, Preços ou Oferta Irrecusável**: Transparência e ancoragem de valor.
+13. **FAQ Dinâmico (Perguntas Frequentes)**: Quebra ativa das principais objeções do cliente.
+14. **Banner CTA Final de Alta Pressão**: Última oportunidade de conversão com escassez/urgência éticas.
+15. **Footer Institucional Completo**: Links legais, direitos autorais, redes sociais e suporte.
+
+---
+
+## 3. Stack Tecnológica
+- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS v4, Motion (Framer Motion / Motion.dev), GSAP (GreenSock Animation Platform), Spline 3D, Lucide Icons.
+- **Backend & APIs**: Node.js, Express.js, Firebase (Firestore, Auth), Groq Cloud API, Google Gemini AI API, Resend Email API, Puppeteer para geração de relatórios PDF.
+- **Deploy & Infraestrutura**: Vercel Edge Network, CDN global com suporte a imagens WebP/AVIF.
+
+---
+
+## 4. Endpoints e Rotas Disponíveis
+- `/`: Landing page principal ESCOM Studio.
+- `/home-v3`: Versão institucional expandida.
+- `/site-onward-consultoria`: Landing page modelo para M&A e Consultoria Corporativa.
+- `/site-aventis-ma`: Landing page modelo para Fusões & Aquisições.
+- `/aviso_legal.html`: Isenção de responsabilidades.
+- `/politica_de_privacidade.html`: Política de Privacidade LGPD.
+- `/termos_de_servico.html`: Termos de Serviço.
+- `/sitemap.xml`: Mapa do site em XML.
+- `/robots.txt`: Instruções para web crawlers.
+- `/llms.txt`: Resumo legível por IA.
+
+---
+
+## 5. Informações de Contato
+- **Site**: https://escom-studio.vercel.app
+- **Atendimento**: Suporte técnico e consultoria via canal oficial no site.

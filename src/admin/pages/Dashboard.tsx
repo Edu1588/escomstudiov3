@@ -17,7 +17,6 @@ import {
   Box, 
   Info, 
   Mail, 
-  HelpCircle,
   ChevronDown,
   Loader2
 } from "lucide-react";
@@ -480,14 +479,6 @@ export default function Dashboard() {
         </div>
 
       </div>
-
-      {/* Floating Action / Help Button (Bottom Right) */}
-      <button 
-        className="fixed bottom-6 right-6 z-50 w-11 h-11 bg-[#2563eb] hover:bg-[#1d4ed8] text-white rounded-full flex items-center justify-center shadow-xl shadow-blue-600/30 transition-transform hover:scale-105 active:scale-95"
-        title="Ajuda e Suporte"
-      >
-        <HelpCircle size={20} />
-      </button>
     </div>
   );
 }

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escom Studio | Engenharia de Conversão, Design de Alta Performance & Automação Inteligente</title>
+    <meta name="description" content="Escom Studio — soluções digitais extraordinárias.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        @media (pointer: fine) {
+            body { cursor: none; }
+        }
+        #custom-cursor {
+            position: fixed;
+            top: 0; left: 0; width: 12px; height: 12px;
+            background-color: #07dc40;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+            mix-blend-mode: difference;
+        }
+    </style>
+</head>
+<body class="bg-black text-white">
+    <div id="custom-cursor"></div>
+    <div id="root"></div>
+    
+    <script type="module" src="/src/main.tsx"></script>
+
+    <script>
+        const cursor = document.getElementById('custom-cursor');
+        document.addEventListener('mousemove', (e) => {
+            if (cursor) {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            }
+        });
+        document.addEventListener('mouseover', (e) => {
+            if (cursor && (e.target.tagName.toLowerCase() === 'a' || e.target.tagName.toLowerCase() === 'button' || e.target.closest('a') || e.target.closest('button'))) {
+                cursor.style.transform = 'translate(-50%, -50%) scale(2.5)';
+                cursor.style.backgroundColor = '#ffffff';
+                cursor.style.mixBlendMode = 'difference';
+            }
+        });
+        document.addEventListener('mouseout', (e) => {
+            if (cursor && (e.target.tagName.toLowerCase() === 'a' || e.target.tagName.toLowerCase() === 'button' || e.target.closest('a') || e.target.closest('button'))) {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursor.style.backgroundColor = '#07dc40';
+                cursor.style.mixBlendMode = 'normal';
+            }
+        });
+    </script>
+</body>
+</html>

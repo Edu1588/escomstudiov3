@@ -1,0 +1,24 @@
+# ESCOM Studio - Sistema de Crescimento & Performance Digital
+
+> ESCOM Studio é um estúdio de engenharia de conversão, inteligência artificial e desenvolvimento web de alta performance. Desenvolvemos landing pages ultraotimizadas, ecossistemas digitais e sistemas de mineração de leads para empresas e profissionais de alto valor.
+
+## Visão Geral e Capacidades
+ESCOM Studio combina copywriting persuasivo baseado em neurociência de vendas, design futurista com animações fluidas a 120fps e arquitetura de software escalável para converter tráfego qualificado em clientes reais.
+
+- **Serviços Oferecidos**: Engenharia de Conversão, Landing Pages de Alta Performance, Branding & Identity, Desenvolvimento Web Futurista (React/Vite/Tailwind/GSAP), Sistemas de Mineração e Nutrição de Leads com IA.
+- **Diferenciais Técnicos**: Tempos de carregamento ultrarrápidos (<1s), estrutura visual e textual embasada em 15 blocos obrigatórios de conversão, integração com APIs de IA (Groq, Gemini, Resend) e suporte multilíngue/multidomínio.
+- **Setores Atendidos**: Clínicas de Saúde & Odontologia Premium, Consultorias de M&A e Valuation, Escritórios de Advocacia, Empresas de Tecnologia e Negócios B2B/B2C.
+
+## Páginas Principais
+- [Home Principal](https://escom-studio.vercel.app/): Plataforma e demonstração do ecossistema de crescimento.
+- [Versão Alternativa](https://escom-studio.vercel.app/home-v3): Apresentação expandida com foco em serviços institucionais.
+- [Case Onward Consultoria](https://escom-studio.vercel.app/site-onward-consultoria): Exemplo de landing page de alta conversão para o setor corporativo.
+- [Case Aventis M&A](https://escom-studio.vercel.app/site-aventis-ma): Exemplo de landing page para fusões e aquisições.
+
+## Documentação Legal & Termos
+- [Aviso Legal](https://escom-studio.vercel.app/aviso_legal.html): Isenções de responsabilidade e garantias operacionais.
+- [Política de Privacidade](https://escom-studio.vercel.app/politica_de_privacidade.html): Conformidade com LGPD e proteção de dados.
+- [Termos de Serviço](https://escom-studio.vercel.app/termos_de_servico.html): Condições gerais de prestação de serviços.
+
+## Recursos Adicionais para IA
+- [llms-full.txt](https://escom-studio.vercel.app/llms-full.txt): Documentação técnica completa sobre arquitetura, ferramentas e metodologia da ESCOM Studio.

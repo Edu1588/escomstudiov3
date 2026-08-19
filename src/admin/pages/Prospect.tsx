@@ -4,7 +4,7 @@ import {
   Search, ArrowRight, LayoutDashboard, UserCheck, Briefcase, Clock, 
   Loader2, Download, Globe, Mail, Phone, MessageSquare, Bookmark, 
   ChevronRight, ChevronLeft, Building2, Send, Copy, Trash2, FileText, 
-  Terminal, Sparkles, X, Check, Calendar, DollarSign, HelpCircle, FileCheck
+  Terminal, Sparkles, X, Check, Calendar, DollarSign, FileCheck
 } from "lucide-react";
 import { db } from "../../lib/firebase";
 import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, query, orderBy } from "firebase/firestore";

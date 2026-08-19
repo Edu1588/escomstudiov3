@@ -18,6 +18,7 @@ export default defineConfig(({mode}) => {
           sobre: path.resolve(__dirname, 'sobre/index.html'),
           baseproposta: path.resolve(__dirname, 'baseproposta/index.html'),
           homev3: path.resolve(__dirname, 'home-v3/index.html'),
+          home3: path.resolve(__dirname, 'home3/index.html'),
         },
       },
     },

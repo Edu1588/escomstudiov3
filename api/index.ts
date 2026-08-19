@@ -25,7 +25,7 @@ const __dirname = path.dirname(__filename);
 import { Resend } from "resend";
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, collection, addDoc, serverTimestamp, Timestamp, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, orderBy, where } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, serverTimestamp, Timestamp, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, orderBy, where, writeBatch, limit } from 'firebase/firestore';
 import fs from 'fs';
 import firebaseConfig from "./firebase-applet-config.js";
 
@@ -1737,6 +1737,573 @@ app.all("/api/trigger-cron", async (req, res) => {
 
 app.all("/api/trigger-monitoring", async (req, res) => {
   res.json({ success: true, message: "Cron trigger-monitoring executed successfully" });
+});
+
+// --- Integração Google Fit OAuth2 ---
+
+app.get("/api/google-health-auth", (req, res) => {
+  const clientId = process.env.GOOGLE_HEALTH_CLIENT_ID;
+  const redirectUri = process.env.GOOGLE_HEALTH_REDIRECT_URI;
+  
+  if (!clientId || !redirectUri) {
+    return res.status(500).json({ error: "Configuração do Google Health incompleta" });
+  }
+
+  const scopes = [
+    "https://www.googleapis.com/auth/fitness.activity.read",
+    "https://www.googleapis.com/auth/fitness.sleep.read",
+    "https://www.googleapis.com/auth/fitness.heart_rate.read",
+    "https://www.googleapis.com/auth/fitness.body.read"
+  ].join(" ");
+
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scopes)}&access_type=offline&prompt=consent`;
+  
+  res.redirect(authUrl);
+});
+
+app.get("/api/google-health-callback", async (req, res) => {
+  const code = req.query.code as string;
+  const clientId = process.env.GOOGLE_HEALTH_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_HEALTH_CLIENT_SECRET;
+  const redirectUri = process.env.GOOGLE_HEALTH_REDIRECT_URI;
+
+  if (!code || !clientId || !clientSecret || !redirectUri) {
+    return res.status(400).send("Faltando parâmetros de configuração ou autorização.");
+  }
+
+  try {
+    const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        code,
+        client_id: clientId,
+        client_secret: clientSecret,
+        redirect_uri: redirectUri,
+        grant_type: "authorization_code"
+      }).toString()
+    });
+
+    const tokenData = await tokenResponse.json();
+
+    if (tokenData.error) {
+      console.error("Erro na troca do token:", tokenData);
+      return res.status(400).send(`Erro de autenticação: ${tokenData.error_description || tokenData.error}`);
+    }
+
+    const expiresAt = new Date(Date.now() + tokenData.expires_in * 1000).toISOString();
+
+    const docData: any = {
+      access_token: tokenData.access_token,
+      expires_at: expiresAt,
+      updatedAt: new Date().toISOString()
+    };
+    if (tokenData.refresh_token) {
+      docData.refresh_token = tokenData.refresh_token;
+    }
+
+    await setDoc(doc(db, "google_health_tokens", "admin"), docData, { merge: true });
+
+    res.redirect("https://www.escomstudio.com.br/admin/saude");
+  } catch (error) {
+    console.error("Erro no callback do Google Fit:", error);
+    res.status(500).send("Erro interno ao processar autenticação.");
+  }
+});
+
+app.get("/api/google-health-sync", async (req, res) => {
+  try {
+    const tokenDoc = await getDoc(doc(db, "google_health_tokens", "admin"));
+    if (!tokenDoc.exists()) {
+      return res.status(400).json({ error: "Token não encontrado. Autorize primeiro." });
+    }
+    
+    let { access_token, refresh_token, expires_at } = tokenDoc.data() as any;
+    const clientId = process.env.GOOGLE_HEALTH_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_HEALTH_CLIENT_SECRET;
+
+    if (new Date(expires_at) < new Date()) {
+      if (!refresh_token || !clientId || !clientSecret) {
+        return res.status(400).json({ error: "Refresh token ou configurações indisponíveis." });
+      }
+      
+      const refreshResponse = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          client_id: clientId,
+          client_secret: clientSecret,
+          refresh_token: refresh_token,
+          grant_type: "refresh_token"
+        }).toString()
+      });
+      
+      const refreshData = await refreshResponse.json();
+      if (refreshData.error) {
+        return res.status(400).json({ error: "Falha ao renovar o token do Google." });
+      }
+      
+      access_token = refreshData.access_token;
+      expires_at = new Date(Date.now() + refreshData.expires_in * 1000).toISOString();
+      
+      const updateData: any = { access_token, expires_at, updatedAt: new Date().toISOString() };
+      if (refreshData.refresh_token) {
+        refresh_token = refreshData.refresh_token;
+        updateData.refresh_token = refresh_token;
+      }
+      
+      await setDoc(doc(db, "google_health_tokens", "admin"), updateData, { merge: true });
+    }
+
+    const end = new Date();
+    const start = new Date();
+    start.setDate(start.getDate() - 7);
+    start.setHours(0, 0, 0, 0);
+    
+    const startTimeMillis = start.getTime();
+    const endTimeMillis = end.getTime();
+    
+    const fetchApi = async (url: string, body?: any) => {
+      const resp = await fetch(url, {
+        method: body ? "POST" : "GET",
+        headers: { 
+          "Authorization": `Bearer ${access_token}`,
+          "Content-Type": "application/json"
+        },
+        body: body ? JSON.stringify(body) : undefined
+      });
+      return resp.json();
+    };
+
+    const aggBody = (dataType: string) => ({
+      aggregateBy: [{ dataTypeName: dataType }],
+      bucketByTime: { durationMillis: 86400000 },
+      startTimeMillis,
+      endTimeMillis
+    });
+
+    const [stepsData, hrData, weightData, caloriesData, sleepData] = await Promise.all([
+      fetchApi("https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate", aggBody("com.google.step_count.delta")),
+      fetchApi("https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate", aggBody("com.google.heart_rate.bpm")),
+      fetchApi("https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate", aggBody("com.google.weight")),
+      fetchApi("https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate", aggBody("com.google.calories.expended")),
+      fetchApi(`https://www.googleapis.com/fitness/v1/users/me/sessions?startTime=${new Date(startTimeMillis).toISOString()}&endTime=${new Date(endTimeMillis).toISOString()}&activityType=72`)
+    ]);
+
+    const dailyMetrics: Record<string, any> = {};
+    
+    // Processar Passos (Somar todos os pontos do dia)
+    if (stepsData && stepsData.bucket) {
+      stepsData.bucket.forEach((bucket: any) => {
+        const dateStr = new Date(parseInt(bucket.startTimeMillis)).toISOString().split('T')[0];
+        if (!dailyMetrics[dateStr]) dailyMetrics[dateStr] = { data: dateStr, origem: "Google Fit" };
+        let totalSteps = 0;
+        if (bucket.dataset) {
+          bucket.dataset.forEach((ds: any) => {
+            (ds.point || []).forEach((pt: any) => {
+              const val = pt.value?.[0]?.intVal ?? pt.value?.[0]?.fpVal ?? 0;
+              totalSteps += Math.round(val);
+            });
+          });
+        }
+        if (totalSteps > 0) dailyMetrics[dateStr].passos = totalSteps;
+      });
+    }
+
+    // Processar Batimento Cardiaco (Média do dia)
+    if (hrData && hrData.bucket) {
+      hrData.bucket.forEach((bucket: any) => {
+        const dateStr = new Date(parseInt(bucket.startTimeMillis)).toISOString().split('T')[0];
+        if (!dailyMetrics[dateStr]) dailyMetrics[dateStr] = { data: dateStr, origem: "Google Fit" };
+        let sumBpm = 0;
+        let countBpm = 0;
+        if (bucket.dataset) {
+          bucket.dataset.forEach((ds: any) => {
+            (ds.point || []).forEach((pt: any) => {
+              const bpmVal = pt.value?.[0]?.fpVal ?? pt.value?.[0]?.intVal ?? 0;
+              if (bpmVal > 0) {
+                sumBpm += bpmVal;
+                countBpm++;
+              }
+            });
+          });
+        }
+        if (countBpm > 0) dailyMetrics[dateStr].batimentoRepouso = Math.round(sumBpm / countBpm);
+      });
+    }
+
+    // Processar Peso
+    if (weightData && weightData.bucket) {
+      weightData.bucket.forEach((bucket: any) => {
+        const dateStr = new Date(parseInt(bucket.startTimeMillis)).toISOString().split('T')[0];
+        if (!dailyMetrics[dateStr]) dailyMetrics[dateStr] = { data: dateStr, origem: "Google Fit" };
+        if (bucket.dataset) {
+          bucket.dataset.forEach((ds: any) => {
+            (ds.point || []).forEach((pt: any) => {
+              const weightVal = pt.value?.[0]?.fpVal ?? pt.value?.[0]?.intVal ?? 0;
+              if (weightVal > 0) dailyMetrics[dateStr].peso = Number(weightVal.toFixed(1));
+            });
+          });
+        }
+      });
+    }
+
+    // Processar Calorias Queimadas
+    if (caloriesData && caloriesData.bucket) {
+      caloriesData.bucket.forEach((bucket: any) => {
+        const dateStr = new Date(parseInt(bucket.startTimeMillis)).toISOString().split('T')[0];
+        if (!dailyMetrics[dateStr]) dailyMetrics[dateStr] = { data: dateStr, origem: "Google Fit" };
+        let totalCal = 0;
+        if (bucket.dataset) {
+          bucket.dataset.forEach((ds: any) => {
+            (ds.point || []).forEach((pt: any) => {
+              const calVal = pt.value?.[0]?.fpVal ?? pt.value?.[0]?.intVal ?? 0;
+              totalCal += calVal;
+            });
+          });
+        }
+        if (totalCal > 0) dailyMetrics[dateStr].caloriasQueimadas = Math.round(totalCal);
+      });
+    }
+
+    // Processar Sono
+    if (sleepData && sleepData.session) {
+      sleepData.session.forEach((session: any) => {
+        const sessionDate = new Date(parseInt(session.startTimeMillis)).toISOString().split('T')[0];
+        if (!dailyMetrics[sessionDate]) dailyMetrics[sessionDate] = { data: sessionDate, origem: "Google Fit" };
+        const durationHours = (parseInt(session.endTimeMillis) - parseInt(session.startTimeMillis)) / (1000 * 60 * 60);
+        const currentHours = dailyMetrics[sessionDate]._rawSonoHours || 0;
+        const totalH = currentHours + durationHours;
+        dailyMetrics[sessionDate]._rawSonoHours = totalH;
+        dailyMetrics[sessionDate].horasSono = `${totalH.toFixed(1)}h`;
+        dailyMetrics[sessionDate].qualidadeSono = totalH >= 7 ? "Excelente (Restaurador)" : totalH >= 6 ? "Bom" : "Insuficiente";
+      });
+    }
+
+    // Salvar no Firestore
+    const batch = writeBatch(db);
+    const syncedAt = new Date().toISOString();
+    let savedCount = 0;
+
+    for (const [date, metrics] of Object.entries(dailyMetrics)) {
+      delete (metrics as any)._rawSonoHours;
+      (metrics as any).syncedAt = syncedAt;
+      const docRef = doc(db, "health_metrics", date);
+      batch.set(docRef, metrics, { merge: true });
+      savedCount++;
+    }
+
+    if (savedCount > 0) {
+      await batch.commit();
+    }
+
+    res.json({ 
+      success: true, 
+      message: "Sincronização concluída", 
+      syncedDays: savedCount, 
+      data: dailyMetrics 
+    });
+  } catch (error: any) {
+    console.error("Erro na sincronização:", error);
+    res.status(500).json({ error: "Erro interno", details: error.message });
+  }
+});
+
+app.get("/api/google-health-status", async (req, res) => {
+  try {
+    const tokenSnap = await getDoc(doc(db, "google_health_tokens", "admin"));
+    if (tokenSnap.exists()) {
+      const data = tokenSnap.data() as any;
+      res.json({ connected: true, lastSync: data.updatedAt || null, expiresAt: data.expires_at || null });
+    } else {
+      res.json({ connected: false, lastSync: null });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao buscar status" });
+  }
+});
+
+app.get("/api/health-metrics", async (req, res) => {
+  try {
+    const q = query(collection(db, "health_metrics"), orderBy("data", "desc"), limit(30));
+    const snapshot = await getDocs(q);
+    const metrics = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    res.json({ success: true, metrics });
+  } catch (error) {
+    console.error("Erro ao buscar health metrics:", error);
+    res.status(500).json({ success: false, error: "Erro interno" });
+  }
+});
+
+app.post("/api/health-metrics", async (req, res) => {
+  try {
+    const { peso, gorduraCorporal, massaMagra, notas } = req.body;
+    const docDate = new Date().toISOString().split('T')[0];
+    
+    await setDoc(doc(db, "health_metrics", docDate), {
+      data: docDate,
+      peso: peso || null,
+      gorduraCorporal: gorduraCorporal || null,
+      massaMagra: massaMagra || null,
+      notas: notas || "",
+      origem: "Manual",
+      updatedAt: new Date().toISOString()
+    }, { merge: true });
+    
+    res.json({ success: true, message: "Métricas salvas com sucesso" });
+  } catch (error) {
+    console.error("Erro ao salvar health metrics:", error);
+    res.status(500).json({ success: false, error: "Erro interno" });
+  }
+});
+
+app.post("/api/health-suggestions", async (req, res) => {
+  try {
+    const { peso, imc, pesoMeta, faltaPerder, passos, cidade, idade, sexo, horasSono } = req.body;
+    
+    if (process.env.GROQ_API_KEY) {
+      const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+      const prompt = `Você é um nutricionista e personal trainer sênior especialista em bio-hacking e performance.
+Gere recomendações hiper-personalizadas e práticas para o usuário com o seguinte perfil:
+- Peso Atual: ${peso || "não informado"} kg
+- IMC: ${imc || "não informado"}
+- Meta de Peso: ${pesoMeta || "não informada"} kg (Faltam ${faltaPerder || 0} kg)
+- Passos hoje: ${passos || 0}
+- Sono: ${horasSono || "não informado"}
+- Idade: ${idade || 30} anos, Sexo: ${sexo === "F" ? "Feminino" : "Masculino"}
+- Localização: ${cidade || "Brasil"}
+
+Regras:
+1. "atividades": 3 sugestões de exercícios práticos adequados ao peso/IMC e nível de passos.
+2. "alimentacao": 3 sugestões de ajustes nutricionais e refeições saudáveis.
+3. "dicasLocais": 3 sugestões de locais ao ar livre, praias, parques, feiras orgânicas ou rotinas específicas considerando a localização (${cidade || "Brasil"}).
+4. "motivacao": 1 frase curta e impactante de incentivo.
+
+Retorne APENAS um JSON VÁLIDO com a estrutura:
+{
+  "atividades": ["...", "...", "..."],
+  "alimentacao": ["...", "...", "..."],
+  "dicasLocais": ["...", "...", "..."],
+  "motivacao": "..."
+}`;
+
+      const response = await groq.chat.completions.create({
+        messages: [
+          { role: "system", content: "Você é um profissional de saúde e bio-hacking. Responda SEMPRE em JSON válido em Português do Brasil." },
+          { role: "user", content: prompt }
+        ],
+        model: "llama-3.3-70b-versatile",
+        temperature: 0.6,
+        response_format: { type: "json_object" }
+      });
+
+      const parsed = JSON.parse(response.choices[0]?.message?.content || "{}");
+      return res.json(parsed);
+    }
+
+    // Fallback se não houver chave Groq configurada
+    res.json({
+      atividades: [
+        "Caminhada diária de 30-45min em ritmo moderado.",
+        "Treino resistido (musculação/calistenia) 3x a 4x por semana.",
+        "Mobilidade e alongamento matinal de 10 minutos."
+      ],
+      alimentacao: [
+        "Priorize proteínas magras (frango, ovos, peixe) em todas as refeições.",
+        "Beba no mínimo 35ml de água por kg corporal diariamente.",
+        "Reduza carboidratos refinados e ultraprocessados à noite."
+      ],
+      dicasLocais: [
+        `Explore caminhadas ao ar livre na região de ${cidade || "sua cidade"}.`,
+        "Busque feiras locais de produtores orgânicos para hortifrúti fresco.",
+        "Aproveite parques ou orlas próximas para atividades no início da manhã."
+      ],
+      motivacao: "Consistência supera intensidade. Cada pequeno passo diário te aproxima do seu peso ideal!"
+    });
+  } catch (error: any) {
+    console.error("[HEALTH_SUGGESTIONS_ERROR]", error);
+    res.status(500).json({ error: "Erro ao gerar sugestões de saúde" });
+  }
+});
+
+// --- Integração Strava API v3 ---
+
+const getStravaCredentials = () => {
+  const clientId = process.env.STRAVA_CLIENT_ID || "270564";
+  const secrets = [
+    process.env.STRAVA_CLIENT_SECRET,
+    "9ad26ac6f32383455fda73c1566a624a44fd9780",
+    "e6cd8d0d9ca2aeace6dcea6407fa777a00ebbf8f"
+  ].filter(Boolean) as string[];
+  const redirectUri = process.env.STRAVA_REDIRECT_URI || "https://www.escomstudio.com.br/api/strava-callback";
+  return { clientId, secrets, redirectUri };
+};
+
+app.get("/api/strava-auth", (req, res) => {
+  const { clientId, redirectUri } = getStravaCredentials();
+  const authUrl = `https://www.strava.com/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=read,activity:read_all&approval_prompt=auto`;
+  res.redirect(authUrl);
+});
+
+app.get("/api/strava-callback", async (req, res) => {
+  const code = req.query.code as string;
+  const { clientId, secrets } = getStravaCredentials();
+
+  if (!code) {
+    return res.status(400).send("Faltando código de autorização do Strava.");
+  }
+
+  try {
+    let data: any = null;
+    for (const secret of secrets) {
+      const resp = await fetch("https://www.strava.com/oauth/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client_id: clientId,
+          client_secret: secret,
+          code,
+          grant_type: "authorization_code"
+        })
+      });
+      data = await resp.json();
+      if (data.access_token) {
+        data._usedSecret = secret;
+        break;
+      }
+    }
+    
+    if (!data || !data.access_token) {
+      return res.status(400).send("Erro na autenticação com o Strava: " + JSON.stringify(data));
+    }
+
+    await setDoc(doc(db, "strava_tokens", "admin"), {
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      expires_at: data.expires_at,
+      used_secret: data._usedSecret,
+      athlete: data.athlete ? { id: data.athlete.id, name: `${data.athlete.firstname} ${data.athlete.lastname}`, profile: data.athlete.profile } : null,
+      updatedAt: new Date().toISOString()
+    }, { merge: true });
+
+    res.redirect("https://www.escomstudio.com.br/admin/saude");
+  } catch (error) {
+    console.error("Erro no callback Strava:", error);
+    res.status(500).send("Erro interno no callback Strava.");
+  }
+});
+
+app.get("/api/strava-status", async (req, res) => {
+  try {
+    const docSnap = await getDoc(doc(db, "strava_tokens", "admin"));
+    if (docSnap.exists()) {
+      const data = docSnap.data() as any;
+      res.json({ connected: true, athlete: data.athlete, lastSync: data.updatedAt || null });
+    } else {
+      res.json({ connected: false, athlete: null });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao verificar status Strava" });
+  }
+});
+
+app.get("/api/strava-sync", async (req, res) => {
+  try {
+    const tokenDoc = await getDoc(doc(db, "strava_tokens", "admin"));
+    if (!tokenDoc.exists()) {
+      return res.status(400).json({ error: "Token Strava não encontrado. Autorize primeiro." });
+    }
+
+    let { access_token, refresh_token, expires_at, used_secret } = tokenDoc.data() as any;
+    const { clientId, secrets } = getStravaCredentials();
+    const activeSecret = used_secret || secrets[0];
+
+    if (expires_at && Date.now() / 1000 >= expires_at - 300) {
+      if (refresh_token) {
+        const refreshResp = await fetch("https://www.strava.com/oauth/token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            client_id: clientId,
+            client_secret: activeSecret,
+            refresh_token,
+            grant_type: "refresh_token"
+          })
+        });
+        const refreshData = await refreshResp.json();
+        if (refreshData.access_token) {
+          access_token = refreshData.access_token;
+          expires_at = refreshData.expires_at;
+          await setDoc(doc(db, "strava_tokens", "admin"), {
+            access_token,
+            refresh_token: refreshData.refresh_token || refresh_token,
+            expires_at,
+            updatedAt: new Date().toISOString()
+          }, { merge: true });
+        }
+      }
+    }
+
+    const activitiesResp = await fetch("https://www.strava.com/api/v3/athlete/activities?per_page=30", {
+      headers: { "Authorization": `Bearer ${access_token}` }
+    });
+
+    const activitiesData = await activitiesResp.json();
+    if (!Array.isArray(activitiesData)) {
+      return res.status(400).json({ error: "Erro ao buscar atividades do Strava", details: activitiesData });
+    }
+
+    const batch = writeBatch(db);
+    let savedCount = 0;
+
+    activitiesData.forEach((act: any) => {
+      const actId = `strava_${act.id}`;
+      const distanceKm = Number((act.distance / 1000).toFixed(2));
+      const movingTimeMinutes = Math.round(act.moving_time / 60);
+      const startDate = act.start_date_local ? act.start_date_local.split("T")[0] : new Date().toISOString().split("T")[0];
+
+      const activityRecord = {
+        id: actId,
+        stravaId: act.id,
+        nome: act.name,
+        tipo: act.type,
+        distanciaKm: distanceKm,
+        tempoMinutos: movingTimeMinutes,
+        elevacaoM: Math.round(act.total_elevation_gain || 0),
+        bpmMedio: Math.round(act.average_heartrate || 0),
+        bpmMax: Math.round(act.max_heartrate || 0),
+        calorias: Math.round(act.calories || 0),
+        data: startDate,
+        syncedAt: new Date().toISOString()
+      };
+
+      const docRef = doc(db, "strava_activities", actId);
+      batch.set(docRef, activityRecord, { merge: true });
+      savedCount++;
+    });
+
+    if (savedCount > 0) {
+      await batch.commit();
+    }
+
+    await setDoc(doc(db, "strava_tokens", "admin"), { updatedAt: new Date().toISOString() }, { merge: true });
+
+    res.json({ success: true, count: savedCount, message: `${savedCount} atividades sincronizadas do Strava!` });
+  } catch (error: any) {
+    console.error("Erro na sincronização Strava:", error);
+    res.status(500).json({ error: "Erro interno", details: error.message });
+  }
+});
+
+app.get("/api/strava-activities", async (req, res) => {
+  try {
+    const q = query(collection(db, "strava_activities"), orderBy("data", "desc"), limit(20));
+    const snapshot = await getDocs(q);
+    const activities = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    res.json({ success: true, activities });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Erro ao buscar atividades Strava" });
+  }
 });
 
 app.listen(PORT, () => { console.log("Server running on port " + PORT); });
