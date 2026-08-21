@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { getPortfolioProjects } from "../../firebase";
 import { motion } from "motion/react";
+import RobotBust3D from "../RobotBust3D";
 
 
 
@@ -871,7 +872,7 @@ export default function BrillianceHome() {
           <img src="https://res.cloudinary.com/djw0tqmiw/image/upload/v1780418939/e84odyan3ohg2t8646rg.png" className="w-full h-auto object-contain pointer-none origin-top" style={{ maskImage: 'linear-gradient(to bottom, black 45%, transparent 90%)', WebkitMaskImage: 'linear-gradient(to bottom, black 45%, transparent 90%)' }} alt="Overlay Mask" />
         </div>
 
-        {/* Camada z-40: Bloco de Conteúdo Principal (Alinhado à esquerda) */}
+        {/* Camada z-40: Bloco de Conteúdo Principal & Robô Busto 3D */}
         <div 
           className="mx-auto max-w-[1400px] px-6 md:px-10 w-full flex-1 flex flex-col justify-center relative z-40 pt-16 pointer-events-none"
           style={{
@@ -879,36 +880,44 @@ export default function BrillianceHome() {
             filter: `blur(${textBlur}px)`
           }}
         >
-          <div className="max-w-2xl text-left flex flex-col pointer-events-auto">
-            {/* Tag exe / metadados */}
-            <div className="mb-6 flex items-center gap-2.5 font-mono text-[10px] tracking-[0.2em] text-[#888] uppercase select-none">
-              <span className="text-[#00d1ff] animate-[pulse_1.5s_infinite] font-sans font-bold">▮</span>
-              <span>{">_ [ ARQUITETURA_DIGITAL.EXE ] / V.2026.01"}</span>
+          <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-8 w-full">
+            {/* Lado Esquerdo: Conteúdo Textual */}
+            <div className="lg:col-span-7 max-w-2xl text-left flex flex-col pointer-events-auto">
+              {/* Tag exe / metadados */}
+              <div className="mb-6 flex items-center gap-2.5 font-mono text-[10px] tracking-[0.2em] text-[#888] uppercase select-none">
+                <span className="text-[#00d1ff] animate-[pulse_1.5s_infinite] font-sans font-bold">▮</span>
+                <span>{">_ [ ARQUITETURA_DIGITAL.EXE ] / V.2026.01"}</span>
+              </div>
+
+              {/* Título principal empilhado (sem fonte serifada) */}
+              <h1 className="display-mega text-[9.5vw] md:text-[6.5vw] lg:text-[5.5vw] xl:text-[5vw] leading-[0.95] select-none text-white opacity-95 flex flex-col w-full font-bold">
+                <span className="w-full block">Engenharia</span>
+                <span className="w-full block text-zinc-400 italic leading-[1.05] mt-1">e conversão</span>
+                <span className="w-full block italic leading-[1.05] text-white mt-1">brutalista</span>
+              </h1>
+
+              {/* Linha horizontal ciano */}
+              <div className="w-16 h-[2px] bg-[#00d1ff] my-6" />
+
+              {/* Parágrafo explicativo */}
+              <p className="text-sm md:text-base leading-relaxed text-zinc-300 max-w-lg mb-8 select-text">
+                Projetos digitais de alta performance que unem <span className="text-[#00d1ff] font-medium">design, automação e inteligência de dados</span> em um único ecossistema. Sem atalhos. Sem SaaS. Sem custos invisíveis.
+              </p>
+
+              {/* Botões de Ação */}
+              <div className="flex flex-wrap gap-4">
+                <a href="#contato" className="border border-[#00d1ff] bg-[#00d1ff] text-black px-6 py-3.5 font-mono text-xs uppercase tracking-wider font-bold transition hover:bg-white hover:text-black hover:border-white shadow-lg">
+                  Agendar diagnóstico →
+                </a>
+                <a href="#servicos" className="border border-white/30 bg-black/40 text-white px-6 py-3.5 font-mono text-xs uppercase tracking-wider font-bold transition hover:bg-white hover:text-black hover:border-white backdrop-blur-md">
+                  Ver capacidades
+                </a>
+              </div>
             </div>
 
-            {/* Título principal empilhado (sem fonte serifada) */}
-            <h1 className="display-mega text-[9.5vw] md:text-[6.5vw] lg:text-[5.5vw] xl:text-[5vw] leading-[0.95] select-none text-white opacity-95 flex flex-col w-full font-bold">
-              <span className="w-full block">Engenharia</span>
-              <span className="w-full block text-zinc-400 italic leading-[1.05] mt-1">e conversão</span>
-              <span className="w-full block italic leading-[1.05] text-white mt-1">brutalista</span>
-            </h1>
-
-            {/* Linha horizontal ciano */}
-            <div className="w-16 h-[2px] bg-[#00d1ff] my-6" />
-
-            {/* Parágrafo explicativo */}
-            <p className="text-sm md:text-base leading-relaxed text-zinc-300 max-w-lg mb-8 select-text">
-              Projetos digitais de alta performance que unem <span className="text-[#00d1ff] font-medium">design, automação e inteligência de dados</span> em um único ecossistema. Sem atalhos. Sem SaaS. Sem custos invisíveis.
-            </p>
-
-            {/* Botões de Ação */}
-            <div className="flex flex-wrap gap-4">
-              <a href="#contato" className="border border-[#00d1ff] bg-[#00d1ff] text-black px-6 py-3.5 font-mono text-xs uppercase tracking-wider font-bold transition hover:bg-white hover:text-black hover:border-white shadow-lg">
-                Agendar diagnóstico →
-              </a>
-              <a href="#servicos" className="border border-white/30 bg-black/40 text-white px-6 py-3.5 font-mono text-xs uppercase tracking-wider font-bold transition hover:bg-white hover:text-black hover:border-white backdrop-blur-md">
-                Ver capacidades
-              </a>
+            {/* Lado Direito: Robô Busto 3D Interativo */}
+            <div className="lg:col-span-5 w-full flex items-center justify-center pointer-events-auto relative">
+              <RobotBust3D />
             </div>
           </div>
         </div>
