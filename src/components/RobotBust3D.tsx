@@ -21,7 +21,8 @@ export default function RobotBust3D() {
       0.1,
       100
     );
-    camera.position.set(0, 0.5, 4.2);
+    camera.position.set(0, 0.45, 2.8);
+    camera.lookAt(0, 0.45, 0);
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -32,61 +33,55 @@ export default function RobotBust3D() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.25;
+    renderer.toneMappingExposure = 1.35;
 
-    // Limpar container e adicionar canvas
     container.innerHTML = "";
     container.appendChild(renderer.domElement);
 
-    // 2. Lighting Setup (Futuristic Cyber Cyberpunk Theme)
-    const ambientLight = new THREE.AmbientLight(0x0f172a, 2.5);
-    scene.add(ambientLight);
+    // 2. High Quality Lighting Setup
+    // Hemisphere light for bright ambient coverage
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x0f172a, 3.5);
+    scene.add(hemiLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 3.0);
-    keyLight.position.set(3, 4, 5);
+    // Key Light (Front/Top)
+    const keyLight = new THREE.DirectionalLight(0xffffff, 4.0);
+    keyLight.position.set(3, 5, 5);
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0x00d1ff, 2.0);
-    fillLight.position.set(-4, 2, -2);
+    // Fill Light (Cyan side glow)
+    const fillLight = new THREE.DirectionalLight(0x00d1ff, 3.0);
+    fillLight.position.set(-4, 2, 2);
     scene.add(fillLight);
 
-    // Luz de contorno ciano (Rim light)
+    // Rim Light (Cyan backlight)
     const rimLight = new THREE.PointLight(0x00d1ff, 6.0, 15);
-    rimLight.position.set(-2, 3, -2);
+    rimLight.position.set(-2, 3, -3);
     scene.add(rimLight);
 
-    // Luz esmeralda (Accent light)
+    // Accent Light (Emerald green glow)
     const accentLight = new THREE.PointLight(0x00e6a5, 5.0, 15);
-    accentLight.position.set(2, -1, 3);
+    accentLight.position.set(3, -1, 3);
     scene.add(accentLight);
 
     // 3. Mouse Tracking Variables
-    let mouseX = 0;
-    let mouseY = 0;
     let targetRotX = 0;
     let targetRotY = 0;
     let currentRotX = 0;
     let currentRotY = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
-      // Normalizar coordenadas do mouse entre -1 e 1
-      const rect = container.getBoundingClientRect();
-      const x = e.clientX - (rect.left + rect.width / 2);
-      const y = e.clientY - (rect.top + rect.height / 2);
+      const x = (e.clientX / window.innerWidth) * 2 - 1;
+      const y = (e.clientY / window.innerHeight) * 2 - 1;
 
-      mouseX = x / (window.innerWidth / 2);
-      mouseY = y / (window.innerHeight / 2);
-
-      // Limites de rotação (radianos)
-      targetRotY = mouseX * 0.65; // ~37 graus de rotação horizontal
-      targetRotX = mouseY * 0.45; // ~25 graus de rotação vertical
+      targetRotY = x * 0.65; // Horizontal turn
+      targetRotX = y * 0.40; // Vertical turn
     };
 
     window.addEventListener("mousemove", handleMouseMove);
 
-    // 4. Carregador do Modelo GLTF
+    // 4. Load GLTF 3D Model
     let robotModel: THREE.Group | null = null;
-    let headMesh: THREE.Object3D | null = null;
+    let initialPosY = 0;
 
     const loader = new GLTFLoader();
     loader.load(
@@ -94,40 +89,33 @@ export default function RobotBust3D() {
       (gltf) => {
         robotModel = gltf.scene;
 
-        // Centralizar o modelo
+        // Calculate bounding box and scale
         const box = new THREE.Box3().setFromObject(robotModel);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
-        robotModel.position.x -= center.x;
-        robotModel.position.y -= center.y;
-        robotModel.position.z -= center.z;
+        // Center mesh geometry
+        robotModel.position.x = -center.x;
+        robotModel.position.y = -center.y + 0.1;
+        robotModel.position.z = -center.z;
+        initialPosY = robotModel.position.y;
 
-        // Ajustar escala para encaixar na tela
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 2.2 / maxDim;
+        const scale = 2.3 / maxDim;
         robotModel.scale.set(scale, scale, scale);
 
-        // Procurar no esqueleto ou na hierarquia por nó da cabeça
+        // Adjust materials for maximum shine and visibility
         robotModel.traverse((child) => {
           if ((child as THREE.Mesh).isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
             const mesh = child as THREE.Mesh;
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
             if (mesh.material) {
               const mat = mesh.material as THREE.MeshStandardMaterial;
-              mat.envMapIntensity = 1.5;
+              mat.roughness = 0.3;
+              mat.metalness = 0.7;
+              mat.needsUpdate = true;
             }
-          }
-
-          const name = child.name.toLowerCase();
-          if (
-            name.includes("head") ||
-            name.includes("cabeca") ||
-            name.includes("cabeça") ||
-            name.includes("neck")
-          ) {
-            headMesh = child;
           }
         });
 
@@ -146,31 +134,24 @@ export default function RobotBust3D() {
       }
     );
 
-    // 5. Render Loop (Com animação suave a 60-120 FPS)
+    // 5. Render & Lerp Animation Loop
     let animationFrameId: number;
     const clock = new THREE.Clock();
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
-
       const elapsedTime = clock.getElapsedTime();
 
       if (robotModel) {
-        // Interpolação suave (lerp) da rotação do mouse
-        currentRotY += (targetRotY - currentRotY) * 0.06;
-        currentRotX += (targetRotX - currentRotX) * 0.06;
+        // Smooth lerp rotation towards mouse position
+        currentRotY += (targetRotY - currentRotY) * 0.07;
+        currentRotX += (targetRotX - currentRotX) * 0.07;
 
-        if (headMesh) {
-          headMesh.rotation.y = currentRotY;
-          headMesh.rotation.x = currentRotX;
-        } else {
-          // Se não houver osso individual da cabeça, rotaciona o busto suavemente
-          robotModel.rotation.y = currentRotY;
-          robotModel.rotation.x = currentRotX;
-        }
+        robotModel.rotation.y = currentRotY;
+        robotModel.rotation.x = currentRotX;
 
-        // Levitação/flutuação suave do busto
-        robotModel.position.y = Math.sin(elapsedTime * 1.5) * 0.06 - 0.1;
+        // Subtle vertical floating motion
+        robotModel.position.y = initialPosY + Math.sin(elapsedTime * 1.5) * 0.05;
       }
 
       renderer.render(scene, camera);
@@ -197,35 +178,35 @@ export default function RobotBust3D() {
   }, []);
 
   return (
-    <div className="relative w-full h-[450px] md:h-[550px] lg:h-[620px] flex items-center justify-center select-none">
-      {/* Glow de fundo neon no Robô */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-[#00d1ff]/15 via-[#00e6a5]/10 to-transparent rounded-full blur-[100px] pointer-events-none transform scale-75" />
+    <div className="relative w-full h-[380px] md:h-[480px] lg:h-[540px] flex items-center justify-center select-none">
+      {/* Background Neon Aura */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-[#00d1ff]/20 via-[#00e6a5]/15 to-transparent rounded-full blur-[90px] pointer-events-none transform scale-90" />
 
-      {/* Indicadores de carregamento */}
+      {/* Loading State */}
       {!isLoaded && !hasError && (
-        <div className="absolute z-20 flex flex-col items-center gap-3 bg-black/60 backdrop-blur-md px-6 py-4 rounded-2xl border border-cyan-500/30 shadow-[0_0_25px_rgba(0,229,255,0.2)]">
+        <div className="absolute z-20 flex flex-col items-center gap-3 bg-black/70 backdrop-blur-md px-6 py-4 rounded-2xl border border-cyan-500/30 shadow-[0_0_25px_rgba(0,229,255,0.25)]">
           <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
           <span className="font-mono text-xs text-cyan-400 font-medium tracking-widest uppercase">
-            CARREGANDO BUSTO ROBÓTICO 3D... {loadingProgress > 0 ? `${loadingProgress}%` : ""}
+            CARREGANDO BUSTO 3D... {loadingProgress > 0 ? `${loadingProgress}%` : ""}
           </span>
         </div>
       )}
 
       {hasError && (
         <div className="absolute z-20 text-center font-mono text-xs text-red-400 bg-red-950/40 p-4 rounded-xl border border-red-500/30">
-          Não foi possível carregar o modelo 3D.
+          Erro ao carregar o modelo 3D futuristRobot-v1.glb
         </div>
       )}
 
       {/* Canvas 3D Three.js */}
       <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing z-10" />
 
-      {/* Subtítulo indicador de interatividade */}
+      {/* Interactive Badge */}
       {isLoaded && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 pointer-events-none">
+        <div className="absolute bottom-1 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-cyan-500/30 pointer-events-none shadow-[0_0_12px_rgba(0,229,255,0.2)]">
           <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-          <span className="font-mono text-[10px] text-zinc-300 tracking-wider uppercase">
-            [ MOVA O MOUSE PARA INTERAGIR ]
+          <span className="font-mono text-[10px] text-cyan-300 tracking-wider uppercase">
+            [ BUSTO 3D INTERATIVO &bull; MOVA O MOUSE ]
           </span>
         </div>
       )}

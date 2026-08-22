@@ -11,6 +11,7 @@ import { RadarEffectDemo } from './components/ui/radar-effect-demo.tsx';
 import { initHeroMarquee } from './components/ui/hero-marquee.tsx';
 import { GLSLHills } from './components/ui/glsl-hills.tsx';
 import { InfiniteRibbon } from './components/ui/infinite-ribbon.tsx';
+import RobotBust3D from './components/RobotBust3D.tsx';
 
 // Prevent cyclic object value crashes from third party libs
 const origStringify = JSON.stringify;
@@ -117,6 +118,15 @@ if (statementHillsElement) {
   createRoot(statementHillsElement).render(
     <StrictMode>
       <GLSLHills width="100%" height="100%" color="#999999" />
+    </StrictMode>,
+  );
+}
+
+const robot3DHeroElement = document.getElementById('robot-3d-hero-root');
+if (robot3DHeroElement) {
+  createRoot(robot3DHeroElement).render(
+    <StrictMode>
+      <RobotBust3D />
     </StrictMode>,
   );
 }
