@@ -17,12 +17,12 @@ export default function RobotBust3D() {
     const scene = new THREE.Scene();
 
     const getWidth = () => container.clientWidth || container.offsetWidth || 480;
-    const getHeight = () => container.clientHeight || container.offsetHeight || 560;
+    const getHeight = () => container.clientHeight || container.offsetHeight || 600;
 
-    // Câmera posicionada para enquadramento completo e sem cortes
+    // Câmera posicionada para enquadramento completo e folga confortável embaixo e em cima
     const camera = new THREE.PerspectiveCamera(40, getWidth() / getHeight(), 0.1, 1000);
-    camera.position.set(0, 0.05, 3.4);
-    camera.lookAt(0, 0.05, 0);
+    camera.position.set(0, -0.02, 3.55);
+    camera.lookAt(0, -0.02, 0);
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -69,7 +69,7 @@ export default function RobotBust3D() {
       const x = (e.clientX - (rect.left + rect.width / 2)) / (window.innerWidth / 2);
       const y = (e.clientY - (rect.top + rect.height / 2)) / (window.innerHeight / 2);
 
-      // Movimento angular natural da cabeça
+      // Movimento angular suave exclusivo da cabeça
       targetRotY = THREE.MathUtils.clamp(x * 0.70, -0.65, 0.65);
       targetRotX = THREE.MathUtils.clamp(y * 0.40, -0.35, 0.35);
     };
@@ -98,9 +98,9 @@ export default function RobotBust3D() {
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
-        // Escala geral do robô
+        // Escala geral proporcional com folga total
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 2.35 / (maxDim || 1);
+        const scale = 2.15 / (maxDim || 1);
         robotWrapper.scale.set(scale, scale, scale);
 
         // Configurar materiais PBR
@@ -131,7 +131,7 @@ export default function RobotBust3D() {
         headGroup.position.set(0, -neckPivotY, -neckPivotZ);
         headPivot.add(headGroup);
 
-        // Coletar nós filhos e distribuir entre peito e cabeça
+        // Distribuir nós entre peito (fixo) e cabeça (articulada)
         const allNodes: THREE.Object3D[] = [];
         rawModel.traverse((child) => {
           if (child.name.startsWith("tripo_part_")) {
@@ -140,7 +140,6 @@ export default function RobotBust3D() {
         });
 
         allNodes.forEach((node) => {
-          // Centralizar posição local do nó
           node.position.x -= center.x;
           node.position.y -= center.y;
           node.position.z -= center.z;
@@ -217,7 +216,7 @@ export default function RobotBust3D() {
   }, []);
 
   return (
-    <div className="relative w-full h-[460px] md:h-[520px] lg:h-[580px] flex items-center justify-center select-none overflow-visible">
+    <div className="relative w-full h-[480px] md:h-[540px] lg:h-[620px] flex items-center justify-center select-none overflow-visible">
       {/* Background Neon Aura */}
       <div className="absolute inset-0 bg-gradient-to-tr from-[#00d1ff]/15 via-[#00e6a5]/10 to-transparent rounded-full blur-[100px] pointer-events-none transform scale-90" />
 

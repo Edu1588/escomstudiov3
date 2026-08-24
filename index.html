@@ -702,14 +702,16 @@ padding-top: 10px;
           <!-- Right Column: Robô Busto 3D + Growth Engine System Card -->
           <div class="lg:col-span-5 flex flex-col justify-center items-center lg:items-end w-full relative z-30 gap-4 overflow-visible">
             <!-- Robô Busto 3D (Montado via React/Vite no main.tsx) -->
-            <div id="robot-3d-hero-root" class="w-full h-[460px] lg:h-[580px] relative z-20 overflow-visible"></div>
+            <div id="robot-3d-hero-root" class="w-full h-[480px] lg:h-[620px] relative z-20 overflow-visible"></div>
 
-            <!-- Card Flutuante Restaurado (ACTIVE_GROWTH) com Transparência Suave -->
+            <!-- Card Flutuante Restaurado (ACTIVE_GROWTH) com Transparência Suave e Nítida -->
             <div
-              class="gsap-card system-card relative z-30 p-[1px] rounded-lg group overflow-hidden bg-gradient-to-br from-cyan-500/30 via-zinc-800/40 to-transparent shadow-[0_25px_50px_-12px_rgba(0,229,255,0.2)] backdrop-blur-2xl w-full max-w-sm sm:max-w-md lg:max-w-md -mt-16 lg:-mt-24 border border-white/10"
+              class="gsap-card system-card relative z-30 p-[1px] rounded-xl group overflow-hidden bg-gradient-to-br from-cyan-500/30 via-cyan-900/20 to-transparent shadow-[0_25px_50px_-12px_rgba(0,229,255,0.2)] w-full max-w-sm sm:max-w-md lg:max-w-md -mt-20 lg:-mt-28 border border-cyan-500/30"
+              style="backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);"
             >
               <div
-                class="bg-[#050505]/75 backdrop-blur-xl w-full p-6 flex flex-col gap-5 relative z-10 rounded-lg"
+                class="w-full p-6 flex flex-col gap-5 relative z-10 rounded-xl"
+                style="background: rgba(6, 9, 18, 0.40) !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);"
               >
                 <div class="flex justify-between items-center w-full">
                   <div class="flex items-center gap-2">
@@ -722,7 +724,7 @@ padding-top: 10px;
                   </div>
                   <a
                     href="#capacidades"
-                    class="text-xs tracking-widest text-zinc-500 uppercase cursor-pointer hover:text-zinc-100 transition-colors font-light"
+                    class="text-xs tracking-widest text-zinc-400 uppercase cursor-pointer hover:text-cyan-300 transition-colors font-light"
                   >
                     DETALHES
                   </a>
