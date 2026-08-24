@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 
 export default function RobotBust3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -15,22 +16,20 @@ export default function RobotBust3D() {
     // 1. Scene, Camera, Renderer Setup
     const scene = new THREE.Scene();
 
-    const camera = new THREE.PerspectiveCamera(
-      45,
-      container.clientWidth / container.clientHeight,
-      0.1,
-      100
-    );
-    camera.position.set(0, 0.45, 2.8);
-    camera.lookAt(0, 0.45, 0);
+    const width = container.clientWidth || container.offsetWidth || 420;
+    const height = container.clientHeight || container.offsetHeight || 480;
+
+    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
+    camera.position.set(0, 0, 3.2);
+    camera.lookAt(0, 0, 0);
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
       antialias: true,
       powerPreference: "high-performance",
     });
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.35;
@@ -38,29 +37,24 @@ export default function RobotBust3D() {
     container.innerHTML = "";
     container.appendChild(renderer.domElement);
 
-    // 2. High Quality Lighting Setup
-    // Hemisphere light for bright ambient coverage
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x0f172a, 3.5);
+    // 2. Cyberpunk Lighting Setup
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x09090b, 3.5);
     scene.add(hemiLight);
 
-    // Key Light (Front/Top)
     const keyLight = new THREE.DirectionalLight(0xffffff, 4.0);
     keyLight.position.set(3, 5, 5);
     scene.add(keyLight);
 
-    // Fill Light (Cyan side glow)
     const fillLight = new THREE.DirectionalLight(0x00d1ff, 3.0);
     fillLight.position.set(-4, 2, 2);
     scene.add(fillLight);
 
-    // Rim Light (Cyan backlight)
     const rimLight = new THREE.PointLight(0x00d1ff, 6.0, 15);
     rimLight.position.set(-2, 3, -3);
     scene.add(rimLight);
 
-    // Accent Light (Emerald green glow)
     const accentLight = new THREE.PointLight(0x00e6a5, 5.0, 15);
-    accentLight.position.set(3, -1, 3);
+    accentLight.position.set(3, -2, 3);
     scene.add(accentLight);
 
     // 3. Mouse Tracking Variables
@@ -70,56 +64,61 @@ export default function RobotBust3D() {
     let currentRotY = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth) * 2 - 1;
-      const y = (e.clientY / window.innerHeight) * 2 - 1;
+      const rect = container.getBoundingClientRect();
+      const x = (e.clientX - (rect.left + rect.width / 2)) / (window.innerWidth / 2);
+      const y = (e.clientY - (rect.top + rect.height / 2)) / (window.innerHeight / 2);
 
-      targetRotY = x * 0.65; // Horizontal turn
-      targetRotX = y * 0.40; // Vertical turn
+      targetRotY = x * 0.65;
+      targetRotX = y * 0.40;
     };
 
     window.addEventListener("mousemove", handleMouseMove);
 
-    // 4. Load GLTF 3D Model
-    let robotModel: THREE.Group | null = null;
-    let initialPosY = 0;
+    // 4. Wrapper and Draco-enabled GLTF Loader
+    const robotWrapper = new THREE.Group();
+    scene.add(robotWrapper);
+
+    const dracoLoader = new DRACOLoader();
+    // Tenta carregar os decoders Draco da pasta pública local
+    dracoLoader.setDecoderPath('/draco/gltf/');
 
     const loader = new GLTFLoader();
+    loader.setDRACOLoader(dracoLoader);
+
     loader.load(
       "/models/futuristRobot-v1.glb",
       (gltf) => {
-        robotModel = gltf.scene;
+        const rawModel = gltf.scene;
 
-        // Calculate bounding box and scale
-        const box = new THREE.Box3().setFromObject(robotModel);
+        // Centralização geométrica exata
+        const box = new THREE.Box3().setFromObject(rawModel);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
-        // Center mesh geometry
-        robotModel.position.x = -center.x;
-        robotModel.position.y = -center.y + 0.1;
-        robotModel.position.z = -center.z;
-        initialPosY = robotModel.position.y;
+        rawModel.position.x = -center.x;
+        rawModel.position.y = -center.y;
+        rawModel.position.z = -center.z;
 
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 2.3 / maxDim;
-        robotModel.scale.set(scale, scale, scale);
+        const scale = 2.1 / (maxDim || 1);
+        robotWrapper.scale.set(scale, scale, scale);
 
-        // Adjust materials for maximum shine and visibility
-        robotModel.traverse((child) => {
+        // Otimizar materiais PBR
+        rawModel.traverse((child) => {
           if ((child as THREE.Mesh).isMesh) {
             const mesh = child as THREE.Mesh;
             mesh.castShadow = true;
             mesh.receiveShadow = true;
             if (mesh.material) {
               const mat = mesh.material as THREE.MeshStandardMaterial;
-              mat.roughness = 0.3;
-              mat.metalness = 0.7;
+              mat.roughness = 0.35;
+              mat.metalness = 0.65;
               mat.needsUpdate = true;
             }
           }
         });
 
-        scene.add(robotModel);
+        robotWrapper.add(rawModel);
         setIsLoaded(true);
       },
       (xhr) => {
@@ -134,25 +133,23 @@ export default function RobotBust3D() {
       }
     );
 
-    // 5. Render & Lerp Animation Loop
+    // 5. Render & Animation Loop
     let animationFrameId: number;
-    const clock = new THREE.Clock();
+    let startTime = performance.now();
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
-      const elapsedTime = clock.getElapsedTime();
+      const elapsed = (performance.now() - startTime) / 1000;
 
-      if (robotModel) {
-        // Smooth lerp rotation towards mouse position
-        currentRotY += (targetRotY - currentRotY) * 0.07;
-        currentRotX += (targetRotX - currentRotX) * 0.07;
+      // Interpolação suave de rotação
+      currentRotY += (targetRotY - currentRotY) * 0.08;
+      currentRotX += (targetRotX - currentRotX) * 0.08;
 
-        robotModel.rotation.y = currentRotY;
-        robotModel.rotation.x = currentRotX;
+      robotWrapper.rotation.y = currentRotY;
+      robotWrapper.rotation.x = currentRotX;
 
-        // Subtle vertical floating motion
-        robotModel.position.y = initialPosY + Math.sin(elapsedTime * 1.5) * 0.05;
-      }
+      // Levitação vertical suave
+      robotWrapper.position.y = Math.sin(elapsed * 1.5) * 0.06;
 
       renderer.render(scene, camera);
     };
@@ -162,9 +159,11 @@ export default function RobotBust3D() {
     // 6. Handle Resize
     const handleResize = () => {
       if (!container) return;
-      camera.aspect = container.clientWidth / container.clientHeight;
+      const w = container.clientWidth || container.offsetWidth || 420;
+      const h = container.clientHeight || container.offsetHeight || 480;
+      camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setSize(w, h);
     };
 
     window.addEventListener("resize", handleResize);
@@ -173,6 +172,7 @@ export default function RobotBust3D() {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(animationFrameId);
+      dracoLoader.dispose();
       renderer.dispose();
     };
   }, []);
