@@ -17,10 +17,11 @@ export default function Robotinho3D() {
     const scene = new THREE.Scene();
 
     const getWidth = () => container.clientWidth || container.offsetWidth || 480;
-    const getHeight = () => container.clientHeight || container.offsetHeight || 620;
+    const getHeight = () => container.clientHeight || container.offsetHeight || 640;
 
+    // Câmera calibrada para enquadramento completo do corpo inteiro (sem cortes no chifre nem nos pés)
     const camera = new THREE.PerspectiveCamera(38, getWidth() / getHeight(), 0.1, 1000);
-    camera.position.set(0, 0.04, 3.10);
+    camera.position.set(0, 0.0, 3.75);
     camera.lookAt(0, 0.0, 0);
 
     const renderer = new THREE.WebGLRenderer({
@@ -32,7 +33,7 @@ export default function Robotinho3D() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05; // Fosco e sem reflexos estourados
+    renderer.toneMappingExposure = 1.05;
 
     container.innerHTML = "";
     container.appendChild(renderer.domElement);
@@ -77,7 +78,7 @@ export default function Robotinho3D() {
 
     window.addEventListener("mousemove", handleMouseMove);
 
-    // 4. Estruturas para articulação: Cabeça + Dedos da Mão Levantada
+    // 4. Hierarquia 3D: Corpo Fixo + Cabeça Articulada + Pivôs Locais dos Dedos
     const robotWrapper = new THREE.Group();
     robotWrapper.rotation.y = baseBodyRotY;
     scene.add(robotWrapper);
@@ -86,8 +87,8 @@ export default function Robotinho3D() {
     const headPivot = new THREE.Group();
     const headGroup = new THREE.Group();
 
-    // Arrays para animar os dedos da mão levantada
-    const fingerMeshes: { mesh: THREE.Mesh; initPos: THREE.Vector3; initRot: THREE.Euler; phase: number; speed: number }[] = [];
+    // Pivôs locais individuais para cada falange de dedo especificada pelo usuário
+    const fingerPivots: { pivot: THREE.Group; phase: number; speed: number }[] = [];
 
     let isModelReady = false;
 
@@ -102,83 +103,105 @@ export default function Robotinho3D() {
       (gltf) => {
         const rawModel = gltf.scene;
 
-        // Centralização do modelo
+        // Centralização exata do modelo completo
         const box = new THREE.Box3().setFromObject(rawModel);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
-        // Escala ampliada para presença imponente
+        // Escala calibrada para enquadramento sem cortes (100% visível dos chifres aos sapatos)
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 2.58 / (maxDim || 1);
+        const scale = 2.15 / (maxDim || 1);
         robotWrapper.scale.set(scale, scale, scale);
 
-        // Pivô do pescoço
-        const neckPivotY = 0.54 - center.y;
-        const neckPivotZ = 0.02 - center.z;
+        // Ponto de articulação do pescoço para a cabeça (Y=0.82)
+        const neckPivotY = 0.82 - center.y;
+        const neckPivotZ = 0.01 - center.z;
 
         headPivot.position.set(0, neckPivotY, neckPivotZ);
         headGroup.position.set(0, -neckPivotY, -neckPivotZ);
         headPivot.add(headGroup);
 
-        // Partes da cabeça e chifres
+        // Peças EXATAS da cabeça especificadas pelo usuário:
         const headPartNames = new Set([
-          "tripo_part_23", "tripo_part_26", "tripo_part_28", "tripo_part_25",
-          "tripo_part_10", "tripo_part_13", "tripo_part_4", "tripo_part_53",
-          "tripo_part_8", "tripo_part_39", "tripo_part_7", "tripo_part_16",
-          "tripo_part_50", "tripo_part_33", "tripo_part_20", "tripo_part_52",
-          "tripo_part_18", "tripo_part_17", "tripo_part_9", "tripo_part_42",
-          "tripo_part_44"
+          "tripo_part_4",
+          "tripo_part_10",
+          "tripo_part_25",
+          "tripo_part_28",
+          "tripo_part_26",
+          "tripo_part_23"
         ]);
 
-        // Partes dos dedos da mão levantada
-        const raisedFingerPartNames = new Set([
-          "tripo_part_45", "tripo_part_27", "tripo_part_32", "tripo_part_46",
-          "tripo_part_31", "tripo_part_49", "tripo_part_54", "tripo_part_43",
-          "tripo_part_15", "tripo_part_34", "tripo_part_40", "tripo_part_48",
-          "tripo_part_37", "tripo_part_12", "tripo_part_30", "tripo_part_35",
-          "tripo_part_11"
+        // Peças EXATAS dos dedos da mão especificadas pelo usuário:
+        const fingerPartNames = new Set([
+          "tripo_part_34",
+          "tripo_part_31",
+          "tripo_part_27",
+          "tripo_part_32",
+          "tripo_part_45",
+          "tripo_part_49",
+          "tripo_part_46",
+          "tripo_part_37",
+          "tripo_part_43",
+          "tripo_part_54"
         ]);
 
-        const allNodes: THREE.Mesh[] = [];
+        const allMeshes: THREE.Mesh[] = [];
         rawModel.traverse((child) => {
           if ((child as THREE.Mesh).isMesh) {
-            allNodes.push(child as THREE.Mesh);
+            allMeshes.push(child as THREE.Mesh);
           }
         });
 
-        allNodes.forEach((mesh, index) => {
-          mesh.position.x -= center.x;
-          mesh.position.y -= center.y;
-          mesh.position.z -= center.z;
-
+        allMeshes.forEach((mesh, index) => {
           mesh.castShadow = true;
           mesh.receiveShadow = true;
 
           if (mesh.material) {
             const mat = mesh.material as THREE.MeshStandardMaterial;
-            mat.roughness = 0.78; // Acabamento fosco
+            mat.roughness = 0.78; // Acabamento fosco realista
             mat.metalness = 0.20;
             mat.envMapIntensity = 0.5;
             mat.needsUpdate = true;
           }
 
           if (headPartNames.has(mesh.name)) {
-            // Adicionar à cabeça para seguir o mouse
+            // Centralizar a malha no espaço do modelo e adicionar à cabeça
+            mesh.position.x -= center.x;
+            mesh.position.y -= center.y;
+            mesh.position.z -= center.z;
             headGroup.add(mesh);
-          } else {
-            // Corpo, tronco, braços e pernas
-            bodyGroup.add(mesh);
+          } else if (fingerPartNames.has(mesh.name)) {
+            // Para articular os dedos sem desmontar a mão:
+            // Calculamos o centro local da geometria da falange e criamos um pivô na junta!
+            mesh.geometry.computeBoundingBox();
+            const fBox = mesh.geometry.boundingBox!;
+            const fCenter = fBox.getCenter(new THREE.Vector3());
 
-            // Se for um dos dedos da mão levantada, registrar para animação lenta
-            if (raisedFingerPartNames.has(mesh.name)) {
-              fingerMeshes.push({
-                mesh,
-                initPos: mesh.position.clone(),
-                initRot: mesh.rotation.clone(),
-                phase: (index * 0.45) % Math.PI,
-                speed: 0.9 + (index % 3) * 0.3,
-              });
-            }
+            // Posição no espaço centralizado do robô
+            const jointX = fCenter.x - center.x;
+            const jointY = fBox.min.y - center.y;
+            const jointZ = fCenter.z - center.z;
+
+            const fingerPivot = new THREE.Group();
+            fingerPivot.position.set(jointX, jointY, jointZ);
+
+            // Posicionar a malha em relação ao pivô da sua própria junta
+            mesh.position.set(-fCenter.x, -fBox.min.y, -fCenter.z);
+            fingerPivot.add(mesh);
+
+            bodyGroup.add(fingerPivot);
+
+            fingerPivots.push({
+              pivot: fingerPivot,
+              phase: (index * 0.65) % Math.PI,
+              speed: 1.1 + (index % 3) * 0.35,
+            });
+          } else {
+            // Corpo, camisa, calça, sapatos, braços e palma da mão
+            mesh.position.x -= center.x;
+            mesh.position.y -= center.y;
+            mesh.position.z -= center.z;
+            bodyGroup.add(mesh);
           }
         });
 
@@ -209,7 +232,7 @@ export default function Robotinho3D() {
       const elapsed = clock.getElapsedTime();
 
       if (isModelReady) {
-        // 1. Cabeça segue o mouse com interpolação orgânica
+        // 1. Cabeça segue suavemente o cursor do mouse
         currentHeadRotY += (targetHeadRotY - currentHeadRotY) * 0.08;
         currentHeadRotX += (targetHeadRotX - currentHeadRotX) * 0.08;
 
@@ -217,16 +240,15 @@ export default function Robotinho3D() {
         headPivot.rotation.x = currentHeadRotX;
         headPivot.rotation.z = currentHeadRotY * -0.08;
 
-        // 2. Micro-movimento lento e fluido dos dedos da mão levantada
-        fingerMeshes.forEach((f) => {
+        // 2. Micro-articulação suave dos dedos nas próprias juntas (sem desmontar a mão)
+        fingerPivots.forEach((f) => {
           const wave = Math.sin(elapsed * f.speed + f.phase);
-          f.mesh.rotation.x = f.initRot.x + wave * 0.06;
-          f.mesh.rotation.z = f.initRot.z + Math.cos(elapsed * f.speed + f.phase) * 0.04;
-          f.mesh.position.y = f.initPos.y + wave * 0.003;
+          f.pivot.rotation.x = wave * 0.07;
+          f.pivot.rotation.z = Math.cos(elapsed * f.speed + f.phase) * 0.05;
         });
 
-        // 3. Levitação suave e amigável do corpo inteiro
-        robotWrapper.position.y = Math.sin(elapsed * 1.5) * 0.04;
+        // 3. Levitação suave do robô
+        robotWrapper.position.y = Math.sin(elapsed * 1.5) * 0.035;
       }
 
       renderer.render(scene, camera);
