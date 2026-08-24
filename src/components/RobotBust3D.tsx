@@ -19,10 +19,10 @@ export default function RobotBust3D() {
     const getWidth = () => container.clientWidth || container.offsetWidth || 480;
     const getHeight = () => container.clientHeight || container.offsetHeight || 560;
 
-    // Câmera perfeitamente posicionada para enquadrar todo o busto e os chifres sem cortes
+    // Câmera posicionada para enquadramento completo e sem cortes
     const camera = new THREE.PerspectiveCamera(42, getWidth() / getHeight(), 0.1, 1000);
-    camera.position.set(0, 0.04, 3.2);
-    camera.lookAt(0, 0.04, 0);
+    camera.position.set(0, 0.02, 3.3);
+    camera.lookAt(0, 0.02, 0);
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -69,18 +69,17 @@ export default function RobotBust3D() {
       const x = (e.clientX - (rect.left + rect.width / 2)) / (window.innerWidth / 2);
       const y = (e.clientY - (rect.top + rect.height / 2)) / (window.innerHeight / 2);
 
-      // Movimento angular calibrado para a cabeça
+      // Movimento angular natural da cabeça
       targetRotY = THREE.MathUtils.clamp(x * 0.70, -0.65, 0.65);
       targetRotX = THREE.MathUtils.clamp(y * 0.40, -0.35, 0.35);
     };
 
     window.addEventListener("mousemove", handleMouseMove);
 
-    // 4. Wrapper e Carregamento do Modelo Otimizado (3Dmodelrobot-v1.glb)
+    // 4. Wrapper e Carregamento com Separação Rigorosa de Peitoral vs Cabeça
     const robotWrapper = new THREE.Group();
     scene.add(robotWrapper);
 
-    const headPivot = new THREE.Group();
     let headPivotRef: THREE.Group | null = null;
 
     const dracoLoader = new DRACOLoader();
@@ -94,18 +93,14 @@ export default function RobotBust3D() {
       (gltf) => {
         const rawModel = gltf.scene;
 
-        // Centralização geométrica exata
+        // Calcular limites de todo o modelo para centralização
         const box = new THREE.Box3().setFromObject(rawModel);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
-        rawModel.position.x = -center.x;
-        rawModel.position.y = -center.y;
-        rawModel.position.z = -center.z;
-
-        // Escala calibrada para enquadramento livre e completo
+        // Escala geral do robô
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 2.40 / (maxDim || 1);
+        const scale = 2.35 / (maxDim || 1);
         robotWrapper.scale.set(scale, scale, scale);
 
         // Configurar materiais PBR
@@ -123,29 +118,44 @@ export default function RobotBust3D() {
           }
         });
 
-        // Configuração do Pivô da Cabeça no Pescoço:
-        // tripo_part_1 é a cabeça / face / orelhas / chifres (Y de 0.40 a 0.99)
-        const neckPivotY = 0.38 - center.y;
-        const neckPivotZ = 0.01 - center.z;
+        // Criar os grupos separados de Peitoral e Cabeça
+        const chestGroup = new THREE.Group();
+        const headPivot = new THREE.Group();
+        const headGroup = new THREE.Group();
+
+        // Ponto de articulação do pescoço (acima do peitoral)
+        const neckPivotY = 0.25 - center.y;
+        const neckPivotZ = 0.00 - center.z;
 
         headPivot.position.set(0, neckPivotY, neckPivotZ);
-        const headInner = new THREE.Group();
-        headInner.position.set(0, -neckPivotY, -neckPivotZ);
-        headPivot.add(headInner);
+        headGroup.position.set(0, -neckPivotY, -neckPivotZ);
+        headPivot.add(headGroup);
 
-        const partsToMoveToHead: THREE.Object3D[] = [];
+        // Coletar nós filhos e distribuir entre peito e cabeça
+        const allNodes: THREE.Object3D[] = [];
         rawModel.traverse((child) => {
-          if (child.name === "tripo_part_1") {
-            partsToMoveToHead.push(child);
+          if (child.name.startsWith("tripo_part_")) {
+            allNodes.push(child);
           }
         });
 
-        partsToMoveToHead.forEach((part) => {
-          headInner.attach(part);
+        allNodes.forEach((node) => {
+          // Centralizar posição local do nó
+          node.position.x -= center.x;
+          node.position.y -= center.y;
+          node.position.z -= center.z;
+
+          if (node.name === "tripo_part_0") {
+            // Peitoral, ombros e base -> Fixo no peito
+            chestGroup.add(node);
+          } else {
+            // tripo_part_1 (cabeça/face/chifres), tripo_part_2 (queixo/pescoço), tripo_part_3..8 (detalhes)
+            // -> Pertencem à cabeça (giram com o mouse)
+            headGroup.add(node);
+          }
         });
 
-        // O peitoral/ombros (tripo_part_0) permanecem no rawModel fixos para a frente
-        robotWrapper.add(rawModel);
+        robotWrapper.add(chestGroup);
         robotWrapper.add(headPivot);
         headPivotRef = headPivot;
 
@@ -163,7 +173,7 @@ export default function RobotBust3D() {
       }
     );
 
-    // 5. Render & Animation Loop (Somente a cabeça gira, sem flutuação vertical)
+    // 5. Render & Animation Loop (Apenas o headPivot gira)
     let animationFrameId: number;
 
     const animate = () => {
@@ -174,10 +184,10 @@ export default function RobotBust3D() {
       currentRotX += (targetRotX - currentRotX) * 0.08;
 
       if (headPivotRef) {
-        // Apenas a cabeça gira em torno do pescoço
+        // Apenas a cabeça gira em torno da articulação do pescoço
         headPivotRef.rotation.y = currentRotY;
         headPivotRef.rotation.x = currentRotX;
-        headPivotRef.rotation.z = currentRotY * -0.10; // Inclinação orgânica suave
+        headPivotRef.rotation.z = currentRotY * -0.08;
       }
 
       renderer.render(scene, camera);
