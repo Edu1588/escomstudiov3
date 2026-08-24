@@ -19,7 +19,7 @@ export default function Robotinho3D() {
     const getWidth = () => container.clientWidth || container.offsetWidth || 480;
     const getHeight = () => container.clientHeight || container.offsetHeight || 640;
 
-    // Câmera calibrada para enquadramento completo do corpo inteiro (sem cortes no chifre nem nos pés)
+    // Câmera calibrada para enquadramento completo do corpo inteiro sem cortes
     const camera = new THREE.PerspectiveCamera(38, getWidth() / getHeight(), 0.1, 1000);
     camera.position.set(0, 0.0, 3.75);
     camera.lookAt(0, 0.0, 0);
@@ -58,34 +58,33 @@ export default function Robotinho3D() {
     accentLight.position.set(2, -1, 2);
     scene.add(accentLight);
 
-    // 3. Mouse Tracking (Para a cabeça do robô)
-    let targetHeadRotX = 0;
-    let targetHeadRotY = 0;
-    let currentHeadRotX = 0;
-    let currentHeadRotY = 0;
+    // 3. Mouse Tracking (Rotação sutil do robô inteiro)
+    let targetRotX = 0;
+    let targetRotY = 0;
+    let currentRotX = 0;
+    let currentRotY = 0;
 
-    // Ângulo base do corpo virado ~28 graus para a direita
-    const baseBodyRotY = 0.48;
+    // Ângulo base mais virado para a esquerda (-0.08 radianos / ~ -5 graus)
+    const baseBodyRotY = -0.08;
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
       const x = (e.clientX - (rect.left + rect.width / 2)) / (window.innerWidth / 2);
       const y = (e.clientY - (rect.top + rect.height / 2)) / (window.innerHeight / 2);
 
-      targetHeadRotY = THREE.MathUtils.clamp(x * 0.70, -0.65, 0.65);
-      targetHeadRotX = THREE.MathUtils.clamp(y * 0.45, -0.35, 0.35);
+      // Rotação muito leve do robô com o mouse
+      targetRotY = THREE.MathUtils.clamp(x * 0.18, -0.15, 0.15);
+      targetRotX = THREE.MathUtils.clamp(y * 0.10, -0.08, 0.08);
     };
 
     window.addEventListener("mousemove", handleMouseMove);
 
-    // 4. Hierarquia 3D: Corpo Fixo + Cabeça Articulada + Pivôs Locais dos Dedos
+    // 4. Hierarquia 3D: Robô Completo Sólido com Pivôs Apenas nos Dedos
     const robotWrapper = new THREE.Group();
     robotWrapper.rotation.y = baseBodyRotY;
     scene.add(robotWrapper);
 
     const bodyGroup = new THREE.Group();
-    const headPivot = new THREE.Group();
-    const headGroup = new THREE.Group();
 
     // Pivôs locais individuais para cada falange de dedo especificada pelo usuário
     const fingerPivots: { pivot: THREE.Group; phase: number; speed: number }[] = [];
@@ -108,30 +107,12 @@ export default function Robotinho3D() {
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
-        // Escala calibrada para enquadramento sem cortes (100% visível dos chifres aos sapatos)
+        // Escala calibrada para enquadramento sem cortes
         const maxDim = Math.max(size.x, size.y, size.z);
         const scale = 2.15 / (maxDim || 1);
         robotWrapper.scale.set(scale, scale, scale);
 
-        // Ponto de articulação do pescoço para a cabeça (Y=0.82)
-        const neckPivotY = 0.82 - center.y;
-        const neckPivotZ = 0.01 - center.z;
-
-        headPivot.position.set(0, neckPivotY, neckPivotZ);
-        headGroup.position.set(0, -neckPivotY, -neckPivotZ);
-        headPivot.add(headGroup);
-
-        // Peças EXATAS da cabeça especificadas pelo usuário:
-        const headPartNames = new Set([
-          "tripo_part_4",
-          "tripo_part_10",
-          "tripo_part_25",
-          "tripo_part_28",
-          "tripo_part_26",
-          "tripo_part_23"
-        ]);
-
-        // Peças EXATAS dos dedos da mão especificadas pelo usuário:
+        // Peças dos dedos da mão que se movem:
         const fingerPartNames = new Set([
           "tripo_part_34",
           "tripo_part_31",
@@ -164,20 +145,12 @@ export default function Robotinho3D() {
             mat.needsUpdate = true;
           }
 
-          if (headPartNames.has(mesh.name)) {
-            // Centralizar a malha no espaço do modelo e adicionar à cabeça
-            mesh.position.x -= center.x;
-            mesh.position.y -= center.y;
-            mesh.position.z -= center.z;
-            headGroup.add(mesh);
-          } else if (fingerPartNames.has(mesh.name)) {
-            // Para articular os dedos sem desmontar a mão:
-            // Calculamos o centro local da geometria da falange e criamos um pivô na junta!
+          if (fingerPartNames.has(mesh.name)) {
+            // Pivô local na junta da falange para articular sem desmontar a mão
             mesh.geometry.computeBoundingBox();
             const fBox = mesh.geometry.boundingBox!;
             const fCenter = fBox.getCenter(new THREE.Vector3());
 
-            // Posição no espaço centralizado do robô
             const jointX = fCenter.x - center.x;
             const jointY = fBox.min.y - center.y;
             const jointZ = fCenter.z - center.z;
@@ -185,7 +158,6 @@ export default function Robotinho3D() {
             const fingerPivot = new THREE.Group();
             fingerPivot.position.set(jointX, jointY, jointZ);
 
-            // Posicionar a malha em relação ao pivô da sua própria junta
             mesh.position.set(-fCenter.x, -fBox.min.y, -fCenter.z);
             fingerPivot.add(mesh);
 
@@ -197,7 +169,7 @@ export default function Robotinho3D() {
               speed: 1.1 + (index % 3) * 0.35,
             });
           } else {
-            // Corpo, camisa, calça, sapatos, braços e palma da mão
+            // Todo o restante do robô (cabeça, capacete, camisa, calça, sapatos, braços) é sólido no corpo
             mesh.position.x -= center.x;
             mesh.position.y -= center.y;
             mesh.position.z -= center.z;
@@ -206,7 +178,6 @@ export default function Robotinho3D() {
         });
 
         robotWrapper.add(bodyGroup);
-        robotWrapper.add(headPivot);
 
         isModelReady = true;
         setIsLoaded(true);
@@ -232,15 +203,14 @@ export default function Robotinho3D() {
       const elapsed = clock.getElapsedTime();
 
       if (isModelReady) {
-        // 1. Cabeça segue suavemente o cursor do mouse
-        currentHeadRotY += (targetHeadRotY - currentHeadRotY) * 0.08;
-        currentHeadRotX += (targetHeadRotX - currentHeadRotX) * 0.08;
+        // 1. Rotação muito sutil do robô inteiro acompanhando o mouse
+        currentRotY += (targetRotY - currentRotY) * 0.06;
+        currentRotX += (targetRotX - currentRotX) * 0.06;
 
-        headPivot.rotation.y = currentHeadRotY;
-        headPivot.rotation.x = currentHeadRotX;
-        headPivot.rotation.z = currentHeadRotY * -0.08;
+        robotWrapper.rotation.y = baseBodyRotY + currentRotY;
+        robotWrapper.rotation.x = currentRotX;
 
-        // 2. Micro-articulação suave dos dedos nas próprias juntas (sem desmontar a mão)
+        // 2. Micro-articulação suave dos dedos nas próprias juntas
         fingerPivots.forEach((f) => {
           const wave = Math.sin(elapsed * f.speed + f.phase);
           f.pivot.rotation.x = wave * 0.07;
