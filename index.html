@@ -706,6 +706,7 @@ padding-top: 10px;
 
             <!-- Card Flutuante Restaurado (ACTIVE_GROWTH) com Transparência Cristalina -->
             <div
+              id="hero-active-growth-card"
               class="gsap-card system-card relative z-30 p-[1px] rounded-xl group overflow-hidden bg-gradient-to-br from-cyan-500/30 via-cyan-900/10 to-transparent shadow-[0_25px_50px_-12px_rgba(0,229,255,0.25)] w-full max-w-sm sm:max-w-md lg:max-w-md -mt-20 lg:-mt-28 border border-cyan-500/30"
               style="backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);"
             >
@@ -1623,36 +1624,47 @@ padding-top: 10px;
           Resultados tangíveis.
         </h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div class="gsap-fade-up p-6 rounded-xl border border-zinc-900 bg-zinc-950/60">
-            <span class="text-3xl font-mono text-cyan-400 font-light">40h/sem</span>
-            <h3 class="text-xs font-mono text-zinc-300 uppercase mt-3 mb-2">Automação de pipeline</h3>
-            <p class="text-xs text-zinc-500 font-thin">Tarefas repetitivas eliminadas — até 40h/semana por equipe.</p>
+        <!-- Estrutura de 2 Colunas: Coluna 1 (Robô 3D robotinho-v1.glb) | Coluna 2 (Cards de Resultados) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          
+          <!-- Coluna 1: Modelo 3D Interativo (robotinho-v1.glb) -->
+          <div class="lg:col-span-5 w-full flex flex-col items-center justify-center relative">
+            <div id="robotinho-3d-root" class="w-full h-[440px] md:h-[500px] lg:h-[560px] relative z-10 overflow-visible"></div>
           </div>
 
-          <div class="gsap-fade-up p-6 rounded-xl border border-zinc-900 bg-zinc-950/60">
-            <span class="text-3xl font-mono text-cyan-400 font-light">0%</span>
-            <h3 class="text-xs font-mono text-zinc-300 uppercase mt-3 mb-2">Erro humano</h3>
-            <p class="text-xs text-zinc-500 font-thin">Mitigado em processos de deploy e sincronização com CRMs.</p>
+          <!-- Coluna 2: Cards de Métricas e Resultados Tangíveis -->
+          <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div class="gsap-fade-up p-6 rounded-xl border border-zinc-900 bg-zinc-950/60 hover:border-cyan-500/30 transition-colors">
+              <span class="text-3xl font-mono text-cyan-400 font-light">40h/sem</span>
+              <h3 class="text-xs font-mono text-zinc-300 uppercase mt-3 mb-2">Automação de pipeline</h3>
+              <p class="text-xs text-zinc-500 font-thin">Tarefas repetitivas eliminadas — até 40h/semana por equipe.</p>
+            </div>
+
+            <div class="gsap-fade-up p-6 rounded-xl border border-zinc-900 bg-zinc-950/60 hover:border-cyan-500/30 transition-colors">
+              <span class="text-3xl font-mono text-cyan-400 font-light">0%</span>
+              <h3 class="text-xs font-mono text-zinc-300 uppercase mt-3 mb-2">Erro humano</h3>
+              <p class="text-xs text-zinc-500 font-thin">Mitigado em processos de deploy e sincronização com CRMs.</p>
+            </div>
+
+            <div class="gsap-fade-up p-6 rounded-xl border border-zinc-900 bg-zinc-950/60 hover:border-cyan-500/30 transition-colors">
+              <span class="text-3xl font-mono text-cyan-400 font-light">+240%</span>
+              <h3 class="text-xs font-mono text-zinc-300 uppercase mt-3 mb-2">Aumento de conversão</h3>
+              <p class="text-xs text-zinc-500 font-thin">Média comparada ao baseline anterior de cada cliente.</p>
+            </div>
+
+            <div class="gsap-fade-up p-6 rounded-xl border border-zinc-900 bg-zinc-950/60 hover:border-cyan-500/30 transition-colors">
+              <span class="text-3xl font-mono text-cyan-400 font-light">0</span>
+              <h3 class="text-xs font-mono text-zinc-300 uppercase mt-3 mb-2">Leads perdidos na operação</h3>
+              <p class="text-xs text-zinc-500 font-thin">Triagem automática garante que nenhum lead qualificado fique sem resposta.</p>
+            </div>
+
+            <div class="gsap-fade-up col-span-1 sm:col-span-2 p-6 rounded-xl border border-zinc-900 bg-zinc-950/60 hover:border-cyan-500/30 transition-colors">
+              <span class="text-3xl font-mono text-cyan-400 font-light">100/100</span>
+              <h3 class="text-xs font-mono text-zinc-300 uppercase mt-3 mb-2">Lighthouse score</h3>
+              <p class="text-xs text-zinc-500 font-thin">Performance, SEO e acessibilidade no topo absoluto.</p>
+            </div>
           </div>
 
-          <div class="gsap-fade-up p-6 rounded-xl border border-zinc-900 bg-zinc-950/60">
-            <span class="text-3xl font-mono text-cyan-400 font-light">+240%</span>
-            <h3 class="text-xs font-mono text-zinc-300 uppercase mt-3 mb-2">Aumento de conversão</h3>
-            <p class="text-xs text-zinc-500 font-thin">Média comparada ao baseline anterior de cada cliente.</p>
-          </div>
-
-          <div class="gsap-fade-up p-6 rounded-xl border border-zinc-900 bg-zinc-950/60">
-            <span class="text-3xl font-mono text-cyan-400 font-light">0</span>
-            <h3 class="text-xs font-mono text-zinc-300 uppercase mt-3 mb-2">Leads perdidos na operação</h3>
-            <p class="text-xs text-zinc-500 font-thin">Triagem automática garante que nenhum lead qualificado fique sem resposta.</p>
-          </div>
-
-          <div class="gsap-fade-up col-span-1 md:col-span-2 p-6 rounded-xl border border-zinc-900 bg-zinc-950/60">
-            <span class="text-3xl font-mono text-cyan-400 font-light">100/100</span>
-            <h3 class="text-xs font-mono text-zinc-300 uppercase mt-3 mb-2">Lighthouse score</h3>
-            <p class="text-xs text-zinc-500 font-thin">Performance, SEO e acessibilidade no topo absoluto.</p>
-          </div>
         </div>
       </div>
     </section>
@@ -2563,6 +2575,24 @@ padding-top: 10px;
                   animateSystemCards();
               }
           });
+
+          // Parallax Scroll Effect no Card Flutuante ACTIVE_GROWTH (sobe e some em blur)
+          const heroActiveCard = document.getElementById("hero-active-growth-card");
+          if (heroActiveCard) {
+              gsap.to(heroActiveCard, {
+                  scrollTrigger: {
+                      trigger: "#main-content",
+                      start: "top top",
+                      end: "bottom 30%",
+                      scrub: 1.2,
+                  },
+                  y: -220,
+                  opacity: 0,
+                  filter: "blur(24px)",
+                  scale: 0.90,
+                  ease: "power2.out"
+              });
+          }
 
       // WarpText Hover Effect — shader WebGL idêntico ao componente WarpText de referência
       initWarpTextTitles();

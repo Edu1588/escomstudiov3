@@ -131,4 +131,15 @@ if (robot3DHeroElement) {
   );
 }
 
+import Robotinho3D from './components/Robotinho3D.tsx';
+
+const robotinhoElement = document.getElementById('robotinho-3d-root');
+if (robotinhoElement) {
+  createRoot(robotinhoElement).render(
+    <StrictMode>
+      <Robotinho3D />
+    </StrictMode>,
+  );
+}
+
 
