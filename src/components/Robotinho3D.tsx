@@ -19,9 +19,9 @@ export default function Robotinho3D() {
     const getWidth = () => container.clientWidth || container.offsetWidth || 450;
     const getHeight = () => container.clientHeight || container.offsetHeight || 520;
 
-    const camera = new THREE.PerspectiveCamera(40, getWidth() / getHeight(), 0.1, 1000);
-    camera.position.set(0, 0.1, 3.4);
-    camera.lookAt(0, 0.05, 0);
+    const camera = new THREE.PerspectiveCamera(38, getWidth() / getHeight(), 0.1, 1000);
+    camera.position.set(0, 0.05, 3.45);
+    camera.lookAt(0, 0.0, 0);
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -32,29 +32,29 @@ export default function Robotinho3D() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.4;
+    renderer.toneMappingExposure = 1.05; // Exposição suave e equilibrada sem brilho estourado
 
     container.innerHTML = "";
     container.appendChild(renderer.domElement);
 
-    // 2. Iluminação
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x09090b, 3.5);
+    // 2. Iluminação Suave e Natural (Sem estourar reflexos na roupa)
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x09090b, 1.8);
     scene.add(hemiLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 4.0);
-    keyLight.position.set(3, 5, 5);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
+    keyLight.position.set(3, 4, 4);
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0x00d1ff, 3.0);
-    fillLight.position.set(-4, 2, 2);
+    const fillLight = new THREE.DirectionalLight(0x00d1ff, 1.3);
+    fillLight.position.set(-3, 2, 2);
     scene.add(fillLight);
 
-    const rimLight = new THREE.PointLight(0x00d1ff, 6.0, 15);
-    rimLight.position.set(-2, 3, -3);
+    const rimLight = new THREE.PointLight(0x00d1ff, 2.8, 12);
+    rimLight.position.set(-2, 3, -2);
     scene.add(rimLight);
 
-    const accentLight = new THREE.PointLight(0x00e6a5, 5.0, 15);
-    accentLight.position.set(3, -2, 3);
+    const accentLight = new THREE.PointLight(0x00e6a5, 2.0, 12);
+    accentLight.position.set(2, -1, 2);
     scene.add(accentLight);
 
     // 3. Mouse Tracking
@@ -63,19 +63,23 @@ export default function Robotinho3D() {
     let currentRotX = 0;
     let currentRotY = 0;
 
+    // Ângulo base virado para a direita (~28 graus em direção aos cards)
+    const baseRotationY = 0.48;
+
     const handleMouseMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
       const x = (e.clientX - (rect.left + rect.width / 2)) / (window.innerWidth / 2);
       const y = (e.clientY - (rect.top + rect.height / 2)) / (window.innerHeight / 2);
 
-      targetRotY = THREE.MathUtils.clamp(x * 0.75, -0.75, 0.75);
-      targetRotX = THREE.MathUtils.clamp(y * 0.45, -0.40, 0.40);
+      targetRotY = THREE.MathUtils.clamp(x * 0.50, -0.45, 0.45);
+      targetRotX = THREE.MathUtils.clamp(y * 0.35, -0.30, 0.30);
     };
 
     window.addEventListener("mousemove", handleMouseMove);
 
     // 4. Carregamento do Modelo robotinho-v1.glb
     const robotWrapper = new THREE.Group();
+    robotWrapper.rotation.y = baseRotationY;
     scene.add(robotWrapper);
 
     const dracoLoader = new DRACOLoader();
@@ -99,10 +103,10 @@ export default function Robotinho3D() {
         rawModel.position.z = -center.z;
 
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 2.30 / (maxDim || 1);
+        const scale = 2.25 / (maxDim || 1);
         robotWrapper.scale.set(scale, scale, scale);
 
-        // Otimizar materiais PBR
+        // Materiais PBR foscos e naturais (sem aspecto de plástico/látex brilhante)
         rawModel.traverse((child) => {
           if ((child as THREE.Mesh).isMesh) {
             const mesh = child as THREE.Mesh;
@@ -110,8 +114,9 @@ export default function Robotinho3D() {
             mesh.receiveShadow = true;
             if (mesh.material) {
               const mat = mesh.material as THREE.MeshStandardMaterial;
-              mat.roughness = 0.35;
-              mat.metalness = 0.65;
+              mat.roughness = 0.78; // Superfície mais fosca e elegante
+              mat.metalness = 0.20; // Reduz a reflectividade excessiva
+              mat.envMapIntensity = 0.5;
               mat.needsUpdate = true;
             }
           }
@@ -140,15 +145,15 @@ export default function Robotinho3D() {
       animationFrameId = requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
 
-      // Interpolação suave de rotação com o mouse
+      // Interpolação suave de rotação com o mouse mantendo a base voltada para a direita
       currentRotY += (targetRotY - currentRotY) * 0.08;
       currentRotX += (targetRotX - currentRotX) * 0.08;
 
-      robotWrapper.rotation.y = currentRotY;
+      robotWrapper.rotation.y = baseRotationY + currentRotY;
       robotWrapper.rotation.x = currentRotX;
 
       // Levitação suave e amigável para o robotinho
-      robotWrapper.position.y = Math.sin(elapsed * 1.6) * 0.06;
+      robotWrapper.position.y = Math.sin(elapsed * 1.5) * 0.05;
 
       renderer.render(scene, camera);
     };
@@ -179,7 +184,7 @@ export default function Robotinho3D() {
   return (
     <div className="relative w-full h-[450px] md:h-[520px] lg:h-[560px] flex items-center justify-center select-none overflow-visible">
       {/* Glow de fundo */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-[#00d1ff]/20 via-[#00e6a5]/10 to-transparent rounded-full blur-[90px] pointer-events-none transform scale-90" />
+      <div className="absolute inset-0 bg-gradient-to-tr from-[#00d1ff]/15 via-[#00e6a5]/08 to-transparent rounded-full blur-[90px] pointer-events-none transform scale-90" />
 
       {/* Loading State */}
       {!isLoaded && !hasError && (
