@@ -19,10 +19,10 @@ export default function RobotBust3D() {
     const getWidth = () => container.clientWidth || container.offsetWidth || 480;
     const getHeight = () => container.clientHeight || container.offsetHeight || 600;
 
-    // Câmera posicionada para enquadramento completo e folga confortável embaixo e em cima
+    // Câmera posicionada para enquadramento perfeito com busto levemente maior
     const camera = new THREE.PerspectiveCamera(40, getWidth() / getHeight(), 0.1, 1000);
-    camera.position.set(0, -0.02, 3.55);
-    camera.lookAt(0, -0.02, 0);
+    camera.position.set(0, -0.01, 3.35);
+    camera.lookAt(0, -0.01, 0);
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -98,9 +98,9 @@ export default function RobotBust3D() {
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
-        // Escala geral proporcional com folga total
+        // Escala geral proporcional com busto levemente maior
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 2.15 / (maxDim || 1);
+        const scale = 2.28 / (maxDim || 1);
         robotWrapper.scale.set(scale, scale, scale);
 
         // Configurar materiais PBR
