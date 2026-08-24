@@ -79,7 +79,7 @@ export default function Robotinho3D() {
 
     window.addEventListener("mousemove", handleMouseMove);
 
-    // 4. Hierarquia 3D: Robô Completo Sólido com Cadeias Cinemáticas nos Dedos
+    // 4. Hierarquia 3D: Robô Completo Sólido com Dedos Articulados e Correntes na Cintura
     const robotWrapper = new THREE.Group();
     robotWrapper.rotation.y = baseBodyRotY;
     scene.add(robotWrapper);
@@ -136,6 +136,9 @@ export default function Robotinho3D() {
       speed: number;
       phase: number;
     }[] = [];
+
+    // Pivô da Corrente da Cintura (tripo_part_9 conectado pelo eixo superior)
+    let chainPivotRef: THREE.Group | null = null;
 
     let isModelReady = false;
 
@@ -215,11 +218,35 @@ export default function Robotinho3D() {
           });
         });
 
+        // Configuração especial para as correntes da cintura (tripo_part_9)
+        // Conectadas apenas pelo eixo superior (ponto de fixação no cinto Y=0.604)
+        const chainMesh = allMeshes.find((m) => m.name === "tripo_part_9");
+        if (chainMesh) {
+          const chainPivotX = 0.021 - center.x;
+          const chainPivotY = 0.604 - center.y; // Ponto superior do cinto
+          const chainPivotZ = 0.056 - center.z;
+
+          const chainPivot = new THREE.Group();
+          chainPivot.position.set(chainPivotX, chainPivotY, chainPivotZ);
+
+          const chainInner = new THREE.Group();
+          chainInner.position.set(-chainPivotX, -chainPivotY, -chainPivotZ);
+          chainPivot.add(chainInner);
+
+          chainMesh.position.x -= center.x;
+          chainMesh.position.y -= center.y;
+          chainMesh.position.z -= center.z;
+          chainInner.add(chainMesh);
+
+          bodyGroup.add(chainPivot);
+          chainPivotRef = chainPivot;
+        }
+
         // Todas as outras peças (cabeça, capacete, camisa, calça, palma, braço, sapatos)
         const allFingerPartNames = new Set(fingerDefs.flatMap((f) => Array.from(f.parts)));
 
         allMeshes.forEach((mesh) => {
-          if (!allFingerPartNames.has(mesh.name)) {
+          if (!allFingerPartNames.has(mesh.name) && mesh.name !== "tripo_part_9") {
             mesh.position.x -= center.x;
             mesh.position.y -= center.y;
             mesh.position.z -= center.z;
@@ -270,7 +297,16 @@ export default function Robotinho3D() {
           finger.pivot.rotation.z = curl * finger.curlAngles.z;
         });
 
-        // 3. Levitação suave do robô
+        // 3. Pêndulo e inclinação natural das correntes na cintura (tripo_part_9)
+        if (chainPivotRef) {
+          const chainSwayZ = Math.sin(elapsed * 1.5 - 0.4) * 0.045;
+          const chainSwayX = Math.cos(elapsed * 1.5 - 0.4) * 0.035;
+          // Inclinada acompanhando a curvatura do quadril e balanço de levitação
+          chainPivotRef.rotation.z = -0.06 + chainSwayZ;
+          chainPivotRef.rotation.x = 0.05 + chainSwayX;
+        }
+
+        // 4. Levitação suave do robô
         robotWrapper.position.y = Math.sin(elapsed * 1.5) * 0.035;
       }
 
