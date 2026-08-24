@@ -19,9 +19,9 @@ export default function Robotinho3D() {
     const getWidth = () => container.clientWidth || container.offsetWidth || 480;
     const getHeight = () => container.clientHeight || container.offsetHeight || 640;
 
-    // Câmera calibrada para enquadramento completo do corpo inteiro sem cortes
+    // Câmera calibrada para robô um pouco maior
     const camera = new THREE.PerspectiveCamera(38, getWidth() / getHeight(), 0.1, 1000);
-    camera.position.set(0, 0.0, 3.75);
+    camera.position.set(0, 0.0, 3.55);
     camera.lookAt(0, 0.0, 0);
 
     const renderer = new THREE.WebGLRenderer({
@@ -64,8 +64,8 @@ export default function Robotinho3D() {
     let currentRotX = 0;
     let currentRotY = 0;
 
-    // Ângulo base virado para a direita (~32 graus em direção aos cards)
-    const baseBodyRotY = 0.55;
+    // Ângulo base virado mais para a direita (~41 graus em direção aos cards)
+    const baseBodyRotY = 0.72;
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
@@ -107,9 +107,9 @@ export default function Robotinho3D() {
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
-        // Escala calibrada para enquadramento sem cortes
+        // Escala calibrada para robô um pouco maior
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 2.15 / (maxDim || 1);
+        const scale = 2.30 / (maxDim || 1);
         robotWrapper.scale.set(scale, scale, scale);
 
         // Peças dos dedos da mão que se movem:
@@ -210,11 +210,11 @@ export default function Robotinho3D() {
         robotWrapper.rotation.y = baseBodyRotY + currentRotY;
         robotWrapper.rotation.x = currentRotX;
 
-        // 2. Micro-articulação suave dos dedos nas próprias juntas
+        // 2. Micro-articulação fluida dos dedos nas próprias juntas (amplitude aumentada)
         fingerPivots.forEach((f) => {
           const wave = Math.sin(elapsed * f.speed + f.phase);
-          f.pivot.rotation.x = wave * 0.07;
-          f.pivot.rotation.z = Math.cos(elapsed * f.speed + f.phase) * 0.05;
+          f.pivot.rotation.x = wave * 0.16;
+          f.pivot.rotation.z = Math.cos(elapsed * f.speed + f.phase) * 0.12;
         });
 
         // 3. Levitação suave do robô
