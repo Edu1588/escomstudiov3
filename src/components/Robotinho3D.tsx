@@ -64,8 +64,8 @@ export default function Robotinho3D() {
     let currentRotX = 0;
     let currentRotY = 0;
 
-    // Ângulo base mais virado para a esquerda (-0.08 radianos / ~ -5 graus)
-    const baseBodyRotY = -0.08;
+    // Ângulo base virado para a direita (~32 graus em direção aos cards)
+    const baseBodyRotY = 0.55;
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
