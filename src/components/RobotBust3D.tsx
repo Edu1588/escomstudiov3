@@ -20,9 +20,9 @@ export default function RobotBust3D() {
     const getHeight = () => container.clientHeight || container.offsetHeight || 560;
 
     // Câmera posicionada para enquadramento completo e sem cortes
-    const camera = new THREE.PerspectiveCamera(42, getWidth() / getHeight(), 0.1, 1000);
-    camera.position.set(0, 0.02, 3.3);
-    camera.lookAt(0, 0.02, 0);
+    const camera = new THREE.PerspectiveCamera(40, getWidth() / getHeight(), 0.1, 1000);
+    camera.position.set(0, 0.05, 3.4);
+    camera.lookAt(0, 0.05, 0);
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
