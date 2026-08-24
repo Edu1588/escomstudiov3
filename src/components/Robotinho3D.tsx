@@ -19,7 +19,7 @@ export default function Robotinho3D() {
     const getWidth = () => container.clientWidth || container.offsetWidth || 480;
     const getHeight = () => container.clientHeight || container.offsetHeight || 640;
 
-    // Câmera calibrada para robô um pouco maior
+    // Câmera calibrada para enquadramento completo do corpo inteiro sem cortes
     const camera = new THREE.PerspectiveCamera(38, getWidth() / getHeight(), 0.1, 1000);
     camera.position.set(0, 0.0, 3.55);
     camera.lookAt(0, 0.0, 0);
@@ -64,7 +64,7 @@ export default function Robotinho3D() {
     let currentRotX = 0;
     let currentRotY = 0;
 
-    // Ângulo base virado mais para a direita (~41 graus em direção aos cards)
+    // Ângulo base virado para a direita (~41 graus em direção aos cards)
     const baseBodyRotY = 0.72;
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -72,22 +72,70 @@ export default function Robotinho3D() {
       const x = (e.clientX - (rect.left + rect.width / 2)) / (window.innerWidth / 2);
       const y = (e.clientY - (rect.top + rect.height / 2)) / (window.innerHeight / 2);
 
-      // Rotação muito leve do robô com o mouse
+      // Rotação sutil do robô com o mouse
       targetRotY = THREE.MathUtils.clamp(x * 0.18, -0.15, 0.15);
       targetRotX = THREE.MathUtils.clamp(y * 0.10, -0.08, 0.08);
     };
 
     window.addEventListener("mousemove", handleMouseMove);
 
-    // 4. Hierarquia 3D: Robô Completo Sólido com Pivôs Apenas nos Dedos
+    // 4. Hierarquia 3D: Robô Completo Sólido com Cadeias Cinemáticas nos Dedos
     const robotWrapper = new THREE.Group();
     robotWrapper.rotation.y = baseBodyRotY;
     scene.add(robotWrapper);
 
     const bodyGroup = new THREE.Group();
 
-    // Pivôs locais individuais para cada falange de dedo especificada pelo usuário
-    const fingerPivots: { pivot: THREE.Group; phase: number; speed: number }[] = [];
+    // Definição dos 5 dedos anatômicos com seus nós e pontos de rotação na junta da palma
+    const fingerDefs = [
+      {
+        name: "thumb",
+        knuckle: { x: -0.130, y: 0.680, z: 0.010 },
+        curlAngles: { x: 0.20, y: 0.10, z: 0.18 },
+        speed: 1.1,
+        phase: 0.15,
+        parts: new Set(["tripo_part_31", "tripo_part_34", "tripo_part_48", "tripo_part_30", "tripo_part_35"])
+      },
+      {
+        name: "index",
+        knuckle: { x: -0.155, y: 0.705, z: 0.055 },
+        curlAngles: { x: 0.28, y: 0.04, z: -0.08 },
+        speed: 1.0,
+        phase: 0.0,
+        parts: new Set(["tripo_part_27", "tripo_part_32", "tripo_part_15"])
+      },
+      {
+        name: "middle",
+        knuckle: { x: -0.127, y: 0.700, z: 0.058 },
+        curlAngles: { x: 0.32, y: 0.02, z: -0.04 },
+        speed: 1.05,
+        phase: 0.25,
+        parts: new Set(["tripo_part_45", "tripo_part_49", "tripo_part_40", "tripo_part_12"])
+      },
+      {
+        name: "ring",
+        knuckle: { x: -0.108, y: 0.700, z: 0.055 },
+        curlAngles: { x: 0.35, y: -0.02, z: 0.04 },
+        speed: 1.1,
+        phase: 0.45,
+        parts: new Set(["tripo_part_46", "tripo_part_37"])
+      },
+      {
+        name: "pinky",
+        knuckle: { x: -0.092, y: 0.715, z: 0.048 },
+        curlAngles: { x: 0.38, y: -0.05, z: 0.08 },
+        speed: 1.15,
+        phase: 0.65,
+        parts: new Set(["tripo_part_54", "tripo_part_43"])
+      }
+    ];
+
+    const activeFingers: {
+      pivot: THREE.Group;
+      curlAngles: { x: number; y: number; z: number };
+      speed: number;
+      phase: number;
+    }[] = [];
 
     let isModelReady = false;
 
@@ -102,30 +150,17 @@ export default function Robotinho3D() {
       (gltf) => {
         const rawModel = gltf.scene;
 
-        // Centralização exata do modelo completo
+        // Centralização do modelo completo
         const box = new THREE.Box3().setFromObject(rawModel);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
-        // Escala calibrada para robô um pouco maior
+        // Escala proporcional confortável
         const maxDim = Math.max(size.x, size.y, size.z);
         const scale = 2.30 / (maxDim || 1);
         robotWrapper.scale.set(scale, scale, scale);
 
-        // Peças dos dedos da mão que se movem:
-        const fingerPartNames = new Set([
-          "tripo_part_34",
-          "tripo_part_31",
-          "tripo_part_27",
-          "tripo_part_32",
-          "tripo_part_45",
-          "tripo_part_49",
-          "tripo_part_46",
-          "tripo_part_37",
-          "tripo_part_43",
-          "tripo_part_54"
-        ]);
-
+        // Coletar todas as malhas
         const allMeshes: THREE.Mesh[] = [];
         rawModel.traverse((child) => {
           if ((child as THREE.Mesh).isMesh) {
@@ -133,43 +168,58 @@ export default function Robotinho3D() {
           }
         });
 
-        allMeshes.forEach((mesh, index) => {
+        // Configurar materiais PBR foscos e realistas
+        allMeshes.forEach((mesh) => {
           mesh.castShadow = true;
           mesh.receiveShadow = true;
 
           if (mesh.material) {
             const mat = mesh.material as THREE.MeshStandardMaterial;
-            mat.roughness = 0.78; // Acabamento fosco realista
+            mat.roughness = 0.78;
             mat.metalness = 0.20;
             mat.envMapIntensity = 0.5;
             mat.needsUpdate = true;
           }
+        });
 
-          if (fingerPartNames.has(mesh.name)) {
-            // Pivô local na junta da falange para articular sem desmontar a mão
-            mesh.geometry.computeBoundingBox();
-            const fBox = mesh.geometry.boundingBox!;
-            const fCenter = fBox.getCenter(new THREE.Vector3());
+        // Montar os 5 dedos como grupos cinemáticos unificados
+        fingerDefs.forEach((fDef) => {
+          const pivotX = fDef.knuckle.x - center.x;
+          const pivotY = fDef.knuckle.y - center.y;
+          const pivotZ = fDef.knuckle.z - center.z;
 
-            const jointX = fCenter.x - center.x;
-            const jointY = fBox.min.y - center.y;
-            const jointZ = fCenter.z - center.z;
+          const fingerPivot = new THREE.Group();
+          fingerPivot.position.set(pivotX, pivotY, pivotZ);
 
-            const fingerPivot = new THREE.Group();
-            fingerPivot.position.set(jointX, jointY, jointZ);
+          const fingerInner = new THREE.Group();
+          fingerInner.position.set(-pivotX, -pivotY, -pivotZ);
+          fingerPivot.add(fingerInner);
 
-            mesh.position.set(-fCenter.x, -fBox.min.y, -fCenter.z);
-            fingerPivot.add(mesh);
+          // Anexar todas as peças deste dedo ao grupo interno
+          allMeshes.forEach((mesh) => {
+            if (fDef.parts.has(mesh.name)) {
+              mesh.position.x -= center.x;
+              mesh.position.y -= center.y;
+              mesh.position.z -= center.z;
+              fingerInner.add(mesh);
+            }
+          });
 
-            bodyGroup.add(fingerPivot);
+          bodyGroup.add(fingerPivot);
 
-            fingerPivots.push({
-              pivot: fingerPivot,
-              phase: (index * 0.65) % Math.PI,
-              speed: 1.1 + (index % 3) * 0.35,
-            });
-          } else {
-            // Todo o restante do robô (cabeça, capacete, camisa, calça, sapatos, braços) é sólido no corpo
+          activeFingers.push({
+            pivot: fingerPivot,
+            curlAngles: fDef.curlAngles,
+            speed: fDef.speed,
+            phase: fDef.phase
+          });
+        });
+
+        // Todas as outras peças (cabeça, capacete, camisa, calça, palma, braço, sapatos)
+        const allFingerPartNames = new Set(fingerDefs.flatMap((f) => Array.from(f.parts)));
+
+        allMeshes.forEach((mesh) => {
+          if (!allFingerPartNames.has(mesh.name)) {
             mesh.position.x -= center.x;
             mesh.position.y -= center.y;
             mesh.position.z -= center.z;
@@ -210,11 +260,14 @@ export default function Robotinho3D() {
         robotWrapper.rotation.y = baseBodyRotY + currentRotY;
         robotWrapper.rotation.x = currentRotX;
 
-        // 2. Micro-articulação fluida dos dedos nas próprias juntas (amplitude aumentada)
-        fingerPivots.forEach((f) => {
-          const wave = Math.sin(elapsed * f.speed + f.phase);
-          f.pivot.rotation.x = wave * 0.16;
-          f.pivot.rotation.z = Math.cos(elapsed * f.speed + f.phase) * 0.12;
+        // 2. Movimento suave e contínuo de ABRIR e FECHAR a mão (Flexão Cinemática dos Dedos)
+        activeFingers.forEach((finger) => {
+          // Onda senoidal de 0 (aberto) a 1 (fechado)
+          const curl = (Math.sin(elapsed * finger.speed + finger.phase) * 0.5 + 0.5);
+
+          finger.pivot.rotation.x = curl * finger.curlAngles.x;
+          finger.pivot.rotation.y = curl * finger.curlAngles.y;
+          finger.pivot.rotation.z = curl * finger.curlAngles.z;
         });
 
         // 3. Levitação suave do robô
