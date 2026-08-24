@@ -19,10 +19,10 @@ export default function RobotBust3D() {
     const getWidth = () => container.clientWidth || container.offsetWidth || 480;
     const getHeight = () => container.clientHeight || container.offsetHeight || 560;
 
-    // Camera configurada com ângulo e distância ideais para nunca cortar as orelhas/chifres ou o peito
-    const camera = new THREE.PerspectiveCamera(44, getWidth() / getHeight(), 0.1, 1000);
-    camera.position.set(0, 0.02, 3.4);
-    camera.lookAt(0, 0.02, 0);
+    // Câmera perfeitamente posicionada para enquadrar todo o busto e os chifres sem cortes
+    const camera = new THREE.PerspectiveCamera(42, getWidth() / getHeight(), 0.1, 1000);
+    camera.position.set(0, 0.04, 3.2);
+    camera.lookAt(0, 0.04, 0);
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -38,7 +38,7 @@ export default function RobotBust3D() {
     container.innerHTML = "";
     container.appendChild(renderer.domElement);
 
-    // 2. Cyberpunk Lighting Setup
+    // 2. Iluminação Cyberpunk
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x09090b, 3.5);
     scene.add(hemiLight);
 
@@ -58,8 +58,7 @@ export default function RobotBust3D() {
     accentLight.position.set(3, -2, 3);
     scene.add(accentLight);
 
-    // 3. Mouse Tracking Variables & Uniforms
-    const headRotationUniform = { value: new THREE.Vector2(0, 0) };
+    // 3. Variáveis de Rastreamento do Mouse
     let targetRotX = 0;
     let targetRotY = 0;
     let currentRotX = 0;
@@ -70,16 +69,19 @@ export default function RobotBust3D() {
       const x = (e.clientX - (rect.left + rect.width / 2)) / (window.innerWidth / 2);
       const y = (e.clientY - (rect.top + rect.height / 2)) / (window.innerHeight / 2);
 
-      // Movimento suave da cabeça limitado para parecer natural
-      targetRotY = THREE.MathUtils.clamp(x * 0.70, -0.60, 0.60);
-      targetRotX = THREE.MathUtils.clamp(y * 0.40, -0.30, 0.30);
+      // Movimento angular calibrado para a cabeça
+      targetRotY = THREE.MathUtils.clamp(x * 0.70, -0.65, 0.65);
+      targetRotX = THREE.MathUtils.clamp(y * 0.40, -0.35, 0.35);
     };
 
     window.addEventListener("mousemove", handleMouseMove);
 
-    // 4. Wrapper and Draco-enabled GLTF Loader
+    // 4. Wrapper e Carregamento do Modelo Otimizado (3Dmodelrobot-v1.glb)
     const robotWrapper = new THREE.Group();
     scene.add(robotWrapper);
+
+    const headPivot = new THREE.Group();
+    let headPivotRef: THREE.Group | null = null;
 
     const dracoLoader = new DRACOLoader();
     dracoLoader.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.5.7/");
@@ -88,7 +90,7 @@ export default function RobotBust3D() {
     loader.setDRACOLoader(dracoLoader);
 
     loader.load(
-      "/models/futuristRobot-v1.glb",
+      "/models/3Dmodelrobot-v1.glb",
       (gltf) => {
         const rawModel = gltf.scene;
 
@@ -101,94 +103,52 @@ export default function RobotBust3D() {
         rawModel.position.y = -center.y;
         rawModel.position.z = -center.z;
 
-        // Escala calibrada para enquadrar perfeitamente sem corte
+        // Escala calibrada para enquadramento livre e completo
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 2.2 / (maxDim || 1);
+        const scale = 2.40 / (maxDim || 1);
         robotWrapper.scale.set(scale, scale, scale);
 
-        // Modificação do Vertex Shader para girar EXCLUSIVAMENTE a cabeça no pescoço
+        // Configurar materiais PBR
         rawModel.traverse((child) => {
           if ((child as THREE.Mesh).isMesh) {
             const mesh = child as THREE.Mesh;
             mesh.castShadow = true;
             mesh.receiveShadow = true;
-
             if (mesh.material) {
-              const mat = (mesh.material as THREE.MeshStandardMaterial).clone();
+              const mat = mesh.material as THREE.MeshStandardMaterial;
               mat.roughness = 0.35;
               mat.metalness = 0.65;
-
-              mat.onBeforeCompile = (shader) => {
-                shader.uniforms.uHeadRotation = headRotationUniform;
-                shader.uniforms.uNeckPivot = { value: new THREE.Vector3(0.0, 0.08, 0.0) };
-
-                shader.vertexShader = `
-                  uniform vec2 uHeadRotation;
-                  uniform vec3 uNeckPivot;
-                  ${shader.vertexShader}
-                `;
-
-                shader.vertexShader = shader.vertexShader.replace(
-                  "#include <begin_vertex>",
-                  `
-                  #include <begin_vertex>
-
-                  // O peito (y < 0.02) fica 100% estático (headFactor = 0.0)
-                  // A cabeça (y > 0.12) gira 100% com o mouse (headFactor = 1.0)
-                  float headFactor = smoothstep(0.02, 0.14, transformed.y);
-
-                  if (headFactor > 0.0) {
-                    vec3 p = transformed - uNeckPivot;
-
-                    // Giro horizontal Y (Yaw)
-                    float angleY = uHeadRotation.x * headFactor;
-                    float cosY = cos(angleY);
-                    float sinY = sin(angleY);
-                    mat2 rotY = mat2(cosY, sinY, -sinY, cosY);
-                    p.xz = rotY * p.xz;
-
-                    // Giro vertical X (Pitch)
-                    float angleX = uHeadRotation.y * headFactor;
-                    float cosX = cos(angleX);
-                    float sinX = sin(angleX);
-                    mat2 rotX = mat2(cosX, -sinX, sinX, cosX);
-                    p.yz = rotX * p.yz;
-
-                    transformed = p + uNeckPivot;
-                  }
-                  `
-                );
-
-                shader.vertexShader = shader.vertexShader.replace(
-                  "#include <beginnormal_vertex>",
-                  `
-                  #include <beginnormal_vertex>
-
-                  float headFactorNorm = smoothstep(0.02, 0.14, position.y);
-                  if (headFactorNorm > 0.0) {
-                    float angleYNorm = uHeadRotation.x * headFactorNorm;
-                    float cosYN = cos(angleYNorm);
-                    float sinYN = sin(angleYNorm);
-                    mat2 rotYN = mat2(cosYN, sinYN, -sinYN, cosYN);
-                    objectNormal.xz = rotYN * objectNormal.xz;
-
-                    float angleXNorm = uHeadRotation.y * headFactorNorm;
-                    float cosXN = cos(angleXNorm);
-                    float sinXN = sin(angleXNorm);
-                    mat2 rotXN = mat2(cosXN, -sinXN, sinXN, cosXN);
-                    objectNormal.yz = rotXN * objectNormal.yz;
-                  }
-                  `
-                );
-              };
-
               mat.needsUpdate = true;
-              mesh.material = mat;
             }
           }
         });
 
+        // Configuração do Pivô da Cabeça no Pescoço:
+        // tripo_part_1 é a cabeça / face / orelhas / chifres (Y de 0.40 a 0.99)
+        const neckPivotY = 0.38 - center.y;
+        const neckPivotZ = 0.01 - center.z;
+
+        headPivot.position.set(0, neckPivotY, neckPivotZ);
+        const headInner = new THREE.Group();
+        headInner.position.set(0, -neckPivotY, -neckPivotZ);
+        headPivot.add(headInner);
+
+        const partsToMoveToHead: THREE.Object3D[] = [];
+        rawModel.traverse((child) => {
+          if (child.name === "tripo_part_1") {
+            partsToMoveToHead.push(child);
+          }
+        });
+
+        partsToMoveToHead.forEach((part) => {
+          headInner.attach(part);
+        });
+
+        // O peitoral/ombros (tripo_part_0) permanecem no rawModel fixos para a frente
         robotWrapper.add(rawModel);
+        robotWrapper.add(headPivot);
+        headPivotRef = headPivot;
+
         setIsLoaded(true);
       },
       (xhr) => {
@@ -203,7 +163,7 @@ export default function RobotBust3D() {
       }
     );
 
-    // 5. Render & Animation Loop (Sem flutuação vertical)
+    // 5. Render & Animation Loop (Somente a cabeça gira, sem flutuação vertical)
     let animationFrameId: number;
 
     const animate = () => {
@@ -213,8 +173,12 @@ export default function RobotBust3D() {
       currentRotY += (targetRotY - currentRotY) * 0.08;
       currentRotX += (targetRotX - currentRotX) * 0.08;
 
-      // Passar a rotação calculada para o shader da cabeça
-      headRotationUniform.value.set(currentRotY, currentRotX);
+      if (headPivotRef) {
+        // Apenas a cabeça gira em torno do pescoço
+        headPivotRef.rotation.y = currentRotY;
+        headPivotRef.rotation.x = currentRotX;
+        headPivotRef.rotation.z = currentRotY * -0.10; // Inclinação orgânica suave
+      }
 
       renderer.render(scene, camera);
     };
@@ -259,7 +223,7 @@ export default function RobotBust3D() {
 
       {hasError && (
         <div className="absolute z-20 text-center font-mono text-xs text-red-400 bg-red-950/40 p-4 rounded-xl border border-red-500/30">
-          Erro ao carregar o modelo 3D futuristRobot-v1.glb
+          Erro ao carregar o modelo 3D 3Dmodelrobot-v1.glb
         </div>
       )}
 
