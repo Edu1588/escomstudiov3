@@ -16,12 +16,12 @@ export default function RobotBust3D() {
     // 1. Scene, Camera, Renderer Setup
     const scene = new THREE.Scene();
 
-    const width = container.clientWidth || container.offsetWidth || 420;
-    const height = container.clientHeight || container.offsetHeight || 480;
+    const width = container.clientWidth || container.offsetWidth || 480;
+    const height = container.clientHeight || container.offsetHeight || 580;
 
-    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
-    camera.position.set(0, 0, 3.2);
-    camera.lookAt(0, 0, 0);
+    const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 1000);
+    camera.position.set(0, 0.05, 3.0);
+    camera.lookAt(0, 0.05, 0);
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -41,23 +41,24 @@ export default function RobotBust3D() {
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x09090b, 3.5);
     scene.add(hemiLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 4.0);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 4.2);
     keyLight.position.set(3, 5, 5);
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0x00d1ff, 3.0);
+    const fillLight = new THREE.DirectionalLight(0x00d1ff, 3.2);
     fillLight.position.set(-4, 2, 2);
     scene.add(fillLight);
 
-    const rimLight = new THREE.PointLight(0x00d1ff, 6.0, 15);
+    const rimLight = new THREE.PointLight(0x00d1ff, 6.5, 15);
     rimLight.position.set(-2, 3, -3);
     scene.add(rimLight);
 
-    const accentLight = new THREE.PointLight(0x00e6a5, 5.0, 15);
+    const accentLight = new THREE.PointLight(0x00e6a5, 5.5, 15);
     accentLight.position.set(3, -2, 3);
     scene.add(accentLight);
 
-    // 3. Mouse Tracking Variables
+    // 3. Mouse Tracking Variables & Head Rotation Uniform
+    const headRotationUniform = { value: new THREE.Vector2(0, 0) };
     let targetRotX = 0;
     let targetRotY = 0;
     let currentRotX = 0;
@@ -68,8 +69,9 @@ export default function RobotBust3D() {
       const x = (e.clientX - (rect.left + rect.width / 2)) / (window.innerWidth / 2);
       const y = (e.clientY - (rect.top + rect.height / 2)) / (window.innerHeight / 2);
 
-      targetRotY = x * 0.65;
-      targetRotX = y * 0.40;
+      // Limitar a rotação para um movimento natural da cabeça
+      targetRotY = THREE.MathUtils.clamp(x * 0.75, -0.65, 0.65);
+      targetRotX = THREE.MathUtils.clamp(y * 0.45, -0.35, 0.35);
     };
 
     window.addEventListener("mousemove", handleMouseMove);
@@ -79,7 +81,7 @@ export default function RobotBust3D() {
     scene.add(robotWrapper);
 
     const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+    dracoLoader.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.5.7/");
 
     const loader = new GLTFLoader();
     loader.setDRACOLoader(dracoLoader);
@@ -98,21 +100,89 @@ export default function RobotBust3D() {
         rawModel.position.y = -center.y;
         rawModel.position.z = -center.z;
 
+        // Escala aumentada para dar maior presença ao busto (2.75x)
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 2.1 / (maxDim || 1);
+        const scale = 2.75 / (maxDim || 1);
         robotWrapper.scale.set(scale, scale, scale);
 
-        // Otimizar materiais PBR
+        // Modificação do Vertex Shader para animar APENAS a cabeça mantendo o peito fixo para frente
         rawModel.traverse((child) => {
           if ((child as THREE.Mesh).isMesh) {
             const mesh = child as THREE.Mesh;
             mesh.castShadow = true;
             mesh.receiveShadow = true;
+
             if (mesh.material) {
-              const mat = mesh.material as THREE.MeshStandardMaterial;
+              const mat = (mesh.material as THREE.MeshStandardMaterial).clone();
               mat.roughness = 0.35;
               mat.metalness = 0.65;
+
+              mat.onBeforeCompile = (shader) => {
+                shader.uniforms.uHeadRotation = headRotationUniform;
+                shader.uniforms.uNeckY = { value: -0.05 };
+                shader.uniforms.uHeadY = { value: 0.30 };
+
+                shader.vertexShader = `
+                  uniform vec2 uHeadRotation;
+                  uniform float uNeckY;
+                  uniform float uHeadY;
+                  ${shader.vertexShader}
+                `;
+
+                shader.vertexShader = shader.vertexShader.replace(
+                  "#include <begin_vertex>",
+                  `
+                  #include <begin_vertex>
+
+                  // Fator de influência da cabeça (0 = peito/ombros fixos, 1 = topo da cabeça)
+                  float headFactor = smoothstep(uNeckY, uHeadY, transformed.y);
+
+                  if (headFactor > 0.0) {
+                    // Rotação Y (Giro esquerda / direita)
+                    float angleY = uHeadRotation.x * headFactor;
+                    float cosY = cos(angleY);
+                    float sinY = sin(angleY);
+                    mat2 rotY = mat2(cosY, sinY, -sinY, cosY);
+                    transformed.xz = rotY * transformed.xz;
+
+                    // Rotação X (Inclinação cima / baixo em torno do pescoço)
+                    float angleX = uHeadRotation.y * headFactor;
+                    float cosX = cos(angleX);
+                    float sinX = sin(angleX);
+                    mat2 rotX = mat2(cosX, -sinX, sinX, cosX);
+                    
+                    transformed.y -= uNeckY;
+                    transformed.yz = rotX * transformed.yz;
+                    transformed.y += uNeckY;
+                  }
+                  `
+                );
+
+                shader.vertexShader = shader.vertexShader.replace(
+                  "#include <beginnormal_vertex>",
+                  `
+                  #include <beginnormal_vertex>
+
+                  float headFactorNorm = smoothstep(uNeckY, uHeadY, position.y);
+                  if (headFactorNorm > 0.0) {
+                    float angleYNorm = uHeadRotation.x * headFactorNorm;
+                    float cosYN = cos(angleYNorm);
+                    float sinYN = sin(angleYNorm);
+                    mat2 rotYN = mat2(cosYN, sinYN, -sinYN, cosYN);
+                    objectNormal.xz = rotYN * objectNormal.xz;
+
+                    float angleXNorm = uHeadRotation.y * headFactorNorm;
+                    float cosXN = cos(angleXNorm);
+                    float sinXN = sin(angleXNorm);
+                    mat2 rotXN = mat2(cosXN, -sinXN, sinXN, cosXN);
+                    objectNormal.yz = rotXN * objectNormal.yz;
+                  }
+                  `
+                );
+              };
+
               mat.needsUpdate = true;
+              mesh.material = mat;
             }
           }
         });
@@ -132,23 +202,18 @@ export default function RobotBust3D() {
       }
     );
 
-    // 5. Render & Animation Loop
+    // 5. Render & Animation Loop (Sem flutuação vertical)
     let animationFrameId: number;
-    let startTime = performance.now();
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
-      const elapsed = (performance.now() - startTime) / 1000;
 
-      // Interpolação suave de rotação
+      // Interpolação suave para a rotação da cabeça
       currentRotY += (targetRotY - currentRotY) * 0.08;
       currentRotX += (targetRotX - currentRotX) * 0.08;
 
-      robotWrapper.rotation.y = currentRotY;
-      robotWrapper.rotation.x = currentRotX;
-
-      // Levitação vertical suave
-      robotWrapper.position.y = Math.sin(elapsed * 1.5) * 0.06;
+      // Passar a rotação calculada para o shader da cabeça
+      headRotationUniform.value.set(currentRotY, currentRotX);
 
       renderer.render(scene, camera);
     };
@@ -158,8 +223,8 @@ export default function RobotBust3D() {
     // 6. Handle Resize
     const handleResize = () => {
       if (!container) return;
-      const w = container.clientWidth || container.offsetWidth || 420;
-      const h = container.clientHeight || container.offsetHeight || 480;
+      const w = container.clientWidth || container.offsetWidth || 480;
+      const h = container.clientHeight || container.offsetHeight || 580;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
@@ -177,9 +242,9 @@ export default function RobotBust3D() {
   }, []);
 
   return (
-    <div className="relative w-full h-[380px] md:h-[480px] lg:h-[540px] flex items-center justify-center select-none">
+    <div className="relative w-full h-[440px] md:h-[540px] lg:h-[620px] flex items-center justify-center select-none">
       {/* Background Neon Aura */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-[#00d1ff]/20 via-[#00e6a5]/15 to-transparent rounded-full blur-[90px] pointer-events-none transform scale-90" />
+      <div className="absolute inset-0 bg-gradient-to-tr from-[#00d1ff]/20 via-[#00e6a5]/15 to-transparent rounded-full blur-[100px] pointer-events-none transform scale-95" />
 
       {/* Loading State */}
       {!isLoaded && !hasError && (
@@ -199,16 +264,6 @@ export default function RobotBust3D() {
 
       {/* Canvas 3D Three.js */}
       <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing z-10" />
-
-      {/* Interactive Badge */}
-      {isLoaded && (
-        <div className="absolute bottom-1 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-cyan-500/30 pointer-events-none shadow-[0_0_12px_rgba(0,229,255,0.2)]">
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-          <span className="font-mono text-[10px] text-cyan-300 tracking-wider uppercase">
-            [ BUSTO 3D INTERATIVO &bull; MOVA O MOUSE ]
-          </span>
-        </div>
-      )}
     </div>
   );
 }
