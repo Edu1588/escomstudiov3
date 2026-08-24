@@ -1627,9 +1627,9 @@ padding-top: 10px;
         <!-- Estrutura de 2 Colunas: Coluna 1 (Robô 3D robotinho-v1.glb) | Coluna 2 (Cards de Resultados) -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
-          <!-- Coluna 1: Modelo 3D Interativo (robotinho-v1.glb) -->
-          <div class="lg:col-span-5 w-full flex flex-col items-center justify-center relative">
-            <div id="robotinho-3d-root" class="w-full h-[440px] md:h-[500px] lg:h-[560px] relative z-10 overflow-visible"></div>
+          <!-- Coluna 1: Modelo 3D Interativo (robotinho-v1.glb) com z-index 99 -->
+          <div class="lg:col-span-5 w-full flex flex-col items-center justify-center relative z-[99]">
+            <div id="robotinho-3d-root" class="w-full h-[520px] md:h-[580px] lg:h-[660px] relative z-[99] overflow-visible"></div>
           </div>
 
           <!-- Coluna 2: Cards de Métricas e Resultados Tangíveis -->
