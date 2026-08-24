@@ -79,8 +79,7 @@ export default function RobotBust3D() {
     scene.add(robotWrapper);
 
     const dracoLoader = new DRACOLoader();
-    // Tenta carregar os decoders Draco da pasta pública local
-    dracoLoader.setDecoderPath('/draco/gltf/');
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
 
     const loader = new GLTFLoader();
     loader.setDRACOLoader(dracoLoader);
