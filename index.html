@@ -707,12 +707,12 @@ padding-top: 10px;
             <!-- Card Flutuante Restaurado (ACTIVE_GROWTH) com Transparência Cristalina -->
             <div
               id="hero-active-growth-card"
-              class="gsap-card system-card relative z-30 p-[1px] rounded-xl group overflow-hidden bg-gradient-to-br from-cyan-500/30 via-cyan-900/10 to-transparent shadow-[0_25px_50px_-12px_rgba(0,229,255,0.25)] w-full max-w-sm sm:max-w-md lg:max-w-md -mt-20 lg:-mt-28 border border-cyan-500/30"
+              class="system-card relative z-30 p-[1px] rounded-xl group overflow-hidden bg-gradient-to-br from-cyan-500/30 via-cyan-900/10 to-transparent shadow-[0_25px_50px_-12px_rgba(0,229,255,0.25)] w-full max-w-sm sm:max-w-md lg:max-w-md -mt-20 lg:-mt-28 border border-cyan-500/30 opacity-100"
               style="backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);"
             >
               <div
                 class="w-full p-6 flex flex-col gap-5 relative z-10 rounded-xl"
-                style="background: rgba(6, 9, 18, 0.22) !important; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);"
+                style="background: rgba(6, 9, 18, 0.40) !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);"
               >
                 <div class="flex justify-between items-center w-full">
                   <div class="flex items-center gap-2">
@@ -2576,20 +2576,20 @@ padding-top: 10px;
               }
           });
 
-          // Parallax Scroll Effect no Card Flutuante ACTIVE_GROWTH (sobe e some em blur)
+          // Parallax Scroll Effect no Card Flutuante ACTIVE_GROWTH (visível no topo, sobe e some em blur ao scrollar)
           const heroActiveCard = document.getElementById("hero-active-growth-card");
           if (heroActiveCard) {
               gsap.to(heroActiveCard, {
                   scrollTrigger: {
-                      trigger: "#main-content",
-                      start: "top top",
-                      end: "bottom 30%",
+                      trigger: "#hero-active-growth-card",
+                      start: "top 60%",
+                      end: "bottom 10%",
                       scrub: 1.2,
                   },
-                  y: -220,
+                  y: -160,
                   opacity: 0,
-                  filter: "blur(24px)",
-                  scale: 0.90,
+                  filter: "blur(20px)",
+                  scale: 0.92,
                   ease: "power2.out"
               });
           }
