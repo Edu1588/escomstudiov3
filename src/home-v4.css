@@ -1,0 +1,706 @@
+/* ==========================================================================
+   ESCOM STUDIO — HOME V4 (THE NOCTURNO EXPERIENCE 100% CINEMA SCROLLYTELLING)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Oswald:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,400;1,500;1,600&family=Space+Grotesk:wght@400;500;700&display=swap');
+
+:root {
+  --paper: #eee9dc;
+  --paper2: #dfd7c2;
+  --paper-card: #f5f0e6;
+  --ink: #121313;
+  --ink-soft: #252627;
+  --ochre: #a99567;
+  --red: #c9332b;
+  --red-bright: #e83b32;
+  --red-dark: #4d110e;
+  --cyan: #38bdf8;
+  --ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #0a0a0a;
+  color: var(--paper);
+  font-family: 'Oswald', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--red);
+  border-radius: 3px;
+}
+
+::selection {
+  background: var(--red);
+  color: #ffffff;
+}
+
+/* Halftone Noise Overlay */
+.comic-grain-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 99;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Fixed Nav Header */
+.cinema-nav {
+  position: fixed;
+  z-index: 80;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+  color: var(--paper);
+  mix-blend-mode: difference;
+}
+
+.cinema-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+}
+
+.cinema-logo__mark {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  font-family: 'Playfair Display', serif;
+  font-size: 19px;
+  font-style: italic;
+}
+
+.cinema-nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cinema-pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(238, 233, 220, 0.08);
+  border: 1px solid rgba(238, 233, 220, 0.25);
+  border-radius: 20px;
+  padding: 6px 14px;
+  color: var(--paper);
+  font: 11px 'DM Mono', monospace;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cinema-pill-btn:hover {
+  background: rgba(238, 233, 220, 0.2);
+  border-color: var(--paper);
+}
+
+.cinema-pill-btn.is-active {
+  border-color: var(--red);
+  color: var(--red-bright);
+}
+
+/* Sound Equalizer Animation */
+.eq-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+}
+
+.eq-bars span {
+  width: 2px;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.eq-bars.playing span:nth-child(1) { animation: eqBounce 0.6s infinite alternate; }
+.eq-bars.playing span:nth-child(2) { animation: eqBounce 0.8s 0.2s infinite alternate; }
+.eq-bars.playing span:nth-child(3) { animation: eqBounce 0.5s 0.4s infinite alternate; }
+
+@keyframes eqBounce {
+  from { height: 2px; }
+  to { height: 12px; }
+}
+
+/* Lateral Progress Bar */
+.cinema-progress-bar {
+  position: fixed;
+  z-index: 70;
+  right: 28px;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transform: translateY(-50%);
+  font: 11px 'DM Mono', monospace;
+  writing-mode: vertical-rl;
+  color: var(--paper);
+  mix-blend-mode: difference;
+}
+
+.cinema-progress-bar i {
+  height: 120px;
+  width: 2px;
+  background: rgba(238, 233, 220, 0.3);
+  display: block;
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.cinema-progress-bar i b {
+  display: block;
+  width: 100%;
+  background: var(--red);
+  transition: height 0.2s ease-out;
+}
+
+/* ==========================================================================
+   MASTER PINNED 100% CINEMA SCROLLYTELLING CONTAINER
+   ========================================================================== */
+.cinema-track {
+  position: relative;
+  height: 900vh; /* 9 full acts of smooth scrub */
+  background: #0a0a0a;
+}
+
+.cinema-viewport {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.8s ease;
+}
+
+.cinema-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s var(--ease), transform 0.6s var(--ease);
+  pointer-events: none;
+}
+
+.cinema-layer.is-active {
+  pointer-events: auto;
+}
+
+/* Fluid SVG Ink Stream Background */
+.cinema-ink-waves {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+/* 1. Insignia Loader */
+.stage-insignia-ring {
+  position: relative;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  border: 1px solid rgba(238, 233, 220, 0.25);
+  display: grid;
+  place-items: center;
+  animation: pulseRing 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes pulseRing {
+  0% { transform: scale(0.95); opacity: 0.7; }
+  100% { transform: scale(1.05); opacity: 1; border-color: rgba(238, 233, 220, 0.7); }
+}
+
+.stage-insignia-rays {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(238, 233, 220, 0.12) 0deg 3deg,
+    transparent 3deg 15deg
+  );
+  animation: rayRotate 35s linear infinite;
+}
+
+@keyframes rayRotate {
+  to { transform: rotate(360deg); }
+}
+
+/* 2. Monumental Headline */
+.cinema-hero-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(3.5rem, 8vw, 7.5rem);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--paper);
+}
+
+.cinema-hero-title span.italic-red {
+  color: var(--red);
+  font-style: italic;
+  font-family: 'Playfair Display', serif;
+  display: block;
+}
+
+/* 3. Perspective Grid Floor */
+.stage-perspective-grid {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 48vh;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    linear-gradient(to top, rgba(18, 19, 19, 0.35) 1px, transparent 1px),
+    linear-gradient(to right, rgba(18, 19, 19, 0.35) 1px, transparent 1px);
+  background-size: 80px 40px;
+  transform: perspective(320px) rotateX(65deg);
+  transform-origin: bottom center;
+}
+
+/* Woodcut Hatched Shader on Robot */
+.woodcut-robot-img {
+  position: absolute;
+  bottom: 6vh;
+  width: min(440px, 46vw);
+  max-height: 72vh;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  filter: contrast(1.4) saturate(0.7) drop-shadow(10px 14px 0 rgba(18, 19, 19, 0.15));
+  transition: transform 0.4s var(--ease);
+}
+
+/* Inset Floating Detail Panels */
+.stage-inset-panel {
+  position: absolute;
+  z-index: 25;
+  border: 1.5px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 6px 6px 0 rgba(18, 19, 19, 0.9);
+  padding: 8px;
+  transition: transform 0.3s ease;
+}
+
+.stage-inset-panel.top-left {
+  left: 8%;
+  top: 18%;
+  width: 150px;
+  transform: rotate(-2deg);
+}
+
+.stage-inset-panel.bottom-right {
+  right: 8%;
+  bottom: 22%;
+  width: 160px;
+  transform: rotate(2deg);
+}
+
+/* Comic Narration Box (Typewriter Style) */
+.stage-narration-box {
+  position: absolute;
+  z-index: 30;
+  max-width: 340px;
+  background: #ffffff;
+  color: #121313;
+  border: 1.5px solid #121313;
+  box-shadow: 5px 5px 0 rgba(18, 19, 19, 0.9);
+  padding: 14px 18px;
+  font: 12px/1.45 'DM Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stage-narration-box.pos-left {
+  left: 8%;
+  bottom: 28%;
+}
+
+.stage-narration-box.pos-right {
+  right: 8%;
+  top: 25%;
+}
+
+/* Monolith Crimson Portal */
+.stage-monolith-portal {
+  width: min(340px, 55vw);
+  height: min(340px, 55vw);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #c9332b 0%, #6e1713 70%, #290806 100%);
+  border: 2px solid var(--ink);
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.85), 0 0 60px rgba(201, 51, 43, 0.5);
+  display: grid;
+  place-items: center;
+  animation: portalGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes portalGlow {
+  0% { transform: scale(0.96); box-shadow: 0 0 40px rgba(201, 51, 43, 0.3); }
+  100% { transform: scale(1.04); box-shadow: 0 0 80px rgba(201, 51, 43, 0.7); }
+}
+
+/* Interactive HOLD & MOVE Disc */
+.stage-hold-disc {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #121313;
+  border: 3px solid #121313;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 0 14px rgba(255, 255, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  z-index: 35;
+  transition: transform 0.1s ease-out, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.stage-hold-disc:active {
+  cursor: grabbing;
+  transform: scale(0.92);
+  background: var(--red);
+  color: #ffffff;
+  box-shadow: 0 0 50px var(--red-bright);
+}
+
+/* Cathedral Pillars */
+.stage-cathedral-columns {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-around;
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+.stage-cathedral-column {
+  width: 44px;
+  height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--red) 0px,
+    var(--red) 4px,
+    #000000 4px,
+    #000000 8px
+  );
+  border-inline: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+/* Eye Close-up Awakening Panel */
+.stage-awakening-strip {
+  width: min(720px, 90vw);
+  height: 170px;
+  border: 3px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 10px 10px 0 var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 40px;
+}
+
+.stage-sensor-orb {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 3px solid var(--ink);
+  background: var(--cyan);
+  box-shadow: 0 0 35px var(--cyan), inset 0 0 15px #0284c7;
+  position: relative;
+  animation: eyeBlink 4s ease-in-out infinite;
+}
+
+.stage-sensor-orb::after {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 20%;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+@keyframes eyeBlink {
+  0%, 94%, 98%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(0.1); }
+}
+
+/* Interactive Floating Artifact Nodes (Climax Scene) */
+.stage-artifacts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: min(840px, 92vw);
+  margin-top: 40px;
+}
+
+.stage-artifact-node {
+  padding: 24px 20px;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+  border-radius: 8px;
+  box-shadow: 6px 6px 0 var(--ink);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+}
+
+.stage-artifact-node:hover {
+  transform: translateY(-8px);
+  border-color: var(--red);
+  box-shadow: 8px 10px 0 var(--red);
+}
+
+.stage-artifact-node span {
+  font: 10px 'DM Mono', monospace;
+  color: var(--red);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.stage-artifact-node h3 {
+  font: 600 22px 'Oswald', sans-serif;
+  text-transform: uppercase;
+  margin: 8px 0 4px;
+}
+
+.stage-artifact-node p {
+  font: 11px/1.5 'DM Mono', monospace;
+  color: var(--ink-soft);
+  margin: 0 0 16px;
+}
+
+.stage-artifact-node .node-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font: 11px 'DM Mono', monospace;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--red);
+  border-top: 1px solid rgba(18, 19, 19, 0.1);
+  padding-top: 10px;
+}
+
+/* ==========================================================================
+   LATERAL HIGH-CONVERSION DRAWERS (SLIDE-IN MODALS)
+   ========================================================================== */
+.cinema-drawer-backdrop {
+  position: fixed;
+  z-index: 120;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeIn 0.25s var(--ease);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.cinema-drawer-content {
+  width: min(600px, 92vw);
+  height: 100vh;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 40px 36px;
+  overflow-y: auto;
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  animation: slideDrawer 0.35s var(--ease);
+}
+
+@keyframes slideDrawer {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.cinema-drawer-close {
+  align-self: flex-end;
+  background: none;
+  border: 1px solid rgba(18, 19, 19, 0.3);
+  border-radius: 20px;
+  padding: 6px 14px;
+  color: var(--ink);
+  font: 11px 'DM Mono', monospace;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 24px;
+  transition: all 0.2s ease;
+}
+
+.cinema-drawer-close:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* Drawer Form Styles */
+.cinema-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.cinema-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font: 11px 'DM Mono', monospace;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.cinema-form input, .cinema-form select {
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  color: var(--ink);
+  font: 13px 'DM Mono', monospace;
+  outline: none;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.cinema-form button[type="submit"] {
+  margin-top: 10px;
+  padding: 14px 20px;
+  background: var(--red);
+  border: 1.5px solid var(--red);
+  color: #ffffff;
+  border-radius: 6px;
+  font: 12px 'DM Mono', monospace;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.cinema-form button[type="submit"]:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+/* Fullscreen Menu Overlay */
+.cinema-menu-overlay {
+  position: fixed;
+  z-index: 110;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(10, 10, 10, 0.96);
+  backdrop-filter: blur(14px);
+  color: var(--paper);
+  animation: fadeIn 0.25s var(--ease);
+}
+
+.menu-inner {
+  width: min(600px, 85vw);
+}
+
+.menu-inner h2 {
+  font: 500 clamp(40px, 6vw, 72px)/0.9 'Oswald', sans-serif;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.menu-inner > button {
+  display: grid;
+  grid-template-columns: 50px 1fr 24px;
+  width: 100%;
+  padding: 14px 0;
+  background: none;
+  border: none;
+  border-top: 1px solid rgba(238, 233, 220, 0.15);
+  color: var(--paper);
+  font: 16px 'Oswald', sans-serif;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: left;
+}
+
+.menu-inner > button:hover {
+  color: var(--red);
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .cinema-nav { padding: 0 20px; }
+  .stage-artifacts-grid { grid-template-columns: 1fr; }
+  .stage-inset-panel { display: none; }
+}

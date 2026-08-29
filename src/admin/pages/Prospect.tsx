@@ -51,7 +51,8 @@ export default function Prospect() {
 
   const [selectedLead, setSelectedLead] = useState<any | null>(null);
   const [activeModalTab, setActiveModalTab] = useState<"Informações" | "Scripts" | "Objeções" | "Site" | "Venda" | "Agendar">("Informações");
-  const [isGeneratingSite, setIsGeneratingSite] = useState(false);
+  const [gerandoPropostaId, setGerandoPropostaId] = useState<string | null>(null);
+  const [reativandoSlug, setReativandoSlug] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCrmLeads();
@@ -81,32 +82,59 @@ export default function Prospect() {
     } catch (err) {}
   };
 
-  const handleGenerateSiteFromCrm = async (lead: any) => {
-    setIsGeneratingSite(true);
+  const handleGerarProposta = async (lead: any) => {
+    setGerandoPropostaId(lead.id);
     try {
-      const res = await fetch("/api/build-and-deploy-site", {
+      const res = await fetch("/api/gerar-proposta", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          companyName: lead.nome,
-          niche: lead.categoria,
-          phone: lead.telefone,
-          address: lead.endereco,
-          website: lead.siteUrl || "",
-          city: lead.cidade
-        })
+        body: JSON.stringify({ leadId: lead.id })
       });
-      const data = await res.json();
-      const newUrl = data.deployedUrl || "https://escom-studio.vercel.app/template-ci-odontologia/index.html";
-      setCrmLeads(prev => prev.map(l => l.id === lead.id ? { ...l, generatedSiteUrl: newUrl } : l));
-      setSelectedLead((prev: any) => ({ ...prev, generatedSiteUrl: newUrl }));
-      alert(`Site gerado com sucesso para ${lead.nome} no padrão benchmark de 15 seções!`);
-      window.open("/template-ci-odontologia/index.html", "_blank");
+      if (!res.ok) throw new Error("Falha ao acionar o n8n");
+      alert(`Proposta em geração para ${lead.nome}! O site-amostra e o PDF ficam disponíveis em alguns instantes.`);
+      await fetchCrmLeads();
     } catch (err) {
-      window.open("/template-ci-odontologia/index.html", "_blank");
+      alert("Erro ao gerar proposta. Verifique se o workflow B do n8n está publicado e ativo.");
     } finally {
-      setIsGeneratingSite(false);
+      setGerandoPropostaId(null);
     }
+  };
+
+  // Reativa uma proposta expirada (site-amostra + PDF do n8n) por R$ 799.
+  // A logica de negocio (novo prazo, novo preco) vive no n8n; aqui so chamamos.
+  const handleReativarProposta = async (lead: any) => {
+    if (!lead.propostaSlug) return;
+    setReativandoSlug(lead.propostaSlug);
+    try {
+      const res = await fetch("/api/reativar-proposta", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: lead.propostaSlug })
+      });
+      if (!res.ok) throw new Error("Falha ao reativar");
+      const data = await res.json();
+      const atualiza = (l: any) => l.id === lead.id
+        ? { ...l, propostaStatus: "gerada", propostaValor: data.novoValor ?? 799, propostaExpiraEm: data.novaExpiraEm }
+        : l;
+      setCrmLeads(prev => prev.map(atualiza));
+      setSelectedLead((prev: any) => (prev && prev.id === lead.id ? atualiza(prev) : prev));
+      alert(`Proposta reativada por R$ ${data.novoValor ?? 799}! O site volta a ficar acessivel por mais 3 dias.`);
+    } catch (err) {
+      alert("Erro ao reativar a proposta. Confira o n8n.");
+    } finally {
+      setReativandoSlug(null);
+    }
+  };
+
+  // Leads criados pelo n8n usam scoreOportunidade (0-100) em vez de indexNum/score,
+  // que so existiam nos leads de mock antigos. Essas funcoes cobrem os dois formatos.
+  const getScore = (lead: any) => lead.scoreOportunidade ?? lead.indexNum ?? lead.score ?? 0;
+  const getTier = (lead: any) => {
+    if (lead.temp) return lead.temp;
+    const s = getScore(lead);
+    if (s >= 70) return "Quente";
+    if (s >= 40) return "Morno";
+    return "Frio";
   };
 
   const filteredLeads = crmLeads.filter(lead => {
@@ -116,12 +144,15 @@ export default function Prospect() {
                           lead.telefone?.includes(searchTerm);
     if (!matchesSearch) return false;
 
+    if (filterTag === "Sem proposta") return !lead.propostaSlug && !lead.generatedSiteUrl;
+    if (filterTag === "Proposta enviada") return lead.propostaStatus === "gerada";
+    if (filterTag === "Pago / Aceito") return lead.propostaStatus === "pago";
+    if (filterTag === "Expirado") return lead.propostaStatus === "expirado";
     if (filterTag === "Sem site") return !lead.temSite;
-    if (filterTag === "Tier 3 (Quente)") return lead.temp === "Quente";
-    if (filterTag === "Tier 2 (Morno)") return lead.temp === "Morno";
-    if (filterTag === "Score 50+") return (lead.score || 0) >= 50;
+    if (filterTag === "Tier 3 (Quente)") return getTier(lead) === "Quente";
+    if (filterTag === "Tier 2 (Morno)") return getTier(lead) === "Morno";
+    if (filterTag === "Score 50+") return getScore(lead) >= 50;
     if (filterTag === "Com telefone") return !!lead.telefone;
-    if (filterTag === "Com WhatsApp") return !!lead.telefone;
     return true;
   });
 
@@ -150,7 +181,7 @@ export default function Prospect() {
 
         {/* CHIPS DE FILTRO COM DESIGN DE BOTÃO QUADRADO (AZUL ESCOM) */}
         <div className="flex items-center gap-2.5 overflow-x-auto pb-2 custom-scrollbar">
-          {["Todos", "Sem site", "Tier 3 (Quente)", "Tier 2 (Morno)", "Score 50+", "Com telefone", "Com WhatsApp"].map(tag => (
+          {["Todos", "Sem proposta", "Proposta enviada", "Pago / Aceito", "Expirado", "Sem site", "Tier 3 (Quente)", "Tier 2 (Morno)", "Score 50+", "Com telefone"].map(tag => (
             <button
               key={tag}
               onClick={() => setFilterTag(tag)}
@@ -200,10 +231,10 @@ export default function Prospect() {
                       >
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-[#2563eb] text-white border border-slate-900">
-                            #{lead.indexNum || 21}
+                            #{getScore(lead)}
                           </span>
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-200 text-slate-800 border border-slate-400">
-                            {lead.temp || "Frio"}
+                            {getTier(lead)}
                           </span>
                         </div>
 
@@ -215,6 +246,45 @@ export default function Prospect() {
                             {lead.categoria} &bull; {lead.cidade}
                           </p>
                         </div>
+
+                        {/* Status da proposta no card */}
+                        {lead.propostaStatus === "pago" ? (
+                          <div className="flex items-center gap-1.5 text-[10px] font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-400 rounded-md px-2 py-1.5 uppercase">
+                            <Check size={11} /> Aceito — Pago
+                          </div>
+                        ) : lead.propostaStatus === "expirado" ? (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleReativarProposta(lead); }}
+                            disabled={reativandoSlug === lead.propostaSlug}
+                            className="w-full text-[10px] font-extrabold text-center py-1.5 rounded-md border border-slate-900 bg-red-50 text-red-700 hover:bg-red-100 transition-colors disabled:opacity-50 uppercase"
+                          >
+                            {reativandoSlug === lead.propostaSlug ? "Reativando…" : "Expirado — Reativar R$ 799"}
+                          </button>
+                        ) : (lead.generatedSiteUrl || lead.pdfUrl) ? (
+                          <div className="flex items-center gap-2 text-[10px] font-bold">
+                            {lead.generatedSiteUrl && (
+                              <a href={lead.generatedSiteUrl} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="flex-1 text-center py-1.5 rounded-md border border-slate-900 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors">
+                                Ver site
+                              </a>
+                            )}
+                            {lead.pdfUrl && (
+                              <a href={lead.pdfUrl} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="flex-1 text-center py-1.5 rounded-md border border-slate-900 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors">
+                                Ver PDF
+                              </a>
+                            )}
+                          </div>
+                        ) : gerandoPropostaId === lead.id ? (
+                          <div className="flex items-center gap-1.5 text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-300 rounded-md px-2 py-1.5">
+                            <Loader2 size={11} className="animate-spin" /> Gerando proposta…
+                          </div>
+                        ) : (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleGerarProposta(lead); }}
+                            className="w-full text-[10px] font-extrabold text-center py-1.5 rounded-md border border-slate-900 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors uppercase"
+                          >
+                            + Gerar proposta
+                          </button>
+                        )}
 
                         {/* Botão de Ligar em Azul ESCOM */}
                         <div className="pt-2 border-t border-slate-200">
@@ -247,7 +317,7 @@ export default function Prospect() {
                     <ChevronLeft size={20} />
                   </button>
                   <span className="text-xs font-extrabold px-2.5 py-1 rounded-md bg-[#2563eb] text-white border border-slate-900">
-                    #{selectedLead.indexNum || 21}
+                    #{getScore(selectedLead)}
                   </span>
                   <h2 className="text-lg font-extrabold text-slate-900 truncate max-w-md">
                     {selectedLead.nome}
@@ -297,15 +367,56 @@ export default function Prospect() {
                       <div className="text-sm font-bold text-slate-900">{selectedLead.endereco || selectedLead.cidade}</div>
                     </div>
 
-                    {/* Botão Gerar Site em Azul ESCOM */}
-                    <button
-                      onClick={() => handleGenerateSiteFromCrm(selectedLead)}
-                      disabled={isGeneratingSite}
-                      className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-extrabold text-sm py-4 rounded-lg border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2 uppercase tracking-wide"
-                    >
-                      {isGeneratingSite ? <Loader2 className="animate-spin" size={18} /> : <Sparkles size={18} />}
-                      <span>Gerar Landing Page Personalizada para {selectedLead.nome}</span>
-                    </button>
+                    {selectedLead.propostaStatus === "expirado" ? (
+                      <div className="bg-red-50 border-2 border-slate-900 p-4 rounded-xl space-y-2">
+                        <span className="text-xs font-mono text-red-700 font-bold uppercase">Amostra expirada (3 dias sem pagamento)</span>
+                        <p className="text-xs text-slate-600">O site e o PDF ficam ocultos ao público até reativar. Reative por um preço promocional — a amostra volta a ficar acessível por mais 3 dias.</p>
+                        <button
+                          onClick={() => handleReativarProposta(selectedLead)}
+                          disabled={reativandoSlug === selectedLead.propostaSlug}
+                          className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-extrabold text-sm py-3 rounded-lg border-2 border-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all uppercase tracking-wide"
+                        >
+                          {reativandoSlug === selectedLead.propostaSlug ? "Reativando..." : "Reativar por R$ 799"}
+                        </button>
+                      </div>
+                    ) : (selectedLead.generatedSiteUrl || selectedLead.pdfUrl) && (
+                      <div className="bg-slate-50 border-2 border-slate-900 p-4 rounded-xl space-y-2">
+                        <span className="text-xs font-mono text-slate-500 font-bold uppercase">Proposta gerada automaticamente (n8n)</span>
+                        <div className="flex gap-2">
+                          {selectedLead.generatedSiteUrl && (
+                            <a href={selectedLead.generatedSiteUrl} target="_blank" rel="noreferrer" className="flex-1 text-center text-xs font-extrabold py-2.5 rounded-lg border-2 border-slate-900 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors">
+                              Ver site-amostra
+                            </a>
+                          )}
+                          {selectedLead.pdfUrl && (
+                            <a href={selectedLead.pdfUrl} target="_blank" rel="noreferrer" className="flex-1 text-center text-xs font-extrabold py-2.5 rounded-lg border-2 border-slate-900 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors">
+                              Ver Análise Estratégica (PDF)
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Botão Gerar Proposta via n8n — só quando ainda não existe proposta */}
+                    {!selectedLead.propostaSlug && !selectedLead.generatedSiteUrl && selectedLead.propostaStatus !== 'expirado' && (
+                      <button
+                        onClick={() => handleGerarProposta(selectedLead)}
+                        disabled={gerandoPropostaId === selectedLead.id}
+                        className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-extrabold text-sm py-4 rounded-lg border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2 uppercase tracking-wide disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        {gerandoPropostaId === selectedLead.id
+                          ? <><Loader2 className="animate-spin" size={18} /><span>Gerando proposta…</span></>
+                          : <><Sparkles size={18} /><span>Gerar Proposta para {selectedLead.nome}</span></>
+                        }
+                      </button>
+                    )}
+
+                    {/* Badge proposta paga */}
+                    {selectedLead.propostaStatus === 'pago' && (
+                      <div className="w-full flex items-center justify-center gap-2 py-3 rounded-lg border-2 border-emerald-600 bg-emerald-50 text-emerald-700 font-extrabold text-sm uppercase tracking-wide">
+                        ✓ Proposta aceita e paga
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

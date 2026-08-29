@@ -668,6 +668,725 @@ function AnimatedMetric({ value, className }: { value: string; className?: strin
   );
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════════
+   TECNOLOGIAS EM DESTAQUE — 4 SIMULAÇÕES INTERATIVAS DE PRODUTOS REAIS
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+function AutoCarrosselDemo() {
+  const [placa, setPlaca] = useState("");
+  const [stage, setStage] = useState<"idle" | "loading" | "done">("idle");
+  const [progress, setProgress] = useState(0);
+
+  const fakeCar = {
+    marca: "Toyota", modelo: "Corolla Cross XRE", ano: "2024/2025",
+    cor: "Branco Pérola", km: "12.450 km", preco: "R$ 189.900",
+    motor: "2.0 Flex 177cv", cambio: "CVT", combustivel: "Flex",
+    itens: ["Central Multimídia 9\"", "Câmera de Ré 360°", "Piloto Automático Adaptativo", "Faróis Full LED", "Teto Solar Panorâmico"]
+  };
+
+  const handleGenerate = () => {
+    if (placa.length < 7) return;
+    setStage("loading");
+    setProgress(0);
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) { clearInterval(interval); setStage("done"); return 100; }
+        return prev + Math.random() * 18 + 4;
+      });
+    }, 180);
+  };
+
+  const reset = () => { setStage("idle"); setPlaca(""); setProgress(0); };
+
+  return (
+    <div className="w-full h-full flex flex-col">
+      {stage === "idle" && (
+        <div className="flex-1 flex flex-col items-center justify-center gap-5 px-4">
+          <div className="text-center">
+            <div className="text-xs font-mono text-[#00e6a5] font-bold tracking-widest mb-2">SISTEMA ATIVO</div>
+            <p className="text-white/60 text-xs font-mono">Digite uma placa para gerar o carrossel automaticamente</p>
+          </div>
+          <div className="flex items-center gap-3 w-full max-w-xs">
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                maxLength={7}
+                placeholder="ABC1D23"
+                className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-white font-mono text-lg text-center tracking-[0.3em] uppercase placeholder:text-white/20 focus:outline-none focus:border-[#00e6a5] transition-colors"
+                value={placa}
+                onChange={e => setPlaca(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 7))}
+                onKeyDown={e => e.key === "Enter" && handleGenerate()}
+              />
+              <div className="absolute -top-2.5 left-3 bg-[#050505] px-2 text-[9px] font-mono text-white/40 uppercase tracking-wider">PLACA DO VEÍCULO</div>
+            </div>
+            <button
+              onClick={handleGenerate}
+              disabled={placa.length < 7}
+              className="px-5 py-3 bg-[#00e6a5] text-black font-mono text-xs font-bold rounded-lg uppercase tracking-wider disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#00ffb7] transition-colors"
+            >
+              Gerar →
+            </button>
+          </div>
+          <div className="flex gap-2 mt-1">
+            {["ABC1D23","XYZ9F87","MOT4H56"].map(p => (
+              <button key={p} onClick={() => setPlaca(p)} className="px-3 py-1 text-[10px] font-mono text-white/40 border border-white/10 rounded-full hover:border-[#00e6a5] hover:text-[#00e6a5] transition-colors">
+                {p}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {stage === "loading" && (
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6">
+          <div className="w-8 h-8 border-2 border-[#00e6a5]/30 border-t-[#00e6a5] rounded-full animate-spin" />
+          <div className="w-full max-w-xs">
+            <div className="flex justify-between text-[10px] font-mono text-white/50 mb-1.5">
+              <span>Consultando FIPE + Detran...</span>
+              <span>{Math.min(100, Math.round(progress))}%</span>
+            </div>
+            <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div className="h-full bg-[#00e6a5] rounded-full transition-all duration-200" style={{ width: `${Math.min(100, progress)}%` }} />
+            </div>
+          </div>
+          <div className="space-y-1 text-[10px] font-mono text-white/30 text-center">
+            {progress > 20 && <p className="animate-pulse">✓ Dados do veículo localizados</p>}
+            {progress > 50 && <p className="animate-pulse">✓ Preço FIPE referência carregado</p>}
+            {progress > 75 && <p className="animate-pulse">✓ Gerando layout do carrossel...</p>}
+          </div>
+        </div>
+      )}
+
+      {stage === "done" && (
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Header do Carrossel Gerado */}
+          <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-mono text-[#00e6a5] font-bold">✓ CARROSSEL GERADO — {placa}</span>
+            </div>
+            <button onClick={reset} className="text-[10px] font-mono text-white/40 hover:text-white transition-colors">
+              Nova consulta ↺
+            </button>
+          </div>
+
+          {/* Preview do Carrossel */}
+          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+            {/* Slide 1: Cover */}
+            <div className="bg-gradient-to-br from-[#0b0c14] to-[#111827] border border-white/10 rounded-xl p-4 relative overflow-hidden">
+              <div className="absolute top-2 right-2 px-2 py-0.5 bg-[#00e6a5]/20 text-[#00e6a5] text-[9px] font-mono font-bold rounded-full">SLIDE 1/4</div>
+              <div className="text-[10px] font-mono text-white/40 mb-1">{fakeCar.marca}</div>
+              <h4 className="text-white font-bold text-lg leading-tight">{fakeCar.modelo}</h4>
+              <div className="text-2xl font-bold text-[#00e6a5] mt-2">{fakeCar.preco}</div>
+              <div className="flex gap-4 mt-3 text-[10px] font-mono text-white/50">
+                <span>{fakeCar.ano}</span>
+                <span>•</span>
+                <span>{fakeCar.km}</span>
+                <span>•</span>
+                <span>{fakeCar.cor}</span>
+              </div>
+            </div>
+
+            {/* Slide 2: Ficha Técnica */}
+            <div className="bg-[#0b0c14] border border-white/10 rounded-xl p-4">
+              <div className="absolute top-2 right-2 px-2 py-0.5 bg-white/5 text-white/40 text-[9px] font-mono rounded-full">SLIDE 2/4</div>
+              <div className="text-[10px] font-mono text-[#00e6a5] font-bold mb-2">FICHA TÉCNICA</div>
+              <div className="grid grid-cols-2 gap-2">
+                {[["Motor", fakeCar.motor], ["Câmbio", fakeCar.cambio], ["Combustível", fakeCar.combustivel], ["Quilometragem", fakeCar.km]].map(([k, v]) => (
+                  <div key={k} className="bg-white/5 rounded-lg p-2">
+                    <div className="text-[9px] font-mono text-white/40">{k}</div>
+                    <div className="text-xs font-mono text-white font-bold">{v}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Slide 3: Opcionais */}
+            <div className="bg-[#0b0c14] border border-white/10 rounded-xl p-4">
+              <div className="text-[10px] font-mono text-[#00e6a5] font-bold mb-2">OPCIONAIS DE DESTAQUE</div>
+              <div className="space-y-1.5">
+                {fakeCar.itens.map(item => (
+                  <div key={item} className="flex items-center gap-2 text-xs font-mono text-white/80">
+                    <span className="w-1.5 h-1.5 bg-[#00e6a5] rounded-full flex-shrink-0" />
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Action bar */}
+            <div className="flex gap-2">
+              <div className="flex-1 py-2.5 bg-[#00e6a5] text-black text-center text-xs font-mono font-bold rounded-lg">
+                📥 Baixar Carrossel (PNG)
+              </div>
+              <div className="flex-1 py-2.5 bg-white/5 border border-white/10 text-white text-center text-xs font-mono rounded-lg">
+                📤 Postar no Instagram
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AgenteIADemo() {
+  const [msgs, setMsgs] = useState<{ from: "bot" | "user"; text: string }[]>([]);
+  const [step, setStep] = useState(0);
+  const [typing, setTyping] = useState(false);
+  const chatRef = useRef<HTMLDivElement>(null);
+
+  const conversation = [
+    { from: "bot" as const, text: "Olá! 👋 Sou a assistente virtual da ESCOM Studio. Como posso ajudar você hoje?" },
+    { from: "user" as const, text: "Oi, quero saber sobre criação de sites" },
+    { from: "bot" as const, text: "Perfeito! Trabalhamos com sites de alta conversão. Antes de prosseguir, qual o segmento da sua empresa?" },
+    { from: "user" as const, text: "Clínica odontológica" },
+    { from: "bot" as const, text: "Ótimo! Temos cases de sucesso com clínicas. Qual seu faturamento mensal aproximado?" },
+    { from: "user" as const, text: "Entre 80 e 120 mil" },
+    { from: "bot" as const, text: "Excelente perfil! 🎯 Lead qualificado. Vou conectar você com nosso especialista agora. Ele vai entrar em contato no seu WhatsApp em menos de 3 minutos." },
+    { from: "bot" as const, text: "📊 Relatório automático enviado ao CRM:\n• Lead: Quente ★★★★★\n• Segmento: Saúde/Odonto\n• Ticket estimado: R$ 4.900+\n• Próximo passo: Agendar diagnóstico" },
+  ];
+
+  useEffect(() => {
+    if (step >= conversation.length) return;
+    const msg = conversation[step];
+    const delay = msg.from === "bot" ? 1200 : 800;
+
+    if (msg.from === "bot") {
+      setTyping(true);
+      const t = setTimeout(() => {
+        setTyping(false);
+        setMsgs(prev => [...prev, msg]);
+        setStep(prev => prev + 1);
+      }, delay);
+      return () => clearTimeout(t);
+    } else {
+      const t = setTimeout(() => {
+        setMsgs(prev => [...prev, msg]);
+        setStep(prev => prev + 1);
+      }, delay);
+      return () => clearTimeout(t);
+    }
+  }, [step]);
+
+  useEffect(() => {
+    if (msgs.length === 0 && step === 0) {
+      const t = setTimeout(() => setStep(1), 500);
+      setMsgs([conversation[0]]);
+      return () => clearTimeout(t);
+    }
+  }, []);
+
+  useEffect(() => {
+    chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: "smooth" });
+  }, [msgs, typing]);
+
+  const restart = () => { setMsgs([]); setStep(0); };
+
+  return (
+    <div className="w-full h-full flex flex-col">
+      {/* Chat Header */}
+      <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#00e6a5] to-[#00d1ff] flex items-center justify-center text-black text-xs font-bold">IA</div>
+          <div>
+            <div className="text-xs font-mono text-white font-bold">Agente ESCOM</div>
+            <div className="text-[10px] font-mono text-[#00e6a5] flex items-center gap-1">
+              <span className="w-1.5 h-1.5 bg-[#00e6a5] rounded-full animate-pulse" /> Online 24/7
+            </div>
+          </div>
+        </div>
+        <button onClick={restart} className="text-[10px] font-mono text-white/40 hover:text-white transition-colors">Reiniciar ↺</button>
+      </div>
+
+      {/* Chat Messages */}
+      <div ref={chatRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+        {msgs.map((m, i) => (
+          <div key={i} className={`flex ${m.from === "user" ? "justify-end" : "justify-start"}`}>
+            <div className={`max-w-[80%] px-3.5 py-2.5 rounded-xl text-xs font-mono whitespace-pre-line ${
+              m.from === "user"
+                ? "bg-[#00e6a5] text-black rounded-br-sm"
+                : "bg-white/10 text-white/90 rounded-bl-sm"
+            }`}>
+              {m.text}
+            </div>
+          </div>
+        ))}
+        {typing && (
+          <div className="flex justify-start">
+            <div className="bg-white/10 px-4 py-2.5 rounded-xl rounded-bl-sm flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+              <span className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <span className="w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Input bar disabled (simulated) */}
+      <div className="px-4 py-2.5 border-t border-white/10">
+        <div className="bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-xs font-mono text-white/30 flex items-center justify-between">
+          <span>Simulação automática em andamento...</span>
+          <span className="text-[#00e6a5] text-[10px]">● LIVE</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MaquinaGoogleDemo() {
+  const [activeTab, setActiveTab] = useState<"seo" | "ga4" | "gmn">("seo");
+
+  return (
+    <div className="w-full h-full flex flex-col">
+      {/* Tabs */}
+      <div className="px-4 py-2 border-b border-white/10 flex gap-1">
+        {([["seo", "SEO Score"], ["ga4", "Google Analytics"], ["gmn", "Meu Negócio"]] as const).map(([key, label]) => (
+          <button
+            key={key}
+            onClick={() => setActiveTab(key)}
+            className={`px-3 py-1.5 rounded-md text-[10px] font-mono font-bold tracking-wider transition-colors ${
+              activeTab === key ? "bg-[#00e6a5] text-black" : "text-white/40 hover:text-white/80"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-4 py-3">
+        {activeTab === "seo" && (
+          <div className="space-y-4">
+            {/* Score Circle */}
+            <div className="flex items-center gap-6">
+              <div className="relative w-20 h-20">
+                <svg viewBox="0 0 36 36" className="w-20 h-20 -rotate-90">
+                  <circle cx="18" cy="18" r="15.5" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="2.5" />
+                  <circle cx="18" cy="18" r="15.5" fill="none" stroke="#00e6a5" strokeWidth="2.5" strokeLinecap="round"
+                    strokeDasharray="97.4" strokeDashoffset="2.6" className="transition-all duration-1000" />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-xl font-bold text-[#00e6a5]">97</span>
+                  <span className="text-[8px] font-mono text-white/40">/100</span>
+                </div>
+              </div>
+              <div>
+                <div className="text-xs font-mono text-[#00e6a5] font-bold">LIGHTHOUSE SCORE</div>
+                <div className="text-white/60 text-[10px] font-mono mt-1">Performance • SEO • Acessibilidade</div>
+              </div>
+            </div>
+
+            {/* Metrics Grid */}
+            <div className="grid grid-cols-2 gap-2">
+              {[["LCP", "0.4s", "#00e6a5"], ["FID", "12ms", "#00e6a5"], ["CLS", "0.01", "#00e6a5"], ["TTFB", "85ms", "#00e6a5"]].map(([label, val, color]) => (
+                <div key={label} className="bg-white/5 rounded-lg p-3">
+                  <div className="text-[9px] font-mono text-white/40">{label}</div>
+                  <div className="text-sm font-mono font-bold" style={{ color }}>{val}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Keyword Ranking */}
+            <div>
+              <div className="text-[10px] font-mono text-[#00e6a5] font-bold mb-2">RANQUEAMENTO DE PALAVRAS-CHAVE</div>
+              <div className="space-y-1.5">
+                {[["clínica odontológica SP", "1º", "+3"], ["implante dentário preço", "2º", "+5"], ["dentista zona sul", "1º", "+7"], ["harmonização facial", "3º", "+2"]].map(([kw, pos, change]) => (
+                  <div key={kw} className="flex items-center justify-between py-1.5 border-b border-white/5 text-[10px] font-mono">
+                    <span className="text-white/70">{kw}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#00e6a5] font-bold">{pos}</span>
+                      <span className="text-[#00e6a5]/60">↑{change}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "ga4" && (
+          <div className="space-y-4">
+            <div className="text-[10px] font-mono text-[#00e6a5] font-bold">GOOGLE ANALYTICS 4 — ÚLTIMOS 30 DIAS</div>
+
+            {/* KPI Row */}
+            <div className="grid grid-cols-3 gap-2">
+              {[["Sessões", "14.832", "+23%"], ["Conversões", "487", "+41%"], ["Taxa Conv.", "3.28%", "+0.8%"]].map(([label, val, change]) => (
+                <div key={label} className="bg-white/5 rounded-lg p-3 text-center">
+                  <div className="text-[9px] font-mono text-white/40">{label}</div>
+                  <div className="text-sm font-mono font-bold text-white">{val}</div>
+                  <div className="text-[9px] font-mono text-[#00e6a5]">{change}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Mini Chart (ASCII bars) */}
+            <div>
+              <div className="text-[9px] font-mono text-white/40 mb-2">TRÁFEGO SEMANAL</div>
+              <div className="flex items-end gap-1 h-16">
+                {[45, 62, 38, 71, 58, 85, 92].map((v, i) => (
+                  <div key={i} className="flex-1 bg-[#00e6a5]/20 rounded-t relative group hover:bg-[#00e6a5]/40 transition-colors" style={{ height: `${v}%` }}>
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-[8px] font-mono text-white/0 group-hover:text-white/60 transition-colors">{v}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-between text-[8px] font-mono text-white/30 mt-1">
+                <span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span>
+              </div>
+            </div>
+
+            {/* Event Tracking */}
+            <div>
+              <div className="text-[9px] font-mono text-white/40 mb-2">EVENTOS RASTREADOS</div>
+              <div className="space-y-1">
+                {[["click_whatsapp", "312"], ["form_submit", "175"], ["scroll_80%", "2.841"], ["video_play", "489"]].map(([ev, count]) => (
+                  <div key={ev} className="flex items-center justify-between text-[10px] font-mono py-1 border-b border-white/5">
+                    <span className="text-white/60">{ev}</span>
+                    <span className="text-white font-bold">{count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "gmn" && (
+          <div className="space-y-4">
+            <div className="text-[10px] font-mono text-[#00e6a5] font-bold">GOOGLE MEU NEGÓCIO — PERFORMANCE</div>
+
+            {/* Business Card Preview */}
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#4285F4] to-[#34A853] flex items-center justify-center text-white font-bold text-sm">G</div>
+                <div className="flex-1">
+                  <h4 className="text-white text-sm font-bold">Clínica Odonto Premium</h4>
+                  <div className="flex items-center gap-1 mt-0.5">
+                    <div className="flex text-yellow-400 text-[10px]">★★★★★</div>
+                    <span className="text-[10px] font-mono text-white/50">4.9 (287 avaliações)</span>
+                  </div>
+                  <p className="text-[10px] font-mono text-white/40 mt-1">Aberto • Fecha às 19:00</p>
+                </div>
+              </div>
+            </div>
+
+            {/* GMN Metrics */}
+            <div className="grid grid-cols-2 gap-2">
+              {[["Visualizações", "8.421", "Mapa + Busca"], ["Cliques no Site", "1.247", "+34% mês"], ["Ligações", "389", "Direto do perfil"], ["Rotas Traçadas", "612", "Google Maps"]].map(([label, val, sub]) => (
+                <div key={label} className="bg-white/5 rounded-lg p-3">
+                  <div className="text-[9px] font-mono text-white/40">{label}</div>
+                  <div className="text-sm font-mono font-bold text-white">{val}</div>
+                  <div className="text-[8px] font-mono text-[#00e6a5]/70">{sub}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Posts Scheduled */}
+            <div>
+              <div className="text-[9px] font-mono text-white/40 mb-2">POSTS AGENDADOS NO GMN</div>
+              <div className="space-y-1.5">
+                {[["Promoção de Clareamento", "Publicar em 2h"], ["Depoimento da Paciente Ana", "Amanhã 10:00"], ["Novo Procedimento: Lente", "Sex 14:00"]].map(([title, when]) => (
+                  <div key={title} className="flex items-center justify-between py-1.5 border-b border-white/5 text-[10px] font-mono">
+                    <span className="text-white/70">{title}</span>
+                    <span className="text-[#00e6a5]/70">{when}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function MineradorLeadsDemo() {
+  const [nicho, setNicho] = useState("");
+  const [cidade, setCidade] = useState("");
+  const [stage, setStage] = useState<"idle" | "mining" | "results">("idle");
+  const [progress, setProgress] = useState(0);
+  const [foundCount, setFoundCount] = useState(0);
+
+  const fakeLeads = [
+    { nome: "Dr. Marcos Silva", empresa: "OdontoVita Clínica", cidade: "São Paulo, SP", tel: "(11) 9****-8247", email: "m****@odontovita.com.br", score: 94 },
+    { nome: "Dra. Ana Beatriz", empresa: "Sorriso Perfeito", cidade: "Campinas, SP", tel: "(19) 9****-1390", email: "a****@sorriso.com", score: 89 },
+    { nome: "Dr. Roberto Nunes", empresa: "Clínica Oral Premium", cidade: "Santos, SP", tel: "(13) 9****-7621", email: "r****@oralpremium.com", score: 87 },
+    { nome: "Dra. Juliana Costa", empresa: "ImplantCenter SP", cidade: "Guarulhos, SP", tel: "(11) 9****-4512", email: "j****@implantcenter.com", score: 82 },
+  ];
+
+  const handleMine = () => {
+    if (!nicho || !cidade) return;
+    setStage("mining");
+    setProgress(0);
+    setFoundCount(0);
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) { clearInterval(interval); setStage("results"); return 100; }
+        const next = prev + Math.random() * 12 + 3;
+        if (next > 30 && foundCount === 0) setFoundCount(1);
+        if (next > 55) setFoundCount(2);
+        if (next > 75) setFoundCount(3);
+        if (next > 90) setFoundCount(4);
+        return next;
+      });
+    }, 200);
+  };
+
+  const reset = () => { setStage("idle"); setNicho(""); setCidade(""); setProgress(0); setFoundCount(0); };
+
+  return (
+    <div className="w-full h-full flex flex-col">
+      {stage === "idle" && (
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 px-5">
+          <div className="text-center">
+            <div className="text-xs font-mono text-[#00e6a5] font-bold tracking-widest mb-1">MINERADOR B2B</div>
+            <p className="text-white/60 text-[10px] font-mono">Encontre o lead perfeito com um clique</p>
+          </div>
+
+          <div className="w-full max-w-xs space-y-2.5">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Ex: Clínicas Odontológicas"
+                className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-2.5 text-white font-mono text-xs placeholder:text-white/20 focus:outline-none focus:border-[#00e6a5] transition-colors"
+                value={nicho}
+                onChange={e => setNicho(e.target.value)}
+              />
+              <div className="absolute -top-2 left-3 bg-[#050505] px-2 text-[8px] font-mono text-white/40 uppercase tracking-wider">SEGMENTO / NICHO</div>
+            </div>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Ex: São Paulo, SP"
+                className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-2.5 text-white font-mono text-xs placeholder:text-white/20 focus:outline-none focus:border-[#00e6a5] transition-colors"
+                value={cidade}
+                onChange={e => setCidade(e.target.value)}
+              />
+              <div className="absolute -top-2 left-3 bg-[#050505] px-2 text-[8px] font-mono text-white/40 uppercase tracking-wider">CIDADE / REGIÃO</div>
+            </div>
+            <button
+              onClick={handleMine}
+              disabled={!nicho || !cidade}
+              className="w-full py-2.5 bg-[#00e6a5] text-black font-mono text-xs font-bold rounded-lg uppercase tracking-wider disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#00ffb7] transition-colors"
+            >
+              🔍 Minerar Leads →
+            </button>
+          </div>
+
+          <div className="flex gap-2 mt-1">
+            {[["Clínicas", "São Paulo"], ["Advocacia", "Curitiba"], ["SaaS", "Remoto"]].map(([n, c]) => (
+              <button key={n} onClick={() => { setNicho(n); setCidade(c); }} className="px-3 py-1 text-[9px] font-mono text-white/30 border border-white/10 rounded-full hover:border-[#00e6a5] hover:text-[#00e6a5] transition-colors">
+                {n} • {c}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {stage === "mining" && (
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6">
+          <div className="w-8 h-8 border-2 border-[#00e6a5]/30 border-t-[#00e6a5] rounded-full animate-spin" />
+          <div className="w-full max-w-xs">
+            <div className="flex justify-between text-[10px] font-mono text-white/50 mb-1.5">
+              <span>Minerando leads B2B...</span>
+              <span>{Math.min(100, Math.round(progress))}%</span>
+            </div>
+            <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div className="h-full bg-[#00e6a5] rounded-full transition-all duration-200" style={{ width: `${Math.min(100, progress)}%` }} />
+            </div>
+          </div>
+          <div className="text-center text-[10px] font-mono text-white/40 space-y-0.5">
+            {progress > 15 && <p className="animate-pulse">✓ Varrendo Google Maps, LinkedIn e bases B2B...</p>}
+            {progress > 50 && <p className="text-[#00e6a5]">⚡ {foundCount} leads qualificados encontrados</p>}
+            {progress > 80 && <p className="animate-pulse">✓ Validando contatos e scoring...</p>}
+          </div>
+        </div>
+      )}
+
+      {stage === "results" && (
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+            <div>
+              <span className="text-[10px] font-mono text-[#00e6a5] font-bold">✓ {fakeLeads.length} LEADS ENCONTRADOS</span>
+              <span className="text-[10px] font-mono text-white/30 ml-2">"{nicho}" em {cidade}</span>
+            </div>
+            <button onClick={reset} className="text-[10px] font-mono text-white/40 hover:text-white transition-colors">Nova busca ↺</button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2.5">
+            {fakeLeads.map((lead, i) => (
+              <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-3.5 hover:border-[#00e6a5]/30 transition-colors group">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h4 className="text-white text-xs font-bold">{lead.nome}</h4>
+                    <p className="text-[10px] font-mono text-white/50">{lead.empresa}</p>
+                    <p className="text-[10px] font-mono text-white/30">{lead.cidade}</p>
+                  </div>
+                  <div className="text-right">
+                    <div className={`text-sm font-mono font-bold ${lead.score >= 90 ? "text-[#00e6a5]" : "text-yellow-400"}`}>
+                      {lead.score}%
+                    </div>
+                    <div className="text-[8px] font-mono text-white/30">SCORE</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 mt-2 text-[10px] font-mono text-white/40">
+                  <span>📞 {lead.tel}</span>
+                  <span>✉️ {lead.email}</span>
+                </div>
+                <div className="mt-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex-1 py-1.5 bg-[#00e6a5]/20 text-[#00e6a5] text-center text-[10px] font-mono font-bold rounded">
+                    Abordar via WhatsApp
+                  </div>
+                  <div className="flex-1 py-1.5 bg-white/5 text-white/50 text-center text-[10px] font-mono rounded">
+                    Salvar no CRM
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TecnologiasEmDestaque() {
+  const [activeDemo, setActiveDemo] = useState(0);
+
+  const demos = [
+    {
+      tag: "CONCESSIONÁRIAS",
+      title: "AutoCarrossel por Placa",
+      desc: "O vendedor digita a placa do veículo e o sistema consulta FIPE, Detran e base interna para montar automaticamente um carrossel profissional pronto para postar no Instagram, OLX e site.",
+      icon: "🚗",
+      component: <AutoCarrosselDemo />,
+    },
+    {
+      tag: "ATENDIMENTO 24/7",
+      title: "Agente Inteligente de IA",
+      desc: "Nosso agente faz o primeiro atendimento no WhatsApp, entende a necessidade, qualifica o lead com perguntas estratégicas, envia relatório automático ao CRM e acompanha toda a jornada.",
+      icon: "🤖",
+      component: <AgenteIADemo />,
+    },
+    {
+      tag: "GOOGLE & SEO",
+      title: "Máquina de Ranqueamento",
+      desc: "Sites otimizados para aparecer na 1ª página do Google. Implementamos SEO técnico, Google Analytics 4 com rastreamento avançado de eventos e Google Meu Negócio para captação local.",
+      icon: "🌐",
+      component: <MaquinaGoogleDemo />,
+    },
+    {
+      tag: "PROSPECÇÃO B2B",
+      title: "Minerador de Leads",
+      desc: "Com um clique, o sistema varre Google Maps, LinkedIn e bases B2B para encontrar o lead ideal com contato validado, score de qualificação e botão de abordagem direta via WhatsApp.",
+      icon: "🎯",
+      component: <MineradorLeadsDemo />,
+    },
+  ];
+
+  return (
+    <section id="tecnologias" className="border-b border-white/10 bg-[#050505] relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute top-1/3 -left-40 w-[500px] h-[500px] bg-[#00e6a5]/5 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-1/4 -right-40 w-[400px] h-[400px] bg-[#00d1ff]/5 rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="mx-auto max-w-[1400px] px-6 py-20 md:px-10 md:py-32 relative z-10">
+        {/* Header */}
+        <div className="mb-16">
+          <div className="font-mono text-xs text-[#00e6a5] font-bold tracking-widest uppercase">{"> /02.5 TECNOLOGIAS EM PRODUÇÃO"}</div>
+          <h2 className="text-5xl md:text-7xl font-bold tracking-tight mt-4 text-white">
+            Tecnologias em<br /><span className="italic font-light text-[#00e6a5]">Destaque.</span>
+          </h2>
+          <p className="text-white/50 text-sm font-mono max-w-xl mt-4">
+            Soluções proprietárias que já estão em produção gerando resultado para nossos clientes. Interaja com as demonstrações abaixo:
+          </p>
+        </div>
+
+        {/* Demo Layout */}
+        <div className="grid lg:grid-cols-12 gap-8">
+          {/* Left: Demo Tabs */}
+          <div className="lg:col-span-5 flex flex-col gap-3">
+            {demos.map((demo, i) => (
+              <motion.button
+                key={demo.title}
+                onClick={() => setActiveDemo(i)}
+                className={`text-left p-5 rounded-2xl border transition-all duration-300 ${
+                  activeDemo === i
+                    ? "bg-[#0b0c14] border-[#00e6a5]/40 shadow-lg shadow-[#00e6a5]/5"
+                    : "bg-white/[0.02] border-white/10 hover:border-white/20"
+                }`}
+                whileHover={{ y: -2 }}
+              >
+                <div className="flex items-start gap-4">
+                  <div className={`text-2xl w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
+                    activeDemo === i ? "bg-[#00e6a5]/10" : "bg-white/5"
+                  }`}>
+                    {demo.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className={`text-[10px] font-mono font-bold tracking-widest mb-1 transition-colors ${
+                      activeDemo === i ? "text-[#00e6a5]" : "text-white/30"
+                    }`}>
+                      {demo.tag}
+                    </div>
+                    <h3 className={`text-lg font-bold tracking-tight transition-colors ${
+                      activeDemo === i ? "text-white" : "text-white/70"
+                    }`}>
+                      {demo.title}
+                    </h3>
+                    {activeDemo === i && (
+                      <motion.p
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        className="text-white/50 text-xs font-mono mt-2 leading-relaxed"
+                      >
+                        {demo.desc}
+                      </motion.p>
+                    )}
+                  </div>
+                </div>
+              </motion.button>
+            ))}
+
+            {/* CTA */}
+            <a
+              href="#contato"
+              className="mt-4 flex items-center justify-center gap-2 py-3.5 bg-[#00e6a5] text-black font-mono text-xs font-bold rounded-xl tracking-wider uppercase hover:bg-[#00ffb7] transition-colors"
+            >
+              Quero essas tecnologias na minha empresa →
+            </a>
+          </div>
+
+          {/* Right: Interactive Demo Viewport */}
+          <div className="lg:col-span-7">
+            <div className="bg-[#0a0b12] border border-white/10 rounded-2xl overflow-hidden shadow-2xl h-[540px] flex flex-col">
+              {/* Window Chrome */}
+              <div className="h-10 bg-[#0b0c14] border-b border-white/10 flex items-center px-4 gap-2 flex-shrink-0">
+                <div className="flex gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+                </div>
+                <div className="flex-1 text-center">
+                  <span className="text-[10px] font-mono text-white/30">
+                    escom-studio://{demos[activeDemo].title.toLowerCase().replace(/ /g, "-")}
+                  </span>
+                </div>
+                <div className="text-[9px] font-mono text-[#00e6a5]/50 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 bg-[#00e6a5] rounded-full animate-pulse" />
+                  DEMO LIVE
+                </div>
+              </div>
+
+              {/* Demo Content */}
+              <div className="flex-1 overflow-hidden">
+                {demos[activeDemo].component}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function BrillianceHome() {
   const [gifs, setGifs] = useState<string[]>([]);
 
@@ -1213,6 +1932,11 @@ export default function BrillianceHome() {
           </div>
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          TECNOLOGIAS EM DESTAQUE — 4 SIMULAÇÕES INTERATIVAS
+          ═══════════════════════════════════════════════════════════════════════ */}
+      <TecnologiasEmDestaque />
 
       {/* COST COMPARISON */}
       <section id="custos" className="border-b border-ink bg-ink text-paper">

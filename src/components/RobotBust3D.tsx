@@ -16,13 +16,18 @@ export default function RobotBust3D() {
     // 1. Scene, Camera, Renderer Setup
     const scene = new THREE.Scene();
 
-    const getWidth = () => container.clientWidth || container.offsetWidth || 480;
-    const getHeight = () => container.clientHeight || container.offsetHeight || 600;
+    const getWidth = () => container.clientWidth || container.offsetWidth || 560;
+    const getHeight = () => container.clientHeight || container.offsetHeight || 680;
 
-    // Câmera posicionada para enquadramento perfeito com busto levemente maior
-    const camera = new THREE.PerspectiveCamera(40, getWidth() / getHeight(), 0.1, 1000);
-    camera.position.set(0, -0.01, 3.35);
-    camera.lookAt(0, -0.01, 0);
+    const isMobileViewport = window.innerWidth < 1024;
+    const camera = new THREE.PerspectiveCamera(38, getWidth() / getHeight(), 0.1, 1000);
+    if (isMobileViewport) {
+      camera.position.set(0, 0.16, 2.60);
+      camera.lookAt(0, 0.12, 0);
+    } else {
+      camera.position.set(0, 0.08, 3.20);
+      camera.lookAt(0, 0.01, 0);
+    }
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -33,50 +38,127 @@ export default function RobotBust3D() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.35;
+    renderer.toneMappingExposure = 1.30;
 
     container.innerHTML = "";
     container.appendChild(renderer.domElement);
 
-    // 2. Iluminação Cyberpunk
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x09090b, 3.5);
+    // 2. Iluminação PBR de Alta Definição
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x09090b, 2.8);
     scene.add(hemiLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 4.2);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 3.8);
     keyLight.position.set(3, 5, 5);
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0x00d1ff, 3.2);
+    const fillLight = new THREE.DirectionalLight(0x00d1ff, 2.5);
     fillLight.position.set(-4, 2, 2);
     scene.add(fillLight);
 
-    const rimLight = new THREE.PointLight(0x00d1ff, 6.5, 15);
-    rimLight.position.set(-2, 3, -3);
+    const rimLight = new THREE.PointLight(0x00ffff, 5.5, 16);
+    rimLight.position.set(-2, 3, -2);
     scene.add(rimLight);
 
-    const accentLight = new THREE.PointLight(0x00e6a5, 5.5, 15);
+    const accentLight = new THREE.PointLight(0x00e6a5, 3.8, 14);
     accentLight.position.set(3, -2, 3);
     scene.add(accentLight);
 
-    // 3. Variáveis de Rastreamento do Mouse
+    // 2.1 Luzes de Alta Precisão dos Olhos / Face (Azul Neon Puro 0x00f0ff / 0x00d8ff, sem sprites/bolas)
+    const faceGlowLight = new THREE.PointLight(0x00d8ff, 0, 2.2);
+    faceGlowLight.position.set(0, 0.40, 0.42);
+
+    const eyeL = new THREE.PointLight(0x00f0ff, 0, 1.2);
+    eyeL.position.set(-0.13, 0.41, 0.38);
+
+    const eyeR = new THREE.PointLight(0x00f0ff, 0, 1.2);
+    eyeR.position.set(0.13, 0.41, 0.38);
+
+    const chinUnderglow = new THREE.PointLight(0x0099ff, 0, 1.4);
+    chinUnderglow.position.set(0, 0.20, 0.32);
+
+    // 3. Rastreamento do Mouse (Desktop) + Modo Automático Lento (Mobile)
     let targetRotX = 0;
     let targetRotY = 0;
     let currentRotX = 0;
     let currentRotY = 0;
+    let isDesktopMouseActive = false;
+
+    // 4. Controle de Acendimento no Clique com Desligamento Automático (Timer 3.5s)
+    let isEyesOn = false;
+    let currentEyeIntensity = 0.0;
+    let isAnimatingToggle = false;
+    let toggleStartTime = 0;
+    let autoTurnOffTimer: number | null = null;
+
+    type Keyframe = { time: number; intensity: number };
+    let toggleSequence: Keyframe[] = [];
+
+    const handleToggleEyes = () => {
+      if (autoTurnOffTimer) {
+        clearTimeout(autoTurnOffTimer);
+        autoTurnOffTimer = null;
+      }
+
+      isEyesOn = true;
+      toggleStartTime = performance.now();
+      isAnimatingToggle = true;
+
+      // Sequência de Ignição Cyberpunk: Flashes de alta voltagem neon e estabilização
+      toggleSequence = [
+        { time: 0, intensity: 0.0 },
+        { time: 40, intensity: 4.5 },
+        { time: 90, intensity: 0.3 },
+        { time: 150, intensity: 5.0 },
+        { time: 230, intensity: 1.0 },
+        { time: 320, intensity: 3.8 },
+        { time: 450, intensity: 2.2 },
+        { time: 600, intensity: 2.0 },
+      ];
+
+      // Ativa o visual neon do botão no DOM
+      const toggleBtn = document.getElementById("robot-light-toggle-btn");
+      if (toggleBtn) {
+        toggleBtn.classList.add("border-cyan-400", "bg-cyan-950/80", "shadow-[0_0_15px_rgba(0,240,255,0.6)]");
+        toggleBtn.classList.remove("border-zinc-700", "bg-zinc-950/90");
+      }
+
+      // Temporizador: Fica acesa por 3.5 segundos e desliga automaticamente
+      autoTurnOffTimer = window.setTimeout(() => {
+        isEyesOn = false;
+        toggleStartTime = performance.now();
+        isAnimatingToggle = true;
+
+        // Sequência de Desligamento Automático suave
+        toggleSequence = [
+          { time: 0, intensity: 2.0 },
+          { time: 100, intensity: 1.2 },
+          { time: 250, intensity: 0.4 },
+          { time: 450, intensity: 0.0 },
+        ];
+
+        // Restaura o botão ao estado padrão
+        if (toggleBtn) {
+          toggleBtn.classList.remove("border-cyan-400", "bg-cyan-950/80", "shadow-[0_0_15px_rgba(0,240,255,0.6)]");
+          toggleBtn.classList.add("border-zinc-700", "bg-zinc-950/90");
+        }
+      }, 3500);
+    };
 
     const handleMouseMove = (e: MouseEvent) => {
+      isDesktopMouseActive = true;
       const rect = container.getBoundingClientRect();
       const x = (e.clientX - (rect.left + rect.width / 2)) / (window.innerWidth / 2);
       const y = (e.clientY - (rect.top + rect.height / 2)) / (window.innerHeight / 2);
 
-      // Movimento angular suave exclusivo da cabeça
       targetRotY = THREE.MathUtils.clamp(x * 0.70, -0.65, 0.65);
-      targetRotX = THREE.MathUtils.clamp(y * 0.40, -0.35, 0.35);
+      targetRotX = THREE.MathUtils.clamp(y * 0.40, -0.32, 0.32);
     };
 
     window.addEventListener("mousemove", handleMouseMove);
+    container.addEventListener("click", handleToggleEyes);
+    window.addEventListener("toggle-robot-eyes", handleToggleEyes);
 
-    // 4. Wrapper e Carregamento com Separação Rigorosa de Peitoral vs Cabeça
+    // 5. Carregamento do Robô 3D
     const robotWrapper = new THREE.Group();
     scene.add(robotWrapper);
 
@@ -93,17 +175,14 @@ export default function RobotBust3D() {
       (gltf) => {
         const rawModel = gltf.scene;
 
-        // Calcular limites de todo o modelo para centralização
         const box = new THREE.Box3().setFromObject(rawModel);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
 
-        // Escala geral proporcional com busto levemente maior
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 2.28 / (maxDim || 1);
+        const scale = 2.18 / (maxDim || 1);
         robotWrapper.scale.set(scale, scale, scale);
 
-        // Configurar materiais PBR
         rawModel.traverse((child) => {
           if ((child as THREE.Mesh).isMesh) {
             const mesh = child as THREE.Mesh;
@@ -111,19 +190,17 @@ export default function RobotBust3D() {
             mesh.receiveShadow = true;
             if (mesh.material) {
               const mat = mesh.material as THREE.MeshStandardMaterial;
-              mat.roughness = 0.35;
-              mat.metalness = 0.65;
+              mat.roughness = 0.32;
+              mat.metalness = 0.68;
               mat.needsUpdate = true;
             }
           }
         });
 
-        // Criar os grupos separados de Peitoral e Cabeça
         const chestGroup = new THREE.Group();
         const headPivot = new THREE.Group();
         const headGroup = new THREE.Group();
 
-        // Ponto de articulação do pescoço (acima do peitoral)
         const neckPivotY = 0.25 - center.y;
         const neckPivotZ = 0.00 - center.z;
 
@@ -131,7 +208,6 @@ export default function RobotBust3D() {
         headGroup.position.set(0, -neckPivotY, -neckPivotZ);
         headPivot.add(headGroup);
 
-        // Distribuir nós entre peito (fixo) e cabeça (articulada)
         const allNodes: THREE.Object3D[] = [];
         rawModel.traverse((child) => {
           if (child.name.startsWith("tripo_part_")) {
@@ -145,14 +221,17 @@ export default function RobotBust3D() {
           node.position.z -= center.z;
 
           if (node.name === "tripo_part_0") {
-            // Peitoral, ombros e base -> Fixo no peito
             chestGroup.add(node);
           } else {
-            // tripo_part_1 (cabeça/face/chifres), tripo_part_2 (queixo/pescoço), tripo_part_3..8 (detalhes)
-            // -> Pertencem à cabeça (giram com o mouse)
             headGroup.add(node);
           }
         });
+
+        // Adiciona as luzes de neon azul diretamente ao pivot da cabeça
+        headPivot.add(faceGlowLight);
+        headPivot.add(eyeL);
+        headPivot.add(eyeR);
+        headPivot.add(chinUnderglow);
 
         robotWrapper.add(chestGroup);
         robotWrapper.add(headPivot);
@@ -172,34 +251,89 @@ export default function RobotBust3D() {
       }
     );
 
-    // 5. Render & Animation Loop (Apenas o headPivot gira)
+    // 6. Render & Animation Loop
     let animationFrameId: number;
+    let time = 0;
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
+      time += 0.015;
 
-      // Interpolação suave para a rotação da cabeça
-      currentRotY += (targetRotY - currentRotY) * 0.08;
-      currentRotX += (targetRotX - currentRotX) * 0.08;
+      const isMobile = window.innerWidth < 768;
+
+      // Movimento suave no mobile
+      if (isMobile && !isDesktopMouseActive) {
+        const autoY = Math.sin(time * 0.40) * 0.38 + Math.sin(time * 0.18) * 0.14;
+        const autoX = Math.cos(time * 0.28) * 0.18 + Math.sin(time * 0.12) * 0.08;
+
+        targetRotY = THREE.MathUtils.clamp(autoY, -0.55, 0.55);
+        targetRotX = THREE.MathUtils.clamp(autoX, -0.28, 0.28);
+      }
+
+      // Execução da animação de acendimento/apagamento
+      if (isAnimatingToggle && toggleSequence.length > 0) {
+        const elapsed = performance.now() - toggleStartTime;
+        const lastKeyframe = toggleSequence[toggleSequence.length - 1];
+
+        if (elapsed >= lastKeyframe.time) {
+          currentEyeIntensity = lastKeyframe.intensity;
+          isAnimatingToggle = false;
+        } else {
+          for (let i = 0; i < toggleSequence.length - 1; i++) {
+            const k1 = toggleSequence[i];
+            const k2 = toggleSequence[i + 1];
+            if (elapsed >= k1.time && elapsed <= k2.time) {
+              const progress = (elapsed - k1.time) / (k2.time - k1.time);
+              currentEyeIntensity = k1.intensity + (k2.intensity - k1.intensity) * progress;
+              break;
+            }
+          }
+        }
+      }
+
+      // Micro-pulsação bio-elétrica sutil quando aceso
+      let finalIntensity = currentEyeIntensity;
+      if (isEyesOn && !isAnimatingToggle) {
+        const pulse = 1.0 + Math.sin(time * 3.5) * 0.06 + Math.sin(time * 8.0) * 0.02;
+        finalIntensity = currentEyeIntensity * pulse;
+      }
+
+      // Aplica as intensidades de luz azul neon
+      faceGlowLight.intensity = finalIntensity * 2.8;
+      eyeL.intensity = finalIntensity * 3.5;
+      eyeR.intensity = finalIntensity * 3.5;
+      chinUnderglow.intensity = finalIntensity * 1.5;
+
+      // Suavização ultra fluida do movimento da cabeça com Lerp
+      currentRotX += (targetRotX - currentRotX) * 0.045;
+      currentRotY += (targetRotY - currentRotY) * 0.045;
 
       if (headPivotRef) {
-        // Apenas a cabeça gira em torno da articulação do pescoço
         headPivotRef.rotation.y = currentRotY;
         headPivotRef.rotation.x = currentRotX;
-        headPivotRef.rotation.z = currentRotY * -0.08;
       }
+
+      // Micro-respiração orgânica do robô
+      robotWrapper.position.y = Math.sin(time * 1.5) * 0.01;
 
       renderer.render(scene, camera);
     };
 
     animate();
 
-    // 6. Handle Resize
     const handleResize = () => {
       if (!container) return;
       const w = getWidth();
       const h = getHeight();
       camera.aspect = w / h;
+      const isMobile = window.innerWidth < 1024;
+      if (isMobile) {
+        camera.position.set(0, 0.16, 2.60);
+        camera.lookAt(0, 0.12, 0);
+      } else {
+        camera.position.set(0, 0.08, 3.20);
+        camera.lookAt(0, 0.01, 0);
+      }
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     };
@@ -207,37 +341,24 @@ export default function RobotBust3D() {
     window.addEventListener("resize", handleResize);
 
     return () => {
+      if (autoTurnOffTimer) clearTimeout(autoTurnOffTimer);
       window.removeEventListener("mousemove", handleMouseMove);
+      container.removeEventListener("click", handleToggleEyes);
+      window.removeEventListener("toggle-robot-eyes", handleToggleEyes);
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(animationFrameId);
-      dracoLoader.dispose();
       renderer.dispose();
+      dracoLoader.dispose();
     };
   }, []);
 
   return (
-    <div className="relative w-full h-[480px] md:h-[540px] lg:h-[620px] flex items-center justify-center select-none overflow-visible">
-      {/* Background Neon Aura */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-[#00d1ff]/15 via-[#00e6a5]/10 to-transparent rounded-full blur-[100px] pointer-events-none transform scale-90" />
-
-      {/* Loading State */}
-      {!isLoaded && !hasError && (
-        <div className="absolute z-20 flex flex-col items-center gap-3 bg-black/70 backdrop-blur-md px-6 py-4 rounded-2xl border border-cyan-500/30 shadow-[0_0_25px_rgba(0,229,255,0.25)]">
-          <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-          <span className="font-mono text-xs text-cyan-400 font-medium tracking-widest uppercase">
-            CARREGANDO BUSTO 3D... {loadingProgress > 0 ? `${loadingProgress}%` : ""}
-          </span>
-        </div>
-      )}
-
-      {hasError && (
-        <div className="absolute z-20 text-center font-mono text-xs text-red-400 bg-red-950/40 p-4 rounded-xl border border-red-500/30">
-          Erro ao carregar o modelo 3D 3Dmodelrobot-v1.glb
-        </div>
-      )}
-
-      {/* Canvas 3D Three.js */}
-      <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing z-10 overflow-visible" />
+    <div className="relative w-full h-full flex items-end justify-center select-none overflow-visible group cursor-pointer">
+      <div
+        ref={containerRef}
+        className="w-full h-full relative z-20 flex items-end justify-center cursor-pointer overflow-visible"
+        title="Clique no robô ou no botão para ligar/desligar a ótica"
+      />
     </div>
   );
 }

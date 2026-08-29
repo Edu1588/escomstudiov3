@@ -6,7 +6,58 @@ import {defineConfig, loadEnv} from 'vite';
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [
+      react(),
+      tailwindcss(),
+      {
+        name: 'mpa-router-middleware',
+        configureServer(server) {
+          server.middlewares.use(async (req, res, next) => {
+            const url = req.url?.split('?')[0];
+            const routeMap: Record<string, string> = {
+              '/home-v2': 'home-v2/index.html',
+              '/home-v2/': 'home-v2/index.html',
+              '/home2': 'home-v2/index.html',
+              '/home2/': 'home-v2/index.html',
+              '/home-v4': 'home-v4/index.html',
+              '/home-v4/': 'home-v4/index.html',
+              '/home4': 'home-v4/index.html',
+              '/home4/': 'home-v4/index.html',
+              '/home-v3': 'home-v3/index.html',
+              '/home-v3/': 'home-v3/index.html',
+              '/home3': 'home3/index.html',
+              '/home3/': 'home3/index.html',
+              '/portfolioedu': 'portfolioedu/index.html',
+              '/portfolioedu/': 'portfolioedu/index.html',
+              '/portfolio-projetos': 'portfolio-projetos/index.html',
+              '/portfolio-projetos/': 'portfolio-projetos/index.html',
+              '/sobre': 'sobre/index.html',
+              '/sobre/': 'sobre/index.html',
+              '/baseproposta': 'baseproposta/index.html',
+              '/baseproposta/': 'baseproposta/index.html',
+            };
+
+            if (url && routeMap[url]) {
+              try {
+                const fs = await import('fs');
+                const filePath = path.resolve(__dirname, routeMap[url]);
+                if (fs.existsSync(filePath)) {
+                  let html = fs.readFileSync(filePath, 'utf-8');
+                  html = await server.transformIndexHtml('/' + routeMap[url], html);
+                  res.statusCode = 200;
+                  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+                  res.end(html);
+                  return;
+                }
+              } catch (e) {
+                return next(e);
+              }
+            }
+            next();
+          });
+        }
+      }
+    ],
 
     build: {
       rollupOptions: {
@@ -17,8 +68,10 @@ export default defineConfig(({mode}) => {
           admin: path.resolve(__dirname, 'admin/index.html'),
           sobre: path.resolve(__dirname, 'sobre/index.html'),
           baseproposta: path.resolve(__dirname, 'baseproposta/index.html'),
+          homev2: path.resolve(__dirname, 'home-v2/index.html'),
           homev3: path.resolve(__dirname, 'home-v3/index.html'),
           home3: path.resolve(__dirname, 'home3/index.html'),
+          homev4: path.resolve(__dirname, 'home-v4/index.html'),
         },
       },
     },

@@ -33,6 +33,22 @@ async function startLocalServer() {
       req.url = "/baseproposta/index.html";
       next();
     });
+    app.get("/home-v2*", (req, res, next) => {
+      req.url = "/home-v2/index.html";
+      next();
+    });
+    app.get("/home2*", (req, res, next) => {
+      req.url = "/home-v2/index.html";
+      next();
+    });
+    app.get("/home-v4*", (req, res, next) => {
+      req.url = "/home-v4/index.html";
+      next();
+    });
+    app.get("/home4*", (req, res, next) => {
+      req.url = "/home-v4/index.html";
+      next();
+    });
     app.get("/proposta-escom-*", (req, res, next) => {
       req.url = "/baseproposta/index.html";
       next();
@@ -69,6 +85,12 @@ async function startLocalServer() {
     });
     app.get("/baseproposta*", (req, res) => {
       res.sendFile(path.join(distPath, "baseproposta", "index.html"));
+    });
+    app.get("/home-v4*", (req, res) => {
+      res.sendFile(path.join(distPath, "home-v4", "index.html"));
+    });
+    app.get("/home4*", (req, res) => {
+      res.sendFile(path.join(distPath, "home-v4", "index.html"));
     });
     app.get("/proposta-escom-*", (req, res) => {
       res.sendFile(path.join(distPath, "baseproposta", "index.html"));

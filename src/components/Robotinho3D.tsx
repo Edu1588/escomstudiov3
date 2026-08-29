@@ -33,29 +33,40 @@ export default function Robotinho3D() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    renderer.toneMappingExposure = 1.18;
 
     container.innerHTML = "";
     container.appendChild(renderer.domElement);
 
-    // 2. Iluminação Suave Cyberpunk
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x09090b, 1.8);
+    // 2. Iluminação Marcante Cyberpunk com Forte Reflexo Azul da Esquerda
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x060913, 1.8);
     scene.add(hemiLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
-    keyLight.position.set(3, 4, 4);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.4);
+    keyLight.position.set(3.5, 4, 4);
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0x00d1ff, 1.3);
-    fillLight.position.set(-3, 2, 2);
-    scene.add(fillLight);
+    // Forte luz direcional azul ciano da esquerda
+    const leftBlueLight = new THREE.DirectionalLight(0x00d1ff, 6.5);
+    leftBlueLight.position.set(-4.5, 2.0, 2.5);
+    scene.add(leftBlueLight);
 
-    const rimLight = new THREE.PointLight(0x00d1ff, 2.8, 12);
-    rimLight.position.set(-2, 3, -2);
+    // Ponto de luz azul intenso próximo à lateral/ombro esquerdo para brilho especular nítido
+    const leftBluePoint = new THREE.PointLight(0x00d1ff, 8.5, 14);
+    leftBluePoint.position.set(-2.8, 0.8, 1.8);
+    scene.add(leftBluePoint);
+
+    // Spot azul realçando o contorno e a máscara
+    const leftSpot = new THREE.SpotLight(0x00e5ff, 7.0, 18, Math.PI / 4, 0.3, 1);
+    leftSpot.position.set(-3.5, 1.8, 3.2);
+    scene.add(leftSpot);
+
+    const rimLight = new THREE.PointLight(0x00d1ff, 4.0, 12);
+    rimLight.position.set(-2.5, 3, -2.5);
     scene.add(rimLight);
 
-    const accentLight = new THREE.PointLight(0x00e6a5, 2.0, 12);
-    accentLight.position.set(2, -1, 2);
+    const accentLight = new THREE.PointLight(0x00e6a5, 2.5, 12);
+    accentLight.position.set(2.5, -1, 2);
     scene.add(accentLight);
 
     // 3. Mouse Tracking (Rotação sutil do robô inteiro)
@@ -79,54 +90,59 @@ export default function Robotinho3D() {
 
     window.addEventListener("mousemove", handleMouseMove);
 
-    // 4. Hierarquia 3D: Robô Completo Sólido com Dedos Articulados e Correntes na Cintura
+    // 4. Hierarquia 3D: Robô Completo Sólido com Dedos Articulados em Unidades Perfeitas
     const robotWrapper = new THREE.Group();
     robotWrapper.rotation.y = baseBodyRotY;
     scene.add(robotWrapper);
 
     const bodyGroup = new THREE.Group();
 
-    // Definição dos 5 dedos anatômicos com seus nós e pontos de rotação na junta da palma
+    // Mapeamento dos 5 dedos com seus respectivos segmentos unificados na mesma direção
     const fingerDefs = [
       {
         name: "thumb",
-        knuckle: { x: -0.130, y: 0.680, z: 0.010 },
-        curlAngles: { x: 0.20, y: 0.10, z: 0.18 },
+        // Base na junta inferior de tripo_part_34
+        knuckle: { x: -0.132, y: 0.702, z: 0.016 },
+        curlAngles: { x: 0.18, y: 0.08, z: 0.12 },
         speed: 1.1,
         phase: 0.15,
-        parts: new Set(["tripo_part_31", "tripo_part_34", "tripo_part_48", "tripo_part_30", "tripo_part_35"])
+        parts: ["tripo_part_34", "tripo_part_31"] // Segmentos do polegar
       },
       {
         name: "index",
-        knuckle: { x: -0.155, y: 0.705, z: 0.055 },
-        curlAngles: { x: 0.28, y: 0.04, z: -0.08 },
+        // Base na junta inferior de tripo_part_32
+        knuckle: { x: -0.141, y: 0.732, z: 0.071 },
+        curlAngles: { x: 0.22, y: 0.02, z: -0.04 },
         speed: 1.0,
         phase: 0.0,
-        parts: new Set(["tripo_part_27", "tripo_part_32", "tripo_part_15"])
+        parts: ["tripo_part_32", "tripo_part_27"] // Segmentos do indicador
       },
       {
         name: "middle",
-        knuckle: { x: -0.127, y: 0.700, z: 0.058 },
-        curlAngles: { x: 0.32, y: 0.02, z: -0.04 },
+        // Base na junta inferior de tripo_part_49
+        knuckle: { x: -0.113, y: 0.733, z: 0.065 },
+        curlAngles: { x: 0.25, y: 0.0, z: -0.02 },
         speed: 1.05,
         phase: 0.25,
-        parts: new Set(["tripo_part_45", "tripo_part_49", "tripo_part_40", "tripo_part_12"])
+        parts: ["tripo_part_49", "tripo_part_45"] // Segmentos do dedo médio
       },
       {
         name: "ring",
-        knuckle: { x: -0.108, y: 0.700, z: 0.055 },
-        curlAngles: { x: 0.35, y: -0.02, z: 0.04 },
+        // Base na junta inferior de tripo_part_37
+        knuckle: { x: -0.115, y: 0.698, z: 0.061 },
+        curlAngles: { x: 0.26, y: -0.02, z: 0.02 },
         speed: 1.1,
         phase: 0.45,
-        parts: new Set(["tripo_part_46", "tripo_part_37"])
+        parts: ["tripo_part_37", "tripo_part_46"] // Segmentos do anelar
       },
       {
         name: "pinky",
-        knuckle: { x: -0.092, y: 0.715, z: 0.048 },
-        curlAngles: { x: 0.38, y: -0.05, z: 0.08 },
+        // Base na junta inferior de tripo_part_43
+        knuckle: { x: -0.097, y: 0.719, z: 0.062 },
+        curlAngles: { x: 0.28, y: -0.04, z: 0.05 },
         speed: 1.15,
         phase: 0.65,
-        parts: new Set(["tripo_part_54", "tripo_part_43"])
+        parts: ["tripo_part_43", "tripo_part_54"] // Segmentos do mínimo
       }
     ];
 
@@ -137,7 +153,7 @@ export default function Robotinho3D() {
       phase: number;
     }[] = [];
 
-    // Pivô da Corrente da Cintura (tripo_part_9 conectado pelo eixo superior)
+    // Pivô da Corrente da Cintura a 45 Graus (tripo_part_9)
     let chainPivotRef: THREE.Group | null = null;
 
     let isModelReady = false;
@@ -171,21 +187,21 @@ export default function Robotinho3D() {
           }
         });
 
-        // Configurar materiais PBR foscos e realistas
+        // Configurar materiais PBR acetinados para reflexo azul vibrante
         allMeshes.forEach((mesh) => {
           mesh.castShadow = true;
           mesh.receiveShadow = true;
 
           if (mesh.material) {
             const mat = mesh.material as THREE.MeshStandardMaterial;
-            mat.roughness = 0.78;
-            mat.metalness = 0.20;
-            mat.envMapIntensity = 0.5;
+            mat.roughness = 0.58;
+            mat.metalness = 0.32;
+            mat.envMapIntensity = 0.8;
             mat.needsUpdate = true;
           }
         });
 
-        // Montar os 5 dedos como grupos cinemáticos unificados
+        // Montar cada dedo unindo todos os seus segmentos no mesmo pivô rígido
         fingerDefs.forEach((fDef) => {
           const pivotX = fDef.knuckle.x - center.x;
           const pivotY = fDef.knuckle.y - center.y;
@@ -198,9 +214,10 @@ export default function Robotinho3D() {
           fingerInner.position.set(-pivotX, -pivotY, -pivotZ);
           fingerPivot.add(fingerInner);
 
-          // Anexar todas as peças deste dedo ao grupo interno
+          const partsSet = new Set(fDef.parts);
+
           allMeshes.forEach((mesh) => {
-            if (fDef.parts.has(mesh.name)) {
+            if (partsSet.has(mesh.name)) {
               mesh.position.x -= center.x;
               mesh.position.y -= center.y;
               mesh.position.z -= center.z;
@@ -218,12 +235,11 @@ export default function Robotinho3D() {
           });
         });
 
-        // Configuração especial para as correntes da cintura (tripo_part_9)
-        // Conectadas apenas pelo eixo superior (ponto de fixação no cinto Y=0.604)
+        // Correntes da cintura (tripo_part_9)
         const chainMesh = allMeshes.find((m) => m.name === "tripo_part_9");
         if (chainMesh) {
           const chainPivotX = 0.021 - center.x;
-          const chainPivotY = 0.604 - center.y; // Ponto superior do cinto
+          const chainPivotY = 0.604 - center.y;
           const chainPivotZ = 0.056 - center.z;
 
           const chainPivot = new THREE.Group();
@@ -242,8 +258,8 @@ export default function Robotinho3D() {
           chainPivotRef = chainPivot;
         }
 
-        // Todas as outras peças (cabeça, capacete, camisa, calça, palma, braço, sapatos)
-        const allFingerPartNames = new Set(fingerDefs.flatMap((f) => Array.from(f.parts)));
+        // Todas as outras peças (palma sólida da mão, camisa, calça, capacete, cabeça, etc)
+        const allFingerPartNames = new Set(fingerDefs.flatMap((f) => f.parts));
 
         allMeshes.forEach((mesh) => {
           if (!allFingerPartNames.has(mesh.name) && mesh.name !== "tripo_part_9") {
@@ -287,9 +303,8 @@ export default function Robotinho3D() {
         robotWrapper.rotation.y = baseBodyRotY + currentRotY;
         robotWrapper.rotation.x = currentRotX;
 
-        // 2. Movimento suave e contínuo de ABRIR e FECHAR a mão (Flexão Cinemática dos Dedos)
+        // 2. Movimento unificado de abrir e fechar a mão (segmentos do mesmo dedo movem-se 100% juntos)
         activeFingers.forEach((finger) => {
-          // Onda senoidal de 0 (aberto) a 1 (fechado)
           const curl = (Math.sin(elapsed * finger.speed + finger.phase) * 0.5 + 0.5);
 
           finger.pivot.rotation.x = curl * finger.curlAngles.x;
@@ -297,13 +312,12 @@ export default function Robotinho3D() {
           finger.pivot.rotation.z = curl * finger.curlAngles.z;
         });
 
-        // 3. Pêndulo e inclinação natural das correntes na cintura (tripo_part_9)
+        // 3. Correntes na cintura em ÂNGULO DE 45 GRAUS com pêndulo suave
         if (chainPivotRef) {
-          const chainSwayZ = Math.sin(elapsed * 1.5 - 0.4) * 0.045;
-          const chainSwayX = Math.cos(elapsed * 1.5 - 0.4) * 0.035;
-          // Inclinada acompanhando a curvatura do quadril e balanço de levitação
-          chainPivotRef.rotation.z = -0.06 + chainSwayZ;
-          chainPivotRef.rotation.x = 0.05 + chainSwayX;
+          const chainSwayZ = Math.sin(elapsed * 1.5 - 0.4) * 0.035;
+          const chainSwayX = Math.cos(elapsed * 1.5 - 0.4) * 0.025;
+          chainPivotRef.rotation.z = -0.785 + chainSwayZ;
+          chainPivotRef.rotation.x = 0.12 + chainSwayX;
         }
 
         // 4. Levitação suave do robô
@@ -339,7 +353,7 @@ export default function Robotinho3D() {
   return (
     <div className="relative w-full h-[520px] md:h-[580px] lg:h-[660px] flex items-center justify-center select-none overflow-visible z-[99]">
       {/* Glow de fundo */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-[#00d1ff]/15 via-[#00e6a5]/08 to-transparent rounded-full blur-[100px] pointer-events-none transform scale-90" />
+      <div className="absolute inset-0 bg-gradient-to-tr from-[#00d1ff]/20 via-[#00e6a5]/10 to-transparent rounded-full blur-[100px] pointer-events-none transform scale-90" />
 
       {/* Loading State */}
       {!isLoaded && !hasError && (

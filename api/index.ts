@@ -62,6 +62,22 @@ app.get(["/home-v3", "/home-v3.html", "/home-v3/index.html"], (req, res) => {
   res.status(404).send("Home V3 não encontrada.");
 });
 
+app.get(["/home-v4", "/home-v4.html", "/home-v4/index.html", "/home4", "/home4.html", "/home4/index.html"], (req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0");
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  const candidates = [
+    path.join(process.cwd(), "public", "home-v4", "index.html"),
+    path.join(process.cwd(), "public", "home-v4.html"),
+    path.join(process.cwd(), "home-v4", "index.html"),
+    path.join(process.cwd(), "dist", "home-v4", "index.html"),
+    path.join(process.cwd(), "dist", "home-v4.html")
+  ];
+  for (const c of candidates) {
+    if (fs.existsSync(c)) return res.sendFile(c);
+  }
+  res.status(404).send("Home V4 não encontrada.");
+});
+
 app.get(["/template-ci-odontologia", "/template-ci-odontologia/index.html", "/ci-odontologia", "/ci-odontologia/index.html"], (req, res) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0");
   const filePath = path.join(process.cwd(), "public", "ci-odontologia", "index.html");
@@ -806,6 +822,57 @@ app.delete("/api/generated-sites/:projectId", async (req, res) => {
   } catch(e) { res.status(500).json({ success: false, error: e.message }); }
 });
 
+// Dispara o Workflow B do n8n para gerar site-amostra + PDF + link de pagamento.
+// Busca dados completos do lead no Firestore e repassa ao n8n via webhook.
+app.post("/api/gerar-proposta", async (req, res) => {
+  try {
+    const { leadId } = req.body;
+    if (!leadId) return res.status(400).json({ error: "leadId obrigatorio" });
+    await ensureAuth();
+    const leadSnap = await getDoc(doc(db, "leads", leadId));
+    if (!leadSnap.exists()) return res.status(404).json({ error: "Lead nao encontrado" });
+    const lead: any = { id: leadId, ...leadSnap.data() };
+    const n8nHost = process.env.N8N_HOST || "https://n8n-iliw.srv1887358.hstgr.cloud";
+    const resp = await fetch(`${n8nHost}/webhook/gerar-proposta`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        leadId,
+        nome: lead.nome,
+        categoria: lead.categoria,
+        cidade: lead.cidade,
+        website: lead.website,
+        telefone: lead.telefone,
+        endereco: lead.endereco,
+        rating: lead.rating,
+        reviewsCount: lead.reviewsCount,
+        diagnostico: lead.diagnostico || null
+      })
+    });
+    const data = await resp.json().catch(() => ({}));
+    res.status(resp.status).json(data);
+  } catch(e: any) { res.status(500).json({ error: e.message }); }
+});
+
+// Reativa uma proposta de site expirada (nao aceita em 3 dias) por um preco
+// promocional de R$ 799. A logica de negocio (novo preco, novo prazo, status)
+// vive no workflow do n8n - aqui so repassamos a chamada server-to-server
+// (evita CORS e evita duplicar a logica de expiracao/preco em dois lugares).
+app.post("/api/reativar-proposta", async (req, res) => {
+  try {
+    const { slug } = req.body;
+    if (!slug) return res.status(400).json({ error: "slug obrigatorio" });
+    const n8nHost = process.env.N8N_HOST || "https://n8n-iliw.srv1887358.hstgr.cloud";
+    const resp = await fetch(`${n8nHost}/webhook/reativar-proposta`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug })
+    });
+    const data = await resp.json().catch(() => ({}));
+    res.status(resp.status).json(data);
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
 app.get("/api/view-prototype/:projectId", async (req, res) => {
   try {
     await ensureAuth();
@@ -822,6 +889,48 @@ app.get("/api/view-prototype/:projectId", async (req, res) => {
       res.status(404).json({ error: "Projeto não encontrado" });
     }
   } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// Serve o site-amostra gerado pelo n8n em /proposta-{slug} (roteado via vercel.json,
+// destino "/api" -> esta mesma funcao). O HTML fica salvo como TEXTO na colecao
+// "propostas" do Firestore (campo indexHtml) - sem Firebase Storage. O preco vem
+// como token {{PRECO_CHEIO}}/{{PRECO_OFERTA}} e e substituido pelo valor ATUAL da
+// proposta aqui (pode ter mudado numa reativacao).
+const PAGINA_PROPOSTA_EXPIRADA = `<!DOCTYPE html><html lang="pt-br"><head><meta charset="utf-8" /><title>Amostra expirada - Escom Studio</title><meta name="robots" content="noindex" /><style>body{font-family:Arial,Helvetica,sans-serif;background:#0b0f1a;color:#f2f2f2;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;}a{color:#4dabf7;}</style></head><body><div><h1>Esta amostra nao esta mais disponivel</h1><p>O prazo de 3 dias para avaliacao expirou. Fale com a gente para gerar uma nova proposta.</p><p><a href="https://escomstudio.com.br">Voltar para o site da Escom Studio</a></p></div></body></html>`;
+const PAGINA_PROPOSTA_NAO_ENCONTRADA = `<!DOCTYPE html><html lang="pt-br"><head><meta charset="utf-8" /><title>Proposta nao encontrada</title><meta name="robots" content="noindex" /></head><body><h1>Proposta nao encontrada</h1><p><a href="https://escomstudio.com.br">Voltar para o site da Escom Studio</a></p></body></html>`;
+
+app.get("/proposta-:slug", async (req, res) => {
+  try {
+    await ensureAuth();
+    const { slug } = req.params; // Express ja tira o prefixo "proposta-" (literal na rota); o slug no Firestore tambem nao tem esse prefixo.
+    const propostaSnap = await getDoc(doc(db, "propostas", slug));
+    if (!propostaSnap.exists()) {
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("X-Robots-Tag", "noindex, nofollow");
+      return res.status(404).send(PAGINA_PROPOSTA_NAO_ENCONTRADA);
+    }
+    const proposta: any = propostaSnap.data();
+    const expirou = proposta.status === "expirado" || (proposta.expiraEm ? new Date(proposta.expiraEm).getTime() < Date.now() : false);
+    if (expirou && proposta.status !== "pago") {
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("X-Robots-Tag", "noindex, nofollow");
+      return res.status(410).send(PAGINA_PROPOSTA_EXPIRADA);
+    }
+    let html = proposta.indexHtml;
+    if (!html) {
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("X-Robots-Tag", "noindex, nofollow");
+      return res.status(404).send(PAGINA_PROPOSTA_NAO_ENCONTRADA);
+    }
+    const formatarReal = (n: number) => "R$ " + Number(n).toLocaleString("pt-BR", { minimumFractionDigits: 2 });
+    if (proposta.valorCheio != null) html = html.split("{{PRECO_CHEIO}}").join(formatarReal(proposta.valorCheio));
+    if (proposta.valor != null) html = html.split("{{PRECO_OFERTA}}").join(formatarReal(proposta.valor));
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.setHeader("X-Robots-Tag", "noindex, nofollow");
+    res.status(200).send(html);
+  } catch (e) {
+    res.status(500).send("Erro ao carregar a proposta");
+  }
 });
 
 app.get("/api/proposals/:id", async (req, res) => {
@@ -2295,14 +2404,117 @@ app.get("/api/strava-sync", async (req, res) => {
   }
 });
 
-app.get("/api/strava-activities", async (req, res) => {
+// --- CONTRACTS API ---
+app.get("/api/contracts", async (req, res) => {
   try {
-    const q = query(collection(db, "strava_activities"), orderBy("data", "desc"), limit(20));
-    const snapshot = await getDocs(q);
-    const activities = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-    res.json({ success: true, activities });
-  } catch (error) {
-    res.status(500).json({ success: false, error: "Erro ao buscar atividades Strava" });
+    await ensureAuth();
+    const snap = await getDocs(collection(db, "contracts"));
+    let contracts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    
+    // Se não houver contratos no Firestore, inicializa com o contrato base
+    if (contracts.length === 0) {
+      const defaultContract = {
+        title: "CONTRATO SONDA SOLO",
+        company: "RASTRO VERDE",
+        personType: "Pessoa Jurídica de Direito Privado",
+        cnpj: "62.878.265/0001-44",
+        address: "Alameda Rio Negro, 503 - CEP: 06454-000",
+        clientName: "Rastro Verde",
+        contractorName: "ES COM Creative Studio",
+        contractorCnpj: "48.298.795/0001-92",
+        contractorRepresentative: "Eduardo Tavares dos Santos",
+        serviceType: "Identidade Visual (Logotipo)",
+        serviceObject: "Prestação de serviços de Design Gráfico para o desenvolvimento de Identidade Visual (Logotipo) exclusivo para o produto SONDA SOLO, pertencente à empresa Rastro Verde.",
+        deliverables: [
+          "Propostas Visuais: Criação e apresentação de 03 (três) opções de logotipo para o produto Sonda Solo, cada uma com sua proposta visual distinta e original das demais.",
+          "Materiais Finais (Após Aprovação): Entrega do material aberto da opção de logotipo escolhida, bem como as suas adaptações (versões com cores de destaque, fundo transparente em PNG, versão para fundo claro e escuro).",
+          "Aplicações da Marca: Desenvolvimento de simulação/mockup da marca Sonda Solo em formato \"White Label\" aplicada aos produtos (ex: sensor, caixa/resskit)."
+        ],
+        initialDeadline: "21 de agosto de 2026, às 18:00",
+        finalDeadline: "28 de agosto de 2026, às 18:00",
+        revisionsPolicy: "Rodadas ilimitadas de alterações e ajustes sobre a opção de logotipo selecionada.",
+        revisionsPeriod: "Entre os dias 22 e 25 de agosto de 2026.",
+        budget: "R$ 1.200,00",
+        budgetText: "um mil e duzentos reais",
+        signalValue: "R$ 600,00",
+        signalText: "seiscentos reais (50%)",
+        finalValue: "R$ 600,00",
+        finalText: "seiscentos reais (50%)",
+        pixBank: "C6 Bank",
+        pixKey: "13981062787",
+        pixFavored: "Eduardo Tavares dos Santos",
+        forumCity: "São Paulo - SP",
+        contractDate: "20 de agosto de 2026",
+        status: "ATIVO",
+        createdAt: new Date().toISOString()
+      };
+      const docRef = await addDoc(collection(db, "contracts"), defaultContract);
+      contracts = [{ id: docRef.id, ...defaultContract }];
+    }
+    
+    res.json({ success: true, contracts });
+  } catch (error: any) {
+    console.error("Erro ao buscar contratos:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post("/api/contracts", async (req, res) => {
+  try {
+    await ensureAuth();
+    const contractData = {
+      ...req.body,
+      status: req.body.status || "ATIVO",
+      createdAt: new Date().toISOString()
+    };
+    const docRef = await addDoc(collection(db, "contracts"), contractData);
+    res.json({ success: true, id: docRef.id, contract: { id: docRef.id, ...contractData } });
+  } catch (error: any) {
+    console.error("Erro ao criar contrato:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.put("/api/contracts/:id", async (req, res) => {
+  try {
+    await ensureAuth();
+    const { id } = req.params;
+    await updateDoc(doc(db, "contracts", id), {
+      ...req.body,
+      updatedAt: new Date().toISOString()
+    });
+    res.json({ success: true });
+  } catch (error: any) {
+    console.error("Erro ao atualizar contrato:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.put("/api/contracts/:id/status", async (req, res) => {
+  try {
+    await ensureAuth();
+    const { id } = req.params;
+    const { status } = req.body;
+    await updateDoc(doc(db, "contracts", id), {
+      status,
+      updatedAt: new Date().toISOString()
+    });
+    res.json({ success: true });
+  } catch (error: any) {
+    console.error("Erro ao atualizar status do contrato:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.delete("/api/contracts/:id", async (req, res) => {
+  try {
+    await ensureAuth();
+    const { id } = req.params;
+    await deleteDoc(doc(db, "contracts", id));
+    res.json({ success: true });
+  } catch (error: any) {
+    console.error("Erro ao deletar contrato:", error);
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
