@@ -17,9 +17,8 @@ export function HomeV2() {
   const heroLeftDoorRef = useRef<HTMLElement | null>(null);
   const heroRightDoorRef = useRef<HTMLElement | null>(null);
 
-  // Estados de iluminação e simulação ativa do capítulo 8
+  // Estados de iluminação do capítulo 8
   const [lightState, setLightState] = useState<'ember' | 'moon' | 'dawn'>('ember');
-  const [activeTechTab, setActiveTechTab] = useState<'autocarrossel' | 'agente' | 'google' | 'minerador'>('autocarrossel');
 
   // Three.js Scene Setup — Robô Busto 3D Oficial da ESCOM Studio
   useEffect(() => {
@@ -630,7 +629,7 @@ export function HomeV2() {
           </div>
         </section>
 
-        {/* CAPÍTULO 08 — TECNOLOGIAS EM AÇÃO & SIMULAÇÕES INTERATIVAS */}
+        {/* CAPÍTULO 08 — TECNOLOGIAS EM DESTAQUE */}
         <section className="panel panel--light" id="light" data-chapter="08" data-name="TECNOLOGIAS">
           <div className="light-intro">
             <p className="chapter-index">第八章 / 08</p>
@@ -638,91 +637,146 @@ export function HomeV2() {
               Tecnologias que operam<br />
               em cada <em>frente.</em>
             </h2>
-            <p>Selecione uma tecnologia abaixo e teste a simulação interativa em tempo real da nossa engenharia proprietária.</p>
+            <p>Sistemas proprietários desenvolvidos para eliminar processos manuais, acelerar o tempo de resposta e maximizar a taxa de conversão do seu negócio.</p>
           </div>
 
-          {/* Grid Editorial de 4 Tecnologias */}
+          {/* Grid Editorial Enriquecida de 4 Tecnologias */}
           <div className="tech-steps-grid">
             {/* Card 01: AutoCarrossel */}
-            <article 
-              className={`tech-step-item ${activeTechTab === 'autocarrossel' ? 'is-active' : ''}`}
-              onClick={() => { setActiveTechTab('autocarrossel'); setLightState('ember'); }}
-            >
+            <article className="tech-step-item">
               <span>車</span>
-              <small>01 / CONCESSIONÁRIAS</small>
+              <div className="tech-step-top">
+                <small>01 / CONCESSIONÁRIAS</small>
+                <div className="tech-step-badge">PROPRIETÁRIO</div>
+              </div>
               <h3>AutoCarrossel.</h3>
               <p>
-                O sistema consulta a base oficial FIPE com a placa do veículo, puxa ficha técnica e monta instantaneamente o carrossel do Instagram com parcelas calculadas.
+                O sistema consulta a base oficial FIPE com a placa do veículo, extrai dados técnicos e gera instantaneamente posts em carrossel para o Instagram com fotos e parcelas calculadas.
               </p>
+              
+              <div className="tech-step-specs">
+                <div className="tech-spec-row">
+                  <span className="spec-label">Entrada</span>
+                  <span className="spec-val">Placa do Veículo</span>
+                </div>
+                <div className="tech-spec-row">
+                  <span className="spec-label">Geração</span>
+                  <span className="spec-val">3 Slides Instagram</span>
+                </div>
+                <div className="tech-spec-row">
+                  <span className="spec-label">Integração</span>
+                  <span className="spec-val">FIPE + Detran API</span>
+                </div>
+              </div>
+
+              <div className="tech-step-highlight">
+                <b>0%</b>
+                <span>Retrabalho operacional na criação de criativos</span>
+              </div>
               <i></i>
             </article>
 
             {/* Card 02: Agente IA */}
-            <article 
-              className={`tech-step-item ${activeTechTab === 'agente' ? 'is-active' : ''}`}
-              onClick={() => { setActiveTechTab('agente'); setLightState('moon'); }}
-            >
+            <article className="tech-step-item">
               <span>智</span>
-              <small>02 / ATENDIMENTO IA</small>
+              <div className="tech-step-top">
+                <small>02 / ATENDIMENTO IA</small>
+                <div className="tech-step-badge">24/7 ONLINE</div>
+              </div>
               <h3>Agente IA 24/7.</h3>
               <p>
-                Atendimento inteligente no WhatsApp que entende a dor do cliente, qualifica o lead por faturamento e agenda direto na pauta da equipe comercial.
+                Primeiro atendimento automatizado no WhatsApp. Entende o que o lead procura, qualifica por faturamento, responde dúvidas com precisão humana e agenda direto na pauta comercial.
               </p>
+              
+              <div className="tech-step-specs">
+                <div className="tech-spec-row">
+                  <span className="spec-label">Canal</span>
+                  <span className="spec-val">WhatsApp API Oficial</span>
+                </div>
+                <div className="tech-spec-row">
+                  <span className="spec-label">Função</span>
+                  <span className="spec-val">Qualificação & Agenda</span>
+                </div>
+                <div className="tech-spec-row">
+                  <span className="spec-label">Velocidade</span>
+                  <span className="spec-val">&lt; 3s Resposta</span>
+                </div>
+              </div>
+
+              <div className="tech-step-highlight">
+                <b>100%</b>
+                <span>Dos leads atendidos nos primeiros 30 segundos</span>
+              </div>
               <i></i>
             </article>
 
             {/* Card 03: Máquina Google */}
-            <article 
-              className={`tech-step-item ${activeTechTab === 'google' ? 'is-active' : ''}`}
-              onClick={() => { setActiveTechTab('google'); setLightState('dawn'); }}
-            >
+            <article className="tech-step-item">
               <span>網</span>
-              <small>03 / GOOGLE & SEO</small>
+              <div className="tech-step-top">
+                <small>03 / GOOGLE & SEO</small>
+                <div className="tech-step-badge">TOP 1 RANK</div>
+              </div>
               <h3>Máquina de Ranqueamento.</h3>
               <p>
-                Páginas com Nota 100 no Google PageSpeed, estrutura semântica avançada para buscas locais e painel com GA4 nativo em tempo real.
+                Estrutura digital super otimizada para o Google. Construída com semântica avançada, SEO local, Nota 100 no PageSpeed, Google Analytics 4 e Google Meu Negócio integrados.
               </p>
+              
+              <div className="tech-step-specs">
+                <div className="tech-spec-row">
+                  <span className="spec-label">PageSpeed</span>
+                  <span className="spec-val">100 / 100 Score</span>
+                </div>
+                <div className="tech-spec-row">
+                  <span className="spec-label">LCP</span>
+                  <span className="spec-val">0.4s Instantâneo</span>
+                </div>
+                <div className="tech-spec-row">
+                  <span className="spec-label">Tracking</span>
+                  <span className="spec-val">GA4 + Search Console</span>
+                </div>
+              </div>
+
+              <div className="tech-step-highlight">
+                <b>1º</b>
+                <span>Posicionamento orgânico para buscas de alta intenção</span>
+              </div>
               <i></i>
             </article>
 
             {/* Card 04: Minerador de Leads */}
-            <article 
-              className={`tech-step-item ${activeTechTab === 'minerador' ? 'is-active' : ''}`}
-              onClick={() => { setActiveTechTab('minerador'); setLightState('ember'); }}
-            >
+            <article className="tech-step-item">
               <span>探</span>
-              <small>04 / PROSPECÇÃO B2B</small>
+              <div className="tech-step-top">
+                <small>04 / PROSPECÇÃO B2B</small>
+                <div className="tech-step-badge">OUTBOUND</div>
+              </div>
               <h3>Minerador de Leads.</h3>
               <p>
-                Encontra empresas no seu nicho e cidade que não possuem presença digital moderna, entregando contatos dos tomadores de decisão para abordagem.
+                Radar inteligente que varre empresas por nicho e cidade, identifica negócios sem presença digital moderna e entrega contatos diretos e WhatsApp de decisores com um clique.
               </p>
+              
+              <div className="tech-step-specs">
+                <div className="tech-spec-row">
+                  <span className="spec-label">Varredura</span>
+                  <span className="spec-val">Nicho + Geolocalização</span>
+                </div>
+                <div className="tech-spec-row">
+                  <span className="spec-label">Filtro</span>
+                  <span className="spec-val">Score de Oportunidade</span>
+                </div>
+                <div className="tech-spec-row">
+                  <span className="spec-label">Saída</span>
+                  <span className="spec-val">WhatsApp de Decisores</span>
+                </div>
+              </div>
+
+              <div className="tech-step-highlight">
+                <b>1-Click</b>
+                <span>Para encontrar o lead perfeito pronto para abordagem</span>
+              </div>
               <i></i>
             </article>
-          </div>
-
-          {/* Viewport da Simulação Interativa ao Vivo */}
-          <div className="tech-simulation-viewport">
-            <div className="sim-header">
-              <div className="sim-header__dots">
-                <i></i><i></i><i></i>
-              </div>
-              <div className="sim-header__title">
-                {activeTechTab === 'autocarrossel' && 'ESCOM // AUTOCARROSSEL ENGINE v2.4'}
-                {activeTechTab === 'agente' && 'ESCOM // WHATSAPP AGENT SIMULATOR v4.1'}
-                {activeTechTab === 'google' && 'ESCOM // GOOGLE SEO & ANALYTICS MONITOR'}
-                {activeTechTab === 'minerador' && 'ESCOM // B2B LEAD MINER RADAR'}
-              </div>
-              <div className="sim-header__status">
-                <b></b> LIVE SIMULATION
-              </div>
-            </div>
-
-            <div className="sim-body">
-              {activeTechTab === 'autocarrossel' && <AutoCarrosselSimV2 />}
-              {activeTechTab === 'agente' && <AgenteIASimV2 />}
-              {activeTechTab === 'google' && <MaquinaGoogleSimV2 />}
-              {activeTechTab === 'minerador' && <MineradorLeadsSimV2 />}
-            </div>
           </div>
         </section>
 
@@ -983,468 +1037,6 @@ export function HomeV2() {
           <a href="#">VOLTAR AO TOPO ↑</a>
         </div>
       </footer>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════════
-   AS 4 SIMULAÇÕES INTERATIVAS AO VIVO DE ENGENHARIA REAL DA ESCOM STUDIO
-   ═══════════════════════════════════════════════════════════════════════════════ */
-
-/* 01. SIMULAÇÃO DO AUTOCARROSSEL */
-function AutoCarrosselSimV2() {
-  const [placa, setPlaca] = useState('');
-  const [stage, setStage] = useState<'idle' | 'loading' | 'done'>('idle');
-  const [progress, setProgress] = useState(0);
-
-  const fakeCar = {
-    marca: 'BMW',
-    modelo: '320i M Sport GP',
-    ano: '2024/2024',
-    km: '8.900 km',
-    preco: 'R$ 329.900',
-    motor: '2.0 TwinPower Turbo 184cv',
-    cambio: 'Automático 8M',
-    cor: 'Cinza Dravit Metálico',
-    parcela: 'Entrada + R$ 3.890/mês',
-    itens: ['Teto Solar Elétrico', 'Painel BMW Curved Display', 'Som Harman Kardon', 'Faróis Full LED Adaptativos']
-  };
-
-  const handleGenerate = () => {
-    if (placa.length < 7) return;
-    setStage('loading');
-    setProgress(0);
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setStage('done');
-          return 100;
-        }
-        return prev + Math.random() * 22 + 8;
-      });
-    }, 160);
-  };
-
-  const reset = () => {
-    setStage('idle');
-    setPlaca('');
-    setProgress(0);
-  };
-
-  return (
-    <div className="w-full flex-1 flex flex-col justify-center">
-      {stage === 'idle' && (
-        <div className="flex flex-col items-center justify-center gap-6 py-6 text-center">
-          <div className="space-y-1">
-            <span className="text-[10px] font-mono text-[#00d1ff] uppercase tracking-widest font-bold">● CONSULTA NATIVO FIPE & DETRAN</span>
-            <h4 className="text-xl font-serif text-[#e9e2d4]">Digite a placa para consultar o veículo</h4>
-            <p className="text-xs font-mono text-[#e9e2d4]/60 max-w-md">O sistema busca a ficha técnica oficial e monta na hora o carrossel do Instagram.</p>
-          </div>
-
-          <div className="flex items-center gap-3 w-full max-w-sm">
-            <input
-              type="text"
-              maxLength={7}
-              placeholder="BRA2E19"
-              value={placa}
-              onChange={(e) => setPlaca(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7))}
-              onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
-              className="flex-1 bg-black/50 border border-white/20 rounded-lg px-4 py-3 text-[#e9e2d4] font-mono text-center text-lg tracking-[0.25em] uppercase focus:border-[#00d1ff] focus:outline-none transition-colors"
-            />
-            <button
-              onClick={handleGenerate}
-              disabled={placa.length < 7}
-              className="px-6 py-3 bg-[#00d1ff] text-[#080706] font-mono text-xs font-bold rounded-lg uppercase tracking-wider hover:bg-[#00f0ff] disabled:opacity-40 transition-colors cursor-pointer"
-            >
-              Gerar →
-            </button>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-[9px] font-mono text-white/40">Placas de teste:</span>
-            {['BRA2E19', 'ABC1D23', 'RIO2A18'].map((p) => (
-              <button
-                key={p}
-                onClick={() => setPlaca(p)}
-                className="px-2.5 py-1 text-[9px] font-mono text-white/60 bg-white/5 border border-white/10 rounded hover:border-[#00d1ff] hover:text-[#00d1ff] transition-colors cursor-pointer"
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {stage === 'loading' && (
-        <div className="flex flex-col items-center justify-center gap-4 py-10 text-center">
-          <div className="w-8 h-8 border-2 border-[#00d1ff]/30 border-t-[#00d1ff] rounded-full animate-spin"></div>
-          <div className="w-full max-w-xs space-y-2">
-            <div className="flex justify-between text-[10px] font-mono text-white/70">
-              <span>Buscando base FIPE & especificações...</span>
-              <span className="text-[#00d1ff]">{Math.min(100, Math.round(progress))}%</span>
-            </div>
-            <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-              <div className="h-full bg-[#00d1ff] transition-all duration-150" style={{ width: `${Math.min(100, progress)}%` }}></div>
-            </div>
-          </div>
-          <p className="text-[10px] font-mono text-white/40 animate-pulse">Cruzando dados de chassi, fotos e calculando parcelamento...</p>
-        </div>
-      )}
-
-      {stage === 'done' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between border-b border-white/10 pb-3">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-mono text-[#00d1ff] font-bold">✓ CARROSSEL GERADO COM SUCESSO</span>
-              <span className="text-[10px] font-mono text-white/40">· Placa: {placa}</span>
-            </div>
-            <button onClick={reset} className="text-[10px] font-mono text-white/50 hover:text-white underline transition-colors cursor-pointer">
-              Nova consulta ↺
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Slide 1 - Capa */}
-            <div className="bg-black/60 border border-white/15 rounded-xl p-4 flex flex-col justify-between aspect-[4/5] relative overflow-hidden">
-              <div className="flex justify-between items-start">
-                <span className="text-[8px] font-mono text-[#00d1ff] font-bold">SLIDE 01 / CAPA</span>
-                <span className="text-[8px] font-mono text-white/40">{fakeCar.ano}</span>
-              </div>
-              <div className="my-auto text-center space-y-1">
-                <div className="text-xs font-mono text-white/50">{fakeCar.marca}</div>
-                <div className="text-base font-serif font-bold text-white leading-tight">{fakeCar.modelo}</div>
-                <div className="text-sm font-mono text-[#00d1ff] font-bold mt-2">{fakeCar.preco}</div>
-              </div>
-              <div className="text-[8px] font-mono text-white/40 text-center border-t border-white/10 pt-2">
-                {fakeCar.km} · {fakeCar.cor}
-              </div>
-            </div>
-
-            {/* Slide 2 - Ficha Técnica */}
-            <div className="bg-black/60 border border-white/15 rounded-xl p-4 flex flex-col justify-between aspect-[4/5] relative overflow-hidden">
-              <div className="flex justify-between items-start">
-                <span className="text-[8px] font-mono text-[#00d1ff] font-bold">SLIDE 02 / ESPECIFICAÇÕES</span>
-                <span className="text-[8px] font-mono text-white/40">FIPE OFICIAL</span>
-              </div>
-              <div className="space-y-2 my-auto text-left text-[10px] font-mono">
-                <div className="flex justify-between border-b border-white/5 py-1 text-white/70">
-                  <span>Motorização:</span> <b className="text-white">{fakeCar.motor}</b>
-                </div>
-                <div className="flex justify-between border-b border-white/5 py-1 text-white/70">
-                  <span>Câmbio:</span> <b className="text-white">{fakeCar.cambio}</b>
-                </div>
-                <div className="flex justify-between border-b border-white/5 py-1 text-white/70">
-                  <span>Quilometragem:</span> <b className="text-white">{fakeCar.km}</b>
-                </div>
-                <div className="flex justify-between border-b border-white/5 py-1 text-white/70">
-                  <span>Combustível:</span> <b className="text-white">Gasolina Turbo</b>
-                </div>
-              </div>
-              <div className="text-[8px] font-mono text-white/40 text-center border-t border-white/10 pt-2">
-                100% periciado com laudo cautelar
-              </div>
-            </div>
-
-            {/* Slide 3 - Opcionais & CTA */}
-            <div className="bg-black/60 border border-white/15 rounded-xl p-4 flex flex-col justify-between aspect-[4/5] relative overflow-hidden">
-              <div className="flex justify-between items-start">
-                <span className="text-[8px] font-mono text-[#00d1ff] font-bold">SLIDE 03 / CONDIÇÕES</span>
-                <span className="text-[8px] font-mono text-white/40">1-CLICK</span>
-              </div>
-              <div className="space-y-1.5 my-auto text-[9.5px] font-mono">
-                <div className="text-white/50 text-[8px] mb-1">DESTAQUES:</div>
-                {fakeCar.itens.map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-1.5 text-white/80">
-                    <span className="text-[#00d1ff]">✔</span> {item}
-                  </div>
-                ))}
-                <div className="mt-3 p-2 bg-white/5 rounded border border-[#00d1ff]/30 text-center">
-                  <span className="text-[9px] text-[#00d1ff] font-bold">{fakeCar.parcela}</span>
-                </div>
-              </div>
-              <div className="text-[8px] font-mono text-[#080706] font-bold bg-[#00d1ff] text-center py-1.5 rounded">
-                CHAMAR NO WHATSAPP →
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* 02. SIMULAÇÃO DO AGENTE DE IA */
-function AgenteIASimV2() {
-  const [messages, setMessages] = useState<{ sender: 'lead' | 'ia'; text: string; time: string }[]>([
-    { sender: 'lead', text: 'Boa tarde, queria saber o valor do implante dentário completo.', time: '14:20' },
-    { sender: 'ia', text: 'Olá! Seja bem-vindo à Clínica Odonto Prime. Sou o assistente virtual da Dra. Mariana.', time: '14:20' },
-    { sender: 'ia', text: 'Os valores de implantes dependem da avaliação óssea e tomografia, mas trabalhamos com condições a partir de 12x sem juros. Você já possui alguma tomografia recente?', time: '14:21' }
-  ]);
-  const [typing, setTyping] = useState(false);
-
-  const simulateNext = (leadResponse: string, iaReply: string) => {
-    if (typing) return;
-    setMessages((prev) => [...prev, { sender: 'lead', text: leadResponse, time: '14:22' }]);
-    setTyping(true);
-    setTimeout(() => {
-      setMessages((prev) => [...prev, { sender: 'ia', text: iaReply, time: '14:22' }]);
-      setTyping(false);
-    }, 1200);
-  };
-
-  return (
-    <div className="w-full flex-1 flex flex-col justify-between">
-      {/* Header do WhatsApp */}
-      <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-3">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#00d1ff]/20 border border-[#00d1ff] flex items-center justify-center text-[#00d1ff] text-xs font-bold font-mono">
-            IA
-          </div>
-          <div>
-            <div className="text-xs font-mono font-bold text-white">Agente ESCOM 24/7 (Qualificação Ativa)</div>
-            <div className="text-[9px] font-mono text-[#00d1ff]">● Online · Resposta em &lt; 3 segundos</div>
-          </div>
-        </div>
-        <div className="text-[9px] font-mono text-white/40 border border-white/10 px-2 py-1 rounded">
-          CRM INTEGRADO
-        </div>
-      </div>
-
-      {/* Janela de Mensagens */}
-      <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
-        {messages.map((m, idx) => (
-          <div key={idx} className={`flex ${m.sender === 'lead' ? 'justify-end' : 'justify-start'}`}>
-            <div
-              className={`max-w-[78%] px-3.5 py-2 rounded-xl text-[10.5px] font-mono leading-relaxed ${
-                m.sender === 'lead' ? 'bg-[#00d1ff]/15 border border-[#00d1ff]/30 text-white' : 'bg-white/5 border border-white/10 text-white/90'
-              }`}
-            >
-              <p className="m-0">{m.text}</p>
-              <span className="block text-[7.5px] text-white/40 text-right mt-1">{m.time}</span>
-            </div>
-          </div>
-        ))}
-        {typing && (
-          <div className="flex justify-start">
-            <div className="bg-white/5 border border-white/10 px-3 py-2 rounded-xl text-[10px] font-mono text-white/50 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-[#00d1ff] rounded-full animate-ping"></span>
-              Agente IA digitando e qualificando lead...
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Botões Rápidos de Simulação */}
-      <div className="border-t border-white/10 pt-3 mt-3">
-        <div className="text-[9px] font-mono text-white/40 mb-2">Simule respostas do cliente:</div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => simulateNext('Não tenho tomografia, gostaria de agendar uma avaliação.', 'Perfeito! Temos horários disponíveis nesta quinta às 10h ou sexta às 14h. Qual fica melhor para você? Já reservo no sistema.')}
-            disabled={typing}
-            className="px-3 py-1.5 bg-white/5 border border-white/15 rounded-lg text-[9px] font-mono text-white/80 hover:border-[#00d1ff] hover:text-[#00d1ff] transition-colors cursor-pointer disabled:opacity-30"
-          >
-            "Não tenho tomografia, quero agendar" →
-          </button>
-          <button
-            onClick={() => simulateNext('Vocês aceitam convênio Bradesco ou Amil?', 'Atendemos por reembolso facilitado, onde nossa equipe cuida de 100% da burocracia para você. Deseja falar com nosso especialista?')}
-            disabled={typing}
-            className="px-3 py-1.5 bg-white/5 border border-white/15 rounded-lg text-[9px] font-mono text-white/80 hover:border-[#00d1ff] hover:text-[#00d1ff] transition-colors cursor-pointer disabled:opacity-30"
-          >
-            "Vocês aceitam convênio?" →
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* 03. SIMULAÇÃO DA MÁQUINA GOOGLE */
-function MaquinaGoogleSimV2() {
-  const [tab, setTab] = useState<'seo' | 'ga4' | 'gmn'>('seo');
-
-  return (
-    <div className="w-full flex-1 flex flex-col justify-between">
-      {/* Abas */}
-      <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-3">
-        <div className="flex gap-2">
-          {(
-            [
-              ['seo', 'SEO & LIGHTHOUSE 100'],
-              ['ga4', 'GOOGLE ANALYTICS 4'],
-              ['gmn', 'GOOGLE MEU NEGÓCIO']
-            ] as const
-          ).map(([key, label]) => (
-            <button
-              key={key}
-              onClick={() => setTab(key)}
-              className={`px-3 py-1.5 rounded text-[9.5px] font-mono font-bold tracking-wider transition-colors cursor-pointer ${
-                tab === key ? 'bg-[#00d1ff] text-[#080706]' : 'bg-white/5 text-white/50 hover:text-white'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        <span className="text-[9px] font-mono text-[#00d1ff] hidden sm:block">ESTRUTURA SEMÂNTICA 2026</span>
-      </div>
-
-      {tab === 'seo' && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 my-auto">
-          {[
-            ['PERFORMANCE', '99/100', '0.4s LCP', '#00d1ff'],
-            ['SEO SCORE', '100/100', 'Schema.org Ok', '#00f0ff'],
-            ['ACESSIBILIDADE', '100/100', 'WCAG AAA', '#00d1ff'],
-            ['BEST PRACTICES', '100/100', 'HTTPS / CSP', '#c5a86a']
-          ].map(([title, score, desc, color], idx) => (
-            <div key={idx} className="bg-black/50 border border-white/10 rounded-xl p-4 text-center space-y-1">
-              <div className="text-[8.5px] font-mono text-white/50">{title}</div>
-              <div className="text-2xl font-mono font-bold" style={{ color }}>{score}</div>
-              <div className="text-[9px] font-mono text-white/40">{desc}</div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {tab === 'ga4' && (
-        <div className="space-y-3 my-auto">
-          <div className="grid grid-cols-3 gap-3">
-            <div className="bg-black/50 border border-white/10 rounded-xl p-3 text-center">
-              <span className="text-[8px] font-mono text-white/40">SESSÕES MENSAIS</span>
-              <div className="text-lg font-mono font-bold text-white">24.580</div>
-              <span className="text-[8.5px] font-mono text-[#00d1ff]">+38% orgânico</span>
-            </div>
-            <div className="bg-black/50 border border-white/10 rounded-xl p-3 text-center">
-              <span className="text-[8px] font-mono text-white/40">LEADS CAPTADOS</span>
-              <div className="text-lg font-mono font-bold text-[#00d1ff]">1.120</div>
-              <span className="text-[8.5px] font-mono text-[#00d1ff]">4.55% conv.</span>
-            </div>
-            <div className="bg-black/50 border border-white/10 rounded-xl p-3 text-center">
-              <span className="text-[8px] font-mono text-white/40">ROAS MÉDIO</span>
-              <div className="text-lg font-mono font-bold text-[#c5a86a]">6.8x</div>
-              <span className="text-[8.5px] font-mono text-white/40">tráfego pago</span>
-            </div>
-          </div>
-          <div className="p-3 bg-white/5 border border-white/10 rounded-lg flex items-center justify-between text-[10px] font-mono text-white/70">
-            <span>Rastreamento Server-Side GTM + Meta CAPI ativo</span>
-            <span className="text-[#00d1ff] font-bold">100% PRECISÃO</span>
-          </div>
-        </div>
-      )}
-
-      {tab === 'gmn' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 my-auto">
-          <div className="bg-black/50 border border-white/10 rounded-xl p-4 space-y-2">
-            <div className="text-xs font-serif font-bold text-white">Google Maps & Busca Local</div>
-            <div className="flex items-center gap-1 text-xs text-[#c5a86a]">
-              <span>★★★★★</span> <b className="text-white font-mono">4.9</b> <span className="text-white/40 text-[9px] font-mono">(340 avaliações)</span>
-            </div>
-            <p className="text-[9.5px] font-mono text-white/60">Posicionado no TOP 3 do Google Maps para o seu nicho e cidade.</p>
-          </div>
-          <div className="bg-black/50 border border-white/10 rounded-xl p-4 space-y-1.5 text-[10px] font-mono">
-            <div className="flex justify-between border-b border-white/5 pb-1 text-white/70">
-              <span>Rotas no Maps:</span> <b className="text-[#00d1ff]">+840/mês</b>
-            </div>
-            <div className="flex justify-between border-b border-white/5 pb-1 text-white/70">
-              <span>Ligações diretas:</span> <b className="text-[#00d1ff]">+320/mês</b>
-            </div>
-            <div className="flex justify-between text-white/70 pt-0.5">
-              <span>Cliques no Site:</span> <b className="text-[#00d1ff]">+1.450/mês</b>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="border-t border-white/10 pt-2 text-[9px] font-mono text-white/40 text-center">
-        Otimização Contínua · Rastreamento Avançado de Eventos GA4
-      </div>
-    </div>
-  );
-}
-
-/* 04. SIMULAÇÃO DO MINERADOR DE LEADS B2B */
-function MineradorLeadsSimV2() {
-  const [nicho, setNicho] = useState('Concessionárias & Lojas de Carro');
-  const [cidade, setCidade] = useState('São Paulo, SP');
-  const [mining, setMining] = useState(false);
-  const [results, setResults] = useState<{ nome: string; decisor: string; zap: string; score: string }[]>([
-    { nome: 'AutoPrime Imports', decisor: 'Carlos Eduardo (Sócio)', zap: '(11) 98452-9981', score: 'OPORTUNIDADE ALTA (Sem site mobile)' },
-    { nome: 'Motors Sul Veículos', decisor: 'Ricardo Mendes (Diretor)', zap: '(11) 97120-4412', score: 'OPORTUNIDADE ALTA (Nota baixa no GMN)' },
-    { nome: 'Elite Motors Jardins', decisor: 'Fabiana Costa (Gerente)', zap: '(11) 99182-7734', score: 'OPORTUNIDADE MÉDIA (Sem tráfego pago)' }
-  ]);
-
-  const handleMine = () => {
-    setMining(true);
-    setTimeout(() => {
-      setResults([
-        { nome: 'Alpha Motors Moema', decisor: 'Bruno Silveira (CEO)', zap: '(11) 97781-2290', score: 'ALTO POTENCIAL (Zero presença Google)' },
-        { nome: 'Titanium Motors', decisor: 'Marcos Vinicius (Sócio)', zap: '(11) 98841-0021', score: 'OPORTUNIDADE ALTA (Site fora do ar)' },
-        { nome: 'Vanguard Veículos', decisor: 'Juliana Prado (Marketing)', zap: '(11) 99231-8845', score: 'OPORTUNIDADE ALTA (Sem CRM)' }
-      ]);
-      setMining(false);
-    }, 1400);
-  };
-
-  return (
-    <div className="w-full flex-1 flex flex-col justify-between">
-      {/* Controles de Busca */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 border-b border-white/10 pb-3 mb-3">
-        <div>
-          <span className="text-[8px] font-mono text-white/40 uppercase">Nicho Alvo</span>
-          <select
-            value={nicho}
-            onChange={(e) => setNicho(e.target.value)}
-            className="w-full bg-black/60 border border-white/15 rounded px-2.5 py-1.5 text-[10px] font-mono text-white focus:outline-none focus:border-[#00d1ff]"
-          >
-            <option>Concessionárias & Lojas de Carro</option>
-            <option>Clínicas Médicas & Odontologia</option>
-            <option>Escritórios de Advocacia</option>
-            <option>Indústrias & B2B</option>
-          </select>
-        </div>
-        <div>
-          <span className="text-[8px] font-mono text-white/40 uppercase">Cidade / Região</span>
-          <input
-            type="text"
-            value={cidade}
-            onChange={(e) => setCidade(e.target.value)}
-            className="w-full bg-black/60 border border-white/15 rounded px-2.5 py-1.5 text-[10px] font-mono text-white focus:outline-none focus:border-[#00d1ff]"
-          />
-        </div>
-        <div className="flex items-end">
-          <button
-            onClick={handleMine}
-            disabled={mining}
-            className="w-full py-2 bg-[#00d1ff] text-[#080706] font-mono text-[10px] font-bold rounded uppercase tracking-wider hover:bg-[#00f0ff] transition-colors cursor-pointer disabled:opacity-40"
-          >
-            {mining ? 'Minerando...' : '🔍 Minerar Empresas'}
-          </button>
-        </div>
-      </div>
-
-      {/* Lista de Resultados */}
-      <div className="space-y-2 max-h-[220px] overflow-y-auto">
-        {results.map((r, idx) => (
-          <div key={idx} className="bg-black/50 border border-white/10 rounded-lg p-3 flex items-center justify-between">
-            <div>
-              <div className="text-xs font-mono font-bold text-white">{r.nome}</div>
-              <div className="text-[9px] font-mono text-white/60 mt-0.5">
-                Decisor: <span className="text-[#e9e2d4]">{r.decisor}</span> · WhatsApp: <span className="text-[#00d1ff]">{r.zap}</span>
-              </div>
-            </div>
-            <div className="text-right">
-              <span className="inline-block text-[8px] font-mono text-[#00d1ff] bg-[#00d1ff]/10 border border-[#00d1ff]/30 px-2 py-0.5 rounded">
-                {r.score}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="border-t border-white/10 pt-2 flex items-center justify-between text-[9px] font-mono text-white/40">
-        <span>Filtro de oportunidades ativas</span>
-        <span className="text-[#00d1ff]">1-CLICK EXPORT TO CRM</span>
-      </div>
     </div>
   );
 }
