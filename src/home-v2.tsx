@@ -36,37 +36,37 @@ export function HomeV2() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 1.25;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
     camera.position.set(0, 0.1, 4.2);
 
-    // Iluminação PBR Cinematográfica Escura / Noir
-    const hemiLight = new THREE.HemisphereLight(0xdde5ed, 0x050507, 1.8);
+    // Iluminação PBR de Alta Definição (Prata com acento Neon Ciano)
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x09090b, 2.4);
     scene.add(hemiLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.4);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 3.4);
     keyLight.position.set(4, 5, 5);
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0x00d1ff, 2.2);
+    const fillLight = new THREE.DirectionalLight(0x00d1ff, 2.4);
     fillLight.position.set(-4, 2, 3);
     scene.add(fillLight);
 
-    const rimLight = new THREE.PointLight(0x00d1ff, 4.2, 16);
+    const rimLight = new THREE.PointLight(0x00d1ff, 4.8, 16);
     rimLight.position.set(3, -2, 3);
     scene.add(rimLight);
 
-    const goldLight = new THREE.PointLight(0xc5a86a, 2.6, 12);
+    const goldLight = new THREE.PointLight(0xc5a86a, 2.4, 12);
     goldLight.position.set(-3, 3, -2);
     scene.add(goldLight);
 
     // Luzes de Neon Ciano nos Olhos do Robô
-    const eyeLightL = new THREE.PointLight(0x00f0ff, 2.4, 2.0);
+    const eyeLightL = new THREE.PointLight(0x00f0ff, 2.6, 2.0);
     eyeLightL.position.set(-0.13, 0.41, 0.38);
 
-    const eyeLightR = new THREE.PointLight(0x00f0ff, 2.4, 2.0);
+    const eyeLightR = new THREE.PointLight(0x00f0ff, 2.6, 2.0);
     eyeLightR.position.set(0.13, 0.41, 0.38);
 
     // Grupo do Robô
@@ -140,9 +140,8 @@ export function HomeV2() {
             mesh.receiveShadow = true;
             if (mesh.material) {
               const mat = mesh.material as THREE.MeshStandardMaterial;
-              mat.color = new THREE.Color(0x32363c); // Tom Gunmetal / Titânio escuro
-              mat.roughness = 0.44;
-              mat.metalness = 0.88;
+              mat.roughness = 0.36;
+              mat.metalness = 0.72;
               mat.needsUpdate = true;
             }
           }
