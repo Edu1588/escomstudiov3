@@ -822,6 +822,40 @@ app.delete("/api/generated-sites/:projectId", async (req, res) => {
   } catch(e) { res.status(500).json({ success: false, error: e.message }); }
 });
 
+// Abre o site com Puppeteer headless, tira screenshot desktop + mobile e retorna
+// HTML renderizado (JS executado). Usado pelo n8n para analise visual com Gemini.
+app.post("/api/screenshot-site", async (req, res) => {
+  const { url } = req.body;
+  if (!url) return res.status(400).json({ error: "url obrigatorio" });
+  let browser: any;
+  try {
+    const puppeteer = require('puppeteer');
+    browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        '--no-sandbox', '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage', '--disable-gpu',
+        '--single-process', '--no-zygote'
+      ]
+    });
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 800 });
+    await page.goto(url, { waitUntil: 'networkidle2', timeout: 15000 })
+      .catch(() => page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10000 }));
+    const title = await page.title();
+    const htmlRendered = (await page.content()).substring(0, 40000);
+    const screenshotDesktop = await page.screenshot({ encoding: 'base64', type: 'jpeg', quality: 75 }) as string;
+    await page.setViewport({ width: 390, height: 844, isMobile: true, deviceScaleFactor: 2 });
+    await page.reload({ waitUntil: 'domcontentloaded', timeout: 8000 }).catch(() => {});
+    const screenshotMobile = await page.screenshot({ encoding: 'base64', type: 'jpeg', quality: 75 }) as string;
+    await browser.close();
+    res.json({ screenshotDesktop, screenshotMobile, htmlRendered, title, url });
+  } catch(e: any) {
+    if (browser) await browser.close().catch(() => {});
+    res.status(500).json({ error: e.message, fallback: true });
+  }
+});
+
 // Dispara o Workflow B do n8n para gerar site-amostra + PDF + link de pagamento.
 // Busca dados completos do lead no Firestore e repassa ao n8n via webhook.
 app.post("/api/gerar-proposta", async (req, res) => {

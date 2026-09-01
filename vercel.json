@@ -1,4 +1,7 @@
 {
+  "functions": {
+    "api/index.ts": { "maxDuration": 60 }
+  },
   "cleanUrls": true,
   "rewrites": [
     { "source": "/home-v2", "destination": "/home-v2/index.html" },
