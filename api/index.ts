@@ -749,6 +749,35 @@ app.get("/api/leads", async (req, res) => {
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
+// Recebe lead do n8n (evita OAuth2 direto ao Firestore, usa auth do backend).
+app.post("/api/salvar-lead", async (req, res) => {
+  try {
+    await ensureAuth();
+    const lead = req.body;
+    if (!lead || !lead.nome) return res.status(400).json({ error: "campo nome obrigatorio" });
+    const nomeNormalizado = lead.nome.toLowerCase().trim();
+    const docId = nomeNormalizado.replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").substring(0, 80) + "-" + (lead.cidade || "").toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    await setDoc(doc(db, "leads", docId), {
+      nome: lead.nome,
+      nomeNormalizado,
+      endereco: lead.endereco || "",
+      telefone: lead.telefone || "",
+      website: lead.website || "",
+      rating: lead.rating || 0,
+      reviewsCount: lead.reviewsCount || 0,
+      categoria: lead.categoria || "",
+      cidade: lead.cidade || "",
+      temSite: lead.temSite ?? false,
+      scoreOportunidade: lead.scoreOportunidade ?? 50,
+      diagnostico: lead.diagnostico || null,
+      status: "novo",
+      criadoEm: new Date().toISOString(),
+      atualizadoEm: new Date().toISOString()
+    }, { merge: false });
+    res.json({ success: true, id: docId });
+  } catch(e: any) { res.status(500).json({ error: e.message }); }
+});
+
 app.post("/api/maps-leads", async (req, res) => {
   try {
     const { query } = req.body;
