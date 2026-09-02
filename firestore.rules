@@ -23,11 +23,10 @@ service cloud.firestore {
       allow read: if true;
       allow write: if request.auth != null;
     }
-    // Leads gerados pelo n8n — leitura liberada pro backend Express (sem auth de usuario).
-    // A escrita continua exigindo auth (n8n usa service account que bypassa as regras).
+    // Leads gerados pelo n8n via OAuth2 Google (nao Firebase ID token).
+    // Leitura e escrita abertas: dados nao sensiveis, gerados automaticamente pelo n8n.
     match /leads/{leadId} {
-      allow read: if true;
-      allow write: if request.auth != null;
+      allow read, write: if true;
     }
     // Secure by default: everything else requires auth
     match /{document=**} {
