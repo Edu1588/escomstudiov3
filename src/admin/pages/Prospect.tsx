@@ -53,6 +53,39 @@ export default function Prospect() {
   const [activeModalTab, setActiveModalTab] = useState<"Informações" | "Scripts" | "Objeções" | "Site" | "Venda" | "Agendar">("Informações");
   const [gerandoPropostaId, setGerandoPropostaId] = useState<string | null>(null);
   const [reativandoSlug, setReativandoSlug] = useState<string | null>(null);
+  const [showBuscarModal, setShowBuscarModal] = useState(false);
+  const [buscando, setBuscando] = useState(false);
+  const [buscarForm, setBuscarForm] = useState({ nicho: "", cidade: "", estado: "SP", quantidade: "15" });
+
+  const nichos = [
+    "Clinicas Odontologicas (Implantes e Lentes de Contato)",
+    "Advocacia", "Clinica Estetica", "Nutricionista",
+    "Contabilidade", "Creche e Escola Infantil", "Clinica de Fisioterapia"
+  ];
+
+  const handleBuscarLeads = async () => {
+    setBuscando(true);
+    try {
+      const res = await fetch("/api/buscar-leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nicho: buscarForm.nicho,
+          cidade: buscarForm.cidade,
+          estado: buscarForm.estado,
+          quantidade: parseInt(buscarForm.quantidade) || 15
+        })
+      });
+      if (!res.ok) throw new Error("Falha ao acionar o n8n");
+      setShowBuscarModal(false);
+      alert("Busca iniciada! Os leads aparecerão aqui em alguns minutos conforme forem qualificados.");
+      setTimeout(fetchCrmLeads, 30000);
+    } catch {
+      alert("Erro ao conectar com o n8n. Verifique se o workflow está publicado e ativo.");
+    } finally {
+      setBuscando(false);
+    }
+  };
 
   useEffect(() => {
     fetchCrmLeads();
@@ -167,17 +200,95 @@ export default function Prospect() {
 
       <div className="p-4 md:p-8 max-w-[1400px] mx-auto space-y-6">
 
-        {/* CAMPO DE BUSCA EM CARD BRANCO */}
-        <div className="bg-white text-slate-900 border-2 border-slate-900 rounded-xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] flex items-center gap-3">
-          <Search className="text-slate-400 shrink-0" size={20} />
-          <input
-            type="text"
-            placeholder="Buscar por nome, categoria, cidade ou telefone..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-transparent text-slate-900 text-sm md:text-base font-medium focus:outline-none placeholder:text-slate-400"
-          />
+        {/* CAMPO DE BUSCA + BOTÃO BUSCAR LEADS */}
+        <div className="flex gap-3">
+          <div className="flex-1 bg-white text-slate-900 border-2 border-slate-900 rounded-xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] flex items-center gap-3">
+            <Search className="text-slate-400 shrink-0" size={20} />
+            <input
+              type="text"
+              placeholder="Buscar por nome, categoria, cidade ou telefone..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-transparent text-slate-900 text-sm md:text-base font-medium focus:outline-none placeholder:text-slate-400"
+            />
+          </div>
+          <button
+            onClick={() => setShowBuscarModal(true)}
+            className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-extrabold text-sm px-5 rounded-xl border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center gap-2 whitespace-nowrap uppercase tracking-wide"
+          >
+            <Sparkles size={16} /> Buscar Leads
+          </button>
         </div>
+
+        {/* MODAL BUSCAR LEADS */}
+        {showBuscarModal && (
+          <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+            <div className="bg-white text-slate-900 border-2 border-slate-900 rounded-2xl p-6 w-full max-w-md shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-5">
+              <div className="flex items-center justify-between">
+                <h2 className="font-extrabold text-lg uppercase tracking-wide">Buscar Leads via n8n</h2>
+                <button onClick={() => setShowBuscarModal(false)} className="text-slate-400 hover:text-slate-900"><X size={20} /></button>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs font-extrabold uppercase tracking-wide text-slate-600 block mb-1">Nicho</label>
+                  <select
+                    value={buscarForm.nicho}
+                    onChange={(e) => setBuscarForm(f => ({ ...f, nicho: e.target.value }))}
+                    className="w-full border-2 border-slate-900 rounded-lg px-3 py-2.5 text-sm font-medium focus:outline-none focus:border-[#2563eb]"
+                  >
+                    <option value="">Automático (rotação do dia)</option>
+                    {nichos.map(n => <option key={n} value={n}>{n}</option>)}
+                  </select>
+                </div>
+
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <label className="text-xs font-extrabold uppercase tracking-wide text-slate-600 block mb-1">Cidade</label>
+                    <input
+                      type="text"
+                      placeholder="Ex: São Paulo"
+                      value={buscarForm.cidade}
+                      onChange={(e) => setBuscarForm(f => ({ ...f, cidade: e.target.value }))}
+                      className="w-full border-2 border-slate-900 rounded-lg px-3 py-2.5 text-sm font-medium focus:outline-none focus:border-[#2563eb]"
+                    />
+                  </div>
+                  <div className="w-24">
+                    <label className="text-xs font-extrabold uppercase tracking-wide text-slate-600 block mb-1">Estado</label>
+                    <input
+                      type="text"
+                      placeholder="SP"
+                      maxLength={2}
+                      value={buscarForm.estado}
+                      onChange={(e) => setBuscarForm(f => ({ ...f, estado: e.target.value.toUpperCase() }))}
+                      className="w-full border-2 border-slate-900 rounded-lg px-3 py-2.5 text-sm font-medium focus:outline-none focus:border-[#2563eb]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-extrabold uppercase tracking-wide text-slate-600 block mb-1">Quantidade de leads</label>
+                  <input
+                    type="number"
+                    min={1} max={50}
+                    value={buscarForm.quantidade}
+                    onChange={(e) => setBuscarForm(f => ({ ...f, quantidade: e.target.value }))}
+                    className="w-full border-2 border-slate-900 rounded-lg px-3 py-2.5 text-sm font-medium focus:outline-none focus:border-[#2563eb]"
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={handleBuscarLeads}
+                disabled={buscando}
+                className="w-full bg-[#2563eb] hover:bg-[#1d4ed8] disabled:opacity-60 text-white font-extrabold text-sm py-3.5 rounded-xl border-2 border-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-2 uppercase tracking-wide"
+              >
+                {buscando ? <><Loader2 size={16} className="animate-spin" /> Buscando…</> : <><Sparkles size={16} /> Iniciar busca</>}
+              </button>
+              <p className="text-[11px] text-slate-500 text-center">Deixe Nicho/Cidade em branco para usar a rotação automática do dia.</p>
+            </div>
+          </div>
+        )}
 
         {/* CHIPS DE FILTRO COM DESIGN DE BOTÃO QUADRADO (AZUL ESCOM) */}
         <div className="flex items-center gap-2.5 overflow-x-auto pb-2 custom-scrollbar">

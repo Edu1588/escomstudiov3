@@ -822,6 +822,22 @@ app.delete("/api/generated-sites/:projectId", async (req, res) => {
   } catch(e) { res.status(500).json({ success: false, error: e.message }); }
 });
 
+// Dispara manualmente o Workflow A do n8n (busca + qualificacao de leads).
+// Recebe nicho/cidade/quantidade do painel admin e repassa ao webhook do n8n.
+app.post("/api/buscar-leads", async (req, res) => {
+  try {
+    const { nicho, cidade, estado, quantidade } = req.body;
+    const n8nHost = process.env.N8N_HOST || "https://n8n-iliw.srv1887358.hstgr.cloud";
+    const resp = await fetch(`${n8nHost}/webhook/buscar-leads`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nicho: nicho || "", cidade: cidade || "", estado: estado || "SP", quantidade: quantidade || 15 })
+    });
+    const data = await resp.json().catch(() => ({ ok: true }));
+    res.status(resp.status).json(data);
+  } catch(e: any) { res.status(500).json({ error: e.message }); }
+});
+
 // Abre o site com Puppeteer headless, tira screenshot desktop + mobile e retorna
 // HTML renderizado (JS executado). Usado pelo n8n para analise visual com Gemini.
 app.post("/api/screenshot-site", async (req, res) => {
