@@ -182,32 +182,23 @@ export default function Leads() {
     setLoading(true);
     try {
       const ufClean = selectedEstado.split(" — ")[0];
-      const res = await fetch(`/api/search-leads?uf=${ufClean}&cidade=${encodeURIComponent(selectedCidade)}&categoria=${encodeURIComponent(selectedCategoria)}&limit=${leadLimit}`);
+      const res = await fetch("/api/buscar-leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nicho: selectedCategoria,
+          cidade: selectedCidade,
+          estado: ufClean,
+          quantidade: leadLimit
+        })
+      });
       if (res.ok) {
-        const data = await res.json();
-        if (data.leads && data.leads.length > 0) {
-          setLeads(data.leads);
-        } else {
-          // Gerar resultados dinâmicos baseados nos filtros
-          const mockResults = Array.from({ length: Math.min(leadLimit, 6) }).map((_, i) => ({
-            id: `lead-search-${Date.now()}-${i}`,
-            nome: `${selectedCategoria} ${selectedCidade} VIP #${i+1}`,
-            categoria: selectedCategoria,
-            cidade: `${selectedCidade}, ${ufClean}`,
-            endereco: `Av. Principal, ${100 + i * 50} - Centro, ${selectedCidade} - ${ufClean}`,
-            telefone: `(11) 9${Math.floor(10000000 + Math.random() * 90000000)}`,
-            rating: Number((4.5 + Math.random() * 0.5).toFixed(1)),
-            reviewsCount: Math.floor(50 + Math.random() * 500),
-            temSite: i % 2 === 0,
-            temp: i % 3 === 0 ? "Quente" : "Frio",
-            score: Math.floor(10 + Math.random() * 80),
-            siteUrl: i % 2 === 0 ? `https://${selectedCategoria.toLowerCase().replace(/[^a-z]/g, '')}${i}.com.br` : "",
-            etapa: "Base"
-          }));
-          setLeads(mockResults);
-        }
+        alert(`Busca iniciada! Os leads aparecerão no CRM em alguns minutos conforme o n8n for qualificando.`);
+      } else {
+        throw new Error("Falha ao acionar o n8n");
       }
     } catch (err) {
+      alert("Erro ao conectar com o n8n. Verifique se o Workflow A está publicado e ativo.");
       console.error(err);
     } finally {
       setLoading(false);

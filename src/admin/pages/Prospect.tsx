@@ -56,6 +56,12 @@ export default function Prospect() {
   const [showBuscarModal, setShowBuscarModal] = useState(false);
   const [buscando, setBuscando] = useState(false);
   const [buscarForm, setBuscarForm] = useState({ nicho: "", cidade: "", estado: "SP", quantidade: "15" });
+  const [toast, setToast] = useState<{ msg: string; tipo: "ok" | "erro" } | null>(null);
+
+  const showToast = (msg: string, tipo: "ok" | "erro" = "ok") => {
+    setToast({ msg, tipo });
+    setTimeout(() => setToast(null), 4000);
+  };
 
   const nichos = [
     "Clinicas Odontologicas (Implantes e Lentes de Contato)",
@@ -78,10 +84,10 @@ export default function Prospect() {
       });
       if (!res.ok) throw new Error("Falha ao acionar o n8n");
       setShowBuscarModal(false);
-      alert("Busca iniciada! Os leads aparecerão aqui em alguns minutos conforme forem qualificados.");
+      showToast("Busca iniciada! Os leads aparecem aqui em alguns minutos.");
       setTimeout(fetchCrmLeads, 30000);
     } catch {
-      alert("Erro ao conectar com o n8n. Verifique se o workflow está publicado e ativo.");
+      showToast("Erro ao conectar com o n8n. Verifique se o Workflow A está ativo.", "erro");
     } finally {
       setBuscando(false);
     }
@@ -124,10 +130,10 @@ export default function Prospect() {
         body: JSON.stringify({ leadId: lead.id })
       });
       if (!res.ok) throw new Error("Falha ao acionar o n8n");
-      alert(`Proposta em geração para ${lead.nome}! O site-amostra e o PDF ficam disponíveis em alguns instantes.`);
+      showToast(`Proposta em geração para ${lead.nome}! Site-amostra e PDF ficam prontos em instantes.`);
       await fetchCrmLeads();
     } catch (err) {
-      alert("Erro ao gerar proposta. Verifique se o workflow B do n8n está publicado e ativo.");
+      showToast("Erro ao gerar proposta. Verifique se o Workflow B do n8n está ativo.", "erro");
     } finally {
       setGerandoPropostaId(null);
     }
@@ -193,6 +199,15 @@ export default function Prospect() {
 
   return (
     <div className="flex-1 overflow-y-auto w-full bg-[#070c18] text-white min-h-screen pb-20 font-sans">
+
+      {/* TOAST */}
+      {toast && (
+        <div className={`fixed bottom-6 right-6 z-[9999] flex items-start gap-3 px-5 py-4 rounded-xl border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-w-sm animate-fade-in-up ${toast.tipo === "erro" ? "bg-red-50 text-red-800" : "bg-emerald-50 text-emerald-800"}`}>
+          <span className="text-lg">{toast.tipo === "erro" ? "✕" : "✓"}</span>
+          <p className="text-sm font-semibold leading-snug">{toast.msg}</p>
+          <button onClick={() => setToast(null)} className="ml-auto text-slate-400 hover:text-slate-700 shrink-0"><X size={15} /></button>
+        </div>
+      )}
       <Header 
         title="Gestão de Clientes ✦ CRM Comercial" 
         subtitle="Filtre, priorize e acompanhe a jornada de prospecção e vendas de cada cliente." 
