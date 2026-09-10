@@ -3,6 +3,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, Center } from '@react-three/drei';
 import * as THREE from 'three';
 
+useGLTF.preload('/models/3Dmodelrobot-v1.glb');
 useGLTF.preload('/models/HEFESTO_FABRICA.glb');
 useGLTF.preload('/models/hefestoHD-v1.glb');
 useGLTF.preload('/models/hephestinho-v1.glb');
@@ -17,14 +18,15 @@ if (typeof window !== 'undefined') {
   });
 }
 
-function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateSpeed, scrollProgress, scrollY, isClean, modelPath = '/models/HEFESTO_FABRICA.glb', fixedScale, fixedY }: any) {
+function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateSpeed, scrollProgress, scrollY, isClean, modelPath = '/models/3Dmodelrobot-v1.glb', fixedScale, fixedY }: any) {
   const modelRef = useRef<THREE.Group>(null);
   const headPivotRef = useRef<THREE.Group | null>(null);
   
   // Hook call at top level
   const gltf = useGLTF(modelPath);
 
-  const isArticulated = typeof modelPath === 'string' && (modelPath.toLowerCase().includes('hefestohd') || modelPath.toLowerCase().includes('hephestinho'));
+  const isRobot = typeof modelPath === 'string' && (modelPath.toLowerCase().includes('3dmodelrobot') || modelPath.toLowerCase().includes('robot'));
+  const isArticulated = isRobot || (typeof modelPath === 'string' && (modelPath.toLowerCase().includes('hefestohd') || modelPath.toLowerCase().includes('hephestinho')));
 
   // Clone scene so multiple canvas instances render separate copies without stealing Object3D
   const clonedScene = useMemo(() => {
@@ -32,7 +34,7 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
     if (!rawScene) return null;
 
     if (isArticulated) {
-      // Montagem com separação de Busto Fixo e Cabeça Articulada (padrão RobotBust3D)
+      // Montagem com separação de Busto Fixo e Cabeça Articulada
       const wrapper = new THREE.Group();
       
       const box = new THREE.Box3().setFromObject(rawScene);
@@ -42,8 +44,8 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
       const headPivot = new THREE.Group();
       const headGroup = new THREE.Group();
       
-      // Ponto de articulação do pescoço (entre o peitoral e a base do queixo)
-      const neckPivotY = 0.55 - center.y;
+      // Ponto de articulação do pescoço (0.25 para o robô da V2, 0.55 para Hefesto)
+      const neckPivotY = isRobot ? (0.25 - center.y) : (0.55 - center.y);
       const neckPivotZ = 0.00 - center.z;
       
       headPivot.position.set(0, neckPivotY, neckPivotZ);
@@ -56,12 +58,25 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
       clone.traverse((child: any) => {
         if (child.isMesh) {
           if (child.material) {
-            const mat = child.material.clone();
-            mat.color.set('#ffffff');
-            mat.roughness = 0.45;
-            mat.metalness = 0.40;
-            mat.needsUpdate = true;
-            child.material = mat;
+            if (isClean) {
+              const mat = child.material.clone();
+              mat.color.set('#ffffff');
+              mat.roughness = isRobot ? 0.36 : 0.45;
+              mat.metalness = isRobot ? 0.72 : 0.40;
+              mat.needsUpdate = true;
+              child.material = mat;
+            } else {
+              // Material com contraste perfeito para o EffectPass (shader de pixels do Hero)
+              child.material = new THREE.MeshStandardMaterial({
+                color: modelColor || '#dedede',
+                roughness: roughness ?? 0.28,
+                metalness: metalness ?? 0.75,
+                emissive: new THREE.Color('#121212'),
+                emissiveIntensity: 0.12,
+                map: null,
+                envMapIntensity: 1.0,
+              });
+            }
             child.castShadow = true;
             child.receiveShadow = true;
           }
@@ -74,14 +89,32 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
         node.position.y -= center.y;
         node.position.z -= center.z;
         
-        if (node.name === 'tripo_part_1') {
-          // Busto / Peitoral / Ombros / Avental -> Fixo no peito
-          chestGroup.add(node);
+        if (isRobot) {
+          // No robô da V2: tripo_part_0 é o tronco/peito; o restante é a cabeça
+          if (node.name === 'tripo_part_0') {
+            chestGroup.add(node);
+          } else {
+            headGroup.add(node);
+          }
         } else {
-          // tripo_part_0 (cabeça/cabelo), tripo_part_2 (rosto), tripo_part_3..5 (detalhes) -> Cabeça (acompanham o mouse)
-          headGroup.add(node);
+          // No Hefesto: tripo_part_1 é o busto
+          if (node.name === 'tripo_part_1') {
+            chestGroup.add(node);
+          } else {
+            headGroup.add(node);
+          }
         }
       });
+
+      if (isRobot) {
+        // Luzes neon nos olhos do robô (seguem a rotação da cabeça)
+        const eyeLightL = new THREE.PointLight(0x00f0ff, 3.2, 2.0);
+        eyeLightL.position.set(-0.13, 0.41, 0.38);
+        const eyeLightR = new THREE.PointLight(0x00f0ff, 3.2, 2.0);
+        eyeLightR.position.set(0.13, 0.41, 0.38);
+        headPivot.add(eyeLightL);
+        headPivot.add(eyeLightR);
+      }
       
       wrapper.add(chestGroup);
       wrapper.add(headPivot);
@@ -150,29 +183,28 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
     }
 
     const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
-    const baseHeroScale = isMobile ? 2.65 : 3.05;
-    const baseHeroY = isMobile ? -0.55 : -0.70;
+    const baseHeroScale = isRobot ? (isMobile ? 2.35 : 2.75) : (isMobile ? 2.65 : 3.05);
+    const baseHeroY = isRobot ? (isMobile ? -0.28 : -0.38) : (isMobile ? -0.55 : -0.70);
     const scroll = scrollY || 0;
 
     let targetScale = isClean ? 3.6 : baseHeroScale;
     let targetY = isClean ? -1.4 : baseHeroY;
-    let targetRotX = 0.25;
-    let targetRotY = -0.8;
+    let targetRotX = isRobot ? 0.04 : 0.25;
+    let targetRotY = isRobot ? 0.0 : -0.8;
     
     if (fixedScale !== undefined && fixedY !== undefined) {
       targetScale = fixedScale;
       targetY = fixedY;
-      // Busto fixo posicionado um pouco mais virado para a direita
       targetRotX = isArticulated ? 0.04 : 0.06 - (py * Math.PI) / 10.0;
-      targetRotY = isArticulated ? -0.15 : -0.20 + (px * Math.PI) / 8.0;
+      targetRotY = isArticulated ? (isRobot ? 0.0 : -0.15) : -0.20 + (px * Math.PI) / 8.0;
     } else if (!isClean) {
       if (scroll <= vh) {
-        // Section 1: Zoom into the top of the head
+        // Section 1: suave tilt ao rolar
         let p = scroll / vh;
-        targetScale = baseHeroScale + p * 3.6; // zoom in progressivo
-        targetY = baseHeroY - p * 1.3; 
-        targetRotX = 0.1 + p * 0.35; // Tilt forward to see top of head, but not too much
-        targetRotY = -0.8 - p * 0.3;
+        targetScale = baseHeroScale + p * 1.6;
+        targetY = baseHeroY - p * 1.0; 
+        targetRotX = (isRobot ? 0.04 : 0.1) + p * 0.25;
+        targetRotY = (isRobot ? 0.0 : -0.8) - p * 0.35;
       } else if (scroll <= vh * 2.5) {
         // Section 2: Tilt to show chin
         let p = (scroll - vh) / (vh * 1.5);

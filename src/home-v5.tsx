@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import ReactDOM from 'react-dom/client';
 import ThreeCanvas from './components/V5/ThreeCanvas';
-import RobotCanvasV2 from './components/V5/RobotCanvasV2';
 import ControlSlider from './components/V5/ControlSlider';
 import PixelArtCanvas from './components/V5/PixelArtCanvas';
-import PaperBurnCard from './components/V5/PaperBurnCard';
 import BlurText from './components/V5/BlurText';
 import SplashCursor from './components/V5/SplashCursor';
 import SciFiLoadingScreen from './components/V5/SciFiLoadingScreen';
-import ChakraServicesSection from './components/V5/ChakraServicesSection';
 import { ArrowUp } from 'lucide-react';
 import gsap from 'gsap';
 import SplitType from 'split-type';
@@ -17,11 +14,11 @@ import './home-v5.css';
 
 const NAV = [
   { label: "Origem", id: "jornada" },
-  { label: "Engenharia", id: "forjamos" },
+  { label: "Ecossistema", id: "ecossistema" },
   { label: "Serviços", id: "servicos" },
-  { label: "Metodologia", id: "porque-forja" },
-  { label: "Time", id: "clientes" },
-  { label: "Contato", id: "projeto" },
+  { label: "Metodologia", id: "metodologia" },
+  { label: "Mercados", id: "mercados" },
+  { label: "Contato", id: "contato" },
 ];
 
 const WRITING = [
@@ -41,6 +38,57 @@ const WRITING = [
   },
 ];
 
+const SERVICES_V5 = [
+  {
+    id: "01",
+    tag: "AUTOMAÇÃO & IA 24/7",
+    title: "Agentes de IA & Atendimento no WhatsApp",
+    description: "Atendimento imediato no WhatsApp com qualificação por faturamento, respostas inteligentes e agendamento comercial automático. Seu lead atendido em menos de 10 segundos, 24 horas por dia.",
+    badge: "ZERO ESPERA",
+    meta: "Atendimento & Conversão",
+  },
+  {
+    id: "02",
+    tag: "CONTEÚDO AUTOMATIZADO",
+    title: "Carrosséis Inteligentes & Conexão FIPE",
+    description: "Geração instantânea e diagramada de carrosséis prontos para Instagram integrados a APIs oficiais e tabela FIPE. Elimina o retrabalho de design e entrega criativos de alta atração em segundos.",
+    badge: "API DIRETA",
+    meta: "Escala Criativa",
+  },
+  {
+    id: "03",
+    tag: "FRICÇÃO ZERO",
+    title: "Landing Pages Automatizadas de Alta Performance",
+    description: "Páginas construídas em código limpo com carregamento sub-segundo (LCP < 0.4s), Lighthouse 100 e tracking avançado (GA4 e CAPI). Cada milissegundo economizado é conversão capturada antes do concorrente.",
+    badge: "LCP < 0.4s",
+    meta: "Performance Web",
+  },
+  {
+    id: "04",
+    tag: "SOBERANIA DIGITAL",
+    title: "Sistemas ERP & Plataformas Proprietárias",
+    description: "Plataformas de gestão desenhadas sob medida para a sua operação: controle de contratos, clientes, faturamento e pipeline comercial centralizados, sem dependência de assinaturas caras de SaaS.",
+    badge: "SEM SAAS RECORRENTE",
+    meta: "Sistemas Sob Medida",
+  },
+  {
+    id: "05",
+    tag: "DADOS EM TEMPO REAL",
+    title: "Dashboards de ROI & Inteligência Comercial",
+    description: "Visão executiva unificada conectando tráfego pago, faturamento, CAC, LTV e taxa de fechamento em tempo real. Clareza matemática sobre onde cada centavo investido se transforma em lucro líquido.",
+    badge: "ROI CONSOLIDADO",
+    meta: "Business Intelligence",
+  },
+  {
+    id: "06",
+    tag: "INFRAESTRUTURA & SEO",
+    title: "Engenharia de Plataformas & SEO Orgânico",
+    description: "Arquitetura escalável em Next.js e React com microsserviços seguros, 99.9% de uptime, semântica avançada e domínio orgânico no Google para atrair clientes qualificados sem custo por clique.",
+    badge: "DOMÍNIO ORGÂNICO",
+    meta: "Infraestrutura Blindada",
+  },
+];
+
 const CONTENT: [string, string, string][] = [
   ["01 — 05", "CRM Nativo Blindado — centralização de leads, propostas e histórico sem SaaS fragmentado", "Controle"],
   ["02 — 05", "Agentes de IA 24/7 — atendimento no WhatsApp com qualificação por faturamento e agenda direta", "Automação"],
@@ -48,73 +96,6 @@ const CONTENT: [string, string, string][] = [
   ["04 — 05", "Máquina de Ranqueamento — SEO técnico mobile-first, Lighthouse 100 e domínio orgânico", "Performance"],
   ["05 — 05", "Minerador de Leads B2B — radar inteligente que mapeia decisores e entrega WhatsApp direto", "Prospecção"],
   ["Faixa", "Engenharia de conversão, ecossistema blindado e código proprietário", "Soberania"],
-];
-
-const TEAM = [
-  {
-    name: "Lucas Correa",
-    role: "Founder & Head de Estratégia",
-    img: "https://res.cloudinary.com/ifuatk2z/image/upload/v1787785391/lucasfabrica.png",
-    quote: "Desenha o plano de crescimento e responde pelo número final de cada conta.",
-    bio: "Desenha o plano de crescimento e responde pelo número final de cada conta."
-  },
-  {
-    name: "Muriel Duarte",
-    role: "Head de Criação & Marca",
-    img: "https://res.cloudinary.com/ifuatk2z/image/upload/v1787785391/murielfabrica.png",
-    quote: "Traduz posicionamento em ideia: conceito, identidade e o criativo que faz o dedo parar.",
-    bio: "Traduz posicionamento em ideia: conceito, identidade e o criativo que faz o dedo parar."
-  },
-  {
-    name: "Douglas Lins",
-    role: "Head de Growth",
-    img: "https://res.cloudinary.com/ifuatk2z/image/upload/v1787785391/douglasfabrica.png",
-    quote: "Dono da máquina: mídia, funil e dados conversando entre si.",
-    bio: "Dono da máquina: mídia, funil e dados conversando entre si."
-  },
-  {
-    name: "Vitor Hugo",
-    role: "Copywriter de Performance",
-    img: "https://res.cloudinary.com/ifuatk2z/image/upload/v1787785391/vitorfabrica.png",
-    quote: "Escreve o que vende: anúncio, página e oferta validados um a um.",
-    bio: "Escreve o que vende: anúncio, página e oferta validados um a um."
-  },
-  {
-    name: "Fernanda Amim",
-    role: "Estrategista de Conteúdo",
-    img: "https://res.cloudinary.com/ifuatk2z/image/upload/v1787785391/fernandafabrica.png",
-    quote: "Cuida da narrativa que aquece o lead antes de qualquer vendedor falar.",
-    bio: "Cuida da narrativa que aquece o lead antes de qualquer vendedor falar."
-  },
-  {
-    name: "Maria Eduarda",
-    role: "Estrategista de Social Media",
-    img: "https://res.cloudinary.com/ifuatk2z/image/upload/v1787785391/mariaeduardafabrica.png",
-    quote: "Transforma o dia a dia da marca em presença: pauta, publicação e comunidade.",
-    bio: "Transforma o dia a dia da marca em presença: pauta, publicação e comunidade."
-  },
-  {
-    name: "Edu Santos",
-    role: "Web Design & Automação de Sistemas",
-    img: "https://res.cloudinary.com/ifuatk2z/image/upload/v1787785392/edufabrica.png",
-    quote: "Especialista em criar ecossistemas digitais que resolvem os gargalos de captação e gestão",
-    bio: "Especialista em criar ecossistemas digitais que resolvem os gargalos de captação e gestão"
-  },
-];
-
-const PEOPLE: [string, string][] = [
-  ["Marcos G. Correia", "Gorre"],
-  ["Isabela Alencar", "Estoque & Office"],
-  ["Roberto Campos", "Unimais Veículos"],
-  ["Renan Brasil", "Brasil Visa"],
-  ["Empresas atendidas", "50+"],
-  ["Pessoas impactadas", "10 M+"],
-  ["Em tráfego pago / ano", "R$ 15 M+"],
-  ["Artes & layouts", "25 K+"],
-  ["O Padrão Comum", "Pilar 22"],
-  ["Teto Comercial", "Pilar 68"],
-  ["Inércia Criativa", "Pilar 37"],
-  ["Falta de Agilidade", "Pilar 53"],
 ];
 
 const SPOTLIGHT: [string, string][] = [
@@ -378,16 +359,14 @@ function InteractiveImage({ src, alt }: { src: string, alt: string }) {
 function HomeV5Content() {
   const [loading, setLoading] = useState(true);
   const [pixelFactor, setPixelFactor] = useState(5.0);
-  const [brightness, setBrightness] = useState(1.0);
+  const [brightness, setBrightness] = useState(1.15);
   const [smearIntensity, setSmearIntensity] = useState(0.3);
-  const [roughness, setRoughness] = useState(0.25);
-  const [metalness, setMetalness] = useState(0.85);
-  const [cameraZ, setCameraZ] = useState(7);
+  const [roughness, setRoughness] = useState(0.28);
+  const [metalness, setMetalness] = useState(0.75);
+  const [cameraZ, setCameraZ] = useState(6.5);
   const [autoRotate, setAutoRotate] = useState(false);
   const [showControls, setShowControls] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [selectedMember, setSelectedMember] = useState<typeof TEAM[0] | null>(null);
-  const [hoveredMember, setHoveredMember] = useState<string | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollY, setScrollY] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -439,7 +418,8 @@ function HomeV5Content() {
       roughness,
       metalness,
       scrollProgress,
-      scrollY
+      scrollY,
+      modelPath: "/models/3Dmodelrobot-v1.glb"
     }),
     [pixelFactor, cameraZ, autoRotate, brightness, smearIntensity, roughness, metalness, scrollProgress, scrollY]
   );
@@ -449,12 +429,12 @@ function HomeV5Content() {
       {/* Sci-Fi Loading Screen with Enter Gate */}
       {loading && <SciFiLoadingScreen onEnter={() => setLoading(false)} />}
 
-      {/* 3D Canvas Background — Robô Busto Oficial ESCOM da Home V2 */}
-      <RobotCanvasV2 />
+      {/* 3D Canvas Background — Robô Busto Oficial ESCOM com Shader de Pixels no HERO */}
+      <ThreeCanvas {...threeProps} />
 
-      {/* Fixed Top-Right Action Button (Hidden on Mobile to optimize screen and avoid navbar overlap) */}
+      {/* Fixed Top-Right Action Button */}
       <a
-        href="#projeto"
+        href="#contato"
         className="hidden md:block fixed top-6 right-6 z-50 text-black bg-[#00d1ff] hover:bg-white transition-colors uppercase font-bold font-mono text-xs tracking-widest px-6 py-3.5 rounded-none shadow-2xl pointer-events-auto"
       >
         Iniciar Projeto
@@ -579,7 +559,7 @@ function HomeV5Content() {
             {/* Paragraph 2: Offset to the right - Large scale */}
             <div className="relative w-full md:w-[75%] lg:w-[60%] md:ml-auto flex flex-col md:flex-row gap-3 md:gap-8 items-start md:items-start justify-end text-left md:text-right">
               <BlurSplitText 
-                text="Não construímos apenas sites bonitos. Forjamos máquinas de conversão blindadas: tráfego pago, automação de WhatsApp e sistemas proprietários para consolidar a soberania do seu negócio."
+                text="Não construímos apenas sites bonitos. Desenvolvemos máquinas de conversão blindadas: tráfego pago, automação de WhatsApp e sistemas proprietários para consolidar a soberania do seu negócio."
                 className="text-lg sm:text-xl md:text-2xl lg:text-3xl leading-[1.4] text-stone-300 font-serif font-light tracking-wide md:text-right"
               />
               <span className="text-[10px] text-stone-500 font-mono tracking-widest uppercase shrink-0 pt-3 text-right">
@@ -590,7 +570,7 @@ function HomeV5Content() {
 
           <div className="pb-28 text-center select-none flex flex-col gap-2">
             <BlurText 
-              text="FORJAR"
+              text="CONSTRUIR"
               as="h2"
               animateBy="letters"
               delay={40}
@@ -622,9 +602,9 @@ function HomeV5Content() {
           </div>
         </section>
 
-        {/* Section 02: Quem somos */}
-        <section id="forjamos" className="mx-auto max-w-[1400px] px-6 pointer-events-auto">
-          <SectionLabel n="02">Quem somos</SectionLabel>
+        {/* Section 02: Quem somos & Ecossistema */}
+        <section id="ecossistema" className="mx-auto max-w-[1400px] px-6 pointer-events-auto">
+          <SectionLabel n="02">Quem somos & Ecossistema</SectionLabel>
 
           <div className="grid gap-12 md:gap-16 pb-28 md:grid-cols-2">
             {WRITING.map((w) => (
@@ -665,18 +645,60 @@ function HomeV5Content() {
         </section>
 
         <div className="bg-[#050505] relative z-20 pointer-events-auto w-full">
-        {/* Section 03: Serviços & Automação Inteligente (Chakras HUD Matrix) */}
-        <ChakraServicesSection />
+        {/* Section 03: Nossos Serviços & Sistemas */}
+        <section id="servicos" className="mx-auto max-w-[1400px] px-6">
+          <SectionLabel n="03">Nossos Serviços & Sistemas</SectionLabel>
 
-        {/* Section 03.1: O que forjamos / Tabela de Especificações */}
-        <section className="mx-auto max-w-[1400px] px-6">
-          <SectionLabel n="03.1">Especificação Técnica de Entregáveis</SectionLabel>
+          {/* Grid de 6 Serviços no Design System Nativo da Home V5 */}
+          <div className="grid gap-6 md:gap-8 pb-16 md:grid-cols-2 lg:grid-cols-3">
+            {SERVICES_V5.map((s) => (
+              <div
+                key={s.id}
+                className="group relative border border-white/10 bg-[#050505] p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:border-[#00d1ff]/50 hover:bg-[#00d1ff]/[0.02]"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[10px] font-mono tracking-widest text-[#00d1ff] uppercase">
+                      {s.tag}
+                    </span>
+                    <span className="text-[9px] font-mono tracking-widest text-stone-300 border border-white/10 px-2 py-0.5 bg-white/5 uppercase">
+                      {s.badge}
+                    </span>
+                  </div>
 
+                  <h3 className="text-base sm:text-lg font-bold font-mono text-white tracking-wide uppercase group-hover:text-[#00d1ff] transition-colors leading-snug">
+                    {s.title}
+                  </h3>
+
+                  <p 
+                    className="text-sm text-stone-400 font-serif leading-relaxed mt-3"
+                    style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                  >
+                    {s.description}
+                  </p>
+                </div>
+
+                <div className="pt-6 mt-6 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-stone-400">
+                  <span>{s.meta}</span>
+                  <span className="text-stone-400 font-bold group-hover:text-[#00d1ff] transition-colors">
+                    {s.id} // 06
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Especificação Técnica de Entregáveis */}
+          <div className="pt-8 pb-4">
+            <span className="label-xs text-stone-400 uppercase font-mono tracking-widest block mb-4">
+              ESPECIFICAÇÃO TÉCNICA DE ENTREGÁVEIS & INTEGRAÇÕES
+            </span>
+          </div>
           <ul className="pb-24 border-t border-white/10">
             {CONTENT.map(([tag, title, date]) => (
               <li key={title}>
                 <a
-                  href="#forjamos"
+                  href="#servicos"
                   className="group flex items-center gap-6 border-b border-white/10 py-5 px-3 transition-all hover:bg-[#00d1ff] hover:border-[#00d1ff]"
                 >
                   <span className="label-xs w-24 shrink-0 text-[#00d1ff] font-bold group-hover:text-black">{tag}</span>
@@ -690,8 +712,8 @@ function HomeV5Content() {
           </ul>
         </section>
 
-        {/* Section 04: Por que Forja */}
-        <section id="porque-forja" className="mx-auto max-w-[1400px] px-6 relative py-12 overflow-visible">
+        {/* Section 04: Nossa Metodologia */}
+        <section id="metodologia" className="mx-auto max-w-[1400px] px-6 relative py-12 overflow-visible">
           {/* Interactive Fluid Splash Effect spanning the entire section with soft edge fading */}
           <div 
             className="absolute -inset-x-6 -inset-y-4 z-0 pointer-events-none overflow-hidden"
@@ -715,9 +737,9 @@ function HomeV5Content() {
             />
           </div>
 
-          {/* Section 04 Header (Standard scrolling header, non-sticky) */}
+          {/* Section 04 Header */}
           <div className="relative z-10">
-            <SectionLabel n="04">Por que a Forja</SectionLabel>
+            <SectionLabel n="04">Nossa Metodologia</SectionLabel>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start pb-28 pt-8 relative z-10">
@@ -726,11 +748,11 @@ function HomeV5Content() {
               {/* Sticky Column 1 Header fixed at top of column while text scrolls */}
               <div className="lg:sticky lg:top-0 z-30 bg-[#050505]/85 backdrop-blur-sm pb-6 pt-6 border-b border-white/10">
                 <span className="text-[10px] text-[#00d1ff] font-mono tracking-widest uppercase bg-white/5 px-3 py-1 border border-white/10">
-                  ENGENHARIA & ORIGEM
+                  ENGENHARIA & ARQUITETURA
                 </span>
                 <BlurText
                   as="h3"
-                  text="A FORJA DA ESCOM"
+                  text="A ENGENHARIA DA ESCOM"
                   className="text-3xl sm:text-4xl md:text-5xl font-light text-white tracking-wide uppercase mt-4 font-sans"
                   delay={150}
                   animateBy="words"
@@ -738,7 +760,7 @@ function HomeV5Content() {
                 />
               </div>
               
-              {/* Top fade out overlay (line by line fade/blur) */}
+              {/* Top fade out overlay */}
               <div 
                 className="hidden lg:block lg:sticky z-20 w-full pointer-events-none"
                 style={{ 
@@ -752,7 +774,7 @@ function HomeV5Content() {
               <div className="space-y-12 text-base sm:text-lg leading-relaxed text-stone-300 font-sans pt-4 pb-12 lg:-mt-[140px]">
                 <BlurLineReveal delay={0.1}>
                   <p className="border-l-2 border-[#00d1ff] pl-6 text-stone-300 text-base sm:text-lg">
-                    Na <strong className="text-white font-semibold">ESCOM STUDIO</strong>, forjar é a disciplina de unir código limpo, inteligência artificial e conversão extrema. Submetemos cada interface aos mais rigorosos testes de stress e fricção zero, até que o sistema se torne uma máquina de receita inquebrável.
+                    Na <strong className="text-white font-semibold">ESCOM STUDIO</strong>, engenharia digital é a disciplina de unir código limpo, inteligência artificial e conversão extrema. Submetemos cada interface aos mais rigorosos testes de stress e fricção zero, até que o sistema se torne uma máquina de receita inquebrável.
                   </p>
                 </BlurLineReveal>
 
@@ -782,63 +804,84 @@ function HomeV5Content() {
               </div>
             </div>
 
-            {/* Column 2: Sticky 3D Articulated Robot Bust (Home V2) */}
-            <div className="lg:sticky lg:top-20 h-[620px] sm:h-[740px] lg:h-[860px] w-full relative bg-transparent overflow-visible z-40">
-              {/* 3D Robot with transparent background layered on top */}
-              <div className="w-full h-full pointer-events-auto">
-                <RobotCanvasV2 isEmbedded />
+            {/* Column 2: Architecture & Telemetry Specs Card */}
+            <div className="lg:sticky lg:top-20 w-full relative bg-transparent overflow-visible z-40">
+              <div className="border border-white/10 bg-[#050505] p-8 sm:p-10 space-y-8 font-mono relative">
+                {/* HUD Corner Accents */}
+                <div className="absolute top-2 left-2 text-[10px] text-[#00d1ff]/50">┌</div>
+                <div className="absolute top-2 right-2 text-[10px] text-[#00d1ff]/50">┐</div>
+                <div className="absolute bottom-2 left-2 text-[10px] text-[#00d1ff]/50">└</div>
+                <div className="absolute bottom-2 right-2 text-[10px] text-[#00d1ff]/50">┘</div>
+
+                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                  <span className="text-xs text-[#00d1ff] uppercase tracking-widest font-bold">TELEMETRIA DE SISTEMAS</span>
+                  <span className="text-[10px] text-stone-500 uppercase">SYS.CORE // v5</span>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <div className="flex justify-between text-xs text-stone-300 mb-1">
+                      <span>VELOCIDADE DE CARREGAMENTO (LCP)</span>
+                      <span className="text-[#00d1ff] font-bold">&lt; 0.4s</span>
+                    </div>
+                    <div className="h-1 bg-white/10 w-full overflow-hidden">
+                      <div className="h-full bg-[#00d1ff] w-[96%]" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-xs text-stone-300 mb-1">
+                      <span>TAXA DE RETENÇÃO & LIGHTHOUSE</span>
+                      <span className="text-[#00d1ff] font-bold">100 / 100</span>
+                    </div>
+                    <div className="h-1 bg-white/10 w-full overflow-hidden">
+                      <div className="h-full bg-[#00d1ff] w-[100%]" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-xs text-stone-300 mb-1">
+                      <span>ESTABILIDADE & DISPONIBILIDADE</span>
+                      <span className="text-[#00d1ff] font-bold">99.98% UPTIME</span>
+                    </div>
+                    <div className="h-1 bg-white/10 w-full overflow-hidden">
+                      <div className="h-full bg-[#00d1ff] w-[99%]" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-xs text-stone-300 mb-1">
+                      <span>AUTOMAÇÃO DE WHATSAPP</span>
+                      <span className="text-[#00d1ff] font-bold">RESPOSTA &lt; 10s</span>
+                    </div>
+                    <div className="h-1 bg-white/10 w-full overflow-hidden">
+                      <div className="h-full bg-[#00d1ff] w-[94%]" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-white/10 text-xs text-stone-400 space-y-2">
+                  <div className="flex justify-between">
+                    <span>STACK:</span>
+                    <span className="text-white">Next.js 15, React 19, TypeScript, Edge API</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>ARQUITETURA:</span>
+                    <span className="text-white">Código Proprietário Sem SaaS Fragmentado</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>SEGURANÇA:</span>
+                    <span className="text-[#00d1ff]">SSL Blindado, CAPI & Webhooks Nativos</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Section 05: Nosso Time */}
-        <section id="clientes" className="w-full relative py-8 overflow-hidden">
-          <div className="mx-auto max-w-[1400px] px-6">
-            <SectionLabel n="05">Nosso time</SectionLabel>
-          </div>
-
-          {/* Automatic Infinite Carousel of Team Members */}
-          <div 
-            className="w-full overflow-hidden py-6 select-none relative group mt-4"
-            style={{
-              maskImage: 'linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)',
-              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)',
-            }}
-          >
-            <div className="animate-team-marquee flex gap-6 items-center">
-              {/* Seamless double loop for infinite marquee */}
-              {[...TEAM, ...TEAM].map((m, idx) => (
-                <div key={`${m.name}-${idx}`} className="w-[300px] sm:w-[340px] shrink-0">
-                  <PaperBurnCard
-                    name={m.name}
-                    role={m.role}
-                    img={m.img}
-                    onClick={() => setSelectedMember(m)}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mx-auto max-w-[1400px] px-6">
-            <div className="grid grid-cols-2 gap-x-10 gap-y-1 py-14 md:grid-cols-4 border-t border-white/10 mt-6">
-              {PEOPLE.map(([name, role]) => (
-                <div
-                  key={name}
-                  className="flex items-baseline justify-between border-b border-white/10 py-3 font-mono"
-                >
-                  <span className="text-xs text-stone-300">{name}</span>
-                  <span className="label-xs text-stone-400">{role}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Section 06: Mercados em que forjamos */}
-        <section id="projeto" className="mx-auto max-w-[1400px] px-6">
-          <SectionLabel n="06">Mercados em que forjamos</SectionLabel>
+        {/* Section 05: Mercados & Clientes */}
+        <section id="mercados" className="mx-auto max-w-[1400px] px-6">
+          <SectionLabel n="05">Mercados & Clientes</SectionLabel>
 
           <p className="mx-auto max-w-2xl pb-12 text-center text-sm leading-relaxed text-stone-400 font-mono">
             Operações digitais que confiam na nossa engenharia. Sistemas proprietários, interfaces de alta conversão
@@ -872,7 +915,7 @@ function HomeV5Content() {
             ))}
           </div>
 
-          {/* Section 06.5: Index de Serviços */}
+          {/* Section 05.5: Index de Serviços */}
           <div className="pt-24 pb-12">
             <span className="text-xs text-stone-300 font-mono uppercase tracking-widest block mb-8 font-bold border-b border-white/10 pb-4">
               [ ÍNDICE DE CAPACIDADES ]
@@ -889,27 +932,6 @@ function HomeV5Content() {
             </div>
           </div>
         </section>
-
-        {/* Small 3D Anvil before Contato */}
-        <div className="mx-auto max-w-[1400px] px-6 flex justify-center pb-12 pt-8">
-          <div className="w-64 h-64 sm:w-80 sm:h-80 relative opacity-90 pointer-events-auto">
-            <ThreeCanvas 
-              isEmbedded 
-              modelPath="/models/003_anvil.glb" 
-              pixelFactor={4.5} 
-              autoRotate={true}
-              autoRotateSpeed={0.45}
-              cameraZ={10.5}
-              cameraFOV={40}
-              brightness={1.9}
-              smearIntensity={0.2}
-              roughness={0.2}
-              metalness={0.8}
-              fixedScale={0.008}
-              fixedY={-0.3}
-            />
-          </div>
-        </div>
 
         {/* Section 07: Contato / Footer */}
         <footer id="contato" className="border-t border-white/10 bg-[#050505] text-stone-300 font-mono pt-16">
@@ -968,80 +990,6 @@ function HomeV5Content() {
         </div>
       </main>
 
-      {/* Team Member Detail Modal */}
-      {selectedMember && (
-        <div 
-          onClick={() => setSelectedMember(null)}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-[#050505]/90 backdrop-blur-md p-4 animate-fadeIn"
-        >
-          <div 
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-md bg-[#050505] border border-white/20 shadow-2xl text-white font-mono overflow-hidden"
-          >
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#050505]">
-              <span className="text-xs text-stone-400 font-mono tracking-widest uppercase">DETAIL</span>
-              
-              {/* Center icon: 4 dots */}
-              <div className="grid grid-cols-2 gap-0.5 w-3 h-3">
-                <div className="bg-[#00d1ff] w-1 h-1" />
-                <div className="bg-[#00d1ff] w-1 h-1" />
-                <div className="bg-[#00d1ff] w-1 h-1" />
-                <div className="bg-[#00d1ff] w-1 h-1" />
-              </div>
-
-              <button
-                onClick={() => setSelectedMember(null)}
-                className="text-xs text-stone-400 hover:text-white font-mono tracking-widest uppercase transition-colors cursor-pointer"
-              >
-                CLOSE
-              </button>
-            </div>
-
-            {/* Modal Photo Area with Corner Crosshairs */}
-            <div className="relative aspect-[4/3] sm:aspect-square bg-stone-950 flex items-center justify-center overflow-hidden border-b border-white/10">
-              <span className="absolute top-3 left-3 text-stone-500 text-xs font-mono select-none">+</span>
-              <span className="absolute top-3 right-3 text-stone-500 text-xs font-mono select-none">+</span>
-              <span className="absolute bottom-3 left-3 text-stone-500 text-xs font-mono select-none">+</span>
-              <span className="absolute bottom-3 right-3 text-stone-500 text-xs font-mono select-none">+</span>
-
-              <img loading="lazy" src={selectedMember.img}
-                alt={selectedMember.name}
-                className="w-full h-full object-cover object-top filter grayscale contrast-110 brightness-90"
-              />
-            </div>
-
-            {/* Modal Details Section - Clean without duplicate fields */}
-            <div className="p-6 space-y-4 bg-[#050505]">
-              <div>
-                <span className="text-[10px] text-stone-500 font-mono tracking-widest uppercase block mb-1">NOME</span>
-                <h3 className="text-xl font-bold tracking-wider text-white font-mono uppercase border-b border-white/10 pb-2">
-                  {selectedMember.name}
-                </h3>
-              </div>
-
-              <div>
-                <span className="text-[10px] text-stone-500 font-mono tracking-widest uppercase block mb-1">CARGO / FUNÇÃO</span>
-                <p className="text-sm text-[#00d1ff] font-mono tracking-widest uppercase border-b border-white/10 pb-2 font-bold">
-                  {selectedMember.role}
-                </p>
-              </div>
-
-              <div>
-                <span className="text-[10px] text-[#00d1ff] font-mono tracking-widest uppercase block mb-1 font-bold">
-                  ATUAÇÃO &amp; IMPACTO
-                </span>
-                <p 
-                  className="text-sm sm:text-base text-stone-100 font-serif italic border-l-2 border-[#00d1ff] pl-3.5 py-2.5 bg-white/[0.03] font-light leading-relaxed my-1"
-                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-                >
-                  "{selectedMember.bio}"
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -1063,7 +1011,7 @@ class HomeErrorBoundary extends React.Component<{ children: React.ReactNode }, {
         <div className="min-h-screen bg-[#050505] text-[#f5f5f7] flex flex-col items-center justify-center p-6 text-center font-mono">
           <div className="max-w-md p-8 border border-[#00d1ff]/30 bg-black/60 shadow-2xl space-y-4">
             <span className="text-[#00d1ff] text-xs uppercase tracking-widest block font-bold">ESCOM STUDIO v5</span>
-            <h1 className="text-2xl font-bold uppercase tracking-wider text-white">A Forja Criativa</h1>
+            <h1 className="text-2xl font-bold uppercase tracking-wider text-white">Engenharia Digital & Sistemas</h1>
             <p className="text-sm text-stone-400 font-serif">
               Ocorreu uma instabilidade na aceleração gráfica. Clique no botão abaixo para restaurar a interface.
             </p>
