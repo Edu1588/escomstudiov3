@@ -6,13 +6,22 @@ import PixelArtCanvas from './components/V5/PixelArtCanvas';
 import PaperBurnCard from './components/V5/PaperBurnCard';
 import BlurText from './components/V5/BlurText';
 import SplashCursor from './components/V5/SplashCursor';
+import SciFiLoadingScreen from './components/V5/SciFiLoadingScreen';
+import ChakraServicesSection from './components/V5/ChakraServicesSection';
 import { ArrowUp } from 'lucide-react';
 import gsap from 'gsap';
 import SplitType from 'split-type';
 import { LanguageProvider } from './contexts/LanguageContext';
 import './home-v5.css';
 
-const NAV = ["Origem", "Engenharia", "Tecnologias", "Metodologia", "Contato"];
+const NAV = [
+  { label: "Origem", id: "jornada" },
+  { label: "Engenharia", id: "forjamos" },
+  { label: "Serviços", id: "servicos" },
+  { label: "Metodologia", id: "porque-forja" },
+  { label: "Time", id: "clientes" },
+  { label: "Contato", id: "projeto" },
+];
 
 const WRITING = [
   {
@@ -366,6 +375,7 @@ function InteractiveImage({ src, alt }: { src: string, alt: string }) {
 }
 
 function HomeV5Content() {
+  const [loading, setLoading] = useState(true);
   const [pixelFactor, setPixelFactor] = useState(5.0);
   const [brightness, setBrightness] = useState(1.0);
   const [smearIntensity, setSmearIntensity] = useState(0.3);
@@ -380,7 +390,6 @@ function HomeV5Content() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollY, setScrollY] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
-
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -436,6 +445,9 @@ function HomeV5Content() {
 
   return (
     <div className="relative min-h-screen bg-[#050505] text-[#f5f5f7] font-mono selection:bg-[#00d1ff] selection:text-black">
+      {/* Sci-Fi Loading Screen with Enter Gate */}
+      {loading && <SciFiLoadingScreen onEnter={() => setLoading(false)} />}
+
       {/* 3D Canvas Background */}
       <ThreeCanvas {...threeProps} />
 
@@ -486,13 +498,13 @@ function HomeV5Content() {
         <div className={`absolute top-full mt-2 overflow-hidden transition-all duration-300 origin-top bg-[#050505]/90 backdrop-blur-xl border border-white/15 w-56 shadow-2xl pointer-events-auto ${isMenuOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}>
           <ul className="flex flex-col py-2 font-mono">
             {NAV.map((item) => (
-              <li key={item}>
+              <li key={item.id}>
                 <a
-                  href={`#${item.toLowerCase()}`}
+                  href={`#${item.id}`}
                   onClick={() => setIsMenuOpen(false)}
                   className="block px-6 py-3 text-xs text-stone-300 hover:text-[#00d1ff] hover:bg-white/5 transition-colors tracking-widest text-left uppercase"
                 >
-                  {item}
+                  {item.label}
                 </a>
               </li>
             ))}
@@ -652,9 +664,12 @@ function HomeV5Content() {
         </section>
 
         <div className="bg-[#050505] relative z-20 pointer-events-auto w-full">
-        {/* Section 03: O que forjamos */}
+        {/* Section 03: Serviços & Automação Inteligente (Chakras HUD Matrix) */}
+        <ChakraServicesSection />
+
+        {/* Section 03.1: O que forjamos / Tabela de Especificações */}
         <section className="mx-auto max-w-[1400px] px-6">
-          <SectionLabel n="03">O que forjamos</SectionLabel>
+          <SectionLabel n="03.1">Especificação Técnica de Entregáveis</SectionLabel>
 
           <ul className="pb-24 border-t border-white/10">
             {CONTENT.map(([tag, title, date]) => (
@@ -938,10 +953,10 @@ function HomeV5Content() {
             <span className="label-xs text-stone-400 uppercase font-mono">
               ESCOM STUDIO — ENGENHARIA DE CRESCIMENTO DIGITAL
             </span>
-            <div className="flex gap-6 text-xs text-stone-400 font-mono">
+            <div className="flex flex-wrap gap-6 text-xs text-stone-400 font-mono">
               {NAV.map((l) => (
-                <a key={l} href={`#${l.toLowerCase()}`} className="hover:text-[#00d1ff] transition-colors uppercase">
-                  {l}
+                <a key={l.id} href={`#${l.id}`} className="hover:text-[#00d1ff] transition-colors uppercase">
+                  {l.label}
                 </a>
               ))}
             </div>
