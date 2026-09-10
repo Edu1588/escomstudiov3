@@ -739,43 +739,69 @@ app.post("/api/search-images", async (req, res) => {
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
-// --- Leads ---
+// --- Leads (Supabase) ---
+async function sbFetch(path: string, options: any = {}) {
+  const bom = String.fromCharCode(65279);
+  const SB_URL = (process.env.SUPABASE_URL || '').replace(bom, '').trim();
+  const SB_KEY = (process.env.SUPABASE_SERVICE_KEY || '').replace(bom, '').trim();
+  if (!SB_URL || !SB_KEY) throw new Error("SUPABASE_URL ou SUPABASE_SERVICE_KEY nao configurado");
+  const resp = await fetch(`${SB_URL}/rest/v1${path}`, {
+    ...options,
+    headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, "Content-Type": "application/json", ...(options.headers || {}) }
+  });
+  const text = await resp.text();
+  const data = text ? JSON.parse(text) : null;
+  if (!resp.ok) throw new Error(JSON.stringify(data));
+  return data;
+}
+
 app.get("/api/leads", async (req, res) => {
   try {
-    await ensureAuth();
-    const leadsSnap = await getDocs(collection(db, "leads"));
-    const leads = leadsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-    res.json({ success: true, leads });
-  } catch(e) { res.status(500).json({ error: e.message }); }
+    const leads = await sbFetch("/leads?select=*&order=criado_em.desc");
+    res.json({ success: true, leads: leads || [] });
+  } catch(e: any) { res.status(500).json({ error: e.message }); }
 });
 
-// Recebe lead do n8n (evita OAuth2 direto ao Firestore, usa auth do backend).
 app.post("/api/salvar-lead", async (req, res) => {
   try {
-    await ensureAuth();
     const lead = req.body;
     if (!lead || !lead.nome) return res.status(400).json({ error: "campo nome obrigatorio" });
     const nomeNormalizado = lead.nome.toLowerCase().trim();
-    const docId = nomeNormalizado.replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").substring(0, 80) + "-" + (lead.cidade || "").toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-    await setDoc(doc(db, "leads", docId), {
-      nome: lead.nome,
-      nomeNormalizado,
-      endereco: lead.endereco || "",
-      telefone: lead.telefone || "",
-      website: lead.website || "",
-      rating: lead.rating || 0,
-      reviewsCount: lead.reviewsCount || 0,
-      categoria: lead.categoria || "",
-      cidade: lead.cidade || "",
-      temSite: lead.temSite ?? false,
-      scoreOportunidade: lead.scoreOportunidade ?? 50,
-      diagnostico: lead.diagnostico || null,
-      status: "novo",
-      criadoEm: new Date().toISOString(),
-      atualizadoEm: new Date().toISOString()
-    }, { merge: false });
-    res.json({ success: true, id: docId });
+    const id = nomeNormalizado.replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").substring(0, 80)
+      + "-" + (lead.cidade || "").toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    await sbFetch("/leads", {
+      method: "POST",
+      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify({
+        id,
+        nome: lead.nome,
+        nome_normalizado: nomeNormalizado,
+        endereco: lead.endereco || null,
+        telefone: lead.telefone || null,
+        website: lead.website || null,
+        rating: lead.rating || null,
+        reviews_count: lead.reviewsCount || null,
+        categoria: lead.categoria || null,
+        cidade: lead.cidade || null,
+        tem_site: lead.temSite ?? false,
+        score_oportunidade: lead.scoreOportunidade ?? 50,
+        diagnostico: lead.diagnostico || null,
+        status: "novo",
+        criado_em: new Date().toISOString(),
+        atualizado_em: new Date().toISOString()
+      })
+    });
+    res.json({ success: true, id });
   } catch(e: any) { res.status(500).json({ error: e.message }); }
+});
+
+app.get("/api/verificar-lead", async (req, res) => {
+  try {
+    const nome = (req.query.nome as string || "").toLowerCase().trim();
+    if (!nome) return res.json({ encontrado: false });
+    const rows = await sbFetch(`/leads?nome_normalizado=eq.${encodeURIComponent(nome)}&select=id&limit=1`);
+    res.json({ encontrado: Array.isArray(rows) && rows.length > 0 });
+  } catch(e: any) { res.json({ encontrado: false, error: e.message }); }
 });
 
 app.post("/api/maps-leads", async (req, res) => {
@@ -851,8 +877,27 @@ app.delete("/api/generated-sites/:projectId", async (req, res) => {
   } catch(e) { res.status(500).json({ success: false, error: e.message }); }
 });
 
-// Dispara manualmente o Workflow A do n8n (busca + qualificacao de leads).
-// Recebe nicho/cidade/quantidade do painel admin e repassa ao webhook do n8n.
+// Busca places no Serper e retorna array bruto para o n8n qualificar.
+// Usado pelo n8n no lugar de chamar o Serper diretamente (evita expor a chave no workflow).
+app.post("/api/buscar-places", async (req, res) => {
+  try {
+    const { nicho, cidade, estado, quantidade } = req.body;
+    if (!nicho || !cidade) return res.status(400).json({ error: "nicho e cidade obrigatorios" });
+    const serperKey = process.env.SERPER_API_KEY;
+    if (!serperKey) return res.status(500).json({ error: "SERPER_API_KEY nao configurado" });
+    const query = `${nicho} em ${cidade}, ${estado || "SP"}`;
+    const serperResp = await fetch("https://google.serper.dev/places", {
+      method: "POST",
+      headers: { "X-API-KEY": serperKey, "Content-Type": "application/json" },
+      body: JSON.stringify({ q: query, gl: "br", hl: "pt-br" })
+    });
+    const serperData: any = await serperResp.json();
+    const places = (serperData.places || []).slice(0, quantidade || 20);
+    res.json({ places, nicho, cidade, total: places.length });
+  } catch(e: any) { res.status(500).json({ error: e.message }); }
+});
+
+// Repassa busca de leads ao n8n, que executa Serper + qualificacao + salvamento no Supabase.
 app.post("/api/buscar-leads", async (req, res) => {
   try {
     const { nicho, cidade, estado, quantidade } = req.body;
@@ -864,6 +909,51 @@ app.post("/api/buscar-leads", async (req, res) => {
     });
     const data = await resp.json().catch(() => ({ ok: true }));
     res.status(resp.status).json(data);
+  } catch(e: any) { res.status(500).json({ error: e.message }); }
+});
+
+// Busca leads via Serper (Google Maps) e salva direto no Supabase (rota alternativa sem n8n).
+app.post("/api/buscar-leads-direto", async (req, res) => {
+  try {
+    const { nicho, cidade, estado, quantidade } = req.body;
+    if (!nicho || !cidade) return res.status(400).json({ error: "nicho e cidade obrigatorios" });
+    const serperKey = process.env.SERPER_API_KEY;
+    if (!serperKey) return res.status(500).json({ error: "SERPER_API_KEY nao configurado" });
+    const query = `${nicho} em ${cidade}, ${estado || "SP"}`;
+    const serperResp = await fetch("https://google.serper.dev/places", {
+      method: "POST",
+      headers: { "X-API-KEY": serperKey, "Content-Type": "application/json" },
+      body: JSON.stringify({ q: query, gl: "br", hl: "pt-br" })
+    });
+    const serperData: any = await serperResp.json();
+    const places: any[] = (serperData.places || []).slice(0, quantidade || 20);
+    if (!places.length) return res.json({ ok: true, salvos: 0, mensagem: "Nenhum resultado encontrado" });
+    let salvos = 0;
+    for (const place of places) {
+      try {
+        const nome = place.title || "";
+        if (!nome) continue;
+        const nomeNormalizado = nome.toLowerCase().trim();
+        const temSite = !!(place.website);
+        const id = nomeNormalizado.replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").substring(0, 80)
+          + "-" + cidade.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+        await sbFetch("/leads", {
+          method: "POST",
+          headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+          body: JSON.stringify({
+            id, nome, nome_normalizado: nomeNormalizado,
+            endereco: place.address || null, telefone: place.phoneNumber || null,
+            website: place.website || null, rating: place.rating ?? null,
+            reviews_count: place.ratingCount ?? null, categoria: nicho, cidade,
+            tem_site: temSite, score_oportunidade: temSite ? 60 : 100,
+            diagnostico: null, status: "novo",
+            criado_em: new Date().toISOString(), atualizado_em: new Date().toISOString()
+          })
+        });
+        salvos++;
+      } catch(_) {}
+    }
+    res.json({ ok: true, salvos, total: places.length });
   } catch(e: any) { res.status(500).json({ error: e.message }); }
 });
 

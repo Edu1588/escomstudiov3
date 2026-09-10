@@ -91,6 +91,12 @@ export default function Leads() {
   const [loading, setLoading] = useState(false);
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
   const [generatingSiteId, setGeneratingSiteId] = useState<string | null>(null);
+  const [notification, setNotification] = useState<{ msg: string; type: "success" | "error" } | null>(null);
+
+  const notify = (msg: string, type: "success" | "error" = "success") => {
+    setNotification({ msg, type });
+    setTimeout(() => setNotification(null), 4000);
+  };
 
   // Inicializar com leads de exemplo ou buscar da API
   useEffect(() => {
@@ -193,12 +199,13 @@ export default function Leads() {
         })
       });
       if (res.ok) {
-        alert(`Busca iniciada! Os leads aparecerão no CRM em alguns minutos conforme o n8n for qualificando.`);
+        notify("Busca concluída! Carregando leads...");
+        await fetchLeads();
       } else {
         throw new Error("Falha ao acionar o n8n");
       }
     } catch (err) {
-      alert("Erro ao conectar com o n8n. Verifique se o Workflow A está publicado e ativo.");
+      notify("Erro ao buscar leads. Verifique o console.", "error");
       console.error(err);
     } finally {
       setLoading(false);
@@ -313,6 +320,19 @@ export default function Leads() {
         <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Buscar Leads</h1>
         <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Encontre negócios locais por categoria e localização</p>
       </div>
+
+      {/* NOTIFICAÇÃO */}
+      {notification && (
+        <div className={`mb-4 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2 ${notification.type === "error" ? "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800" : "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800"}`}>
+          {notification.msg}
+        </div>
+      )}
+      {loading && (
+        <div className="mb-4 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+          <Loader2 className="animate-spin" size={14} />
+          Buscando leads e analisando sites... Os resultados aparecerão em alguns minutos.
+        </div>
+      )}
 
       {/* FORMULÁRIO DE FILTROS SUPERIOR */}
       <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm mb-6">

@@ -35,6 +35,10 @@ export default defineConfig(({mode}) => {
               '/sobre/': 'sobre/index.html',
               '/baseproposta': 'baseproposta/index.html',
               '/baseproposta/': 'baseproposta/index.html',
+              '/home-v5': 'home-v5/index.html',
+              '/home-v5/': 'home-v5/index.html',
+              '/home5': 'home-v5/index.html',
+              '/home5/': 'home-v5/index.html',
             };
 
             if (url && routeMap[url]) {
@@ -72,6 +76,7 @@ export default defineConfig(({mode}) => {
           homev3: path.resolve(__dirname, 'home-v3/index.html'),
           home3: path.resolve(__dirname, 'home3/index.html'),
           homev4: path.resolve(__dirname, 'home-v4/index.html'),
+          homev5: path.resolve(__dirname, 'home-v5/index.html'),
         },
       },
     },

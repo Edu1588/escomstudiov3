@@ -4,6 +4,11 @@
   },
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/home-v5", "destination": "/home-v5/index.html" },
+    { "source": "/home-v5.html", "destination": "/home-v5/index.html" },
+    { "source": "/home-v5/index.html", "destination": "/home-v5/index.html" },
+    { "source": "/home5", "destination": "/home-v5/index.html" },
+    { "source": "/home5.html", "destination": "/home-v5/index.html" },
     { "source": "/home-v2", "destination": "/home-v2/index.html" },
     { "source": "/home-v2.html", "destination": "/home-v2/index.html" },
     { "source": "/home-v2/index.html", "destination": "/home-v2/index.html" },
