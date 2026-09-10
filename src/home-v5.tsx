@@ -209,25 +209,29 @@ function BlurSplitText({
             setAnimated(true);
             observer.disconnect();
 
-            const split = new SplitType(el, { types: 'words,chars' });
-            
-            gsap.fromTo(
-              split.chars,
-              {
-                opacity: 0,
-                filter: 'blur(16px)',
-                y: 18,
-              },
-              {
-                opacity: 1,
-                filter: 'blur(0px)',
-                y: 0,
-                duration: 1.3,
-                delay: delay,
-                stagger: stagger,
-                ease: 'power3.out',
-              }
-            );
+            try {
+              const split = new SplitType(el, { types: 'words,chars' });
+              
+              gsap.fromTo(
+                split.chars,
+                {
+                  opacity: 0,
+                  filter: 'blur(16px)',
+                  y: 18,
+                },
+                {
+                  opacity: 1,
+                  filter: 'blur(0px)',
+                  y: 0,
+                  duration: 1.3,
+                  delay: delay,
+                  stagger: stagger,
+                  ease: 'power3.out',
+                }
+              );
+            } catch (splitErr) {
+              console.warn('[BlurSplitText] Fallback para texto natural:', splitErr);
+            }
           }
         });
       },
@@ -267,26 +271,30 @@ function BlurLineReveal({ children, className = '', delay = 0 }: { children: Rea
             setAnimated(true);
             observer.disconnect();
 
-            const split = new SplitType(el, { types: 'lines,words' });
-            
-            if (split.words) {
-              gsap.fromTo(
-                split.words,
-                {
-                  opacity: 0,
-                  filter: 'blur(8px)',
-                  y: 15,
-                },
-                {
-                  opacity: 1,
-                  filter: 'blur(0px)',
-                  y: 0,
-                  duration: 0.8,
-                  delay: delay,
-                  stagger: 0.02,
-                  ease: 'power2.out',
-                }
-              );
+            try {
+              const split = new SplitType(el, { types: 'lines,words' });
+              
+              if (split.words) {
+                gsap.fromTo(
+                  split.words,
+                  {
+                    opacity: 0,
+                    filter: 'blur(8px)',
+                    y: 15,
+                  },
+                  {
+                    opacity: 1,
+                    filter: 'blur(0px)',
+                    y: 0,
+                    duration: 0.8,
+                    delay: delay,
+                    stagger: 0.02,
+                    ease: 'power2.out',
+                  }
+                );
+              }
+            } catch (splitErr) {
+              console.warn('[BlurLineReveal] Fallback para renderização padrão:', splitErr);
             }
           }
         });
@@ -329,8 +337,8 @@ const HeroText = React.memo(() => {
       className="relative z-10 text-center text-[16vw] leading-[0.85] font-light tracking-tight text-[#ff4d16] md:text-[13vw] select-none uppercase drop-shadow-[0_0_25px_rgba(255,77,22,0.4)] cursor-default"
       animateBy="letters"
       direction="bottom"
-      delay={80}
-      stepDuration={1.8}
+      delay={60}
+      stepDuration={0.8}
       hoverBlur={true}
     />
   );
@@ -1049,11 +1057,48 @@ function HomeV5Content() {
   );
 }
 
+class HomeErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean; error: any }> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error('[HomeV5 ErrorBoundary]:', error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-[#050505] text-[#f5f5f7] flex flex-col items-center justify-center p-6 text-center font-mono">
+          <div className="max-w-md p-8 border border-[#ff4d16]/30 bg-black/60 shadow-2xl space-y-4">
+            <span className="text-[#ff4d16] text-xs uppercase tracking-widest block font-bold">ESCOM STUDIO v5</span>
+            <h1 className="text-2xl font-bold uppercase tracking-wider text-white">A Forja Criativa</h1>
+            <p className="text-sm text-stone-400 font-serif">
+              Ocorreu uma instabilidade na aceleração gráfica. Clique no botão abaixo para restaurar a interface.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 px-6 py-2.5 bg-[#ff4d16] text-black font-bold uppercase text-xs tracking-widest hover:bg-white transition-colors cursor-pointer"
+            >
+              Recarregar Página
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export default function HomeV5() {
   return (
-    <LanguageProvider>
-      <HomeV5Content />
-    </LanguageProvider>
+    <HomeErrorBoundary>
+      <LanguageProvider>
+        <HomeV5Content />
+      </LanguageProvider>
+    </HomeErrorBoundary>
   );
 }
 

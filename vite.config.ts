@@ -37,8 +37,12 @@ export default defineConfig(({mode}) => {
               '/baseproposta/': 'baseproposta/index.html',
               '/home-v5': 'home-v5/index.html',
               '/home-v5/': 'home-v5/index.html',
-              '/home5': 'home-v5/index.html',
-              '/home5/': 'home-v5/index.html',
+              '/home-v5.html': 'home-v5/index.html',
+              '/home-v5/index.html': 'home-v5/index.html',
+              '/home5': 'home5/index.html',
+              '/home5/': 'home5/index.html',
+              '/home5.html': 'home5/index.html',
+              '/home5/index.html': 'home5/index.html',
             };
 
             if (url && routeMap[url]) {

@@ -466,19 +466,78 @@ function EffectPass({ pixelFactor, brightness, smearIntensity, scrollProgress = 
   );
 }
 
+class CanvasErrorBoundary extends React.Component<{ children: React.ReactNode; fallback?: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error: any, errorInfo: any) {
+    console.warn('[ThreeCanvas] Erro de renderização 3D interceptado:', error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback || <div className="w-full h-full bg-[#050505]" />;
+    }
+    return this.props.children;
+  }
+}
+
 export default function ThreeCanvas(props: any) {
+  const handleCreated = ({ gl }: any) => {
+    if (gl?.domElement) {
+      gl.domElement.addEventListener(
+        'webglcontextlost',
+        (event: any) => {
+          event.preventDefault();
+          console.warn('[ThreeCanvas] Contexto WebGL perdido. Evitando encerramento do processo.');
+        },
+        false
+      );
+    }
+  };
+
   if (props.isEmbedded) {
     return (
       <div className={`w-full h-full relative overflow-hidden pointer-events-auto ${props.className || ''}`}>
+        <CanvasErrorBoundary>
+          <Canvas
+            camera={{ position: [0, 0, props.cameraZ || 6.5], fov: props.cameraFOV || 45 }}
+            gl={{ 
+              antialias: true, 
+              alpha: true,
+              powerPreference: 'high-performance'
+            }}
+            onCreated={handleCreated}
+          >
+            {props.renderClean && !props.transparentBg && <color attach="background" args={[props.bgColor || '#050505']} />}
+            
+            <React.Suspense fallback={null}>
+              <SceneContent {...props} />
+            </React.Suspense>
+            
+            {!props.renderClean && <EffectPass {...props} />}
+          </Canvas>
+        </CanvasErrorBoundary>
+      </div>
+    );
+  }
+
+  return (
+    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh' }}>
+      <CanvasErrorBoundary>
         <Canvas
-          camera={{ position: [0, 0, props.cameraZ || 6.5], fov: props.cameraFOV || 45 }}
+          camera={{ position: [0, 0, props.cameraZ || 7], fov: props.cameraFOV || 45 }}
           gl={{ 
             antialias: true, 
             alpha: true,
             powerPreference: 'high-performance'
           }}
+          onCreated={handleCreated}
         >
-          {props.renderClean && !props.transparentBg && <color attach="background" args={[props.bgColor || '#050505']} />}
+          <color attach="background" args={[props.bgColor || '#050505']} />
           
           <React.Suspense fallback={null}>
             <SceneContent {...props} />
@@ -486,28 +545,8 @@ export default function ThreeCanvas(props: any) {
           
           {!props.renderClean && <EffectPass {...props} />}
         </Canvas>
-      </div>
-    );
-  }
-
-  return (
-    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh' }}>
-      <Canvas
-        camera={{ position: [0, 0, props.cameraZ || 7], fov: props.cameraFOV || 45 }}
-        gl={{ 
-          antialias: true, 
-          alpha: true,
-          powerPreference: 'high-performance'
-        }}
-      >
-        <color attach="background" args={[props.bgColor || '#050505']} />
-        
-        <React.Suspense fallback={null}>
-          <SceneContent {...props} />
-        </React.Suspense>
-        
-        {!props.renderClean && <EffectPass {...props} />}
-      </Canvas>
+      </CanvasErrorBoundary>
     </div>
   );
 }
+

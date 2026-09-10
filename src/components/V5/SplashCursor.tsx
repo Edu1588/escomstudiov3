@@ -49,8 +49,10 @@ export default function SplashCursor({
     if (!canvas) return;
 
     let isActive = true;
+    let cleanupFns: Array<() => void> = [];
 
-    function pointerPrototype(this: any) {
+    try {
+      function pointerPrototype(this: any) {
       this.id = -1;
       this.texcoordX = 0;
       this.texcoordY = 0;
@@ -1044,7 +1046,7 @@ export default function SplashCursor({
 
     updateFrame();
 
-    return () => {
+    cleanupFns.push(() => {
       isActive = false;
 
       if (animationFrameId.current) {
@@ -1057,9 +1059,16 @@ export default function SplashCursor({
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    });
+  } catch (e) {
+    console.warn('[SplashCursor] WebGL fluido não inicializado:', e);
+  }
+
+  return () => {
+    cleanupFns.forEach((fn) => fn());
+  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
 
   return (
     <div
