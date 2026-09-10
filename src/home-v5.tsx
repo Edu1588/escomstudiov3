@@ -6,6 +6,7 @@ import PixelArtCanvas from './components/V5/PixelArtCanvas';
 import BlurText from './components/V5/BlurText';
 import SplashCursor from './components/V5/SplashCursor';
 import SciFiLoadingScreen from './components/V5/SciFiLoadingScreen';
+import RobotServicesViewer from './components/V5/RobotServicesViewer';
 import { ArrowUp } from 'lucide-react';
 import gsap from 'gsap';
 import SplitType from 'split-type';
@@ -146,7 +147,7 @@ const INDEX = [
 ];
 
 const JOBS: [string, string, string][] = [
-  ["WhatsApp Oficial", "(48) 99806-5099", "Atendimento Direto"],
+  ["WhatsApp Oficial", "(13) 98106-2787", "Atendimento Direto"],
   ["Instagram Oficial", "@escomstudio", "Portfólio & Bastidores"],
   ["E-mail Corporativo", "contato@escomstudio.com.br", "Diagnóstico de Projeto"],
 ];
@@ -419,7 +420,7 @@ function HomeV5Content() {
       metalness,
       scrollProgress,
       scrollY,
-      modelPath: "/models/3Dmodelrobot-v1.glb"
+      modelPath: "/models/hefestoHD-v1.glb"
     }),
     [pixelFactor, cameraZ, autoRotate, brightness, smearIntensity, roughness, metalness, scrollProgress, scrollY]
   );
@@ -645,47 +646,111 @@ function HomeV5Content() {
         </section>
 
         <div className="bg-[#050505] relative z-20 pointer-events-auto w-full">
-        {/* Section 03: Nossos Serviços & Sistemas */}
-        <section id="servicos" className="mx-auto max-w-[1400px] px-6">
+        {/* Section 03: Nossos Serviços & Sistemas com Robô Centralizado e Cards Flutuantes */}
+        <section id="servicos" className="mx-auto max-w-[1400px] px-6 relative">
           <SectionLabel n="03">Nossos Serviços & Sistemas</SectionLabel>
 
-          {/* Grid de 6 Serviços no Design System Nativo da Home V5 */}
-          <div className="grid gap-6 md:gap-8 pb-16 md:grid-cols-2 lg:grid-cols-3">
-            {SERVICES_V5.map((s) => (
-              <div
-                key={s.id}
-                className="group relative border border-white/10 bg-[#050505] p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:border-[#00d1ff]/50 hover:bg-[#00d1ff]/[0.02]"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[10px] font-mono tracking-widest text-[#00d1ff] uppercase">
-                      {s.tag}
-                    </span>
-                    <span className="text-[9px] font-mono tracking-widest text-stone-300 border border-white/10 px-2 py-0.5 bg-white/5 uppercase">
-                      {s.badge}
-                    </span>
+          {/* Header da Seção */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-white/10 pb-6 gap-4">
+            <div>
+              <span className="text-[10px] font-mono tracking-widest text-[#00d1ff] uppercase block mb-1">
+                ECOSSISTEMA INTEGRADO DE CRESCIMENTO
+              </span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-light text-white uppercase tracking-wide">
+                Soluções Proprietárias Sob Medida
+              </h2>
+            </div>
+            <p className="text-xs sm:text-sm text-stone-400 font-mono max-w-md">
+              Engenharia ponta a ponta: inteligência artificial, tráfego, automação de processos e plataformas com 0% dependência de ferramentas frágeis.
+            </p>
+          </div>
+
+          {/* Palco Central: Robô 3D Interativo no Centro + 6 Cards Flutuantes em Volta */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center pb-16 relative">
+            {/* Coluna Esquerda: 3 Cards Flutuantes */}
+            <div className="lg:col-span-4 flex flex-col gap-5 order-2 lg:order-1">
+              {SERVICES_V5.slice(0, 3).map((s) => (
+                <div
+                  key={s.id}
+                  className="group relative border border-white/10 bg-[#0a0a0c]/85 backdrop-blur-md p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 hover:border-[#00d1ff]/60 hover:shadow-[0_0_30px_rgba(0,209,255,0.08)] hover:-translate-y-1"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] font-mono tracking-widest text-[#00d1ff] uppercase">
+                        {s.tag}
+                      </span>
+                      <span className="text-[9px] font-mono tracking-widest text-stone-400 border border-white/10 px-2 py-0.5 bg-white/5 uppercase">
+                        {s.badge}
+                      </span>
+                    </div>
+
+                    <h3 className="text-base sm:text-lg font-bold font-mono text-white tracking-wide uppercase group-hover:text-[#00d1ff] transition-colors leading-snug">
+                      {s.title}
+                    </h3>
+
+                    <p 
+                      className="text-sm text-stone-400 font-serif leading-relaxed mt-2.5"
+                      style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                    >
+                      {s.description}
+                    </p>
                   </div>
 
-                  <h3 className="text-base sm:text-lg font-bold font-mono text-white tracking-wide uppercase group-hover:text-[#00d1ff] transition-colors leading-snug">
-                    {s.title}
-                  </h3>
-
-                  <p 
-                    className="text-sm text-stone-400 font-serif leading-relaxed mt-3"
-                    style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-                  >
-                    {s.description}
-                  </p>
+                  <div className="pt-4 mt-4 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-stone-400">
+                    <span>{s.meta}</span>
+                    <span className="text-stone-400 font-bold group-hover:text-[#00d1ff] transition-colors">
+                      {s.id} // 06
+                    </span>
+                  </div>
                 </div>
+              ))}
+            </div>
 
-                <div className="pt-6 mt-6 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-stone-400">
-                  <span>{s.meta}</span>
-                  <span className="text-stone-400 font-bold group-hover:text-[#00d1ff] transition-colors">
-                    {s.id} // 06
-                  </span>
-                </div>
+            {/* Coluna Central: Robô Oficial 3D com Cabeça Articulada Responsiva ao Mouse */}
+            <div className="lg:col-span-4 flex flex-col items-center justify-center order-1 lg:order-2 min-h-[460px] lg:min-h-[640px] relative">
+              <div className="w-full h-full flex items-center justify-center relative">
+                <RobotServicesViewer height={620} className="w-full" />
               </div>
-            ))}
+            </div>
+
+            {/* Coluna Direita: 3 Cards Flutuantes */}
+            <div className="lg:col-span-4 flex flex-col gap-5 order-3">
+              {SERVICES_V5.slice(3, 6).map((s) => (
+                <div
+                  key={s.id}
+                  className="group relative border border-white/10 bg-[#0a0a0c]/85 backdrop-blur-md p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 hover:border-[#00d1ff]/60 hover:shadow-[0_0_30px_rgba(0,209,255,0.08)] hover:-translate-y-1"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] font-mono tracking-widest text-[#00d1ff] uppercase">
+                        {s.tag}
+                      </span>
+                      <span className="text-[9px] font-mono tracking-widest text-stone-400 border border-white/10 px-2 py-0.5 bg-white/5 uppercase">
+                        {s.badge}
+                      </span>
+                    </div>
+
+                    <h3 className="text-base sm:text-lg font-bold font-mono text-white tracking-wide uppercase group-hover:text-[#00d1ff] transition-colors leading-snug">
+                      {s.title}
+                    </h3>
+
+                    <p 
+                      className="text-sm text-stone-400 font-serif leading-relaxed mt-2.5"
+                      style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                    >
+                      {s.description}
+                    </p>
+                  </div>
+
+                  <div className="pt-4 mt-4 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-stone-400">
+                    <span>{s.meta}</span>
+                    <span className="text-stone-400 font-bold group-hover:text-[#00d1ff] transition-colors">
+                      {s.id} // 06
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Especificação Técnica de Entregáveis */}
@@ -950,7 +1015,7 @@ function HomeV5Content() {
               {JOBS.map(([label, val, desc]) => (
                 <a
                   key={label}
-                  href={label.includes("WhatsApp") ? "https://wa.me/5548998065099?text=Ol%C3%A1!%20Gostaria%20de%20um%20diagn%C3%B3stico%20da%20ESCOM%20Studio." : label.includes("Instagram") ? "https://instagram.com/escomstudio" : "mailto:contato@escomstudio.com.br"}
+                  href={label.includes("WhatsApp") ? "https://wa.me/5513981062787?text=Ol%C3%A1!%20Gostaria%20de%20um%20diagn%C3%B3stico%20da%20ESCOM%20Studio." : label.includes("Instagram") ? "https://instagram.com/escomstudio" : "mailto:contato@escomstudio.com.br"}
                   target="_blank"
                   rel="noreferrer"
                   className="group block border border-white/10 p-5 hover:border-[#00d1ff] hover:bg-[#00d1ff]/5 transition-all"

@@ -183,14 +183,15 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
     }
 
     const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
-    const baseHeroScale = isRobot ? (isMobile ? 2.35 : 2.75) : (isMobile ? 2.65 : 3.05);
-    const baseHeroY = isRobot ? (isMobile ? -0.28 : -0.38) : (isMobile ? -0.55 : -0.70);
+    // Busto grande e imponente no Hero conforme solicitado pelo usuário
+    const baseHeroScale = isRobot ? (isMobile ? 2.4 : 2.85) : (isMobile ? 3.5 : 4.2);
+    const baseHeroY = isRobot ? (isMobile ? -0.28 : -0.38) : (isMobile ? -0.42 : -0.52);
     const scroll = scrollY || 0;
 
     let targetScale = isClean ? 3.6 : baseHeroScale;
     let targetY = isClean ? -1.4 : baseHeroY;
-    let targetRotX = isRobot ? 0.04 : 0.25;
-    let targetRotY = isRobot ? 0.0 : -0.8;
+    let targetRotX = isRobot ? 0.04 : 0.16;
+    let targetRotY = isRobot ? 0.0 : -0.15;
     
     if (fixedScale !== undefined && fixedY !== undefined) {
       targetScale = fixedScale;
@@ -201,20 +202,20 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
       if (scroll <= vh) {
         // Section 1: suave tilt ao rolar
         let p = scroll / vh;
-        targetScale = baseHeroScale + p * 1.6;
-        targetY = baseHeroY - p * 1.0; 
-        targetRotX = (isRobot ? 0.04 : 0.1) + p * 0.25;
-        targetRotY = (isRobot ? 0.0 : -0.8) - p * 0.35;
+        targetScale = baseHeroScale + p * 1.4;
+        targetY = baseHeroY - p * 0.8; 
+        targetRotX = (isRobot ? 0.04 : 0.16) + p * 0.22;
+        targetRotY = (isRobot ? 0.0 : -0.15) - p * 0.25;
       } else if (scroll <= vh * 2.5) {
         // Section 2: Tilt to show chin
         let p = (scroll - vh) / (vh * 1.5);
         p = Math.min(p, 1.0);
-        targetScale = (baseHeroScale * 1.9) + p * 1.5;
-        targetY = -2.0 + p * 3.2; // Move up to keep chin in view
-        targetRotX = 0.45 - p * 1.0; // Tilt back to show chin
-        targetRotY = -1.3 + p * 0.5;
+        targetScale = (baseHeroScale * 1.6) + p * 1.2;
+        targetY = -1.8 + p * 2.8;
+        targetRotX = 0.38 - p * 0.9;
+        targetRotY = -0.4 + p * 0.3;
       } else {
-        targetScale = baseHeroScale * 2.3;
+        targetScale = baseHeroScale * 2.0;
         targetY = 1.0;
         targetRotX = -1.5;
         targetRotY = -0.8;
@@ -378,9 +379,9 @@ function EffectPass({ pixelFactor, brightness, smearIntensity, scrollProgress = 
   const uniforms = useMemo(() => ({
     tDiffuse: { value: null },
     uResolution: { value: new THREE.Vector2() },
-    uPixelFactor: { value: 6.0 },
-    uBrightness: { value: 1.0 },
-    uSmear: { value: 0.3 },
+    uPixelFactor: { value: 3.2 },
+    uBrightness: { value: 1.1 },
+    uSmear: { value: 0.15 },
     uTime: { value: 0.0 },
     uMouse: { value: new THREE.Vector2(0.5, 0.5) },
     uOpacity: { value: 1.0 }
@@ -413,68 +414,60 @@ function EffectPass({ pixelFactor, brightness, smearIntensity, scrollProgress = 
     void main() {
       vec2 uv = vUv;
       
-      // Calculate dot grid
+      // Grade de pixels/dots ultra definida
       vec2 d = uPixelFactor / uResolution;
       
       vec2 basePixelUv = floor(uv / d) * d + (d * 0.5);
       vec2 pixelUv = basePixelUv;
       vec2 fractUv = fract(uv / d);
       
-      // Add slow continuous horizontal drift instead of blinking noise
-      float drift = sin(pixelUv.y * 10.0 + uTime * 0.5) * 0.5 + sin(pixelUv.y * 25.0 - uTime * 0.2) * 0.5;
-      pixelUv.x += drift * uSmear * 0.015;
+      // Deslocamento sutil micro-cinético
+      float drift = sin(pixelUv.y * 12.0 + uTime * 0.4) * 0.4 + sin(pixelUv.y * 30.0 - uTime * 0.2) * 0.4;
+      pixelUv.x += drift * uSmear * 0.008;
       
       vec4 texColor = texture2D(tDiffuse, pixelUv);
       
-      // Calculate luma based on the rendered scene (which includes the dark background)
+      // Luminância com contraste apurado para esculpir luz e sombra
       float luma = dot(texColor.rgb, vec3(0.299, 0.587, 0.114)) * uBrightness;
       
       vec2 cuv = fractUv - 0.5;
       float r = length(cuv);
       
-      // ASCII-like shapes based on luminance. Ignore dark background.
+      // Halftone de altíssima definição: dots circulares e texturas nítidas
       float shape = 0.0;
       if (luma > 0.015) {
-        if (luma > 0.5) {
-          // Plus
-          shape = step(abs(cuv.x), 0.06) * step(abs(cuv.y), 0.25) + step(abs(cuv.y), 0.06) * step(abs(cuv.x), 0.25);
-        } else if (luma > 0.3) {
-          // Minus
-          shape = step(abs(cuv.y), 0.06) * step(abs(cuv.x), 0.25);
-        } else if (luma > 0.15) {
-          // Small plus
-          shape = step(abs(cuv.x), 0.05) * step(abs(cuv.y), 0.15) + step(abs(cuv.y), 0.05) * step(abs(cuv.x), 0.15);
-        } else if (luma > 0.06) {
-          // Small dot
-          shape = step(r, 0.1);
-        } else {
-          // Tiny dot
-          shape = step(r, 0.06);
+        // Dot proporcional suavemente anti-aliased
+        float dotRadius = clamp(luma * 0.48, 0.06, 0.45);
+        shape = smoothstep(dotRadius, dotRadius - 0.03, r);
+
+        // Em realces fortes de luz, sobrepõe micro-cruzetas nítidas para textura técnica
+        if (luma > 0.52) {
+          float crossShape = (step(abs(cuv.x), 0.07) * step(abs(cuv.y), 0.28)) + 
+                            (step(abs(cuv.y), 0.07) * step(abs(cuv.x), 0.28));
+          shape = max(shape, crossShape);
         }
       }
       
-      // Calculate aspect-corrected distance to mouse for circular hover effect
       vec2 aspect = vec2(uResolution.x / uResolution.y, 1.0);
       
-      // Base color for dots: cleaner grays
-      vec3 baseCol = vec3(clamp(luma * 1.3, 0.1, 0.75));
+      // Paleta refinada: monocromática estrita em tons de preto, chumbo e cinza escultural
+      vec3 baseCol = vec3(clamp(luma * 1.2, 0.10, 0.90));
       
-      // Hover effect: tight cluster of twinkling pixels
+      // Hover interativo com o mouse: toque ciano sutil nas partículas vizinhas
       float hoverRadius = 0.08; 
       float dist = distance(basePixelUv * aspect, uMouse * aspect);
       vec2 cell = floor(uv / d);
       
       if (dist < hoverRadius) {
-        float spatialNoise = rand(cell * 20.0);
-        float temporalNoise = sin(uTime * 8.0 + spatialNoise * 100.0);
-        float prob = mix(0.7, 0.98, dist / hoverRadius);
+        float spatialNoise = rand(cell * 25.0);
+        float temporalNoise = sin(uTime * 10.0 + spatialNoise * 100.0);
+        float prob = mix(0.72, 0.98, dist / hoverRadius);
         
         if (spatialNoise > prob && temporalNoise > 0.0) { 
-          baseCol = vec3(0.0, 0.82, 1.0); // pure escom blue (#00d1ff)
+          baseCol = vec3(0.0, 0.82, 1.0); // acento ciano ESCOM (#00d1ff)
         }
       }
       
-      // Render dots with alpha transparency so background seamlessly matches page
       gl_FragColor = vec4(baseCol, shape * uOpacity);
     }
   `;
