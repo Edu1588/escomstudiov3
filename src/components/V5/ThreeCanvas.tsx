@@ -267,7 +267,7 @@ function SceneContent(props: any) {
           <ambientLight intensity={3.5} />
           <directionalLight position={[5, 5, 5]} intensity={8} color="#ffffff" />
           <directionalLight position={[-5, -5, -5]} intensity={4} color="#ffffff" />
-          <pointLight position={[0, 2, 5]} intensity={10} color="#ff4d16" distance={50} />
+          <pointLight position={[0, 2, 5]} intensity={10} color="#00d1ff" distance={50} />
         </>
       ) : (
         <>
@@ -438,7 +438,7 @@ function EffectPass({ pixelFactor, brightness, smearIntensity, scrollProgress = 
         float prob = mix(0.7, 0.98, dist / hoverRadius);
         
         if (spatialNoise > prob && temporalNoise > 0.0) { 
-          baseCol = vec3(1.0, 0.35, 0.08); // pure orange
+          baseCol = vec3(0.0, 0.82, 1.0); // pure escom blue (#00d1ff)
         }
       }
       

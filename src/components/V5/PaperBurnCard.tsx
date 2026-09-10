@@ -23,7 +23,7 @@ export const PaperBurnCard: React.FC<PaperBurnCardProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={`relative aspect-[3/4] w-full cursor-pointer overflow-hidden select-none group transition-all duration-300 bg-[#050505] border ${
-        isHovered ? 'border-[#ff4d16] shadow-[0_0_35px_rgba(255,77,22,0.3)]' : 'border-white/10'
+        isHovered ? 'border-[#00d1ff] shadow-[0_0_35px_rgba(0,209,255,0.35)]' : 'border-white/10'
       } ${className}`}
     >
       {/* Photo Container with subtle zoom and grayscale/color transition */}
@@ -47,25 +47,25 @@ export const PaperBurnCard: React.FC<PaperBurnCardProps> = ({
           }}
         />
 
-        {/* Ember Edge / Fire Glow on Hover */}
+        {/* Ember Edge / Blue Glow on Hover */}
         <div 
           className={`absolute inset-0 pointer-events-none transition-opacity duration-500 ${
             isHovered ? 'opacity-100' : 'opacity-0'
           }`}
           style={{
-            background: 'radial-gradient(ellipse at bottom, rgba(255, 77, 22, 0.22) 0%, transparent 70%)',
-            boxShadow: 'inset 0 0 40px rgba(255, 77, 22, 0.15)'
+            background: 'radial-gradient(ellipse at bottom, rgba(0, 209, 255, 0.25) 0%, transparent 70%)',
+            boxShadow: 'inset 0 0 40px rgba(0, 209, 255, 0.18)'
           }}
         />
       </div>
 
-      {/* Top-Right Corner Icon (4 orange dots) */}
+      {/* Top-Right Corner Icon (4 blue dots) */}
       <div className="p-3 absolute top-0 right-0 z-10">
         <div className="grid grid-cols-2 gap-1 w-3 h-3">
-          <div className="bg-[#ff4d16] w-1 h-1 shadow-[0_0_4px_#ff4d16]" />
-          <div className="bg-[#ff4d16] w-1 h-1 shadow-[0_0_4px_#ff4d16]" />
-          <div className="bg-[#ff4d16] w-1 h-1 shadow-[0_0_4px_#ff4d16]" />
-          <div className="bg-[#ff4d16] w-1 h-1 shadow-[0_0_4px_#ff4d16]" />
+          <div className="bg-[#00d1ff] w-1 h-1 shadow-[0_0_4px_#00d1ff]" />
+          <div className="bg-[#00d1ff] w-1 h-1 shadow-[0_0_4px_#00d1ff]" />
+          <div className="bg-[#00d1ff] w-1 h-1 shadow-[0_0_4px_#00d1ff]" />
+          <div className="bg-[#00d1ff] w-1 h-1 shadow-[0_0_4px_#00d1ff]" />
         </div>
       </div>
 
@@ -79,12 +79,12 @@ export const PaperBurnCard: React.FC<PaperBurnCardProps> = ({
       {/* Bottom Label Container */}
       <div 
         className={`absolute bottom-0 inset-x-0 p-5 border-t border-white/10 backdrop-blur-md transition-all duration-300 ${
-          isHovered ? 'bg-[#ff4d16]/10 border-[#ff4d16]/40' : 'bg-[#050505]/85'
+          isHovered ? 'bg-[#00d1ff]/10 border-[#00d1ff]/40' : 'bg-[#050505]/85'
         }`}
       >
         <h4 
           className={`text-base font-bold font-mono tracking-wider uppercase transition-colors duration-300 ${
-            isHovered ? 'text-[#ff4d16]' : 'text-white'
+            isHovered ? 'text-[#00d1ff]' : 'text-white'
           }`}
         >
           {name}

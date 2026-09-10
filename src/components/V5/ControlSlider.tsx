@@ -38,7 +38,7 @@ export default function ControlSlider({
         onChange={(e) => onChange(parseFloat(e.target.value))}
         className="w-full h-1 bg-white/10 rounded-full appearance-none outline-none focus:outline-none cursor-pointer"
         style={{
-          background: `linear-gradient(to right, #ff4d16 ${(value - min) / (max - min) * 100}%, rgba(255,255,255,0.1) ${(value - min) / (max - min) * 100}%)`
+          background: `linear-gradient(to right, #00d1ff ${(value - min) / (max - min) * 100}%, rgba(255,255,255,0.1) ${(value - min) / (max - min) * 100}%)`
         }}
       />
     </div>

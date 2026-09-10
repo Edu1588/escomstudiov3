@@ -318,7 +318,7 @@ function BlurLineReveal({ children, className = '', delay = 0 }: { children: Rea
 function SectionLabel({ n, children }: { n: string; children: string }) {
   return (
     <div className="flex flex-col items-center gap-2 pt-12 pb-6 select-none w-[70%] mx-auto border-t-[3px] border-dotted border-white/20">
-      <span className="text-4xl sm:text-6xl md:text-7xl text-[#ff4d16] font-mono font-extralight tracking-widest">{n}</span>
+      <span className="text-4xl sm:text-6xl md:text-7xl text-[#00d1ff] font-mono font-extralight tracking-widest">{n}</span>
       <h2 
         className="text-2xl sm:text-4xl md:text-5xl text-white tracking-widest uppercase font-sans font-light text-center"
       >
@@ -334,7 +334,7 @@ const HeroText = React.memo(() => {
       text="FÁBRICA"
       as="h1"
       style={{ fontFamily: "'Outfit', sans-serif", justifyContent: 'center' }}
-      className="relative z-10 text-center text-[16vw] leading-[0.85] font-light tracking-tight text-[#ff4d16] md:text-[13vw] select-none uppercase drop-shadow-[0_0_25px_rgba(255,77,22,0.4)] cursor-default"
+      className="relative z-10 text-center text-[16vw] leading-[0.85] font-light tracking-tight text-[#00d1ff] md:text-[13vw] select-none uppercase drop-shadow-[0_0_25px_rgba(0,209,255,0.4)] cursor-default"
       animateBy="letters"
       direction="bottom"
       delay={60}
@@ -455,14 +455,14 @@ function HomeV5Content() {
   );
 
   return (
-    <div className="relative min-h-screen bg-[#050505] text-[#f5f5f7] font-mono selection:bg-[#ff4d16] selection:text-white">
+    <div className="relative min-h-screen bg-[#050505] text-[#f5f5f7] font-mono selection:bg-[#00d1ff] selection:text-black">
       {/* 3D Canvas Background */}
       <ThreeCanvas {...threeProps} />
 
       {/* Fixed Top-Right Action Button (Hidden on Mobile to optimize screen and avoid navbar overlap) */}
       <a
         href="#projeto"
-        className="hidden md:block fixed top-6 right-6 z-50 text-black bg-[#ff4d16] hover:bg-white transition-colors uppercase font-bold font-mono text-xs tracking-widest px-6 py-3.5 rounded-none shadow-2xl pointer-events-auto"
+        className="hidden md:block fixed top-6 right-6 z-50 text-black bg-[#00d1ff] hover:bg-white transition-colors uppercase font-bold font-mono text-xs tracking-widest px-6 py-3.5 rounded-none shadow-2xl pointer-events-auto"
       >
         Iniciar Projeto
       </a>
@@ -474,7 +474,7 @@ function HomeV5Content() {
           ${scrollY > 400 ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'}`}
         aria-label="Voltar ao topo"
       >
-        <ArrowUp className="w-8 h-8 text-stone-500 stroke-[1] transition-colors hover:text-[#ff4d16]" />
+        <ArrowUp className="w-8 h-8 text-stone-500 stroke-[1] transition-colors hover:text-[#00d1ff]" />
       </button>
 
       {/* Navigation Header Bar (Matching Reference) */}
@@ -486,7 +486,7 @@ function HomeV5Content() {
           </span>
 
           {/* Center Indicator */}
-          <div className="flex items-center gap-1 text-[#ff4d16] font-mono text-xs font-bold select-none">
+          <div className="flex items-center gap-1 text-[#00d1ff] font-mono text-xs font-bold select-none">
             <span>▪</span><span>▪</span><span>▪</span><span>▪</span><span>▪</span>
           </div>
 
@@ -510,7 +510,7 @@ function HomeV5Content() {
                 <a
                   href={`#${item.toLowerCase()}`}
                   onClick={() => setIsMenuOpen(false)}
-                  className="block px-6 py-3 text-xs text-stone-300 hover:text-[#ff4d16] hover:bg-white/5 transition-colors tracking-widest text-left uppercase"
+                  className="block px-6 py-3 text-xs text-stone-300 hover:text-[#00d1ff] hover:bg-white/5 transition-colors tracking-widest text-left uppercase"
                 >
                   {item}
                 </a>
@@ -529,7 +529,7 @@ function HomeV5Content() {
         >
           <div className="flex items-center justify-between mb-5">
             <h3 className="label-xs text-white">Shader Controls</h3>
-            <div className="w-2 h-2 rounded-full bg-[#ff4d16] shadow-[0_0_8px_rgba(255,77,22,0.5)]" />
+            <div className="w-2 h-2 rounded-full bg-[#00d1ff] shadow-[0_0_8px_rgba(0,209,255,0.5)]" />
           </div>
 
           <ControlSlider label="Pixel Factor" value={pixelFactor} min={2} max={15} step={1} onChange={setPixelFactor} formatValue={(v) => `${v}x`} />
@@ -544,13 +544,13 @@ function HomeV5Content() {
             <button
               onClick={() => setAutoRotate(!autoRotate)}
               className="relative w-8 h-4 rounded-full transition-colors"
-              style={{ background: autoRotate ? "rgba(255, 77, 22, 0.3)" : "rgba(255,255,255,0.1)" }}
+              style={{ background: autoRotate ? "rgba(0, 209, 255, 0.3)" : "rgba(255,255,255,0.1)" }}
             >
               <div 
                 className="absolute top-[2px] w-3 h-3 rounded-full transition-all"
                 style={{ 
                   left: autoRotate ? "18px" : "2px", 
-                  background: autoRotate ? "#ff4d16" : "#8B8578" 
+                  background: autoRotate ? "#00d1ff" : "#8B8578" 
                 }}
               />
             </button>
@@ -654,7 +654,7 @@ function HomeV5Content() {
 
                   {/* Title & Description */}
                   <h3 
-                    className="text-lg sm:text-xl md:text-2xl font-bold font-mono text-white tracking-wider uppercase group-hover:text-[#ff4d16] transition-colors"
+                    className="text-lg sm:text-xl md:text-2xl font-bold font-mono text-white tracking-wider uppercase group-hover:text-[#00d1ff] transition-colors"
                   >
                     {w.title}
                   </h3>
@@ -681,9 +681,9 @@ function HomeV5Content() {
               <li key={title}>
                 <a
                   href="#forjamos"
-                  className="group flex items-center gap-6 border-b border-white/10 py-5 px-3 transition-all hover:bg-[#ff4d16] hover:border-[#ff4d16]"
+                  className="group flex items-center gap-6 border-b border-white/10 py-5 px-3 transition-all hover:bg-[#00d1ff] hover:border-[#00d1ff]"
                 >
-                  <span className="label-xs w-24 shrink-0 text-[#ff4d16] font-bold group-hover:text-black">{tag}</span>
+                  <span className="label-xs w-24 shrink-0 text-[#00d1ff] font-bold group-hover:text-black">{tag}</span>
                   <span className="flex-1 text-sm text-stone-200 font-mono transition-colors group-hover:text-black">
                     {title}
                   </span>
@@ -715,7 +715,7 @@ function HomeV5Content() {
               COLOR_UPDATE_SPEED={10}
               SHADING={true}
               RAINBOW_MODE={false}
-              COLOR="#ff6800"
+              COLOR="#00d1ff"
             />
           </div>
 
@@ -729,7 +729,7 @@ function HomeV5Content() {
             <div className="space-y-10 text-stone-200 font-sans relative">
               {/* Sticky Column 1 Header fixed at top of column while text scrolls */}
               <div className="lg:sticky lg:top-0 z-30 bg-[#050505]/85 backdrop-blur-sm pb-6 pt-6 border-b border-white/10">
-                <span className="text-[10px] text-[#ff4d16] font-mono tracking-widest uppercase bg-white/5 px-3 py-1 border border-white/10">
+                <span className="text-[10px] text-[#00d1ff] font-mono tracking-widest uppercase bg-white/5 px-3 py-1 border border-white/10">
                   CONCEITO & ORIGEM
                 </span>
                 <BlurText
@@ -755,7 +755,7 @@ function HomeV5Content() {
               {/* Scrolling paragraphs with blur-reveal effect */}
               <div className="space-y-12 text-base sm:text-lg leading-relaxed text-stone-300 font-sans pt-4 pb-12 lg:-mt-[140px]">
                 <BlurLineReveal delay={0.1}>
-                  <p className="border-l-2 border-[#ff4d16] pl-6 text-stone-300 text-base sm:text-lg">
+                  <p className="border-l-2 border-[#00d1ff] pl-6 text-stone-300 text-base sm:text-lg">
                     A palavra <strong className="text-white font-semibold">Forja</strong> nasce da própria essência da <strong className="text-white font-semibold">Fábrica</strong>. Forjar é o ato milenar de submeter a matéria-prima bruta às mais altas temperaturas e ao impacto contínuo do martelo sobre a bigorna, até transformar o metal amorfo em uma ferramenta de precisão inquebrável.
                   </p>
                 </BlurLineReveal>
@@ -776,10 +776,10 @@ function HomeV5Content() {
                   <div className="pt-8 border-t border-white/10 space-y-4 font-sans">
                     <span className="text-xs text-white font-mono uppercase tracking-widest block font-bold">O PROCESSO DE MOLDAGEM</span>
                     <div className="text-xs sm:text-sm text-stone-300 space-y-4 leading-relaxed font-sans">
-                      <p><span className="text-[#ff4d16] font-mono font-extralight text-base sm:text-lg mr-2">01.</span> <strong className="text-white font-semibold">ESTADO BRUTO:</strong> Diagnóstico profundo e desconstrução dos clichês do mercado.</p>
-                      <p><span className="text-[#ff4d16] font-mono font-extralight text-base sm:text-lg mr-2">02.</span> <strong className="text-white font-semibold">CALOR & PRESSÃO:</strong> Estratégia de diferenciação, branding assinado e arquitetura de marca.</p>
-                      <p><span className="text-[#ff4d16] font-mono font-extralight text-base sm:text-lg mr-2">03.</span> <strong className="text-white font-semibold">FORJAMENTO:</strong> Design obsessivo, tecnologia escalável e performance de conversão.</p>
-                      <p><span className="text-[#ff4d16] font-mono font-extralight text-base sm:text-lg mr-2">04.</span> <strong className="text-white font-semibold">TÊMPERA:</strong> Validação rigorosa e entrega de uma marca afiada e pronta para vencer.</p>
+                      <p><span className="text-[#00d1ff] font-mono font-extralight text-base sm:text-lg mr-2">01.</span> <strong className="text-white font-semibold">ESTADO BRUTO:</strong> Diagnóstico profundo e desconstrução dos clichês do mercado.</p>
+                      <p><span className="text-[#00d1ff] font-mono font-extralight text-base sm:text-lg mr-2">02.</span> <strong className="text-white font-semibold">CALOR & PRESSÃO:</strong> Estratégia de diferenciação, branding assinado e arquitetura de marca.</p>
+                      <p><span className="text-[#00d1ff] font-mono font-extralight text-base sm:text-lg mr-2">03.</span> <strong className="text-white font-semibold">FORJAMENTO:</strong> Design obsessivo, tecnologia escalável e performance de conversão.</p>
+                      <p><span className="text-[#00d1ff] font-mono font-extralight text-base sm:text-lg mr-2">04.</span> <strong className="text-white font-semibold">TÊMPERA:</strong> Validação rigorosa e entrega de uma marca afiada e pronta para vencer.</p>
                     </div>
                   </div>
                 </BlurLineReveal>
@@ -857,7 +857,7 @@ function HomeV5Content() {
           </p>
 
           <div className="pb-6 text-center">
-            <span className="label-xs text-[#ff4d16] border border-[#ff4d16]/30 px-3 py-1 rounded-full bg-[#ff4d16]/10">
+            <span className="label-xs text-[#00d1ff] border border-[#00d1ff]/30 px-3 py-1 rounded-full bg-[#00d1ff]/10">
               Spotlight
             </span>
           </div>
@@ -866,16 +866,16 @@ function HomeV5Content() {
             {SPOTLIGHT.map(([brand, cat]) => (
               <div
                 key={brand}
-                className="group relative border border-white/10 p-6 transition-all hover:border-[#ff4d16]/50 hover:bg-[#ff4d16]/5 flex flex-col justify-between h-40"
+                className="group relative border border-white/10 p-6 transition-all hover:border-[#00d1ff]/50 hover:bg-[#00d1ff]/5 flex flex-col justify-between h-40"
               >
                 <div>
-                  <span className="label-xs text-[#ff4d16] font-bold">{cat}</span>
+                  <span className="label-xs text-[#00d1ff] font-bold">{cat}</span>
                   <h4 className="font-mono text-base text-stone-200 mt-2 font-bold group-hover:text-white transition-colors">{brand}</h4>
                 </div>
                 <div className="flex items-center justify-between text-xs text-stone-300 font-mono pt-4 border-t border-white/5">
                   <span>Status</span>
-                  <span className="text-[#ff4d16] flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#ff4d16] animate-pulse"></span>
+                  <span className="text-[#00d1ff] flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#00d1ff] animate-pulse"></span>
                     Ativo
                   </span>
                 </div>
@@ -892,7 +892,7 @@ function HomeV5Content() {
               {INDEX.map((item) => (
                 <span
                   key={item}
-                  className="border border-white/10 px-3 py-1.5 hover:border-[#ff4d16] hover:text-[#ff4d16] transition-colors cursor-default"
+                  className="border border-white/10 px-3 py-1.5 hover:border-[#00d1ff] hover:text-[#00d1ff] transition-colors cursor-default"
                 >
                   {item}
                 </span>
@@ -926,7 +926,7 @@ function HomeV5Content() {
         <footer id="contato" className="border-t border-white/10 bg-[#050505] text-stone-300 font-mono pt-16">
           <div className="mx-auto max-w-[1400px] px-6 pb-20 grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
             <div>
-              <span className="label-xs text-[#ff4d16] font-bold tracking-widest block mb-2">FORJAMENTO & BRIEFING</span>
+              <span className="label-xs text-[#00d1ff] font-bold tracking-widest block mb-2">FORJAMENTO & BRIEFING</span>
               <h2 className="text-4xl sm:text-5xl font-light text-white font-sans tracking-tight uppercase leading-tight">
                 Pronto para dar têmpera à sua marca?
               </h2>
@@ -942,13 +942,13 @@ function HomeV5Content() {
                   href={label.includes("WhatsApp") ? "https://wa.me/5519982646492" : label.includes("Instagram") ? "https://instagram.com/fabricapublicidadedigital" : "mailto:lucas@fabricapublicidade.com.br"}
                   target="_blank"
                   rel="noreferrer"
-                  className="group block border border-white/10 p-5 hover:border-[#ff4d16] hover:bg-[#ff4d16]/5 transition-all"
+                  className="group block border border-white/10 p-5 hover:border-[#00d1ff] hover:bg-[#00d1ff]/5 transition-all"
                 >
                   <div className="flex justify-between items-center">
-                    <span className="label-xs text-[#ff4d16] font-bold">{label}</span>
+                    <span className="label-xs text-[#00d1ff] font-bold">{label}</span>
                     <span className="label-xs text-stone-400 group-hover:text-white transition-colors">{desc}</span>
                   </div>
-                  <span className="block text-lg font-bold text-white mt-2 group-hover:text-[#ff4d16] transition-colors">{val}</span>
+                  <span className="block text-lg font-bold text-white mt-2 group-hover:text-[#00d1ff] transition-colors">{val}</span>
                 </a>
               ))}
             </div>
@@ -960,7 +960,7 @@ function HomeV5Content() {
             </span>
             <div className="flex gap-6 text-xs text-stone-400 font-mono">
               {NAV.map((l) => (
-                <a key={l} href={`#${l.toLowerCase()}`} className="hover:text-[#ff4d16] transition-colors uppercase">
+                <a key={l} href={`#${l.toLowerCase()}`} className="hover:text-[#00d1ff] transition-colors uppercase">
                   {l}
                 </a>
               ))}
@@ -971,7 +971,7 @@ function HomeV5Content() {
             <span className="label-xs text-stone-400">
               © 2026 Fábrica Publicidade &amp; Digital — Campinas / SP
             </span>
-            <span className="label-xs text-[#ff4d16]/80 mt-2 sm:mt-0">
+            <span className="label-xs text-[#00d1ff]/80 mt-2 sm:mt-0">
               &gt;| FÁBRICA |&lt;
             </span>
           </div>
@@ -993,12 +993,12 @@ function HomeV5Content() {
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#050505]">
               <span className="text-xs text-stone-400 font-mono tracking-widest uppercase">DETAIL</span>
               
-              {/* Center icon: 4 orange dots */}
+              {/* Center icon: 4 dots */}
               <div className="grid grid-cols-2 gap-0.5 w-3 h-3">
-                <div className="bg-[#ff4d16] w-1 h-1" />
-                <div className="bg-[#ff4d16] w-1 h-1" />
-                <div className="bg-[#ff4d16] w-1 h-1" />
-                <div className="bg-[#ff4d16] w-1 h-1" />
+                <div className="bg-[#00d1ff] w-1 h-1" />
+                <div className="bg-[#00d1ff] w-1 h-1" />
+                <div className="bg-[#00d1ff] w-1 h-1" />
+                <div className="bg-[#00d1ff] w-1 h-1" />
               </div>
 
               <button
@@ -1033,17 +1033,17 @@ function HomeV5Content() {
 
               <div>
                 <span className="text-[10px] text-stone-500 font-mono tracking-widest uppercase block mb-1">CARGO / FUNÇÃO</span>
-                <p className="text-sm text-[#ff4d16] font-mono tracking-widest uppercase border-b border-white/10 pb-2 font-bold">
+                <p className="text-sm text-[#00d1ff] font-mono tracking-widest uppercase border-b border-white/10 pb-2 font-bold">
                   {selectedMember.role}
                 </p>
               </div>
 
               <div>
-                <span className="text-[10px] text-[#ff4d16] font-mono tracking-widest uppercase block mb-1 font-bold">
+                <span className="text-[10px] text-[#00d1ff] font-mono tracking-widest uppercase block mb-1 font-bold">
                   ATUAÇÃO &amp; IMPACTO
                 </span>
                 <p 
-                  className="text-sm sm:text-base text-stone-100 font-serif italic border-l-2 border-[#ff4d16] pl-3.5 py-2.5 bg-white/[0.03] font-light leading-relaxed my-1"
+                  className="text-sm sm:text-base text-stone-100 font-serif italic border-l-2 border-[#00d1ff] pl-3.5 py-2.5 bg-white/[0.03] font-light leading-relaxed my-1"
                   style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
                 >
                   "{selectedMember.bio}"
@@ -1072,15 +1072,15 @@ class HomeErrorBoundary extends React.Component<{ children: React.ReactNode }, {
     if (this.state.hasError) {
       return (
         <div className="min-h-screen bg-[#050505] text-[#f5f5f7] flex flex-col items-center justify-center p-6 text-center font-mono">
-          <div className="max-w-md p-8 border border-[#ff4d16]/30 bg-black/60 shadow-2xl space-y-4">
-            <span className="text-[#ff4d16] text-xs uppercase tracking-widest block font-bold">ESCOM STUDIO v5</span>
+          <div className="max-w-md p-8 border border-[#00d1ff]/30 bg-black/60 shadow-2xl space-y-4">
+            <span className="text-[#00d1ff] text-xs uppercase tracking-widest block font-bold">ESCOM STUDIO v5</span>
             <h1 className="text-2xl font-bold uppercase tracking-wider text-white">A Forja Criativa</h1>
             <p className="text-sm text-stone-400 font-serif">
               Ocorreu uma instabilidade na aceleração gráfica. Clique no botão abaixo para restaurar a interface.
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="mt-4 px-6 py-2.5 bg-[#ff4d16] text-black font-bold uppercase text-xs tracking-widest hover:bg-white transition-colors cursor-pointer"
+              className="mt-4 px-6 py-2.5 bg-[#00d1ff] text-black font-bold uppercase text-xs tracking-widest hover:bg-white transition-colors cursor-pointer"
             >
               Recarregar Página
             </button>
