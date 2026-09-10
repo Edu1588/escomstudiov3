@@ -77,6 +77,7 @@ export default defineConfig(({mode}) => {
           home3: path.resolve(__dirname, 'home3/index.html'),
           homev4: path.resolve(__dirname, 'home-v4/index.html'),
           homev5: path.resolve(__dirname, 'home-v5/index.html'),
+          home5: path.resolve(__dirname, 'home5/index.html'),
         },
       },
     },
