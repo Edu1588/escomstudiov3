@@ -12,32 +12,32 @@ import SplitType from 'split-type';
 import { LanguageProvider } from './contexts/LanguageContext';
 import './home-v5.css';
 
-const NAV = ["Jornada", "Forjamos", "Clientes", "Contato", "Projeto"];
+const NAV = ["Origem", "Engenharia", "Tecnologias", "Metodologia", "Contato"];
 
 const WRITING = [
   {
     type: 'vortex' as const,
-    tag: "OPINIÃO",
-    title: "NÃO PRODUZIMOS CLICHÊS",
-    meta: "Estratégia & Branding",
-    description: "Criamos posicionamentos estratégicos e identidades de alto impacto que transformam marcas brutas em ferramentas afiadas de conversão e diferenciação no mercado.",
+    tag: "CONVERSÃO CIRÚRGICA",
+    title: "A LINHA ENTRE O CLIQUE E O LUCRO",
+    meta: "Engenharia de Conversão",
+    description: "Páginas construídas com fricção zero e carregamento sub-segundo. O lead nunca espera. Cada milissegundo economizado é conversão capturada antes do concorrente sequer carregar.",
   },
   {
     type: 'structure' as const,
-    tag: "INOVAÇÃO",
-    title: "TECNOLOGIA E DADOS",
-    meta: "Engenharia Digital",
-    description: "Desenvolvemos aplicações escaláveis, inteligência artificial aplicada e ecossistemas digitais focados na máxima retenção e retorno sobre investimento.",
+    tag: "SISTEMAS PROPRIETÁRIOS",
+    title: "CÓDIGO PURO & INTELIGÊNCIA ARTIFICIAL",
+    meta: "Soberania Digital",
+    description: "Design que atrai os olhos e engenharia de backend que converte no checkout. Tráfego pago, agentes IA 24/7 e automação de ponta integrados em uma única máquina de receita.",
   },
 ];
 
 const CONTENT: [string, string, string][] = [
-  ["01 — 05", "Branding — essência e pilares da identidade visual", "Posicionamento"],
-  ["02 — 05", "Comunicação — discurso e canais consistentes", "Relacionamento"],
-  ["03 — 05", "Design — tipografia e diagramação obsessivas", "Criação"],
-  ["04 — 05", "Digital — presença criativa com engajamento e métrica", "Performance"],
-  ["05 — 05", "Tech House — aplicações escaláveis, IA e gamificação", "Tecnologia"],
-  ["Faixa", "Design assinado, estruturas robustas, código resistente", "Fábrica"],
+  ["01 — 05", "CRM Nativo Blindado — centralização de leads, propostas e histórico sem SaaS fragmentado", "Controle"],
+  ["02 — 05", "Agentes de IA 24/7 — atendimento no WhatsApp com qualificação por faturamento e agenda direta", "Automação"],
+  ["03 — 05", "AutoCarrossel Inteligente — consulta automática à FIPE e geração instantânea de criativos prontos", "Escala"],
+  ["04 — 05", "Máquina de Ranqueamento — SEO técnico mobile-first, Lighthouse 100 e domínio orgânico", "Performance"],
+  ["05 — 05", "Minerador de Leads B2B — radar inteligente que mapeia decisores e entrega WhatsApp direto", "Prospecção"],
+  ["Faixa", "Engenharia de conversão, ecossistema blindado e código proprietário", "Soberania"],
 ];
 
 const TEAM = [
@@ -120,64 +120,44 @@ const SPOTLIGHT: [string, string][] = [
 ];
 
 const INDEX = [
-  "Branding",
-  "Identidade Visual",
-  "Naming",
-  "Manual de Marca",
-  "Site Institucional",
-  "Embalagens",
-  "Papelaria",
-  "Comunicação Visual",
-  "Gestão de Redes",
-  "Produção de Conteúdo",
-  "E-mail Marketing",
-  "Campanhas Sazonais",
-  "Materiais para PDV",
-  "Meta Ads",
-  "Google Ads",
-  "Landing Pages",
-  "Copywriting",
-  "CRM & Automações",
-  "CRO & Otimização",
-  "Tech House",
-  "Inteligência Artificial",
-  "Gamificação",
-  "Gorre",
-  "Netconfig",
-  "Brasil Visa",
-  "Hidrocamp",
-  "TGlobal Networks",
-  "Colégio Pitágoras",
-  "Estoque & Office",
-  "Renata Freitas Studio",
-  "Design",
-  "Digital",
-  "Performance",
-  "Estratégia",
-  "Marketing",
-  "Visual Identity",
-  "Tecnologia",
-  "Serviços",
-  "Indústria",
-  "Varejo",
-  "E-commerce",
-  "Infoprodutos",
-  "Educação",
-  "Alta Precisão",
-  "Resistência",
-  "Têmpera",
-  "Bigorna",
-  "Martelo",
-  "Aquecimento",
-  "Forja",
-  "Campinas / SP",
-  "Santo Antônio / SP",
+  "Engenharia de Conversão",
+  "Sistemas Proprietários",
+  "Agentes IA 24/7",
+  "AutoCarrossel Inteligente",
+  "Máquina de Ranqueamento",
+  "SEO Mobile-First",
+  "Lighthouse Score 100",
+  "Minerador de Leads B2B",
+  "CRM Nativo Blindado",
+  "Next.js & React",
+  "Landing Pages Brutalistas",
+  "Dashboards de ROI",
+  "Automação de WhatsApp",
+  "Mapeamento de ICP",
+  "Fricção Zero",
+  "Arquitetura Escalável",
+  "Google Analytics 4",
+  "Google Meu Negócio",
+  "Webhooks & Integrações",
+  "Design Assinado",
+  "Ecossistemas Digitais",
+  "Soberania Digital",
+  "Checkout Sub-Segundo",
+  "Retenção de Leads",
+  "Alta Performance",
+  "LCP 0.4s",
+  "Tráfego Pago Otimizado",
+  "Código Proprietário",
+  "Soberania",
+  "Infraestrutura 24/7",
+  "São Paulo / SP",
+  "Brasil",
 ];
 
 const JOBS: [string, string, string][] = [
-  ["WhatsApp Oficial", "(19) 9 8264-6492", "Contato direto"],
-  ["Instagram Oficial", "@fabricapublicidadedigital", "Portfólio"],
-  ["E-mail Corporativo", "lucas@fabricapublicidade.com.br", "Briefing"],
+  ["WhatsApp Oficial", "(48) 99806-5099", "Atendimento Direto"],
+  ["Instagram Oficial", "@escomstudio", "Portfólio & Bastidores"],
+  ["E-mail Corporativo", "contato@escomstudio.com.br", "Diagnóstico de Projeto"],
 ];
 
 function BlurSplitText({
@@ -331,7 +311,7 @@ function SectionLabel({ n, children }: { n: string; children: string }) {
 const HeroText = React.memo(() => {
   return (
     <BlurText
-      text="FÁBRICA"
+      text="ESCOM"
       as="h1"
       style={{ fontFamily: "'Outfit', sans-serif", justifyContent: 'center' }}
       className="relative z-10 text-center text-[16vw] leading-[0.85] font-light tracking-tight text-[#00d1ff] md:text-[13vw] select-none uppercase drop-shadow-[0_0_25px_rgba(0,209,255,0.4)] cursor-default"
@@ -578,7 +558,7 @@ function HomeV5Content() {
                 SEC—01
               </span>
               <BlurSplitText 
-                text="Forjamos estratégias criativas e resultados sólidos para destacar sua marca, unindo posicionamento de impacto e desempenho digital sob medida. O seu negócio modelado com força e consistência de ferro."
+                text="A engenharia digital da ESCOM constrói ecossistemas onde código, inteligência artificial e conversão se tornam um só organismo. Design que atrai os olhos e tecnologia robusta que multiplica seu faturamento."
                 className="text-lg sm:text-xl md:text-2xl lg:text-3xl leading-[1.4] text-stone-300 font-serif font-light tracking-wide text-left"
               />
             </div>
@@ -586,7 +566,7 @@ function HomeV5Content() {
             {/* Paragraph 2: Offset to the right - Large scale */}
             <div className="relative w-full md:w-[75%] lg:w-[60%] md:ml-auto flex flex-col md:flex-row gap-3 md:gap-8 items-start md:items-start justify-end text-left md:text-right">
               <BlurSplitText 
-                text="Fortalecer marcas, potencializar resultados e ser parceiro estratégico em cada etapa da jornada. Somos a Fábrica: retiramos as marcas do estado bruto e as lapidamos até se tornarem ferramentas afiadas de conversão."
+                text="Não construímos apenas sites bonitos. Forjamos máquinas de conversão blindadas: tráfego pago, automação de WhatsApp e sistemas proprietários para consolidar a soberania do seu negócio."
                 className="text-lg sm:text-xl md:text-2xl lg:text-3xl leading-[1.4] text-stone-300 font-serif font-light tracking-wide md:text-right"
               />
               <span className="text-[10px] text-stone-500 font-mono tracking-widest uppercase shrink-0 pt-3 text-right">
@@ -597,7 +577,7 @@ function HomeV5Content() {
 
           <div className="pb-28 text-center select-none flex flex-col gap-2">
             <BlurText 
-              text="POSICIONE-SE"
+              text="FORJAR"
               as="h2"
               animateBy="letters"
               delay={40}
@@ -607,7 +587,7 @@ function HomeV5Content() {
               className="text-[14vw] leading-[0.85] md:text-[10rem] uppercase tracking-tight text-white font-serif font-light cursor-default"
             />
             <BlurText 
-              text="CONECTE-SE"
+              text="CONVERTER"
               as="h2"
               animateBy="letters"
               delay={40}
@@ -617,7 +597,7 @@ function HomeV5Content() {
               className="text-[14vw] leading-[0.85] md:text-[10rem] uppercase tracking-tight text-white font-serif font-light cursor-default"
             />
             <BlurText 
-              text="E VENDA"
+              text="E ESCALAR"
               as="h2"
               animateBy="letters"
               delay={40}
@@ -721,7 +701,7 @@ function HomeV5Content() {
 
           {/* Section 04 Header (Standard scrolling header, non-sticky) */}
           <div className="relative z-10">
-            <SectionLabel n="04">Por que Forja</SectionLabel>
+            <SectionLabel n="04">Por que a Forja</SectionLabel>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start pb-28 pt-8 relative z-10">
@@ -730,11 +710,11 @@ function HomeV5Content() {
               {/* Sticky Column 1 Header fixed at top of column while text scrolls */}
               <div className="lg:sticky lg:top-0 z-30 bg-[#050505]/85 backdrop-blur-sm pb-6 pt-6 border-b border-white/10">
                 <span className="text-[10px] text-[#00d1ff] font-mono tracking-widest uppercase bg-white/5 px-3 py-1 border border-white/10">
-                  CONCEITO & ORIGEM
+                  ENGENHARIA & ORIGEM
                 </span>
                 <BlurText
                   as="h3"
-                  text="FORJA VEM DE FÁBRICA"
+                  text="A FORJA DA ESCOM"
                   className="text-3xl sm:text-4xl md:text-5xl font-light text-white tracking-wide uppercase mt-4 font-sans"
                   delay={150}
                   animateBy="words"
@@ -756,30 +736,30 @@ function HomeV5Content() {
               <div className="space-y-12 text-base sm:text-lg leading-relaxed text-stone-300 font-sans pt-4 pb-12 lg:-mt-[140px]">
                 <BlurLineReveal delay={0.1}>
                   <p className="border-l-2 border-[#00d1ff] pl-6 text-stone-300 text-base sm:text-lg">
-                    A palavra <strong className="text-white font-semibold">Forja</strong> nasce da própria essência da <strong className="text-white font-semibold">Fábrica</strong>. Forjar é o ato milenar de submeter a matéria-prima bruta às mais altas temperaturas e ao impacto contínuo do martelo sobre a bigorna, até transformar o metal amorfo em uma ferramenta de precisão inquebrável.
+                    Na <strong className="text-white font-semibold">ESCOM STUDIO</strong>, forjar é a disciplina de unir código limpo, inteligência artificial e conversão extrema. Submetemos cada interface aos mais rigorosos testes de stress e fricção zero, até que o sistema se torne uma máquina de receita inquebrável.
                   </p>
                 </BlurLineReveal>
 
                 <BlurLineReveal delay={0.2}>
                   <p className="pl-6 text-stone-300 text-base sm:text-lg">
-                    No mercado atual, marcas genéricas e comunicação sem intenção se desgastam rapidamente. Nós não apenas criamos layouts; nós <strong className="text-white">forjamos identidades de alto impacto</strong>, lapidando o posicionamento e a presença digital até que ganhem têmpera, peso e relevância inquestionável.
+                    No mercado atual, sites lentos e ferramentas desconexas queimam orçamento sem gerar retorno. Nós não entregamos apenas estética: nós <strong className="text-white">construímos operações digitais completas</strong>, integrando tráfego pago, atendimento automático no WhatsApp e páginas com carregamento em 0.4s.
                   </p>
                 </BlurLineReveal>
 
                 <BlurLineReveal delay={0.3}>
                   <p className="pl-6 text-stone-300 text-base sm:text-lg">
-                    O fogo é a nossa paixão aliada aos dados; a bigorna é a estratégia consistente. Na Forja, moldamos o posicionamento, a engenharia de software e a estética do seu negócio para resistir ao tempo e superar qualquer concorrência.
+                    O equilíbrio exato entre sofisticação visual de marca e brutalidade de conversão: o ponto onde o usuário não encontra atrito, o lead é qualificado em segundos e o ticket médio se multiplica.
                   </p>
                 </BlurLineReveal>
 
                 <BlurLineReveal delay={0.4}>
                   <div className="pt-8 border-t border-white/10 space-y-4 font-sans">
-                    <span className="text-xs text-white font-mono uppercase tracking-widest block font-bold">O PROCESSO DE MOLDAGEM</span>
+                    <span className="text-xs text-white font-mono uppercase tracking-widest block font-bold">O MÉTODO DE ENGENHARIA</span>
                     <div className="text-xs sm:text-sm text-stone-300 space-y-4 leading-relaxed font-sans">
-                      <p><span className="text-[#00d1ff] font-mono font-extralight text-base sm:text-lg mr-2">01.</span> <strong className="text-white font-semibold">ESTADO BRUTO:</strong> Diagnóstico profundo e desconstrução dos clichês do mercado.</p>
-                      <p><span className="text-[#00d1ff] font-mono font-extralight text-base sm:text-lg mr-2">02.</span> <strong className="text-white font-semibold">CALOR & PRESSÃO:</strong> Estratégia de diferenciação, branding assinado e arquitetura de marca.</p>
-                      <p><span className="text-[#00d1ff] font-mono font-extralight text-base sm:text-lg mr-2">03.</span> <strong className="text-white font-semibold">FORJAMENTO:</strong> Design obsessivo, tecnologia escalável e performance de conversão.</p>
-                      <p><span className="text-[#00d1ff] font-mono font-extralight text-base sm:text-lg mr-2">04.</span> <strong className="text-white font-semibold">TÊMPERA:</strong> Validação rigorosa e entrega de uma marca afiada e pronta para vencer.</p>
+                      <p><span className="text-[#00d1ff] font-mono font-extralight text-base sm:text-lg mr-2">01.</span> <strong className="text-white font-semibold">MAPEAMENTO:</strong> Diagnóstico profundo de ICP, gargalos e fluxos nativos.</p>
+                      <p><span className="text-[#00d1ff] font-mono font-extralight text-base sm:text-lg mr-2">02.</span> <strong className="text-white font-semibold">ENGENHARIA BLINDADA:</strong> Desenvolvimento puro em Next.js/React, sem dependência de plataformas lentas.</p>
+                      <p><span className="text-[#00d1ff] font-mono font-extralight text-base sm:text-lg mr-2">03.</span> <strong className="text-white font-semibold">SISTEMAS PROPRIETÁRIOS:</strong> Agentes IA 24/7, AutoCarrossel e automações conectadas ao seu WhatsApp.</p>
+                      <p><span className="text-[#00d1ff] font-mono font-extralight text-base sm:text-lg mr-2">04.</span> <strong className="text-white font-semibold">ESCALA & ROI:</strong> Lighthouse Score 100, indexação no Google e maximização de faturamento líquido.</p>
                     </div>
                   </div>
                 </BlurLineReveal>
@@ -852,8 +832,8 @@ function HomeV5Content() {
           <SectionLabel n="06">Mercados em que forjamos</SectionLabel>
 
           <p className="mx-auto max-w-2xl pb-12 text-center text-sm leading-relaxed text-stone-400 font-mono">
-            Marcas que confiam na nossa bigorna. Design assinado, estruturas robustas de marketing
-            e engenharia de código resistente a altas cargas de tráfego.
+            Operações digitais que confiam na nossa engenharia. Sistemas proprietários, interfaces de alta conversão
+            e arquiteturas de código preparadas para suportar picos de escala e faturamento contínuo.
           </p>
 
           <div className="pb-6 text-center">
@@ -926,12 +906,12 @@ function HomeV5Content() {
         <footer id="contato" className="border-t border-white/10 bg-[#050505] text-stone-300 font-mono pt-16">
           <div className="mx-auto max-w-[1400px] px-6 pb-20 grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
             <div>
-              <span className="label-xs text-[#00d1ff] font-bold tracking-widest block mb-2">FORJAMENTO & BRIEFING</span>
+              <span className="label-xs text-[#00d1ff] font-bold tracking-widest block mb-2">DIAGNÓSTICO & PROJETO</span>
               <h2 className="text-4xl sm:text-5xl font-light text-white font-sans tracking-tight uppercase leading-tight">
-                Pronto para dar têmpera à sua marca?
+                Construa apenas o que gera lucro.
               </h2>
               <p className="text-sm text-stone-400 font-mono mt-6 max-w-md leading-relaxed">
-                Transforme sua presença digital em uma máquina de conversão blindada. Fale direto com nossos fundadores.
+                A ESCOM STUDIO é o seu braço de engenharia digital, automação e inteligência de vendas. Fale com nossos especialistas e consolide sua soberania no mercado.
               </p>
             </div>
 
@@ -939,7 +919,7 @@ function HomeV5Content() {
               {JOBS.map(([label, val, desc]) => (
                 <a
                   key={label}
-                  href={label.includes("WhatsApp") ? "https://wa.me/5519982646492" : label.includes("Instagram") ? "https://instagram.com/fabricapublicidadedigital" : "mailto:lucas@fabricapublicidade.com.br"}
+                  href={label.includes("WhatsApp") ? "https://wa.me/5548998065099?text=Ol%C3%A1!%20Gostaria%20de%20um%20diagn%C3%B3stico%20da%20ESCOM%20Studio." : label.includes("Instagram") ? "https://instagram.com/escomstudio" : "mailto:contato@escomstudio.com.br"}
                   target="_blank"
                   rel="noreferrer"
                   className="group block border border-white/10 p-5 hover:border-[#00d1ff] hover:bg-[#00d1ff]/5 transition-all"
@@ -956,7 +936,7 @@ function HomeV5Content() {
 
           <div className="border-t border-white/5 mx-auto max-w-[1400px] px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <span className="label-xs text-stone-400 uppercase font-mono">
-              FÁBRICA — PUBLICIDADE &amp; DIGITAL
+              ESCOM STUDIO — ENGENHARIA DE CRESCIMENTO DIGITAL
             </span>
             <div className="flex gap-6 text-xs text-stone-400 font-mono">
               {NAV.map((l) => (
@@ -969,10 +949,10 @@ function HomeV5Content() {
 
           <div className="mx-auto max-w-[1400px] px-6 pb-12 flex flex-col sm:flex-row items-center justify-between border-t border-white/5 pt-6">
             <span className="label-xs text-stone-400">
-              © 2026 Fábrica Publicidade &amp; Digital — Campinas / SP
+              © 2026 ESCOM STUDIO. Todos os direitos reservados. Código Proprietário Blindado.
             </span>
             <span className="label-xs text-[#00d1ff]/80 mt-2 sm:mt-0">
-              &gt;| FÁBRICA |&lt;
+              &gt;| ESCOM STUDIO |&lt;
             </span>
           </div>
         </footer>
