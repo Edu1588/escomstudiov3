@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import ReactDOM from 'react-dom/client';
 import ThreeCanvas from './components/V5/ThreeCanvas';
+import RobotCanvasV2 from './components/V5/RobotCanvasV2';
 import ControlSlider from './components/V5/ControlSlider';
 import PixelArtCanvas from './components/V5/PixelArtCanvas';
 import PaperBurnCard from './components/V5/PaperBurnCard';
@@ -448,8 +449,8 @@ function HomeV5Content() {
       {/* Sci-Fi Loading Screen with Enter Gate */}
       {loading && <SciFiLoadingScreen onEnter={() => setLoading(false)} />}
 
-      {/* 3D Canvas Background */}
-      <ThreeCanvas {...threeProps} />
+      {/* 3D Canvas Background — Robô Busto Oficial ESCOM da Home V2 */}
+      <RobotCanvasV2 />
 
       {/* Fixed Top-Right Action Button (Hidden on Mobile to optimize screen and avoid navbar overlap) */}
       <a
@@ -781,18 +782,11 @@ function HomeV5Content() {
               </div>
             </div>
 
-            {/* Column 2: Sticky 3D Articulated Hefesto Bust */}
+            {/* Column 2: Sticky 3D Articulated Robot Bust (Home V2) */}
             <div className="lg:sticky lg:top-20 h-[620px] sm:h-[740px] lg:h-[860px] w-full relative bg-transparent overflow-visible z-40">
-              {/* 3D Statue with transparent background layered on top */}
+              {/* 3D Robot with transparent background layered on top */}
               <div className="w-full h-full pointer-events-auto">
-                <ThreeCanvas 
-                  isEmbedded 
-                  renderClean 
-                  transparentBg
-                  modelPath="/models/hefestoHD-v1.glb" 
-                  fixedScale={4.0}
-                  fixedY={-0.08}
-                />
+                <RobotCanvasV2 isEmbedded />
               </div>
             </div>
           </div>
