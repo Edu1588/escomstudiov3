@@ -420,7 +420,7 @@ function HomeV5Content() {
       metalness,
       scrollProgress,
       scrollY,
-      modelPath: "/models/hefestoHD-v1.glb"
+      modelPath: "/models/3Dmodelrobot-v1.glb"
     }),
     [pixelFactor, cameraZ, autoRotate, brightness, smearIntensity, roughness, metalness, scrollProgress, scrollY]
   );
@@ -665,38 +665,36 @@ function HomeV5Content() {
             </p>
           </div>
 
-          {/* Palco Central: Robô 3D Interativo no Centro + 6 Cards Flutuantes em Volta */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center pb-16 relative">
-            {/* Coluna Esquerda: 3 Cards Flutuantes */}
-            <div className="lg:col-span-4 flex flex-col gap-5 order-2 lg:order-1">
+          {/* Palco Central: Robô 3D Interativo no Centro + 6 Cards Bem Menores Flutuantes em Volta */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-center pb-16 relative">
+            {/* Coluna Esquerda: 3 Cards Menores Flutuantes */}
+            <div className="lg:col-span-3 flex flex-col gap-3.5 order-2 lg:order-1">
               {SERVICES_V5.slice(0, 3).map((s) => (
                 <div
                   key={s.id}
-                  className="group relative border border-white/10 bg-[#0a0a0c]/85 backdrop-blur-md p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 hover:border-[#00d1ff]/60 hover:shadow-[0_0_30px_rgba(0,209,255,0.08)] hover:-translate-y-1"
+                  className="group relative border border-white/10 bg-[#070709]/85 backdrop-blur-md p-3.5 sm:p-4 transition-all duration-300 hover:border-[#00d1ff]/50 hover:shadow-[0_0_25px_rgba(0,209,255,0.08)] hover:-translate-y-1"
                 >
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-[10px] font-mono tracking-widest text-[#00d1ff] uppercase">
-                        {s.tag}
-                      </span>
-                      <span className="text-[9px] font-mono tracking-widest text-stone-400 border border-white/10 px-2 py-0.5 bg-white/5 uppercase">
-                        {s.badge}
-                      </span>
-                    </div>
-
-                    <h3 className="text-base sm:text-lg font-bold font-mono text-white tracking-wide uppercase group-hover:text-[#00d1ff] transition-colors leading-snug">
-                      {s.title}
-                    </h3>
-
-                    <p 
-                      className="text-sm text-stone-400 font-serif leading-relaxed mt-2.5"
-                      style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-                    >
-                      {s.description}
-                    </p>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-[9px] font-mono tracking-widest text-[#00d1ff] uppercase">
+                      {s.tag}
+                    </span>
+                    <span className="text-[8px] font-mono tracking-widest text-stone-400 border border-white/10 px-1.5 py-0.5 bg-white/5 uppercase">
+                      {s.badge}
+                    </span>
                   </div>
 
-                  <div className="pt-4 mt-4 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-stone-400">
+                  <h4 className="text-xs sm:text-[13px] font-bold font-mono text-white tracking-wide uppercase group-hover:text-[#00d1ff] transition-colors leading-snug">
+                    {s.title}
+                  </h4>
+
+                  <p 
+                    className="text-[11px] sm:text-xs text-stone-300 font-serif leading-relaxed mt-1.5"
+                    style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                  >
+                    {s.description}
+                  </p>
+
+                  <div className="pt-2 mt-2 border-t border-white/5 flex items-center justify-between text-[9px] font-mono text-stone-400">
                     <span>{s.meta}</span>
                     <span className="text-stone-400 font-bold group-hover:text-[#00d1ff] transition-colors">
                       {s.id} // 06
@@ -706,43 +704,41 @@ function HomeV5Content() {
               ))}
             </div>
 
-            {/* Coluna Central: Robô Oficial 3D com Cabeça Articulada Responsiva ao Mouse */}
-            <div className="lg:col-span-4 flex flex-col items-center justify-center order-1 lg:order-2 min-h-[460px] lg:min-h-[640px] relative">
+            {/* Coluna Central: Robô Oficial 3D com Cabeça Articulada Responsiva ao Mouse e Busto Fixo */}
+            <div className="lg:col-span-6 flex flex-col items-center justify-center order-1 lg:order-2 min-h-[480px] lg:min-h-[640px] relative">
               <div className="w-full h-full flex items-center justify-center relative">
-                <RobotServicesViewer height={620} className="w-full" />
+                <RobotServicesViewer height={640} className="w-full" />
               </div>
             </div>
 
-            {/* Coluna Direita: 3 Cards Flutuantes */}
-            <div className="lg:col-span-4 flex flex-col gap-5 order-3">
+            {/* Coluna Direita: 3 Cards Menores Flutuantes */}
+            <div className="lg:col-span-3 flex flex-col gap-3.5 order-3">
               {SERVICES_V5.slice(3, 6).map((s) => (
                 <div
                   key={s.id}
-                  className="group relative border border-white/10 bg-[#0a0a0c]/85 backdrop-blur-md p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 hover:border-[#00d1ff]/60 hover:shadow-[0_0_30px_rgba(0,209,255,0.08)] hover:-translate-y-1"
+                  className="group relative border border-white/10 bg-[#070709]/85 backdrop-blur-md p-3.5 sm:p-4 transition-all duration-300 hover:border-[#00d1ff]/50 hover:shadow-[0_0_25px_rgba(0,209,255,0.08)] hover:-translate-y-1"
                 >
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-[10px] font-mono tracking-widest text-[#00d1ff] uppercase">
-                        {s.tag}
-                      </span>
-                      <span className="text-[9px] font-mono tracking-widest text-stone-400 border border-white/10 px-2 py-0.5 bg-white/5 uppercase">
-                        {s.badge}
-                      </span>
-                    </div>
-
-                    <h3 className="text-base sm:text-lg font-bold font-mono text-white tracking-wide uppercase group-hover:text-[#00d1ff] transition-colors leading-snug">
-                      {s.title}
-                    </h3>
-
-                    <p 
-                      className="text-sm text-stone-400 font-serif leading-relaxed mt-2.5"
-                      style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-                    >
-                      {s.description}
-                    </p>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-[9px] font-mono tracking-widest text-[#00d1ff] uppercase">
+                      {s.tag}
+                    </span>
+                    <span className="text-[8px] font-mono tracking-widest text-stone-400 border border-white/10 px-1.5 py-0.5 bg-white/5 uppercase">
+                      {s.badge}
+                    </span>
                   </div>
 
-                  <div className="pt-4 mt-4 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-stone-400">
+                  <h4 className="text-xs sm:text-[13px] font-bold font-mono text-white tracking-wide uppercase group-hover:text-[#00d1ff] transition-colors leading-snug">
+                    {s.title}
+                  </h4>
+
+                  <p 
+                    className="text-[11px] sm:text-xs text-stone-300 font-serif leading-relaxed mt-1.5"
+                    style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+                  >
+                    {s.description}
+                  </p>
+
+                  <div className="pt-2 mt-2 border-t border-white/5 flex items-center justify-between text-[9px] font-mono text-stone-400">
                     <span>{s.meta}</span>
                     <span className="text-stone-400 font-bold group-hover:text-[#00d1ff] transition-colors">
                       {s.id} // 06

@@ -183,9 +183,9 @@ function ModelLoader({ roughness, metalness, modelColor, autoRotate, autoRotateS
     }
 
     const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
-    // Busto grande e imponente no Hero conforme solicitado pelo usuário
-    const baseHeroScale = isRobot ? (isMobile ? 2.4 : 2.85) : (isMobile ? 3.5 : 4.2);
-    const baseHeroY = isRobot ? (isMobile ? -0.28 : -0.38) : (isMobile ? -0.42 : -0.52);
+    // Robô grande e imponente no Hero em cinzas e pretos
+    const baseHeroScale = isRobot ? (isMobile ? 3.2 : 3.85) : (isMobile ? 3.5 : 4.2);
+    const baseHeroY = isRobot ? (isMobile ? -0.32 : -0.44) : (isMobile ? -0.42 : -0.52);
     const scroll = scrollY || 0;
 
     let targetScale = isClean ? 3.6 : baseHeroScale;

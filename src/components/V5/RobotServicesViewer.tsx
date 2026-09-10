@@ -33,8 +33,8 @@ export default function RobotServicesViewer({ className = '', height = 620 }: Ro
     renderer.toneMappingExposure = 1.35;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
-    camera.position.set(0, 0.05, 3.8);
+    const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
+    camera.position.set(0, 0.05, 4.35);
 
     // Iluminação cinematográfica monocromática com acento em Ciano
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x050505, 2.2);
@@ -85,9 +85,10 @@ export default function RobotServicesViewer({ className = '', height = 620 }: Ro
         const size = box.getSize(new THREE.Vector3());
 
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 2.5 / (maxDim || 1);
+        // Escala calibrada com folga para não cortar topo da cabeça nem a base
+        const scale = 2.05 / (maxDim || 1);
         robotGroup.scale.set(scale, scale, scale);
-        robotGroup.position.set(0, -0.22, 0);
+        robotGroup.position.set(0, -0.42, 0);
 
         rawModel.traverse((child) => {
           if ((child as THREE.Mesh).isMesh) {
@@ -137,6 +138,7 @@ export default function RobotServicesViewer({ className = '', height = 620 }: Ro
         headPivot.add(eyeLightL);
         headPivot.add(eyeLightR);
 
+        // Busto/tronco fica fixo e imóvel no centro
         robotGroup.add(chestGroup);
         robotGroup.add(headPivot);
 
@@ -168,9 +170,9 @@ export default function RobotServicesViewer({ className = '', height = 620 }: Ro
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
 
-      // Movimento dinâmico da cabeça: ampla rotação para olhar cards da esquerda ou da direita
-      targetHeadRotY = mouseX * 0.75;
-      targetHeadRotX = mouseY * 0.45;
+      // Apenas a cabeça se move acompanhando dinamicamente o mouse
+      targetHeadRotY = mouseX * 0.70;
+      targetHeadRotX = mouseY * 0.38;
 
       currentHeadRotY += (targetHeadRotY - currentHeadRotY) * 0.07;
       currentHeadRotX += (targetHeadRotX - currentHeadRotX) * 0.07;
@@ -178,15 +180,15 @@ export default function RobotServicesViewer({ className = '', height = 620 }: Ro
       if (headPivotRef) {
         headPivotRef.rotation.y = currentHeadRotY;
         headPivotRef.rotation.x = currentHeadRotX;
-        headPivotRef.rotation.z = -currentHeadRotY * 0.15; // Inclinação orgânica natural
+        headPivotRef.rotation.z = -currentHeadRotY * 0.12; // Leve inclinação orgânica natural da cabeça
       }
 
-      // Respiração suave do corpo do robô
-      const time = performance.now() * 0.002;
-      robotGroup.position.y = -0.22 + Math.sin(time) * 0.03;
-      robotGroup.rotation.y = mouseX * 0.12;
+      // O Busto permanece rigorosamente fixo no centro (sem balanço do corpo)
+      robotGroup.position.set(0, -0.42, 0);
+      robotGroup.rotation.set(0, 0, 0);
 
       // Pulso neon nos olhos
+      const time = performance.now() * 0.002;
       const pulse = 2.4 + Math.sin(time * 2.5) * 0.8;
       eyeLightL.intensity = pulse;
       eyeLightR.intensity = pulse;
