@@ -208,7 +208,7 @@ export function HomeV6() {
   };
 
   return (
-    <main className="overflow-clip bg-background text-foreground">
+    <main className="relative overflow-x-hidden bg-background text-foreground">
       <VerticalNav />
       <div className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/90 backdrop-blur-md xl:hidden">
         <div className="flex h-9 items-center justify-center border-b border-border px-4 font-mono text-[9px] uppercase tracking-[0.14em] md:text-[10px]">

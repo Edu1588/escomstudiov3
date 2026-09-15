@@ -98,7 +98,7 @@ function Scene({ color, progressRef }: { color: string, progressRef: React.Mutab
 export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string }) {
   const triggerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef(0);
+  const progressRef = useRef(-0.2);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -108,81 +108,99 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
   useEffect(() => {
     if (!mounted || typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
-    
+
     const trigger = triggerRef.current;
     if (!trigger) return;
     const section = trigger.closest("section");
     if (!section) return;
 
     const container = containerRef.current;
-    const nextSection = section.nextElementSibling as HTMLElement;
+    if (!container) return;
+
+    // Elementos da seção que devem fazer fade-out durante o pin
+    const contentElements = Array.from(section.children).filter(
+      (child) => child !== trigger && child !== container
+    );
 
     let ctx = gsap.context(() => {
-      const scrollDist = window.innerHeight * 0.8;
+      const scrollDistance = window.innerHeight * 0.9;
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: "bottom bottom",
-          end: () => "+=" + scrollDist, 
+          end: () => "+=" + scrollDistance,
           pin: true,
-          pinSpacing: false, 
-          scrub: 1,
-        }
+          pinSpacing: true,
+          scrub: 0.6,
+          anticipatePin: 1,
+          onEnter: () => {
+            if (container) container.style.opacity = "1";
+          },
+          onLeave: () => {
+            if (container) container.style.opacity = "0";
+          },
+          onEnterBack: () => {
+            if (container) container.style.opacity = "1";
+          },
+          onLeaveBack: () => {
+            if (container) container.style.opacity = "0";
+          },
+        },
       });
 
-      tl.set(container, { opacity: 1 }, 0);
-
-      if (nextSection) {
-        // Congela a proxima secao perfeitamente no lugar, anulando o scroll
-        tl.fromTo(nextSection, 
-          { y: () => -scrollDist }, 
-          { y: 0, ease: "none", duration: 1 }, 
-          0
-        );
-        // Garante que o conteudo esta invisivel enquanto os pixels cobrem a tela
-        tl.set(nextSection, { opacity: 0 }, 0);
-      }
-
-      // FASE 1: (0 a 0.5) Pixels crescem ate formar uma cor solida
-      tl.fromTo(progressRef, 
-        { current: -0.2 }, 
-        { current: 1.4, duration: 0.5, ease: "none" }, 
+      // 1. O conteúdo da seção atual desvanece
+      tl.to(
+        contentElements,
+        {
+          opacity: 0,
+          y: -40,
+          duration: 0.45,
+          ease: "power2.inOut",
+        },
         0
       );
 
-      // FASE 2: (0.5 a 1.0) Sem segunda transicao de pixels (nao encolhem).
-      // Apenas revelamos (fade in) a nova secao em cima da cor solida.
-      if (nextSection) {
-        tl.to(nextSection, { opacity: 1, duration: 0.5, ease: "power2.inOut" }, 0.5);
-      }
-      
-      // No final do scroll, escondemos o canvas, pois a nova secao ja esta la
-      tl.set(container, { opacity: 0 }, 1.0);
+      // 2. Os blocos de pixels crescem até cobrir 100% da tela com nextColor
+      tl.fromTo(
+        progressRef,
+        { current: -0.2 },
+        {
+          current: 1.4,
+          duration: 0.85,
+          ease: "none",
+        },
+        0.05
+      );
     });
 
     return () => {
       ctx.revert();
-      if (nextSection) {
-        gsap.set(nextSection, { clearProps: "y,opacity" });
+      if (contentElements.length) {
+        gsap.set(contentElements, { clearProps: "opacity,transform" });
       }
     };
-  }, [mounted]);
+  }, [mounted, nextColor]);
 
   return (
     <>
       <div ref={triggerRef} className="absolute bottom-0 w-full h-1 pointer-events-none" />
-      {mounted && createPortal(
-        <div 
-           ref={containerRef} 
-           className="fixed inset-0 z-[9999] pointer-events-none opacity-0"
-        >
-          <Canvas camera={{ position: [0, 0, 1] }} gl={{ alpha: true, antialias: false }} resize={{ scroll: false }}>
-            <Scene color={nextColor} progressRef={progressRef} />
-          </Canvas>
-        </div>,
-        document.body
-      )}
+      {mounted &&
+        createPortal(
+          <div
+            ref={containerRef}
+            className="fixed inset-0 z-40 pointer-events-none opacity-0 transition-opacity duration-200"
+          >
+            <Canvas
+              camera={{ position: [0, 0, 1] }}
+              gl={{ alpha: true, antialias: false }}
+              resize={{ scroll: false }}
+            >
+              <Scene color={nextColor} progressRef={progressRef} />
+            </Canvas>
+          </div>,
+          document.body
+        )}
     </>
   );
 }
