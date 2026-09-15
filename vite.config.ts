@@ -43,6 +43,14 @@ export default defineConfig(({mode}) => {
               '/home5/': 'home5/index.html',
               '/home5.html': 'home5/index.html',
               '/home5/index.html': 'home5/index.html',
+              '/home-v6': 'home-v6/index.html',
+              '/home-v6/': 'home-v6/index.html',
+              '/home-v6.html': 'home-v6/index.html',
+              '/home-v6/index.html': 'home-v6/index.html',
+              '/home6': 'home-v6/index.html',
+              '/home6/': 'home-v6/index.html',
+              '/home6.html': 'home-v6/index.html',
+              '/home6/index.html': 'home-v6/index.html',
             };
 
             if (url && routeMap[url]) {
@@ -82,6 +90,7 @@ export default defineConfig(({mode}) => {
           homev4: path.resolve(__dirname, 'home-v4/index.html'),
           homev5: path.resolve(__dirname, 'home-v5/index.html'),
           home5: path.resolve(__dirname, 'home5/index.html'),
+          homev6: path.resolve(__dirname, 'home-v6/index.html'),
         },
       },
     },

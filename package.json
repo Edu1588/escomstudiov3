@@ -9,13 +9,15 @@
     "start": "node dist/server.cjs",
     "preview": "vite preview",
     "clean": "rm -rf dist",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "buscar-leads": "tsx scripts/buscar-leads.ts"
   },
   "dependencies": {
     "@dotlottie/react-player": "^1.6.19",
     "@google/genai": "^1.29.0",
     "@google/stitch-sdk": "^0.3.5",
     "@inspira-ui/plugins": "^0.0.2",
+    "@radix-ui/react-accordion": "^1.2.20",
     "@radix-ui/react-slot": "^1.2.4",
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",

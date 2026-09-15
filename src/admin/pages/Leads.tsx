@@ -270,13 +270,15 @@ export default function Leads() {
         })
       });
       const data = await res.json();
-      if (data.success || data.deployedUrl) {
-        alert(`Site para ${lead.nome} gerado com sucesso!\nURL: ${data.deployedUrl || 'https://escom-studio.vercel.app/template-ci-odontologia/index.html'}`);
+      if (data.success || data.deployedUrl || data.projectId) {
+        const url = data.deployedUrl || `/api/site-preview/${data.projectId}`;
+        notify(`Site gerado para ${lead.nome}!`);
+        window.open(url, "_blank");
       } else {
-        window.open("/template-ci-odontologia/index.html", "_blank");
+        notify("Erro ao gerar site. Tente novamente.", "error");
       }
     } catch (err) {
-      window.open("/template-ci-odontologia/index.html", "_blank");
+      notify("Erro ao gerar site. Tente novamente.", "error");
     } finally {
       setGeneratingSiteId(null);
     }

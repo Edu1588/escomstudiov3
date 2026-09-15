@@ -124,16 +124,29 @@ export default function Prospect() {
   const handleGerarProposta = async (lead: any) => {
     setGerandoPropostaId(lead.id);
     try {
-      const res = await fetch("/api/gerar-proposta", {
+      const res = await fetch("/api/build-and-deploy-site", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ leadId: lead.id })
+        body: JSON.stringify({
+          companyName: lead.nome || lead.title || lead.companyName,
+          niche:       lead.categoria || lead.nicho || lead.niche,
+          phone:       lead.telefone || lead.phone,
+          address:     lead.endereco || lead.address,
+          website:     lead.website  || lead.siteUrl || "",
+          city:        lead.cidade   || lead.city,
+        })
       });
-      if (!res.ok) throw new Error("Falha ao acionar o n8n");
-      showToast(`Proposta em geração para ${lead.nome}! Site-amostra e PDF ficam prontos em instantes.`);
+      const data = await res.json();
+      if (data.success || data.deployedUrl) {
+        showToast(`Site gerado para ${lead.nome || lead.title}!`);
+        const url = data.deployedUrl || `/api/site-preview/${data.projectId}`;
+        window.open(url, "_blank");
+      } else {
+        throw new Error(data.error || "Falha na geração");
+      }
       await fetchCrmLeads();
     } catch (err) {
-      showToast("Erro ao gerar proposta. Verifique se o Workflow B do n8n está ativo.", "erro");
+      showToast("Erro ao gerar proposta. Tente novamente.", "erro");
     } finally {
       setGerandoPropostaId(null);
     }

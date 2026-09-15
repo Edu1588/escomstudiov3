@@ -757,8 +757,15 @@ async function sbFetch(path: string, options: any = {}) {
 
 app.get("/api/leads", async (req, res) => {
   try {
-    const leads = await sbFetch("/leads?select=*&order=criado_em.desc");
-    res.json({ success: true, leads: leads || [] });
+    const rows = await sbFetch("/leads?select=*&order=criado_em.desc");
+    const leads = (rows || []).map((r: any) => ({
+      ...r,
+      score:        r.score_oportunidade ?? r.score ?? 0,
+      reviewsCount: r.reviews_count      ?? r.reviewsCount ?? 0,
+      temSite:      r.tem_site           ?? r.temSite ?? false,
+      siteUrl:      r.website            ?? r.siteUrl ?? "",
+    }));
+    res.json({ success: true, leads });
   } catch(e: any) { res.status(500).json({ error: e.message }); }
 });
 
@@ -1664,6 +1671,17 @@ app.post("/api/build-and-deploy-site", async (req, res) => {
 
     res.json({ success: true, projectId: pid, deployedUrl, status: siteRecord.status });
   } catch(e) { res.status(500).json({ success: false, error: e.message }); }
+});
+
+app.get("/api/site-preview/:projectId", async (req, res) => {
+  try {
+    await ensureAuth();
+    const snap = await getDoc(doc(db, "generated_sites", req.params.projectId));
+    if (!snap.exists()) return res.status(404).send("<h1>Site não encontrado</h1>");
+    const html = snap.data().htmlContent || "<h1>Sem conteúdo</h1>";
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.send(html);
+  } catch(e: any) { res.status(500).send("<h1>Erro: " + e.message + "</h1>"); }
 });
 
 app.post("/api/approve-site", async (req, res) => {
