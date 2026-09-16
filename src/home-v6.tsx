@@ -264,7 +264,7 @@ export function HomeV6() {
 
       <section
         id="top"
-        className="relative min-h-[92vh] border-b border-border pt-25 dark bg-background text-foreground"
+        className="relative min-h-screen flex flex-col justify-between border-b border-border pt-20 dark bg-background text-foreground"
       >
         <img
           src={heroImage}
@@ -274,7 +274,7 @@ export function HomeV6() {
           className="absolute inset-0 h-full w-full object-cover object-[62%_center]"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/75 to-transparent" />
-        <div className="relative flex min-h-[calc(92vh-6.25rem)] flex-col justify-between px-5 py-8 md:px-12 xl:px-[22vw] md:py-12">
+        <div className="relative flex min-h-[calc(100vh-5rem)] flex-1 flex-col justify-between px-5 py-8 md:px-12 xl:px-[22vw] md:py-12">
           <Eyebrow>ESCOM STUDIO · DIGITAL GROWTH SYSTEMS</Eyebrow>
           <div className="max-w-4xl py-16">
             <SplitTextReveal type="words" className="max-w-3xl font-serif text-5xl leading-[0.95] font-light md:text-7xl lg:text-[5.5rem]">
@@ -308,7 +308,7 @@ export function HomeV6() {
           <ChunkyTransition nextColor="#ECECE3" />
       </section>
 
-      <section className="relative px-5 py-28 text-foreground md:px-12 xl:px-[22vw] md:py-40 bg-background text-foreground">
+      <section className="relative min-h-screen flex flex-col justify-center px-5 py-28 text-foreground md:px-12 xl:px-[22vw] md:py-40 bg-background text-foreground">
         
         <Eyebrow light>O crescimento não acontece em partes isoladas</Eyebrow>
         <h2 className="mt-16 max-w-6xl font-serif text-5xl leading-[0.98] font-light md:text-7xl">

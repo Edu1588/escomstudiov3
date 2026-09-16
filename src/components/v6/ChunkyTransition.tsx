@@ -117,13 +117,15 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
     const container = containerRef.current;
     if (!container) return;
 
-    // Elementos da seção que devem fazer fade-out durante o pin
+    const nextSection = section.nextElementSibling as HTMLElement | null;
+
+    // Elementos da seção atual para fade out
     const contentElements = Array.from(section.children).filter(
       (child) => child !== trigger && child !== container
     );
 
     let ctx = gsap.context(() => {
-      const scrollDistance = window.innerHeight * 0.9;
+      const scrollDistance = window.innerHeight * 1.0;
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -131,8 +133,8 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
           start: "bottom bottom",
           end: () => "+=" + scrollDistance,
           pin: true,
-          pinSpacing: true,
-          scrub: 0.6,
+          pinSpacing: false,
+          scrub: 0.8,
           anticipatePin: 1,
           onEnter: () => {
             if (container) container.style.opacity = "1";
@@ -149,28 +151,52 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
         },
       });
 
-      // 1. O conteúdo da seção atual desvanece
+      // FASE 1 (0% a 50%):
+      // - Conteúdo da seção atual desvanece
+      // - Pixels da nova cor crescem e cobrem 100% da tela
       tl.to(
         contentElements,
         {
           opacity: 0,
-          y: -40,
-          duration: 0.45,
+          y: -50,
+          duration: 0.4,
           ease: "power2.inOut",
         },
         0
       );
 
-      // 2. Os blocos de pixels crescem até cobrir 100% da tela com nextColor
       tl.fromTo(
         progressRef,
         { current: -0.2 },
         {
           current: 1.4,
-          duration: 0.85,
+          duration: 0.5,
           ease: "none",
         },
-        0.05
+        0
+      );
+
+      // Garante que a próxima seção não vaze antes da tela estar coberta por pixels
+      if (nextSection) {
+        tl.fromTo(
+          nextSection,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.25, ease: "power1.inOut" },
+          0.45
+        );
+      }
+
+      // FASE 2 (50% a 100%):
+      // - A próxima seção já está assentada na viewport
+      // - Os pixels se dissolvem (1.4 -> -0.2), revelando o conteúdo da próxima seção
+      tl.to(
+        progressRef,
+        {
+          current: -0.2,
+          duration: 0.5,
+          ease: "none",
+        },
+        0.5
       );
     });
 
@@ -178,6 +204,9 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
       ctx.revert();
       if (contentElements.length) {
         gsap.set(contentElements, { clearProps: "opacity,transform" });
+      }
+      if (nextSection) {
+        gsap.set(nextSection, { clearProps: "opacity" });
       }
     };
   }, [mounted, nextColor]);
