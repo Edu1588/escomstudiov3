@@ -58,9 +58,7 @@ const fragmentShader = `
       }
     }
     
-    // Quando a transição de pixel atinge o ponto, dá discard no preto,
-    // revelando diretamente o conteúdo da próxima seção que está logo abaixo!
-    if (showB) {
+    if (!showB) {
       discard;
     }
     
@@ -144,28 +142,41 @@ export function HeroManifestoStage({
         },
       });
 
-      // 1. O conteúdo textual do Hero desvanece suavemente no início (0.00 a 0.20)
+      // 1. O Hero começa 100% visível e faz fade-out suave ao rolar (0.00 a 0.40)
       tl.to(
         hero,
         {
           opacity: 0,
-          duration: 0.2,
+          y: -30,
+          duration: 0.4,
           ease: "power1.inOut",
         },
         0
       );
 
-      // 2. Um ÚNICO fluxo de pixel: a máscara preta abre do centro para as bordas (0.15 a 1.00)
-      // Revelando DIRETAMENTE a cor clara com o conteúdo do Manifesto já dentro!
+      // 2. Os pixels da cor clara (#ECECE3) crescem do centro e tomam a tela em 1 fluxo contínuo (0.05 a 0.85)
       tl.fromTo(
         progressRef,
         { current: -0.2 },
         {
           current: 1.4,
-          duration: 0.85,
+          duration: 0.8,
           ease: "none",
         },
-        0.15
+        0.05
+      );
+
+      // 3. A cor clara que entra JÁ TRAZ o conteúdo da Seção 2, que emerge simultaneamente no lugar fixo!
+      tl.fromTo(
+        manifesto,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          ease: "power2.out",
+        },
+        0.25
       );
     }, stage);
 
@@ -181,10 +192,10 @@ export function HeroManifestoStage({
         ref={screenRef}
         className="relative h-screen w-full overflow-hidden bg-[#000000]"
       >
-        {/* CAMADA 1: MANIFESTO (Z-10, Fundo claro com o conteúdo já renderizado e visível por baixo) */}
+        {/* CAMADA 1: MANIFESTO (Z-10, Fundo claro com o conteúdo que emerge junto com os pixels) */}
         <section
           ref={manifestoContentRef}
-          className="absolute inset-0 z-10 flex flex-col justify-center px-5 py-12 text-foreground md:px-12 xl:px-[22vw] bg-[#ecece3] text-[#000000]"
+          className="absolute inset-0 z-10 flex flex-col justify-center px-5 py-12 text-foreground md:px-12 xl:px-[22vw] bg-[#ecece3] text-[#000000] opacity-0"
         >
           <Eyebrow light>O crescimento não acontece em partes isoladas</Eyebrow>
           <h2 className="mt-12 max-w-6xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl">
@@ -205,7 +216,7 @@ export function HeroManifestoStage({
           </div>
         </section>
 
-        {/* CAMADA 2: HERO (Z-20, Fundo escuro com imagem e textos) */}
+        {/* CAMADA 2: HERO (Z-20, Fundo escuro com imagem e textos - 100% visível no topo) */}
         <section
           id="top"
           ref={heroContentRef}
@@ -255,7 +266,7 @@ export function HeroManifestoStage({
           </div>
         </section>
 
-        {/* CAMADA 3: THREE.JS PIXEL SHADER CANVAS (Z-30, Shader de pixels pretos que se dissolvem revelando o manifesto) */}
+        {/* CAMADA 3: THREE.JS PIXEL SHADER CANVAS (Z-30, Shader de pixels claros que brotam do centro cobrindo o Hero) */}
         {mounted && (
           <div
             ref={pixelLayerRef}
@@ -266,7 +277,7 @@ export function HeroManifestoStage({
               gl={{ alpha: true, antialias: false }}
               resize={{ scroll: false }}
             >
-              <Scene color="#000000" progressRef={progressRef} />
+              <Scene color="#ecece3" progressRef={progressRef} />
             </Canvas>
           </div>
         )}
