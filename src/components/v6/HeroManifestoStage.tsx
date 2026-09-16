@@ -58,7 +58,9 @@ const fragmentShader = `
       }
     }
     
-    if (!showB) {
+    // Quando a transição de pixel atinge o ponto, dá discard no preto,
+    // revelando diretamente o conteúdo da próxima seção que está logo abaixo!
+    if (showB) {
       discard;
     }
     
@@ -134,64 +136,36 @@ export function HeroManifestoStage({
         scrollTrigger: {
           trigger: stage,
           start: "top top",
-          end: "+=160%",
+          end: "+=120%",
           pin: screen,
           pinSpacing: true,
-          scrub: 0.8,
+          scrub: 0.7,
           anticipatePin: 1,
         },
       });
 
-      // 1. Hero fade-out (0.00 a 0.35)
+      // 1. O conteúdo textual do Hero desvanece suavemente no início (0.00 a 0.20)
       tl.to(
         hero,
         {
           opacity: 0,
-          y: -40,
-          duration: 0.35,
-          ease: "power2.inOut",
+          duration: 0.2,
+          ease: "power1.inOut",
         },
         0
       );
 
-      // 2. Pixels crescem de -0.2 até 1.4 (0.05 a 0.50) cobrindo 100% da tela com bege (#ECECE3)
+      // 2. Um ÚNICO fluxo de pixel: a máscara preta abre do centro para as bordas (0.15 a 1.00)
+      // Revelando DIRETAMENTE a cor clara com o conteúdo do Manifesto já dentro!
       tl.fromTo(
         progressRef,
         { current: -0.2 },
         {
           current: 1.4,
-          duration: 0.45,
+          duration: 0.85,
           ease: "none",
         },
-        0.05
-      );
-
-      // 3. Em 0.50: A tela está 100% bege sólida.
-      // Ativamos a visibilidade do manifesto por baixo dos pixels
-      tl.set(manifesto, { pointerEvents: "auto" }, 0.5);
-
-      // 4. Pixels dissolvem de 1.4 para -0.2 (0.50 a 0.95)
-      tl.to(
-        progressRef,
-        {
-          current: -0.2,
-          duration: 0.45,
-          ease: "none",
-        },
-        0.5
-      );
-
-      // 5. O conteúdo do Manifesto aparece no lugar com fade-in suave e subida elegante (0.50 a 0.85)
-      tl.fromTo(
-        manifesto,
-        { opacity: 0, y: 35 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.35,
-          ease: "power2.out",
-        },
-        0.5
+        0.15
       );
     }, stage);
 
@@ -207,11 +181,35 @@ export function HeroManifestoStage({
         ref={screenRef}
         className="relative h-screen w-full overflow-hidden bg-[#000000]"
       >
-        {/* CAMADA 1: HERO (Dark, fundo preto, imagem com esfera azul e tipografia) */}
+        {/* CAMADA 1: MANIFESTO (Z-10, Fundo claro com o conteúdo já renderizado e visível por baixo) */}
+        <section
+          ref={manifestoContentRef}
+          className="absolute inset-0 z-10 flex flex-col justify-center px-5 py-12 text-foreground md:px-12 xl:px-[22vw] bg-[#ecece3] text-[#000000]"
+        >
+          <Eyebrow light>O crescimento não acontece em partes isoladas</Eyebrow>
+          <h2 className="mt-12 max-w-6xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl">
+            Um site desconectado. Uma marca sem direção. Tráfego sem estratégia.
+            Automação sem contexto.
+          </h2>
+          <div className="mt-14 grid gap-8 border-t border-border/30 pt-8 md:grid-cols-12">
+            <p className="md:col-span-5 md:col-start-7 text-base leading-7 md:text-lg md:leading-8">
+              Muitas empresas investem em canais, ferramentas e campanhas que não
+              conversam entre si. O resultado é uma operação difícil de medir,
+              leads perdidos e uma presença digital que não acompanha a ambição
+              do negócio.
+            </p>
+            <p className="font-serif text-2xl md:col-span-6 md:col-start-7 md:text-3xl">
+              A ESCOM organiza as partes para que o sistema inteiro trabalhe a
+              favor do crescimento.
+            </p>
+          </div>
+        </section>
+
+        {/* CAMADA 2: HERO (Z-20, Fundo escuro com imagem e textos) */}
         <section
           id="top"
           ref={heroContentRef}
-          className="absolute inset-0 z-10 flex flex-col justify-between pt-20 dark bg-background text-foreground"
+          className="absolute inset-0 z-20 flex flex-col justify-between pt-20 dark bg-background text-foreground"
         >
           <img
             src={heroImage}
@@ -257,31 +255,7 @@ export function HeroManifestoStage({
           </div>
         </section>
 
-        {/* CAMADA 2: MANIFESTO (Cream #ECECE3, fundo bege da marca com manifesto editorial) */}
-        <section
-          ref={manifestoContentRef}
-          className="absolute inset-0 z-15 flex flex-col justify-center px-5 py-12 text-foreground md:px-12 xl:px-[22vw] bg-[#ecece3] opacity-0 pointer-events-none"
-        >
-          <Eyebrow light>O crescimento não acontece em partes isoladas</Eyebrow>
-          <h2 className="mt-12 max-w-6xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl">
-            Um site desconectado. Uma marca sem direção. Tráfego sem estratégia.
-            Automação sem contexto.
-          </h2>
-          <div className="mt-14 grid gap-8 border-t border-border/30 pt-8 md:grid-cols-12">
-            <p className="md:col-span-5 md:col-start-7 text-base leading-7 md:text-lg md:leading-8">
-              Muitas empresas investem em canais, ferramentas e campanhas que não
-              conversam entre si. O resultado é uma operação difícil de medir,
-              leads perdidos e uma presença digital que não acompanha a ambição
-              do negócio.
-            </p>
-            <p className="font-serif text-2xl md:col-span-6 md:col-start-7 md:text-3xl">
-              A ESCOM organiza as partes para que o sistema inteiro trabalhe a
-              favor do crescimento.
-            </p>
-          </div>
-        </section>
-
-        {/* CAMADA 3: THREE.JS PIXEL SHADER CANVAS (Fica em z-30 cobrindo e desfazendo entre as duas seções) */}
+        {/* CAMADA 3: THREE.JS PIXEL SHADER CANVAS (Z-30, Shader de pixels pretos que se dissolvem revelando o manifesto) */}
         {mounted && (
           <div
             ref={pixelLayerRef}
@@ -292,7 +266,7 @@ export function HeroManifestoStage({
               gl={{ alpha: true, antialias: false }}
               resize={{ scroll: false }}
             >
-              <Scene color="#ecece3" progressRef={progressRef} />
+              <Scene color="#000000" progressRef={progressRef} />
             </Canvas>
           </div>
         )}
