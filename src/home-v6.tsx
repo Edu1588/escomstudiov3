@@ -7,6 +7,7 @@ import { VerticalNav } from "@/components/v6/VerticalNav";
 import { ChunkyTransition } from "@/components/v6/ChunkyTransition";
 import { SplitTextReveal } from "@/components/v6/SplitTextReveal";
 import { LenisProvider } from "@/components/v6/LenisProvider";
+import { HeroManifestoStage } from "@/components/v6/HeroManifestoStage";
 
 import {
   Accordion,
@@ -262,73 +263,7 @@ export function HomeV6() {
         )}
       </div>
 
-      <section
-        id="top"
-        className="relative min-h-screen flex flex-col justify-between border-b border-border pt-20 dark bg-background text-foreground"
-      >
-        <img
-          src={heroImage}
-          alt="Diretor criativo observa uma esfera azul, símbolo de um sistema digital em evolução"
-          width={1536}
-          height={1024}
-          className="absolute inset-0 h-full w-full object-cover object-[62%_center]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/75 to-transparent" />
-        <div className="relative flex min-h-[calc(100vh-5rem)] flex-1 flex-col justify-between px-5 py-8 md:px-12 xl:px-[22vw] md:py-12">
-          <Eyebrow>ESCOM STUDIO · DIGITAL GROWTH SYSTEMS</Eyebrow>
-          <div className="max-w-4xl py-16">
-            <SplitTextReveal type="words" className="max-w-3xl font-serif text-5xl leading-[0.95] font-light md:text-7xl lg:text-[5.5rem]">
-              Transformamos presença digital em sistemas que geram crescimento.
-            </SplitTextReveal>
-            <p className="mt-7 max-w-2xl text-sm leading-6 md:text-base">
-              Criamos sites, marcas, automações, experiências com inteligência
-              artificial e operações de tráfego pago para empresas que precisam
-              atrair melhor, vender mais e operar com menos fricção.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <AnchorButton>Iniciar diagnóstico</AnchorButton>
-              <Button asChild variant="editorialOutline" size="xl">
-                <a href="#solucoes">
-                  Explorar soluções
-                  <ArrowDown />
-                </a>
-              </Button>
-            </div>
-            <p className="mt-5 max-w-xl text-xs leading-5 text-muted-foreground">
-              Conte-nos onde você está e onde quer chegar. Identificamos as
-              oportunidades mais importantes para o seu próximo ciclo.
-            </p>
-          </div>
-          <div className="flex flex-wrap justify-between gap-3 border-t border-border pt-4 font-mono text-[9px] uppercase tracking-[0.12em]">
-            <span>Strategy // Design // Code // Automation // Media</span>
-            <span>System status: ready</span>
-            <span>Built for conversion</span>
-          </div>
-        </div>
-          <ChunkyTransition nextColor="#ECECE3" />
-      </section>
-
-      <section className="relative min-h-screen flex flex-col justify-center px-5 py-28 text-foreground md:px-12 xl:px-[22vw] md:py-40 bg-background text-foreground">
-        
-        <Eyebrow light>O crescimento não acontece em partes isoladas</Eyebrow>
-        <h2 className="mt-16 max-w-6xl font-serif text-5xl leading-[0.98] font-light md:text-7xl">
-          Um site desconectado. Uma marca sem direção. Tráfego sem estratégia.
-          Automação sem contexto.
-        </h2>
-        <div className="mt-20 grid gap-10 border-t border-border pt-8 md:grid-cols-12">
-          <p className="md:col-span-5 md:col-start-7 text-lg leading-8">
-            Muitas empresas investem em canais, ferramentas e campanhas que não
-            conversam entre si. O resultado é uma operação difícil de medir,
-            leads perdidos e uma presença digital que não acompanha a ambição do
-            negócio.
-          </p>
-          <p className="font-serif text-3xl md:col-span-6 md:col-start-7">
-            A ESCOM organiza as partes para que o sistema inteiro trabalhe a
-            favor do crescimento.
-          </p>
-        </div>
-          <ChunkyTransition nextColor="#000000" />
-      </section>
+      <HeroManifestoStage Eyebrow={Eyebrow} AnchorButton={AnchorButton} />
       <section
         id="solucoes"
         className="relative bg-background px-5 py-28 md:px-12 xl:px-[22vw] md:py-36 dark bg-background text-foreground"
