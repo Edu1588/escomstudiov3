@@ -161,7 +161,7 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
         contentElements,
         {
           opacity: 0,
-          y: -30,
+          y: -25,
           duration: 0.35,
           ease: "power1.inOut",
         },
@@ -181,9 +181,11 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
         0
       );
 
-      // 3. A próxima seção se posiciona e revela seu conteúdo (0.35 a 0.85)
-      // Ela é mantida fixa anulando o scroll até o final da transição, e o conteúdo faz fade in!
+      // 3. A próxima seção se posiciona na frente do canvas (z-30) e revela seu conteúdo (0.15 a 0.50)
+      // Ela é mantida fixa anulando o scroll até o final da transição, e o conteúdo NÃO fica invisível!
       if (nextSection) {
+        gsap.set(nextSection, { position: "relative", zIndex: 30 });
+
         tl.fromTo(
           nextSection,
           { y: () => -scrollDistance },
@@ -191,13 +193,26 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
           0
         );
 
+        // O conteúdo emerge imediatamente junto com a mudança de cor (0.15 a 0.50)
         tl.fromTo(
           nextSection,
           { opacity: 0 },
-          { opacity: 1, duration: 0.4, ease: "power2.out" },
-          0.35
+          { opacity: 1, duration: 0.35, ease: "power2.out" },
+          0.15
         );
       }
+
+      // 4. Assim que o fundo da nova cor se consolidou (em 0.55), o canvas esconde suavemente
+      // garantindo que a tela nunca fique coberta por um plano sólido vazio
+      tl.to(
+        container,
+        {
+          opacity: 0,
+          duration: 0.15,
+          ease: "power1.out",
+        },
+        0.55
+      );
     });
 
     return () => {
@@ -206,7 +221,7 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
         gsap.set(contentElements, { clearProps: "opacity,transform" });
       }
       if (nextSection) {
-        gsap.set(nextSection, { clearProps: "y,opacity" });
+        gsap.set(nextSection, { clearProps: "y,opacity,position,zIndex" });
       }
     };
   }, [mounted, nextColor]);
@@ -218,7 +233,7 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
         createPortal(
           <div
             ref={containerRef}
-            className="fixed inset-0 z-40 pointer-events-none opacity-0 transition-opacity duration-200"
+            className="fixed inset-0 z-20 pointer-events-none opacity-0 transition-opacity duration-200"
           >
             <Canvas
               camera={{ position: [0, 0, 1] }}
