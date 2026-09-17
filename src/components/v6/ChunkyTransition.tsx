@@ -130,7 +130,7 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
     );
 
     let ctx = gsap.context(() => {
-      const scrollDistance = window.innerHeight * 0.9;
+      const scrollDistance = window.innerHeight;
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -138,62 +138,80 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
           start: "bottom bottom",
           end: () => "+=" + scrollDistance,
           pin: true,
-          pinSpacing: false,
+          pinSpacing: true,
           scrub: 0.7,
           anticipatePin: 1,
           onEnter: () => {
             if (container) container.style.opacity = "1";
+            if (nextSection) {
+              gsap.set(nextSection, {
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                zIndex: 30,
+                opacity: 0,
+              });
+            }
           },
           onLeave: () => {
             if (container) container.style.opacity = "0";
+            if (nextSection) {
+              gsap.set(nextSection, {
+                clearProps: "position,top,left,width,zIndex,opacity",
+              });
+            }
           },
           onEnterBack: () => {
             if (container) container.style.opacity = "1";
+            if (nextSection) {
+              gsap.set(nextSection, {
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                zIndex: 30,
+              });
+            }
           },
           onLeaveBack: () => {
             if (container) container.style.opacity = "0";
+            if (nextSection) {
+              gsap.set(nextSection, {
+                clearProps: "position,top,left,width,zIndex,opacity",
+              });
+            }
           },
         },
       });
 
-      // 1. Elementos da seção atual fazem fade out no início (0.0 a 0.35)
+      // 1. Elementos da seção atual fazem fade out no início (0.0 a 0.30)
       tl.to(
         contentElements,
         {
           opacity: 0,
           y: -25,
-          duration: 0.35,
+          duration: 0.3,
           ease: "power1.inOut",
         },
         0
       );
 
-      // 2. Micro-pixels da nova cor crescem em 1 fluxo direto cobrindo 100% da tela (0.0 a 0.55)
+      // 2. Micro-pixels da nova cor crescem em 1 fluxo direto cobrindo 100% da tela (0.0 a 0.50)
       // Sem segundo fluxo de pixel (não encolhem)!
       tl.fromTo(
         progressRef,
         { current: -0.15 },
         {
           current: 1.35,
-          duration: 0.55,
+          duration: 0.5,
           ease: "none",
         },
         0
       );
 
-      // 3. A próxima seção se posiciona na frente do canvas (z-30) e revela seu conteúdo (0.15 a 0.50)
-      // Ela é mantida fixa anulando o scroll até o final da transição, e o conteúdo NÃO fica invisível!
+      // 3. A próxima seção está FIXADA no topo (top: 0) sem nenhum salto e faz fade in (0.15 a 0.50)
       if (nextSection) {
-        gsap.set(nextSection, { position: "relative", zIndex: 30 });
-
-        tl.fromTo(
-          nextSection,
-          { y: () => -scrollDistance },
-          { y: 0, ease: "none", duration: 1.0 },
-          0
-        );
-
-        // O conteúdo emerge imediatamente junto com a mudança de cor (0.15 a 0.50)
         tl.fromTo(
           nextSection,
           { opacity: 0 },
@@ -203,7 +221,6 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
       }
 
       // 4. Assim que o fundo da nova cor se consolidou (em 0.55), o canvas esconde suavemente
-      // garantindo que a tela nunca fique coberta por um plano sólido vazio
       tl.to(
         container,
         {
@@ -221,7 +238,7 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
         gsap.set(contentElements, { clearProps: "opacity,transform" });
       }
       if (nextSection) {
-        gsap.set(nextSection, { clearProps: "y,opacity,position,zIndex" });
+        gsap.set(nextSection, { clearProps: "position,top,left,width,zIndex,opacity" });
       }
     };
   }, [mounted, nextColor]);
