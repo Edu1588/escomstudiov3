@@ -4,7 +4,6 @@ import { ArrowDown, ArrowRight, Check, Menu, X } from "lucide-react";
 import heroImage from "@/assets/escom-hero.jpg";
 import { Button } from "@/components/ui/button";
 import { VerticalNav } from "@/components/v6/VerticalNav";
-import { ChunkyTransition } from "@/components/v6/ChunkyTransition";
 import { SplitTextReveal } from "@/components/v6/SplitTextReveal";
 import { LenisProvider } from "@/components/v6/LenisProvider";
 import { HeroManifestoStage } from "@/components/v6/HeroManifestoStage";
@@ -268,7 +267,6 @@ export function HomeV6() {
         id="solucoes"
         className="relative bg-background px-5 py-28 md:px-12 xl:px-[22vw] md:py-36 dark bg-background text-foreground"
       >
-        <ChunkyTransition color="#000000" />
         <Eyebrow>Um sistema digital, várias frentes de crescimento</Eyebrow>
         <div className="mt-14 grid gap-8 md:grid-cols-12">
           <h2 className="font-serif text-5xl leading-none md:col-span-8 md:text-7xl">
@@ -312,7 +310,6 @@ export function HomeV6() {
       </section>
 
       <section className="relative px-5 py-28 text-foreground md:px-12 xl:px-[22vw] md:py-40 bg-background text-foreground">
-        <ChunkyTransition color="#ECECE3" />
         <Eyebrow light>Não somos uma fábrica de entregáveis</Eyebrow>
         <h2 className="mt-14 max-w-5xl font-serif text-5xl leading-none md:text-7xl">
           Cada projeto começa pelo problema. E termina em uma estrutura que pode
@@ -448,7 +445,6 @@ export function HomeV6() {
         id="sobre"
         className="relative px-5 py-28 text-foreground md:px-12 xl:px-[22vw] md:py-36 dark bg-background text-foreground"
       >
-        <ChunkyTransition color="#000000" />
         <Eyebrow light>Sobre a ESCOM</Eyebrow>
         <div className="mt-14 grid gap-12 md:grid-cols-12">
           <h2 className="font-serif text-5xl leading-none md:col-span-7 md:text-7xl">
@@ -490,7 +486,6 @@ export function HomeV6() {
         id="insights"
         className="relative bg-background px-5 py-28 md:px-12 xl:px-[22vw] md:py-36"
       >
-        <ChunkyTransition color="#ECECE3" />
         <Eyebrow>Para quem é</Eyebrow>
         <div className="mt-14 grid gap-12 md:grid-cols-12">
           <h2 className="font-serif text-5xl leading-none md:col-span-7 md:text-7xl">
@@ -555,7 +550,6 @@ export function HomeV6() {
         id="diagnostico"
         className="relative px-5 py-28 text-foreground md:px-12 xl:px-[22vw] md:py-36 dark bg-background text-foreground"
       >
-        <ChunkyTransition color="#000000" />
         <Eyebrow light>O próximo sistema começa com uma conversa</Eyebrow>
         <div className="mt-14 grid gap-16 md:grid-cols-12">
           <div className="md:col-span-5">
