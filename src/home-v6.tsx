@@ -268,7 +268,7 @@ export function HomeV6() {
         id="solucoes"
         className="relative bg-background px-5 py-28 md:px-12 xl:px-[22vw] md:py-36 dark bg-background text-foreground"
       >
-        
+        <ChunkyTransition color="#000000" />
         <Eyebrow>Um sistema digital, várias frentes de crescimento</Eyebrow>
         <div className="mt-14 grid gap-8 md:grid-cols-12">
           <h2 className="font-serif text-5xl leading-none md:col-span-8 md:text-7xl">
@@ -309,11 +309,10 @@ export function HomeV6() {
             </article>
           ))}
         </div>
-        <ChunkyTransition nextColor="#ECECE3" />
       </section>
 
       <section className="relative px-5 py-28 text-foreground md:px-12 xl:px-[22vw] md:py-40 bg-background text-foreground">
-        
+        <ChunkyTransition color="#ECECE3" />
         <Eyebrow light>Não somos uma fábrica de entregáveis</Eyebrow>
         <h2 className="mt-14 max-w-5xl font-serif text-5xl leading-none md:text-7xl">
           Cada projeto começa pelo problema. E termina em uma estrutura que pode
@@ -444,13 +443,12 @@ export function HomeV6() {
             </article>
           ))}
         </div>
-          <ChunkyTransition nextColor="#000000" />
       </section>
       <section
         id="sobre"
         className="relative px-5 py-28 text-foreground md:px-12 xl:px-[22vw] md:py-36 dark bg-background text-foreground"
       >
-        
+        <ChunkyTransition color="#000000" />
         <Eyebrow light>Sobre a ESCOM</Eyebrow>
         <div className="mt-14 grid gap-12 md:grid-cols-12">
           <h2 className="font-serif text-5xl leading-none md:col-span-7 md:text-7xl">
@@ -487,13 +485,12 @@ export function HomeV6() {
             </div>
           ))}
         </div>
-        <ChunkyTransition nextColor="#ECECE3" />
       </section>
       <section
         id="insights"
         className="relative bg-background px-5 py-28 md:px-12 xl:px-[22vw] md:py-36"
       >
-        
+        <ChunkyTransition color="#ECECE3" />
         <Eyebrow>Para quem é</Eyebrow>
         <div className="mt-14 grid gap-12 md:grid-cols-12">
           <h2 className="font-serif text-5xl leading-none md:col-span-7 md:text-7xl">
@@ -552,14 +549,13 @@ export function HomeV6() {
             ))}
           </Accordion>
         </div>
-        <ChunkyTransition nextColor="#000000" />
       </section>
 
       <section
         id="diagnostico"
         className="relative px-5 py-28 text-foreground md:px-12 xl:px-[22vw] md:py-36 dark bg-background text-foreground"
       >
-        
+        <ChunkyTransition color="#000000" />
         <Eyebrow light>O próximo sistema começa com uma conversa</Eyebrow>
         <div className="mt-14 grid gap-16 md:grid-cols-12">
           <div className="md:col-span-5">

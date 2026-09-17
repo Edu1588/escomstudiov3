@@ -30,6 +30,12 @@ const fragmentShader = `
   }
   
   void main() {
+    // Se o progresso for <= 0.005 (início/sem scroll), descarta 100% dos fragmentos.
+    // Garante que nenhum pixel pisque no Hero no frame 0.
+    if (uProgress <= 0.005) {
+      discard;
+    }
+
     // Micro-pixels densos: escala para grãos ultra finos (~1.5px a 2px) como na referência
     float pixelsX = clamp(uResolution.x * 0.48, 700.0, 1000.0); 
     float pixelsY = pixelsX * (uResolution.y / uResolution.x);
@@ -47,8 +53,8 @@ const fragmentShader = `
     float shapeDist = mix(boxDist, radialDist, 0.35);
     
     float n = hash(pUv * 876.54);
-    float threshold = shapeDist * 0.72 + n * 0.28;
-    float band = 0.20;
+    float threshold = 0.04 + shapeDist * 0.70 + n * 0.26;
+    float band = 0.18;
     
     bool show = false;
     if (uProgress >= threshold + band) {
@@ -115,7 +121,7 @@ export function HeroManifestoStage({
   const heroRef = useRef<HTMLDivElement>(null);
   const manifestoRef = useRef<HTMLDivElement>(null);
   const pixelLayerRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef(-0.15);
+  const progressRef = useRef(0.0);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -147,29 +153,29 @@ export function HeroManifestoStage({
         },
       });
 
-      // 1. O Hero faz fade out suave enquanto os micro-pixels claros tomam a tela (0.0 a 0.35)
+      // 1. O Hero faz fade out suave enquanto os micro-pixels claros tomam a tela (0.04 a 0.38)
       tl.to(
         hero,
         {
           opacity: 0,
           y: -25,
-          duration: 0.35,
+          duration: 0.34,
           ease: "power1.inOut",
         },
-        0
+        0.04
       );
 
-      // 2. Os micro-pixels WebGL da cor clara (#ECECE3) crescem e cobrem 100% da tela (0.0 a 0.55)
+      // 2. Os micro-pixels WebGL da cor clara (#ECECE3) crescem e cobrem 100% da tela (0.04 a 0.55)
       // Um único fluxo contínuo onde a poeira stardust se expande até a tela ficar clara!
       tl.fromTo(
         progressRef,
-        { current: -0.15 },
+        { current: 0.0 },
         {
           current: 1.35,
-          duration: 0.55,
+          duration: 0.51,
           ease: "none",
         },
-        0
+        0.04
       );
 
       // 3. O conteúdo do Manifesto emerge com revelação óptica de desfoque/blur gradual (conforme a referência)
