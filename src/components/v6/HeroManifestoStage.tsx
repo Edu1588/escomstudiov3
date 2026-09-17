@@ -23,12 +23,15 @@ const fragmentShader = `
   uniform vec2 uResolution;
   uniform float uTime;
   
-  float rand(vec2 n) { 
-    return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
+  float hash(vec2 p) {
+    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.x + p3.y) * p3.z);
   }
   
   void main() {
-    float pixelsX = 220.0; 
+    // Micro-pixels densos: escala para grãos ultra finos (~1.5px a 2px) como na referência
+    float pixelsX = clamp(uResolution.x * 0.48, 700.0, 1000.0); 
     float pixelsY = pixelsX * (uResolution.y / uResolution.x);
     vec2 grid = vec2(pixelsX, pixelsY);
     
@@ -38,27 +41,29 @@ const fragmentShader = `
     aspectUv.x *= uResolution.x / uResolution.y;
     vec2 aspectCenter = vec2(0.5 * (uResolution.x / uResolution.y), 0.5);
     
-    float dist = distance(aspectUv, aspectCenter) / distance(vec2(0.0), aspectCenter);
-    float n = rand(pUv);
+    vec2 dBox = abs(aspectUv - aspectCenter);
+    float boxDist = max(dBox.x / aspectCenter.x, dBox.y / aspectCenter.y);
+    float radialDist = length(dBox) / length(aspectCenter);
+    float shapeDist = mix(boxDist, radialDist, 0.35);
     
-    float threshold = dist * 0.62 + n * 0.38;
+    float n = hash(pUv * 876.54);
+    float threshold = shapeDist * 0.72 + n * 0.28;
+    float band = 0.20;
     
-    float band = 0.08;
-    bool showB = false;
-    
-    if (uProgress > threshold + band) {
-      showB = true;
-    } else if (uProgress < threshold - band) {
-      showB = false;
+    bool show = false;
+    if (uProgress >= threshold + band) {
+      show = true;
+    } else if (uProgress <= threshold - band) {
+      show = false;
     } else {
       float prob = (uProgress - (threshold - band)) / (2.0 * band);
-      float flickerNoise = rand(pUv * 100.0 + uTime * 15.0);
-      if (flickerNoise < prob) {
-        showB = true;
+      float grain = hash(pUv * 1423.17 + fract(uTime * 15.0));
+      if (grain < prob) {
+        show = true;
       }
     }
     
-    if (!showB) {
+    if (!show) {
       discard;
     }
     
@@ -110,7 +115,7 @@ export function HeroManifestoStage({
   const heroRef = useRef<HTMLDivElement>(null);
   const manifestoRef = useRef<HTMLDivElement>(null);
   const pixelLayerRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef(-0.2);
+  const progressRef = useRef(-0.15);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -134,7 +139,7 @@ export function HeroManifestoStage({
         scrollTrigger: {
           trigger: stage,
           start: "top top",
-          end: "+=140%",
+          end: "+=130%",
           pin: screen,
           pinSpacing: true,
           scrub: 0.7,
@@ -142,33 +147,33 @@ export function HeroManifestoStage({
         },
       });
 
-      // 1. O Hero faz fade out suave enquanto os pixels claros começam a cobrir (0.0 a 0.35)
+      // 1. O Hero faz fade out suave enquanto os micro-pixels claros tomam a tela (0.0 a 0.35)
       tl.to(
         hero,
         {
           opacity: 0,
-          y: -30,
+          y: -25,
           duration: 0.35,
           ease: "power1.inOut",
         },
         0
       );
 
-      // 2. Os pixels WebGL Three.js da cor clara (#ECECE3) crescem e cobrem 100% da tela (0.05 a 0.55)
-      // Um único fluxo contínuo onde os pixels tomam o fundo!
+      // 2. Os micro-pixels WebGL da cor clara (#ECECE3) crescem e cobrem 100% da tela (0.0 a 0.55)
+      // Um único fluxo contínuo onde a poeira stardust se expande até a tela ficar clara!
       tl.fromTo(
         progressRef,
-        { current: -0.2 },
+        { current: -0.15 },
         {
-          current: 1.4,
-          duration: 0.5,
+          current: 1.35,
+          duration: 0.55,
           ease: "none",
         },
-        0.05
+        0
       );
 
-      // 3. Logo depois que o fundo muda de cor (0.45 a 0.85):
-      // O conteúdo da Seção 2 emerge suavemente no mesmo lugar fixo NA FRENTE DO CANVAS (z-30)!
+      // 3. O conteúdo do Manifesto NÃO espera: emerge em sintonia com a chegada dos pixels (0.15 a 0.55)
+      // Assim que os pixels fecham a tela clara, o conteúdo do Manifesto já está totalmente assentado e nítido!
       tl.fromTo(
         manifesto,
         { opacity: 0, y: 30 },
@@ -177,8 +182,11 @@ export function HeroManifestoStage({
           y: 0,
           duration: 0.4,
           ease: "power2.out",
+          onStart: () => {
+            manifesto.style.pointerEvents = "auto";
+          },
         },
-        0.45
+        0.15
       );
     }, stage);
 

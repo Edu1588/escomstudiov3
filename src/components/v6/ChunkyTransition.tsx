@@ -20,12 +20,15 @@ const fragmentShader = `
   uniform vec2 uResolution;
   uniform float uTime;
   
-  float rand(vec2 n) { 
-    return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
+  float hash(vec2 p) {
+    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.x + p3.y) * p3.z);
   }
   
   void main() {
-    float pixelsX = 250.0; 
+    // Micro-pixels densos: grãos ultra finos (~1.5px a 2px)
+    float pixelsX = clamp(uResolution.x * 0.48, 700.0, 1000.0); 
     float pixelsY = pixelsX * (uResolution.y / uResolution.x);
     vec2 grid = vec2(pixelsX, pixelsY);
     
@@ -35,27 +38,29 @@ const fragmentShader = `
     aspectUv.x *= uResolution.x / uResolution.y;
     vec2 aspectCenter = vec2(0.5 * (uResolution.x / uResolution.y), 0.5);
     
-    float dist = distance(aspectUv, aspectCenter) / distance(vec2(0.0), aspectCenter);
-    float n = rand(pUv);
+    vec2 dBox = abs(aspectUv - aspectCenter);
+    float boxDist = max(dBox.x / aspectCenter.x, dBox.y / aspectCenter.y);
+    float radialDist = length(dBox) / length(aspectCenter);
+    float shapeDist = mix(boxDist, radialDist, 0.35);
     
-    float threshold = dist * 0.62 + n * 0.38;
+    float n = hash(pUv * 876.54);
+    float threshold = shapeDist * 0.72 + n * 0.28;
+    float band = 0.20;
     
-    float band = 0.08;
-    bool showB = false;
-    
-    if (uProgress > threshold + band) {
-      showB = true;
-    } else if (uProgress < threshold - band) {
-      showB = false;
+    bool show = false;
+    if (uProgress >= threshold + band) {
+      show = true;
+    } else if (uProgress <= threshold - band) {
+      show = false;
     } else {
       float prob = (uProgress - (threshold - band)) / (2.0 * band);
-      float flickerNoise = rand(pUv * 100.0 + uTime * 15.0);
-      if (flickerNoise < prob) {
-        showB = true;
+      float grain = hash(pUv * 1423.17 + fract(uTime * 15.0));
+      if (grain < prob) {
+        show = true;
       }
     }
     
-    if (!showB) {
+    if (!show) {
       discard;
     }
     
@@ -98,7 +103,7 @@ function Scene({ color, progressRef }: { color: string, progressRef: React.Mutab
 export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string }) {
   const triggerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef(-0.2);
+  const progressRef = useRef(-0.15);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -125,7 +130,7 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
     );
 
     let ctx = gsap.context(() => {
-      const scrollDistance = window.innerHeight * 1.0;
+      const scrollDistance = window.innerHeight * 0.9;
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -134,7 +139,7 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
           end: () => "+=" + scrollDistance,
           pin: true,
           pinSpacing: false,
-          scrub: 0.8,
+          scrub: 0.7,
           anticipatePin: 1,
           onEnter: () => {
             if (container) container.style.opacity = "1";
@@ -151,53 +156,48 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
         },
       });
 
-      // FASE 1 (0% a 50%):
-      // - Conteúdo da seção atual desvanece
-      // - Pixels da nova cor crescem e cobrem 100% da tela
+      // 1. Elementos da seção atual fazem fade out no início (0.0 a 0.35)
       tl.to(
         contentElements,
         {
           opacity: 0,
-          y: -50,
-          duration: 0.4,
-          ease: "power2.inOut",
+          y: -30,
+          duration: 0.35,
+          ease: "power1.inOut",
         },
         0
       );
 
+      // 2. Micro-pixels da nova cor crescem em 1 fluxo direto cobrindo 100% da tela (0.0 a 0.55)
+      // Sem segundo fluxo de pixel (não encolhem)!
       tl.fromTo(
         progressRef,
-        { current: -0.2 },
+        { current: -0.15 },
         {
-          current: 1.4,
-          duration: 0.5,
+          current: 1.35,
+          duration: 0.55,
           ease: "none",
         },
         0
       );
 
-      // Garante que a próxima seção não vaze antes da tela estar coberta por pixels
+      // 3. A próxima seção se posiciona e revela seu conteúdo (0.35 a 0.85)
+      // Ela é mantida fixa anulando o scroll até o final da transição, e o conteúdo faz fade in!
       if (nextSection) {
         tl.fromTo(
           nextSection,
+          { y: () => -scrollDistance },
+          { y: 0, ease: "none", duration: 1.0 },
+          0
+        );
+
+        tl.fromTo(
+          nextSection,
           { opacity: 0 },
-          { opacity: 1, duration: 0.25, ease: "power1.inOut" },
-          0.45
+          { opacity: 1, duration: 0.4, ease: "power2.out" },
+          0.35
         );
       }
-
-      // FASE 2 (50% a 100%):
-      // - A próxima seção já está assentada na viewport
-      // - Os pixels se dissolvem (1.4 -> -0.2), revelando o conteúdo da próxima seção
-      tl.to(
-        progressRef,
-        {
-          current: -0.2,
-          duration: 0.5,
-          ease: "none",
-        },
-        0.5
-      );
     });
 
     return () => {
@@ -206,7 +206,7 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
         gsap.set(contentElements, { clearProps: "opacity,transform" });
       }
       if (nextSection) {
-        gsap.set(nextSection, { clearProps: "opacity" });
+        gsap.set(nextSection, { clearProps: "y,opacity" });
       }
     };
   }, [mounted, nextColor]);

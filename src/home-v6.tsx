@@ -309,6 +309,7 @@ export function HomeV6() {
             </article>
           ))}
         </div>
+        <ChunkyTransition nextColor="#ECECE3" />
       </section>
 
       <section className="relative px-5 py-28 text-foreground md:px-12 xl:px-[22vw] md:py-40 bg-background text-foreground">
@@ -551,6 +552,7 @@ export function HomeV6() {
             ))}
           </Accordion>
         </div>
+        <ChunkyTransition nextColor="#000000" />
       </section>
 
       <section
