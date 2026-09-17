@@ -172,21 +172,40 @@ export function HeroManifestoStage({
         0
       );
 
-      // 3. O conteúdo do Manifesto NÃO espera: emerge em sintonia com a chegada dos pixels (0.15 a 0.55)
-      // Assim que os pixels fecham a tela clara, o conteúdo do Manifesto já está totalmente assentado e nítido!
+      // 3. O conteúdo do Manifesto emerge com revelação óptica de desfoque/blur gradual (conforme a referência)
+      // As letras iniciam difusas/borradas e cristalizam em foco nítido à medida que o fundo se consolida
+      const manifestoChildren = Array.from(manifesto.children);
+
       tl.fromTo(
         manifesto,
-        { opacity: 0, y: 30 },
+        { opacity: 0 },
         {
           opacity: 1,
-          y: 0,
-          duration: 0.4,
+          duration: 0.35,
           ease: "power2.out",
           onStart: () => {
             manifesto.style.pointerEvents = "auto";
           },
         },
         0.15
+      );
+
+      tl.fromTo(
+        manifestoChildren,
+        {
+          opacity: 0,
+          filter: "blur(16px)",
+          y: 16,
+        },
+        {
+          opacity: 1,
+          filter: "blur(0px)",
+          y: 0,
+          duration: 0.45,
+          stagger: 0.08,
+          ease: "power2.out",
+        },
+        0.18
       );
     }, stage);
 

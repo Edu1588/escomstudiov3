@@ -160,6 +160,7 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
               gsap.set(nextSection, {
                 clearProps: "position,top,left,width,zIndex,opacity",
               });
+              gsap.set(nextSection.children, { clearProps: "filter,opacity,transform" });
             }
           },
           onEnterBack: () => {
@@ -180,6 +181,7 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
               gsap.set(nextSection, {
                 clearProps: "position,top,left,width,zIndex,opacity",
               });
+              gsap.set(nextSection.children, { clearProps: "filter,opacity,transform" });
             }
           },
         },
@@ -210,13 +212,34 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
         0
       );
 
-      // 3. A próxima seção está FIXADA no topo (top: 0) sem nenhum salto e faz fade in (0.15 a 0.50)
+      // 3. A próxima seção está FIXADA no topo (top: 0) e o conteúdo emerge com foco óptico / blur gradual
+      // Conforme a referência: as letras iniciam borradas/difusas e cristalizam em foco nítido
       if (nextSection) {
+        const nextElements = Array.from(nextSection.children);
+
         tl.fromTo(
           nextSection,
           { opacity: 0 },
-          { opacity: 1, duration: 0.35, ease: "power2.out" },
+          { opacity: 1, duration: 0.25, ease: "power1.out" },
           0.15
+        );
+
+        tl.fromTo(
+          nextElements,
+          {
+            opacity: 0,
+            filter: "blur(18px)",
+            y: 18,
+          },
+          {
+            opacity: 1,
+            filter: "blur(0px)",
+            y: 0,
+            duration: 0.45,
+            stagger: 0.08,
+            ease: "power2.out",
+          },
+          0.18
         );
       }
 
@@ -239,6 +262,7 @@ export function ChunkyTransition({ nextColor = "#000000" }: { nextColor?: string
       }
       if (nextSection) {
         gsap.set(nextSection, { clearProps: "position,top,left,width,zIndex,opacity" });
+        gsap.set(nextSection.children, { clearProps: "filter,opacity,transform" });
       }
     };
   }, [mounted, nextColor]);
