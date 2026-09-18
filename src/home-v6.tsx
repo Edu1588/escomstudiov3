@@ -7,6 +7,7 @@ import { VerticalNav } from "@/components/v6/VerticalNav";
 import { SplitTextReveal } from "@/components/v6/SplitTextReveal";
 import { LenisProvider } from "@/components/v6/LenisProvider";
 import { HeroManifestoStage } from "@/components/v6/HeroManifestoStage";
+import { GlobalPixelTransitions } from "@/components/v6/GlobalPixelTransitions";
 
 import {
   Accordion,
@@ -210,6 +211,7 @@ export function HomeV6() {
   return (
     <main className="relative overflow-x-hidden bg-background text-foreground">
       <VerticalNav />
+      <GlobalPixelTransitions />
       <div className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/90 backdrop-blur-md xl:hidden">
         <div className="flex h-9 items-center justify-center border-b border-border px-4 font-mono text-[9px] uppercase tracking-[0.14em] md:text-[10px]">
           Engenharia digital para empresas que querem operar na próxima fase do
@@ -269,7 +271,7 @@ export function HomeV6() {
       >
         <Eyebrow>Um sistema digital, várias frentes de crescimento</Eyebrow>
         <div className="mt-14 grid gap-8 md:grid-cols-12">
-          <h2 className="font-serif text-5xl leading-none md:col-span-8 md:text-7xl">
+          <h2 className="reveal-focus font-serif text-5xl leading-none md:col-span-8 md:text-7xl">
             Tudo o que sua empresa precisa para ser percebida, encontrada e
             escolhida.
           </h2>
@@ -309,9 +311,12 @@ export function HomeV6() {
         </div>
       </section>
 
-      <section className="relative px-5 py-28 text-foreground md:px-12 xl:px-[22vw] md:py-40 bg-background text-foreground">
+      <section
+        id="metodo"
+        className="relative px-5 py-28 text-foreground md:px-12 xl:px-[22vw] md:py-40 bg-background text-foreground"
+      >
         <Eyebrow light>Não somos uma fábrica de entregáveis</Eyebrow>
-        <h2 className="mt-14 max-w-5xl font-serif text-5xl leading-none md:text-7xl">
+        <h2 className="reveal-focus mt-14 max-w-5xl font-serif text-5xl leading-none md:text-7xl">
           Cada projeto começa pelo problema. E termina em uma estrutura que pode
           evoluir.
         </h2>
@@ -447,7 +452,7 @@ export function HomeV6() {
       >
         <Eyebrow light>Sobre a ESCOM</Eyebrow>
         <div className="mt-14 grid gap-12 md:grid-cols-12">
-          <h2 className="font-serif text-5xl leading-none md:col-span-7 md:text-7xl">
+          <h2 className="reveal-focus font-serif text-5xl leading-none md:col-span-7 md:text-7xl">
             Somos uma equipe de estratégia, design e tecnologia para empresas em
             movimento.
           </h2>
@@ -488,7 +493,7 @@ export function HomeV6() {
       >
         <Eyebrow>Para quem é</Eyebrow>
         <div className="mt-14 grid gap-12 md:grid-cols-12">
-          <h2 className="font-serif text-5xl leading-none md:col-span-7 md:text-7xl">
+          <h2 className="reveal-focus font-serif text-5xl leading-none md:col-span-7 md:text-7xl">
             Para empresas que já entenderam que o próximo estágio exige mais do
             que presença.
           </h2>
@@ -553,7 +558,7 @@ export function HomeV6() {
         <Eyebrow light>O próximo sistema começa com uma conversa</Eyebrow>
         <div className="mt-14 grid gap-16 md:grid-cols-12">
           <div className="md:col-span-5">
-            <h2 className="font-serif text-5xl leading-none md:text-7xl">
+            <h2 className="reveal-focus font-serif text-5xl leading-none md:text-7xl">
               O que sua empresa precisa construir agora?
             </h2>
             <p className="mt-8 max-w-md leading-7">
