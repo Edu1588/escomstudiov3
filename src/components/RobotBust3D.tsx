@@ -19,11 +19,15 @@ export default function RobotBust3D() {
     const getWidth = () => container.clientWidth || container.offsetWidth || 560;
     const getHeight = () => container.clientHeight || container.offsetHeight || 680;
 
+    const width = getWidth();
+    const height = getHeight();
+    const aspect = width / height;
     const isMobileViewport = window.innerWidth < 1024;
-    const camera = new THREE.PerspectiveCamera(38, getWidth() / getHeight(), 0.1, 1000);
+
+    const camera = new THREE.PerspectiveCamera(38, aspect, 0.1, 1000);
     if (isMobileViewport) {
-      camera.position.set(0, 0.22, 4.20);
-      camera.lookAt(0, 0.10, 0);
+      camera.position.set(0, 0.12, 6.50);
+      camera.lookAt(0, 0.05, 0);
     } else {
       camera.position.set(0, 0.08, 3.20);
       camera.lookAt(0, 0.01, 0);
@@ -180,7 +184,7 @@ export default function RobotBust3D() {
         const size = box.getSize(new THREE.Vector3());
 
         const maxDim = Math.max(size.x, size.y, size.z);
-        const targetScale = isMobileViewport ? 1.25 : 2.18;
+        const targetScale = isMobileViewport ? 0.60 : 2.18;
         const scale = targetScale / (maxDim || 1);
         robotWrapper.scale.set(scale, scale, scale);
 
