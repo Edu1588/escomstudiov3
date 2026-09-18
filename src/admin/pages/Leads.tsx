@@ -91,7 +91,11 @@ export default function Leads() {
   const [loading, setLoading] = useState(false);
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
   const [generatingSiteId, setGeneratingSiteId] = useState<string | null>(null);
+  const [generatedSiteUrls, setGeneratedSiteUrls] = useState<Record<string, string>>({});
   const [notification, setNotification] = useState<{ msg: string; type: "success" | "error" } | null>(null);
+  const [emailModal, setEmailModal] = useState<{ lead: any } | null>(null);
+  const [emailInput, setEmailInput] = useState("");
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   const notify = (msg: string, type: "success" | "error" = "success") => {
     setNotification({ msg, type });
@@ -272,6 +276,7 @@ export default function Leads() {
       const data = await res.json();
       if (data.success || data.deployedUrl || data.projectId) {
         const url = data.deployedUrl || `/api/site-preview/${data.projectId}`;
+        setGeneratedSiteUrls(prev => ({ ...prev, [lead.id]: url }));
         notify(`Site gerado para ${lead.nome}!`);
         window.open(url, "_blank");
       } else {
@@ -281,6 +286,34 @@ export default function Leads() {
       notify("Erro ao gerar site. Tente novamente.", "error");
     } finally {
       setGeneratingSiteId(null);
+    }
+  };
+
+  const handleEnviarEmail = async () => {
+    if (!emailModal || !emailInput.trim()) return;
+    setSendingEmail(true);
+    try {
+      const res = await fetch("/api/enviar-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          leadId: emailModal.lead.id,
+          emailDestinatario: emailInput.trim(),
+          nomeDestinatario: emailModal.lead.nome,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        notify(`Email enviado para ${emailInput}!`);
+        setEmailModal(null);
+        setEmailInput("");
+      } else {
+        notify(data.error || "Erro ao enviar email.", "error");
+      }
+    } catch {
+      notify("Erro ao enviar email.", "error");
+    } finally {
+      setSendingEmail(false);
     }
   };
 
@@ -528,42 +561,128 @@ export default function Leads() {
                 </div>
 
                 {/* Botões de Ação */}
-                <div className="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                  <button
-                    onClick={() => handleGenerateSite(lead)}
-                    disabled={generatingSiteId === lead.id}
-                    className="flex-1 bg-[#0F172A] hover:bg-slate-800 text-white dark:bg-slate-900 dark:hover:bg-slate-800 text-xs font-bold py-2.5 px-3 rounded-xl transition-all border border-slate-700 flex items-center justify-center gap-1.5 shadow-sm"
-                  >
-                    {generatingSiteId === lead.id ? (
-                      <Loader2 className="animate-spin" size={14} />
-                    ) : (
-                      <Sparkles size={14} className="text-cyan-400" />
+                <div className="flex flex-col gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                  {/* Link do site gerado + botão enviar email */}
+                  {(generatedSiteUrls[lead.id] || lead.siteGerado) && (
+                    <div className="flex gap-2">
+                      <a
+                        href={generatedSiteUrls[lead.id] || lead.siteGerado}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-cyan-950/40 border border-cyan-500/40 text-cyan-400 text-xs font-bold hover:bg-cyan-900/50 transition-colors"
+                      >
+                        <Sparkles size={13} />
+                        Ver site gerado
+                      </a>
+                      <button
+                        onClick={() => { setEmailModal({ lead }); setEmailInput(lead.email || ""); }}
+                        title="Enviar email de prospecção"
+                        className="px-3 py-2 rounded-xl bg-cyan-950/40 border border-cyan-500/40 text-cyan-400 hover:bg-cyan-900/50 transition-colors"
+                      >
+                        <Send size={13} />
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleGenerateSite(lead)}
+                      disabled={generatingSiteId === lead.id}
+                      className="flex-1 bg-[#0F172A] hover:bg-slate-800 text-white dark:bg-slate-900 dark:hover:bg-slate-800 text-xs font-bold py-2.5 px-3 rounded-xl transition-all border border-slate-700 flex items-center justify-center gap-1.5 shadow-sm"
+                    >
+                      {generatingSiteId === lead.id ? (
+                        <Loader2 className="animate-spin" size={14} />
+                      ) : (
+                        <Sparkles size={14} className="text-cyan-400" />
+                      )}
+                      <span>{(generatedSiteUrls[lead.id] || lead.siteGerado) ? "Regerar site" : "Gerar site"}</span>
+                    </button>
+
+                    {/* Botão Análise PDF */}
+                    <a
+                      href={`/api/gerar-analise/${lead.id}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      title="Análise Estratégica PDF"
+                      className="p-2.5 rounded-xl border border-cyan-500/30 bg-cyan-950/20 text-cyan-400 hover:bg-cyan-900/40 hover:border-cyan-400 transition-colors"
+                    >
+                      <Download size={14} />
+                    </a>
+
+                    {lead.siteUrl && (
+                      <a
+                        href={lead.siteUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-400 text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-1 transition-colors"
+                      >
+                        <Globe size={14} />
+                        <span>Site atual</span>
+                      </a>
                     )}
-                    <span>Gerar site</span>
-                  </button>
 
-                  <a
-                    href={lead.siteUrl || "#"}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-400 text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-1 transition-colors"
-                  >
-                    <Globe size={14} />
-                    <span>Site atual</span>
-                  </a>
-
-                  <button
-                    onClick={() => handleDeleteLead(lead.id)}
-                    className="p-2.5 rounded-xl bg-red-50 dark:bg-red-950/30 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                    <button
+                      onClick={() => handleDeleteLead(lead.id)}
+                      className="p-2.5 rounded-xl bg-red-50 dark:bg-red-950/30 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
             );
           })
         )}
       </div>
+
+      {/* Modal de Envio de Email */}
+      {emailModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-[#0f172a] border border-slate-700 rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-9 h-9 rounded-xl bg-cyan-950/50 border border-cyan-500/30 flex items-center justify-center">
+                <Send size={16} className="text-cyan-400" />
+              </div>
+              <div>
+                <h3 className="text-white font-bold text-sm">Enviar prospecção por email</h3>
+                <p className="text-slate-400 text-xs">{emailModal.lead.nome}</p>
+              </div>
+            </div>
+
+            <p className="text-slate-400 text-xs mb-4 leading-relaxed">
+              O email incluirá o site-amostra, a análise estratégica e uma mensagem humanizada gerada pelo Gemini com convite para conversa.
+            </p>
+
+            <div className="mb-4">
+              <label className="text-xs font-semibold text-slate-300 mb-1.5 block">Email do destinatário</label>
+              <input
+                type="email"
+                value={emailInput}
+                onChange={e => setEmailInput(e.target.value)}
+                placeholder="contato@empresa.com.br"
+                className="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 placeholder-slate-500"
+              />
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => { setEmailModal(null); setEmailInput(""); }}
+                className="flex-1 py-2.5 rounded-xl border border-slate-700 text-slate-300 text-sm font-semibold hover:bg-slate-800 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleEnviarEmail}
+                disabled={sendingEmail || !emailInput.trim()}
+                className="flex-1 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-sm font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {sendingEmail ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                {sendingEmail ? "Enviando..." : "Enviar email"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

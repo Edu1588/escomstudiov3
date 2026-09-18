@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
-    "buscar-leads": "tsx scripts/buscar-leads.ts"
+    "buscar-leads": "tsx scripts/buscar-leads.ts",
+    "gerar-site": "tsx scripts/gerar-site.ts"
   },
   "dependencies": {
     "@dotlottie/react-player": "^1.6.19",

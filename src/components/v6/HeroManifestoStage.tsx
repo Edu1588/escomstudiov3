@@ -1,127 +1,30 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import * as THREE from "three";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitTextReveal } from "@/components/v6/SplitTextReveal";
+import { PixelTransitionCanvas } from "@/components/v6/PixelTransitionCanvas";
 import { Button } from "@/components/ui/button";
 import { ArrowDown } from "lucide-react";
 import heroImage from "@/assets/escom-hero.jpg";
-
-const vertexShader = `
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    gl_Position = vec4(position, 1.0);
-  }
-`;
-
-const fragmentShader = `
-  varying vec2 vUv;
-  uniform vec3 uColor;
-  uniform float uProgress;
-  uniform vec2 uResolution;
-  uniform float uTime;
-  
-  float hash(vec2 p) {
-    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
-    p3 += dot(p3, p3.yzx + 33.33);
-    return fract((p3.x + p3.y) * p3.z);
-  }
-  
-  void main() {
-    // Se o progresso for <= 0.005 (início/sem scroll), descarta 100% dos fragmentos.
-    // Garante que nenhum pixel pisque no Hero no frame 0.
-    if (uProgress <= 0.005) {
-      discard;
-    }
-
-    // Micro-pixels densos: escala para grãos ultra finos (~1.5px a 2px) como na referência
-    float pixelsX = clamp(uResolution.x * 0.48, 700.0, 1000.0); 
-    float pixelsY = pixelsX * (uResolution.y / uResolution.x);
-    vec2 grid = vec2(pixelsX, pixelsY);
-    
-    vec2 pUv = floor(vUv * grid) / grid;
-    
-    vec2 aspectUv = pUv;
-    aspectUv.x *= uResolution.x / uResolution.y;
-    vec2 aspectCenter = vec2(0.5 * (uResolution.x / uResolution.y), 0.5);
-    
-    vec2 dBox = abs(aspectUv - aspectCenter);
-    float boxDist = max(dBox.x / aspectCenter.x, dBox.y / aspectCenter.y);
-    float radialDist = length(dBox) / length(aspectCenter);
-    float shapeDist = mix(boxDist, radialDist, 0.35);
-    
-    float n = hash(pUv * 876.54);
-    float threshold = 0.04 + shapeDist * 0.70 + n * 0.26;
-    float band = 0.18;
-    
-    bool show = false;
-    if (uProgress >= threshold + band) {
-      show = true;
-    } else if (uProgress <= threshold - band) {
-      show = false;
-    } else {
-      float prob = (uProgress - (threshold - band)) / (2.0 * band);
-      float grain = hash(pUv * 1423.17 + fract(uTime * 15.0));
-      if (grain < prob) {
-        show = true;
-      }
-    }
-    
-    if (!show) {
-      discard;
-    }
-    
-    gl_FragColor = vec4(uColor, 1.0);
-  }
-`;
-
-function Scene({ color, progressRef }: { color: string; progressRef: React.MutableRefObject<number> }) {
-  const materialRef = useRef<THREE.ShaderMaterial>(null);
-  const colorVec = new THREE.Color(color);
-  const { size } = useThree();
-
-  useFrame((state) => {
-    if (materialRef.current) {
-      materialRef.current.uniforms.uProgress.value = progressRef.current;
-      materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
-      materialRef.current.uniforms.uResolution.value.set(size.width, size.height);
-    }
-  });
-
-  return (
-    <mesh>
-      <planeGeometry args={[2, 2]} />
-      <shaderMaterial
-        ref={materialRef}
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
-        transparent={true}
-        uniforms={{
-          uColor: { value: colorVec },
-          uProgress: { value: 0 },
-          uTime: { value: 0 },
-          uResolution: { value: new THREE.Vector2(size.width, size.height) }
-        }}
-      />
-    </mesh>
-  );
-}
 
 export function HeroManifestoStage({
   Eyebrow,
   AnchorButton,
 }: {
-  Eyebrow: React.ComponentType<{ children: React.ReactNode; light?: boolean }>;
+  Eyebrow: React.ComponentType<{
+    children: React.ReactNode;
+    light?: boolean;
+    cyan?: boolean;
+  }>;
   AnchorButton: React.ComponentType<{ children: React.ReactNode }>;
 }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const screenRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const manifestoRef = useRef<HTMLDivElement>(null);
-  const pixelLayerRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef(0.0);
+  const solutionsIntroRef = useRef<HTMLDivElement>(null);
+  const progress1Ref = useRef(0.0);
+  const progress2Ref = useRef(0.0);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -136,16 +39,16 @@ export function HeroManifestoStage({
     const screen = screenRef.current;
     const hero = heroRef.current;
     const manifesto = manifestoRef.current;
-    const pixel = pixelLayerRef.current;
+    const solutionsIntro = solutionsIntroRef.current;
 
-    if (!stage || !screen || !hero || !manifesto || !pixel) return;
+    if (!stage || !screen || !hero || !manifesto || !solutionsIntro) return;
 
     let ctx = gsap.context(() => {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: stage,
           start: "top top",
-          end: "+=130%",
+          end: "+=260%",
           pin: screen,
           pinSpacing: true,
           scrub: 0.7,
@@ -153,49 +56,45 @@ export function HeroManifestoStage({
         },
       });
 
-      // 1. O Hero faz fade out suave enquanto os micro-pixels claros tomam a tela (0.04 a 0.38)
+      // ==========================================
+      // ETAPA 1: HERO -> MANIFESTO (0.0 a 0.45)
+      // ==========================================
       tl.to(
         hero,
         {
           opacity: 0,
           y: -25,
-          duration: 0.34,
+          duration: 0.20,
           ease: "power1.inOut",
         },
-        0.04
+        0.02
       );
 
-      // 2. Os micro-pixels WebGL da cor clara (#ECECE3) crescem e cobrem 100% da tela (0.04 a 0.55)
-      // Um único fluxo contínuo onde a poeira stardust se expande até a tela ficar clara!
       tl.fromTo(
-        progressRef,
+        progress1Ref,
         { current: 0.0 },
         {
           current: 1.35,
-          duration: 0.51,
+          duration: 0.30,
           ease: "none",
         },
-        0.04
+        0.02
       );
 
-      // 3. O conteúdo do Manifesto emerge com revelação óptica de desfoque/blur gradual (conforme a referência)
-      // As letras iniciam difusas/borradas e cristalizam em foco nítido à medida que o fundo se consolida
       const manifestoChildren = Array.from(manifesto.children);
-
       tl.fromTo(
         manifesto,
         { opacity: 0 },
         {
           opacity: 1,
-          duration: 0.35,
+          duration: 0.22,
           ease: "power2.out",
           onStart: () => {
             manifesto.style.pointerEvents = "auto";
           },
         },
-        0.15
+        0.12
       );
-
       tl.fromTo(
         manifestoChildren,
         {
@@ -207,11 +106,72 @@ export function HeroManifestoStage({
           opacity: 1,
           filter: "blur(0px)",
           y: 0,
-          duration: 0.45,
-          stagger: 0.08,
+          duration: 0.28,
+          stagger: 0.05,
           ease: "power2.out",
         },
-        0.18
+        0.14
+      );
+
+      // ==========================================
+      // ETAPA 2: MANIFESTO FICA ESTÁTICO (0.40 a 0.58)
+      // ==========================================
+
+      // ==========================================
+      // ETAPA 3: MANIFESTO -> SOLUÇÕES INTRO (0.58 a 1.0)
+      // ==========================================
+      tl.to(
+        manifesto,
+        {
+          opacity: 0,
+          y: -25,
+          duration: 0.16,
+          ease: "power1.inOut",
+        },
+        0.58
+      );
+
+      tl.fromTo(
+        progress2Ref,
+        { current: 0.0 },
+        {
+          current: 1.35,
+          duration: 0.27,
+          ease: "none",
+        },
+        0.58
+      );
+
+      const solutionsChildren = Array.from(solutionsIntro.children);
+      tl.fromTo(
+        solutionsIntro,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 0.22,
+          ease: "power2.out",
+          onStart: () => {
+            solutionsIntro.style.pointerEvents = "auto";
+          },
+        },
+        0.70
+      );
+      tl.fromTo(
+        solutionsChildren,
+        {
+          opacity: 0,
+          filter: "blur(16px)",
+          y: 16,
+        },
+        {
+          opacity: 1,
+          filter: "blur(0px)",
+          y: 0,
+          duration: 0.26,
+          stagger: 0.05,
+          ease: "power2.out",
+        },
+        0.72
       );
     }, stage);
 
@@ -222,16 +182,16 @@ export function HeroManifestoStage({
 
   return (
     <div ref={stageRef} className="relative w-full">
-      {/* Viewport fixado onde a transição de pixel ocorre com precisão */}
+      {/* Viewport fixado onde as 3 telas ocorrem em tela cheia fixa */}
       <div
         ref={screenRef}
         className="relative h-screen w-full overflow-hidden bg-[#000000]"
       >
-        {/* CAMADA INFERIOR (Z-10): HERO (Fundo escuro, 100% visível ao entrar no site) */}
+        {/* CAMADA 1 (Z-10): HERO (Preto) */}
         <section
           id="top"
           ref={heroRef}
-          className="absolute inset-0 z-10 flex flex-col justify-between pt-20 dark bg-background text-foreground"
+          className="absolute inset-0 z-10 flex flex-col justify-between pt-20 dark bg-[#000000] text-foreground"
         >
           <img
             src={heroImage}
@@ -242,7 +202,7 @@ export function HeroManifestoStage({
           />
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/75 to-transparent" />
           <div className="relative flex min-h-[calc(100vh-5rem)] flex-1 flex-col justify-between px-5 py-8 md:px-12 xl:px-[22vw] md:py-12">
-            <Eyebrow>ESCOM STUDIO · DIGITAL GROWTH SYSTEMS</Eyebrow>
+            <Eyebrow cyan>ESCOM STUDIO · DIGITAL GROWTH SYSTEMS</Eyebrow>
             <div className="max-w-4xl py-16">
               <SplitTextReveal
                 type="words"
@@ -277,23 +237,14 @@ export function HeroManifestoStage({
           </div>
         </section>
 
-        {/* CAMADA INTERMEDIÁRIA (Z-20): THREE.JS PIXEL SHADER (Shader WebGL com ruído de blocos claros) */}
+        {/* CAMADA 2 (Z-20): THREE.JS PIXEL SHADER BEGE (#ecece3) */}
         {mounted && (
-          <div
-            ref={pixelLayerRef}
-            className="absolute inset-0 z-20 pointer-events-none"
-          >
-            <Canvas
-              camera={{ position: [0, 0, 1] }}
-              gl={{ alpha: true, antialias: false }}
-              resize={{ scroll: false }}
-            >
-              <Scene color="#ecece3" progressRef={progressRef} />
-            </Canvas>
+          <div className="z-20 absolute inset-0 pointer-events-none">
+            <PixelTransitionCanvas color="#ecece3" progressRef={progress1Ref} />
           </div>
         )}
 
-        {/* CAMADA SUPERIOR (Z-30): CONTEÚDO DO MANIFESTO (Emerge NA FRENTE do canvas bege logo após o fundo mudar de cor) */}
+        {/* CAMADA 3 (Z-30): MANIFESTO (Bege) */}
         <section
           ref={manifestoRef}
           className="absolute inset-0 z-30 flex flex-col justify-center px-5 py-12 text-[#000000] md:px-12 xl:px-[22vw] opacity-0 pointer-events-none"
@@ -313,6 +264,33 @@ export function HeroManifestoStage({
             <p className="font-serif text-2xl md:col-span-6 md:col-start-7 md:text-3xl text-black">
               A ESCOM organiza as partes para que o sistema inteiro trabalhe a
               favor do crescimento.
+            </p>
+          </div>
+        </section>
+
+        {/* CAMADA 4 (Z-40): THREE.JS PIXEL SHADER PRETO (#000000) */}
+        {mounted && (
+          <div className="z-40 absolute inset-0 pointer-events-none">
+            <PixelTransitionCanvas color="#000000" progressRef={progress2Ref} />
+          </div>
+        )}
+
+        {/* CAMADA 5 (Z-50): CABEÇALHO DE SOLUÇÕES (Preto) */}
+        <section
+          id="solucoes-intro"
+          ref={solutionsIntroRef}
+          className="absolute inset-0 z-50 flex flex-col justify-center px-5 py-12 dark bg-[#000000] text-foreground md:px-12 xl:px-[22vw] opacity-0 pointer-events-none"
+        >
+          <Eyebrow cyan>Um sistema digital, várias frentes de crescimento</Eyebrow>
+          <div className="mt-14 grid gap-8 md:grid-cols-12">
+            <h2 className="font-serif text-5xl leading-none md:col-span-8 md:text-7xl">
+              Tudo o que sua empresa precisa para ser percebida, encontrada e
+              escolhida.
+            </h2>
+            <p className="self-end text-sm leading-6 md:col-span-4 text-muted-foreground">
+              Unimos marca, experiência digital, aquisição e automação. Cada
+              solução pode existir sozinha ou fazer parte de um sistema mais
+              amplo.
             </p>
           </div>
         </section>

@@ -7,6 +7,7 @@ import cors from "cors";
 import * as cheerio from "cheerio";
 import Groq from "groq-sdk";
 import cron from "node-cron";
+import { Resend } from "resend";
 
 const origStringify = JSON.stringify;
 JSON.stringify = function(value, replacer, space) {
@@ -764,6 +765,7 @@ app.get("/api/leads", async (req, res) => {
       reviewsCount: r.reviews_count      ?? r.reviewsCount ?? 0,
       temSite:      r.tem_site           ?? r.temSite ?? false,
       siteUrl:      r.website            ?? r.siteUrl ?? "",
+      siteGerado:   r.site_gerado        ?? "",
     }));
     res.json({ success: true, leads });
   } catch(e: any) { res.status(500).json({ error: e.message }); }
@@ -1126,15 +1128,31 @@ app.get("/api/proposals/:id", async (req, res) => {
 
 // --- Build & Deploy ---
 export async function generateMandatory15SectionsHtml(payload) {
-  const { formData, siteData, reports, projectId } = payload;
+  const { formData, siteData, reports, projectId, diagnostico, rating, reviewsCount, scoreOportunidade } = payload;
   const pid = projectId || "site_" + Date.now();
   const name = formData?.companyName || "Empresa";
   const niche = formData?.niche || "";
   const comp = formData?.primaryHex || "#ff5a00";
   const escomColor = "#00d1ff";
-  const phone = formData?.phone || "";
+  const phone = (formData?.phone || "").replace(/\D/g, "");
+  const phoneDisplay = formData?.phone || "";
   const address = formData?.address || "";
+  const website = formData?.website || "";
+  const city = formData?.city || "";
   const esc = s => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+  // Extrai dados de diagnóstico reais do Supabase
+  const pagespeed = diagnostico?.pagespeed || null;
+  const geminiAnalysis = diagnostico ? {
+    identidadeVisual: diagnostico.identidadeVisualUI,
+    heuristicas: diagnostico.heuristicasNielsen,
+    arquitetura: diagnostico.arquiteturaInformacao,
+    acessibilidade: diagnostico.acessibilidade,
+    vieses: diagnostico.viesesCognitivosDarkPatterns,
+  } : null;
+  const scorePS = pagespeed?.performance ?? null;
+  const ratingStr = rating ? `${rating} estrelas (${reviewsCount || 0} avaliações no Google)` : "não disponível";
+  const scoreStr = scoreOportunidade ? `${scoreOportunidade}/100` : "não calculado";
 
   // Selecionar imagens do Unsplash dinâmicas baseadas no nicho
   const nicheLower = niche.toLowerCase();
@@ -1142,7 +1160,11 @@ export async function generateMandatory15SectionsHtml(payload) {
   let imgSolution = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop";
   let imgAbout = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop";
 
-  if (nicheLower.includes("restaurante") || nicheLower.includes("comida") || nicheLower.includes("gastronomia") || nicheLower.includes("parrilla") || nicheLower.includes("churrasco") || nicheLower.includes("sushi") || nicheLower.includes("massas") || nicheLower.includes("pizzaria") || nicheLower.includes("alimento")) {
+  if (nicheLower.includes("barbearia") || nicheLower.includes("barber") || nicheLower.includes("salão") || nicheLower.includes("cabelo") || nicheLower.includes("beleza")) {
+    imgHero = "https://images.unsplash.com/photo-1621607512022-6aecc4fed814?q=80&w=1200&auto=format&fit=crop";
+    imgSolution = "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=1200&auto=format&fit=crop";
+    imgAbout = "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?q=80&w=1200&auto=format&fit=crop";
+  } else if (nicheLower.includes("restaurante") || nicheLower.includes("comida") || nicheLower.includes("gastronomia") || nicheLower.includes("parrilla") || nicheLower.includes("churrasco") || nicheLower.includes("sushi") || nicheLower.includes("massas") || nicheLower.includes("pizzaria") || nicheLower.includes("alimento")) {
     imgHero = "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1200&auto=format&fit=crop";
     imgSolution = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1200&auto=format&fit=crop";
     imgAbout = "https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1200&auto=format&fit=crop";
@@ -1164,90 +1186,160 @@ export async function generateMandatory15SectionsHtml(payload) {
     imgAbout = "https://images.unsplash.com/photo-1509319117193-57bab727e09d?q=80&w=1200&auto=format&fit=crop";
   }
 
-  // --- GROQ AI: Gerar HTML com Framework v3.0 (Site do cliente no topo, prospecção no final) ---
-  const apiKey = process.env.GROQ_API_KEY || process.env.Groq_API_KEY || process.env.Groq;
-  if (apiKey) {
+  // --- GEMINI 2.0 FLASH: Gerar HTML completo com dados reais do lead ---
+  const geminiKey = process.env.GEMINI_API_KEY || process.env.CUSTOM_GEMINI_KEY || process.env.STITCH_API_KEY;
+  if (geminiKey) {
     try {
-      const groq = new Groq({ apiKey });
-      const siteDataStr = JSON.stringify(siteData || {});
-      const reportsStr = reports ? JSON.stringify(reports) : "não disponível";
+      const diagnosticoStr = geminiAnalysis ? JSON.stringify(geminiAnalysis) : "nao disponivel";
+      const pagespeedStr = pagespeed ? `Performance: ${pagespeed.performance}%, Acessibilidade: ${pagespeed.acessibilidade}%, SEO: ${pagespeed.seo}%, Boas Praticas: ${pagespeed.bestPractices}%` : "nao disponivel";
 
       const prompt = `Você é um Engenheiro de Front-end Sênior, Copywriter de Elite, Especialista em UI/UX e Estrategista de Conversão da ESCOM Studio.
-Sua missão é gerar o código HTML COMPLETO de uma Landing Page de altíssima conversão.
+Sua missão é gerar o código HTML COMPLETO de uma Landing Page de alta conversão para o lead abaixo.
 
-[DADOS DA EMPRESA E ESTRUTURA VISUAL]
+════════════════════════════════════════
+DADOS REAIS DA EMPRESA
+════════════════════════════════════════
 - Nome: ${name}
 - Nicho: ${niche}
-- Cor primária do cliente: ${comp} (Use esta cor EXCLUSIVAMENTE nas seções do Bloco B - o site do cliente)
-- Cor oficial da ESCOM Studio: ${escomColor} (Use esta cor EXCLUSIVAMENTE nas seções do Bloco A e Bloco C - prospecção no final)
-- Telefone: ${phone} (Todos os CTAs do cliente devem apontar para o WhatsApp funcional dele: https://wa.me/telefone?text=mensagem)
-- Endereço físico real: ${address}
-- Proposta ID (para link da proposta em PDF): ${pid}
-- Copy pré-gerada: ${siteDataStr}
-- Relatórios de inteligência e auditoria de site existente: ${reportsStr}
+- Cidade: ${city}
+- Telefone: ${phoneDisplay}
+- Endereço: ${address}
+- Site atual: ${website || "não possui"}
+- Avaliação Google: ${ratingStr}
+- Score de oportunidade (0=baixo, 100=alto): ${scoreStr}
 
-[REGRAS ABSOLUTAS DE COPY]
-1. É TERMINANTEMENTE PROIBIDO o uso de travessões ou meia-riscas (— ou ‐) em QUALQUER parte do texto.
-2. Toda copy deve ser moldada a partir dos dados REAIS da empresa e de sua auditoria de mercado.
+════════════════════════════════════════
+DIAGNÓSTICO TÉCNICO DO SITE ATUAL (dados reais)
+════════════════════════════════════════
+PageSpeed (mobile): ${pagespeedStr}
+Análise UX/Gemini: ${diagnosticoStr}
 
-[STACK TÉCNICA OBRIGATÓRIA]
-- Tailwind CSS via CDN: <script src="https://cdn.tailwindcss.com"></script>
-- GSAP + ScrollTrigger via CDN: <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script> e <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-- Lenis Smooth Scroll: <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
-- Google Fonts: Playfair Display (títulos) + Plus Jakarta Sans (corpo)
-- Font Awesome 6: <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-- Imagens reais do Unsplash (ex: para carros use mecânica, para parrilla use carne/churrasco, etc.)
+USE esses dados para fundamentar a copy de agitação do problema e os diferenciais.
+Se a performance for baixa (<50%), use isso como argumento de problema.
+Se a acessibilidade for baixa, mencione que o site afasta clientes.
+Se o score de oportunidade for alto, enfatize o potencial de crescimento.
 
-[ARQUITETURA OBRIGATÓRIA E ORDEM DE SEÇÕES: 15 SEÇÕES EM 3 BLOCOS]
-O site do cliente deve vir PRIMEIRO (no topo do site) para impactar o cliente, e as seções de venda e proposta da ESCOM Studio devem vir APENAS NO FINAL.
+════════════════════════════════════════
+PRINCÍPIOS DE DESIGN OBRIGATÓRIOS
+════════════════════════════════════════
+HIERARQUIA E COPY:
+- O hero deve fazer UMA promessa em até 8 palavras, sem frase de efeito genérica
+- Cada seção responde a UMA dúvida real do cliente (não lista features, resolve objeções)
+- Apenas UM botão CTA primário por seção, repetido com variações ao longo da página
+- Copy específica ao nicho ${niche} e à cidade ${city}. NUNCA usar "Excelência em" ou "Bem-vindo"
 
-PARTE I: SITE DA EMPRESA (BLOCO B) - ESTILO BASEADO NA COR DO CLIENTE: ${comp}
-1. HERO (id="hero"): Fullscreen, imagem de destaque do Unsplash refinada com opacidade de 20% e filtro escuro. Título persuasivo (headline), subtítulo, botões CTA (primário e secundário). Animação de entrada com GSAP.
-2. AGITAÇÃO DO PROBLEMA (id="problema"): Título chamativo e grid de 3 cards detalhando os problemas reais do nicho.
-3. A SOLUÇÃO (id="solucao"): Layout split (texto persuasivo + imagem real do Unsplash). Lista com checkmarks dos 4 benefícios principais.
-4. DIFERENCIAIS (id="diferenciais"): Grid de 4 diferenciais competitivos reais em cards com hover interativo.
-5. COMO FUNCIONA (id="como-funciona"): 3 passos visuais numerados (01, 02, 03) descrevendo a jornada do cliente.
-6. PROVA SOCIAL (id="depoimentos"): 3 depoimentos autênticos com foto avatar (faces do Unsplash), nome e cargo/cidade.
-7. SOBRE (id="sobre"): Split layout (imagem real + texto sobre história, paixão e dedicação). Grid de 3 estatísticas relevantes.
-8. FAQ (id="faq"): Accordion com 4 perguntas do nicho. JavaScript de toggle.
-9. CTA FINAL (id="cta-final"): Chamada à ação urgente com botão para contato/WhatsApp do cliente.
+TIPOGRAFIA (Google Fonts obrigatórias):
+- Playfair Display: headlines H1/H2 (tamanho mínimo H1: 48px mobile, 72px desktop)
+- Plus Jakarta Sans: corpo, labels, CTAs (mínimo 16px corpo)
+- Contraste mínimo de peso entre H1 e parágrafo: H1 bold, parágrafo regular
+- Line-height corpo: 1.6 a 1.8. Line-length: máximo 65 caracteres por linha
 
-PARTE II: PROSPECÇÃO COMERCIAL (BLOCO A) - ESTILO BASEADO NA COR DA ESCOM: ${escomColor}
-10. TARJA DE URGÊNCIA (id="banner-urgencia"): Banner com gradiente animado posicionado acima do diagnóstico comercial: "Proposta exclusiva válida por 3 dias | Condições Especiais Liberadas".
-11. DOSSIÊ ESTRATÉGICO (id="dossie"): Título "Dossiê de Mercado & Diagnóstico Digital", texto sobre oportunidades reais e grid de 4 cards (Score, Pontos Críticos, Oportunidades, ROI Projetado). Deve conter o botão de destaque: "Visualizar Diagnóstico Técnico em PDF" apontando para a URL "https://escom-studio.vercel.app/proposta-escom-${pid}" em nova aba.
-12. INVESTIMENTO (id="investimento"): Card de preço com taxa única R$ 990, lista dos entregáveis inclusos e badge de escassez comercial.
-13. EXPANSÕES TECNOLÓGICAS (id="expansoes"): Grid de módulos adicionais (CRM, Chatbot IA, Dashboard, WhatsApp Bot) com preços mensais e botões funcionais para ativar no painel.
+CORES:
+- Bloco B (site do cliente): cor primária ${comp}. Usar com moderação: apenas em CTAs, destaques e acentos
+- Bloco A/C (ESCOM): ciano ${escomColor}
+- Fundo: #0a0a0a. Cards: glassmorphism com rgba(255,255,255,0.05) e border rgba(255,255,255,0.08)
+- Texto principal: #f1f5f9. Texto secundário: #94a3b8
+- Contraste mínimo WCAG AA em todo texto sobre fundo escuro
 
-PARTE III: PROSPECÇÃO INSTITUCIONAL (BLOCO C) - ESTILO BASEADO NA COR DA ESCOM: ${escomColor}
-14. ESCOM STUDIO (id="escom"): Seção institucional com a história da agência, especialidades e badges de capacidades técnicas.
-15. FOOTER + FORMULÁRIO (id="footer"): Formulário de contato para aceite do projeto, dados de contato reais e botão WhatsApp flutuante do cliente.
+ESPAÇAMENTO E GRID:
+- Sistema de espaçamento consistente: 8px base. Seções com padding mínimo de 80px vertical
+- Grid de cards: gap mínimo de 24px entre itens
+- Hit targets (botões, links): mínimo 44px de altura
 
-[REGRAS DE ESTILO]
-- Tema: Dark mode luxuoso (fundo #0a0a0a, cards em glassmorphism).
-- Use a cor do cliente (${comp}) apenas no Bloco B.
-- Use o ciano da ESCOM (#00d1ff) nas partes II e III (Blocos A e C).
-- Animações GSAP: Todos os elementos com reveal on scroll (fade-up, stagger).
-- Lenis: Inicializar smooth scroll no script final com easing correto.
+ANIMAÇÕES (GSAP + ScrollTrigger):
+- Apenas fade-up + stagger em elementos ao entrar no viewport. Sem exageros
+- Duração máxima por animação: 0.8s. Easing: power2.out
+- Lenis smooth scroll inicializado com lerp: 0.1
 
-Retorne APENAS o código HTML completo. Comece com <!DOCTYPE html>. Sem markdown, sem explicações.`;
+════════════════════════════════════════
+STACK TÉCNICA OBRIGATÓRIA
+════════════════════════════════════════
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
 
-      const response = await groq.chat.completions.create({
-        messages: [
-          { role: "system", content: "Você é um gerador de código HTML/CSS/JS de altíssimo nível. Gere APENAS código HTML puro, completo e funcional. Sem markdown. Sem explicações. Comece com <!DOCTYPE html>." },
-          { role: "user", content: prompt }
-        ],
-        model: "llama-3.3-70b-specdec",
-        temperature: 0.15,
-        max_tokens: 8000
-      });
+Imagens: Unsplash com q=80&w=1200&auto=format&fit=crop. Use fotos de barbearia para nicho barbearia, etc.
+Todos os <img> com loading="lazy" width e height definidos.
 
-      let html = response.choices[0].message.content || "";
+════════════════════════════════════════
+SEO TÉCNICO OBRIGATÓRIO (no <head>)
+════════════════════════════════════════
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<html lang="pt-br">
+<title>${name} | Proposta Exclusiva ESCOM Studio</title>
+<meta name="description" content="[descrição real do negócio com nicho e cidade, 150 chars]">
+<meta property="og:title" content="${name} | Proposta Digital">
+<meta property="og:description" content="[descrição real]">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+Schema.org JSON-LD LocalBusiness (ou subtipo correto do nicho, ex: HairSalon para barbearia):
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"[TipoCorreto]","name":"${name}","address":{"@type":"PostalAddress","streetAddress":"${address}","addressLocality":"${city}","addressCountry":"BR"},"telephone":"${phoneDisplay}"${website ? `,"url":"${website}"` : ""}}</script>
+
+════════════════════════════════════════
+ESTRUTURA OBRIGATÓRIA: 15 SEÇÕES EM 3 BLOCOS
+════════════════════════════════════════
+
+BLOCO B — SITE DO CLIENTE (cor: ${comp})
+1. HERO (id="hero"): Fullscreen. Imagem Unsplash do nicho com overlay escuro 75%. H1 com a promessa principal de ${name} em ${city}. Subtítulo em 1 frase. CTA primário "Agende agora" → WhatsApp: https://wa.me/55${phone}?text=Olá,+vi+o+site+e+quero+agendar. CTA secundário "Ver serviços" scroll suave. GSAP entrada.
+2. PROBLEMA (id="problema"): H2 que nomeia a dor real do nicho. 3 cards com problema específico de ${niche} (use dados do diagnóstico Gemini se disponíveis).
+3. SOLUÇÃO (id="solucao"): Layout split. Texto: como ${name} resolve cada problema. Imagem Unsplash do nicho. 4 checkmarks com benefícios concretos.
+4. DIFERENCIAIS (id="diferenciais"): 4 cards com diferenciais REAIS (baseados no nicho e cidade, não genéricos). Hover com border ${comp}.
+5. COMO FUNCIONA (id="como-funciona"): 3 passos numerados (01/02/03) da jornada do cliente de ${name}.
+6. DEPOIMENTOS (id="depoimentos"): 3 depoimentos verossímeis com nome + cidade (${city}). Avatar face Unsplash.
+7. SOBRE (id="sobre"): Split. Texto sobre a história/paixão de ${name}. 3 stats relevantes ao nicho (use rating ${rating} se disponível).
+8. FAQ (id="faq"): Accordion JS. 4 perguntas reais do nicho ${niche}.
+9. CTA FINAL (id="cta-final"): Urgência + botão WhatsApp. Fundo com textura ou gradiente em ${comp}.
+
+BLOCO A — PROPOSTA COMERCIAL (cor: ${escomColor})
+10. URGÊNCIA (id="banner-urgencia"): Banner animado. Texto: "Proposta exclusiva para ${name} valida por 72 horas".
+11. DOSSIE (id="dossie"): "Diagnostico Digital de ${name}". 4 cards: Score ${scoreStr}, Performance ${scorePS !== null ? scorePS + "%" : "N/A"}, Oportunidade identificada, ROI projetado. Botao "Ver Diagnostico Completo em PDF" → https://escomstudio.com.br/proposta-escom-${pid}.
+12. INVESTIMENTO (id="investimento"): De R$ 4.500 por R$ 990 taxa unica. Lista de entregaveis. Badge "Oferta valida 72h".
+13. EXPANSOES (id="expansoes"): 4 modulos adicionais (CRM R$97/mes, Chatbot IA R$147/mes, Dashboard R$97/mes, WhatsApp Bot R$197/mes).
+
+BLOCO C — INSTITUCIONAL ESCOM (cor: ${escomColor})
+14. ESCOM (id="escom"): Historia da agencia. Badges de capacidades tecnicas.
+15. FOOTER (id="footer"): Formulario de aceite. Contatos. Botao WhatsApp flutuante fixo → https://wa.me/55${phone}?text=Quero+saber+mais.
+
+════════════════════════════════════════
+REGRAS ABSOLUTAS
+════════════════════════════════════════
+1. PROIBIDO travessao (— ou –) em qualquer texto. Use virgula ou ponto.
+2. PROIBIDO frases genericas: "Excelencia em", "Bem-vindo", "Solucoes inovadoras", "Compromisso com qualidade"
+3. TODA copy deve ser especifica a ${name}, ${niche}, ${city}
+4. WhatsApp sempre com DDI: https://wa.me/55${phone}
+5. Retorne APENAS o HTML. Comece com <!DOCTYPE html>. Sem markdown, sem explicacoes.`;
+
+      const geminiRes = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${geminiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.2, maxOutputTokens: 65536 }
+          })
+        }
+      );
+      if (!geminiRes.ok) throw new Error(`Gemini HTTP ${geminiRes.status}`);
+      const geminiData = await geminiRes.json();
+      let html = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text || "";
       if (html.includes("```html")) html = html.split("```html")[1].split("```")[0].trim();
       else if (html.includes("```")) html = html.split("```")[1].split("```")[0].trim();
       html = html.trim();
       html = html.replace(/—/g, ",").replace(/–/g, ",");
       if (html.startsWith("<!DOCTYPE html>") || html.includes("<html")) return html;
-    } catch (e) { console.error("[BUILD_HTML] Falha ao gerar via Groq:", e.message); }
+    } catch (e) {
+      console.error("[BUILD_HTML] Falha ao gerar via Gemini:", e.message);
+      throw new Error("Gemini falhou: " + e.message);
+    }
+  } else {
+    throw new Error("Nenhuma chave Gemini encontrada nas env vars");
   }
 
   // --- FALLBACK: Template Premium v3.0 com 15 Seções ---
@@ -1623,11 +1715,45 @@ document.querySelectorAll('.fade-up').forEach(el => {
 app.post("/api/build-and-deploy-site", async (req, res) => {
   try {
     const payload = req.body;
-    const { projectId, slug, formData, siteData, lead } = payload;
+    const { projectId, slug, siteData, lead } = payload;
     const pid = projectId || "site_" + Date.now();
     const siteSlug = slug || pid;
 
-    const html = await generateMandatory15SectionsHtml(payload);
+    // Normaliza: aceita dados tanto em formData quanto no top-level (vindo de Leads.tsx)
+    const formData = payload.formData || {
+      companyName: payload.companyName,
+      niche:       payload.niche,
+      phone:       payload.phone,
+      address:     payload.address,
+      website:     payload.website,
+      city:        payload.city,
+    };
+
+    // Busca dados completos do lead no Supabase (Gemini + PageSpeed + rating)
+    let leadDataSupabase: any = null;
+    try {
+      const websiteUrl = formData.website || lead?.website || "";
+      const nomeLead = (formData.companyName || "").toLowerCase().trim();
+      if (websiteUrl || nomeLead) {
+        let query = "/leads?select=*";
+        if (websiteUrl) query += `&website=eq.${encodeURIComponent(websiteUrl)}`;
+        else query += `&nome=ilike.${encodeURIComponent("%" + nomeLead + "%")}`;
+        query += "&limit=1";
+        const rows = await sbFetch(query).catch(() => null);
+        if (rows && rows.length > 0) leadDataSupabase = rows[0];
+      }
+    } catch(e) { console.warn("[BUILD] Supabase fetch skipped:", e.message); }
+
+    const enrichedPayload = {
+      ...payload,
+      formData,
+      diagnostico: leadDataSupabase?.diagnostico || null,
+      rating:      leadDataSupabase?.rating || null,
+      reviewsCount: leadDataSupabase?.reviews_count || null,
+      scoreOportunidade: leadDataSupabase?.score_oportunidade || null,
+    };
+
+    const html = await generateMandatory15SectionsHtml(enrichedPayload);
     const dir = path.join(os.tmpdir(), "dist-deployed", siteSlug);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(path.join(dir, "index.html"), html, "utf-8");
@@ -1669,7 +1795,19 @@ app.post("/api/build-and-deploy-site", async (req, res) => {
     await ensureAuth();
     await setDoc(doc(db, "generated_sites", pid), siteRecord, { merge: true });
 
-    res.json({ success: true, projectId: pid, deployedUrl, status: siteRecord.status });
+    // Persiste o link no lead do Supabase para aparecer no card
+    const previewUrl = `https://www.escomstudio.com.br/api/site-preview/${pid}`;
+    if (leadDataSupabase?.id) {
+      try {
+        await sbFetch(`/leads?id=eq.${leadDataSupabase.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
+          body: JSON.stringify({ site_gerado: deployedUrl || previewUrl }),
+        });
+      } catch(e) { console.warn("[BUILD] Não salvou site_gerado no Supabase:", e.message); }
+    }
+
+    res.json({ success: true, projectId: pid, deployedUrl, previewUrl, status: siteRecord.status });
   } catch(e) { res.status(500).json({ success: false, error: e.message }); }
 });
 
@@ -2703,6 +2841,304 @@ app.delete("/api/contracts/:id", async (req, res) => {
     console.error("Erro ao deletar contrato:", error);
     res.status(500).json({ success: false, error: error.message });
   }
+});
+
+// ── /api/buscar-leads — Prospecção via Serper + PageSpeed (sem Gemini) ────────
+app.post("/api/buscar-leads", async (req, res) => {
+  try {
+    const { nicho = "Barbearia", cidade = "São Paulo", estado = "SP", quantidade = 10 } = req.body;
+    const serperKey = process.env.SERPER_API_KEY || "";
+    const pagespeedKey = process.env.PAGESPEED_API_KEY || "";
+    if (!serperKey) return res.status(500).json({ error: "SERPER_API_KEY não configurada" });
+
+    // 1. Serper Places
+    const serperRes = await fetch("https://google.serper.dev/places", {
+      method: "POST",
+      headers: { "X-API-KEY": serperKey, "Content-Type": "application/json" },
+      body: JSON.stringify({ q: `${nicho} em ${cidade}, ${estado}`, gl: "br", hl: "pt-br" }),
+    });
+    if (!serperRes.ok) throw new Error(`Serper ${serperRes.status}`);
+    const serperData: any = await serperRes.json();
+    const places = (serperData.places || []).slice(0, quantidade);
+
+    let salvos = 0;
+    for (const p of places) {
+      const nome = p.title || "";
+      if (!nome) continue;
+      const website = p.website || null;
+
+      // 2. PageSpeed (opcional)
+      let pagespeed: any = null;
+      if (website && pagespeedKey) {
+        try {
+          const params = new URLSearchParams({ url: website, strategy: "MOBILE", key: pagespeedKey });
+          ["PERFORMANCE","ACCESSIBILITY","SEO","BEST_PRACTICES"].forEach(c => params.append("category", c));
+          const psRes = await fetch(`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?${params}`);
+          if (psRes.ok) {
+            const psData: any = await psRes.json();
+            const cats = (psData.lighthouseResult || {}).categories || {};
+            pagespeed = {
+              performance:    cats.performance     ? Math.round(cats.performance.score * 100)     : null,
+              acessibilidade: cats.accessibility   ? Math.round(cats.accessibility.score * 100)   : null,
+              seo:            cats.seo             ? Math.round(cats.seo.score * 100)             : null,
+              boasPraticas:   cats["best-practices"] ? Math.round(cats["best-practices"].score * 100) : null,
+            };
+          }
+        } catch {}
+      }
+
+      // 3. Score simples baseado em PageSpeed
+      let score = website ? 20 : 50;
+      if (pagespeed) {
+        if (pagespeed.performance !== null) score += pagespeed.performance < 50 ? 20 : pagespeed.performance < 80 ? 10 : 0;
+        if (pagespeed.acessibilidade !== null) score += pagespeed.acessibilidade < 50 ? 15 : 7;
+      }
+      score = Math.min(score, 100);
+
+      // 4. Salva no Supabase
+      const nomeNorm = nome.toLowerCase().trim();
+      const id = nomeNorm.replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").substring(0, 80)
+        + "-" + cidade.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+      try {
+        await sbFetch("/leads", {
+          method: "POST",
+          headers: { Prefer: "resolution=merge-duplicates,return=minimal" } as any,
+          body: JSON.stringify({
+            id, nome, nome_normalizado: nomeNorm,
+            endereco: p.address || null, telefone: p.phoneNumber || null,
+            website, rating: p.rating ?? null, reviews_count: p.ratingCount ?? null,
+            categoria: nicho, cidade, tem_site: !!website,
+            score_oportunidade: score,
+            diagnostico: pagespeed ? { pagespeed } : null,
+            status: "novo",
+            criado_em: new Date().toISOString(), atualizado_em: new Date().toISOString(),
+          }),
+        });
+        salvos++;
+      } catch(e: any) { console.warn(`[BUSCAR] Falha ao salvar ${nome}:`, e.message); }
+    }
+    res.json({ success: true, encontrados: places.length, salvos });
+  } catch(e: any) { res.status(500).json({ success: false, error: e.message }); }
+});
+
+// ── /api/gerar-analise/:leadId — PDF de Análise Estratégica via Gemini ────────
+app.get("/api/gerar-analise/:leadId", async (req, res) => {
+  try {
+    const geminiKey = process.env.GEMINI_API_KEY || process.env.CUSTOM_GEMINI_KEY || process.env.STITCH_API_KEY || "";
+    if (!geminiKey) return res.status(500).send("<h1>GEMINI_API_KEY não configurada</h1>");
+
+    // Busca lead no Supabase
+    const rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(req.params.leadId)}&select=*&limit=1`);
+    if (!rows || rows.length === 0) return res.status(404).send("<h1>Lead não encontrado</h1>");
+    const lead = rows[0];
+    const diag = lead.diagnostico || {};
+    const ps = diag.pagespeed || {};
+
+    const prompt = `Você é um estrategista sênior da ESCOM Studio. Gere um Relatório de Análise Estratégica completo em HTML para o lead abaixo.
+
+DADOS DO LEAD:
+Nome: ${lead.nome}
+Nicho: ${lead.categoria}
+Cidade: ${lead.cidade}
+Rating Google: ${lead.rating || "N/A"} (${lead.reviews_count || 0} avaliações)
+Site: ${lead.website || "não possui"}
+Score de oportunidade: ${lead.score_oportunidade || 0}/100
+PageSpeed mobile: Performance ${ps.performance ?? "N/A"}%, SEO ${ps.seo ?? "N/A"}%, Acessibilidade ${ps.acessibilidade ?? "N/A"}%
+Diagnóstico UX: ${diag.identidadeVisualUI ? JSON.stringify(diag) : "não disponível"}
+
+Gere um relatório HTML COMPLETO, profissional, imprimível (A4), com as seguintes seções:
+
+1. CAPA: Logo "ESCOM Studio" em #00d1ff, título "Análise Estratégica", nome do lead, data, elementos geométricos
+2. CONTEXTO DO NICHO: panorama do mercado de ${lead.categoria} em ${lead.cidade}
+3. CAMPO DE BATALHA: análise dos concorrentes diretos (invente 3 concorrentes plausíveis com dados verossímeis)
+4. DIAGNÓSTICO DIGITAL: tabela com notas de Performance, SEO, UX, Acessibilidade — codificadas por cor (FORTE/MÉDIO/FRACO)
+5. CONTRASTE REPUTAÇÃO × PRESENÇA DIGITAL: caixa de destaque — nota ${lead.rating || "?"} no Google vs qualidade do site
+6. ESPAÇO VAZIO (OCEANO AZUL): 3 oportunidades não exploradas pelos concorrentes
+7. JANELA DE OPORTUNIDADE: por que agir agora (dados de mercado e sazonalidade)
+8. DIFERENCIAIS DISPONÍVEIS: 5 ações concretas que ${lead.nome} pode tomar para se destacar
+9. SÍNTESE ESTRATÉGICA: 3 prioridades imediatas + ROI estimado em 6 meses
+10. PROPOSTA ESCOM: CTA final para contratar a ESCOM Studio
+
+DESIGN OBRIGATÓRIO (cores ESCOM Studio):
+- Fundo das páginas: #ffffff
+- Cor primária ESCOM: #00d1ff (ciano)
+- Cor secundária: #0a0a14 (azul escuro)
+- Tabelas: header #0a0a14 texto #ffffff, linhas alternadas #f0f9ff
+- Badges FORTE: bg #00d1ff20 texto #006680 borda #00d1ff
+- Badges MÉDIO: bg #fef3c720 texto #92400e borda #f59e0b
+- Badges FRACO: bg #fee2e220 texto #991b1b borda #ef4444
+- Fontes: Playfair Display (títulos) + Plus Jakarta Sans (corpo) via Google Fonts
+- Cada "página" A4: width 210mm, min-height 297mm, padding 20mm, page-break-after: always
+- CSS @media print: remover box-shadow, garantir cores, font-size 11pt
+
+REGRAS:
+- Retorne APENAS o HTML completo (<!DOCTYPE html>...)
+- Sem markdown, sem explicações
+- Dados específicos do lead, nunca genérico
+- Proibido inventar estatísticas nacionais — use apenas dados plausíveis do nicho/cidade`;
+
+    // Chama Gemini com fallback de modelos
+    const models = ["gemini-2.5-flash", "gemini-3.6-flash", "gemini-2.5-flash-lite"];
+    let html = "";
+    for (const model of models) {
+      try {
+        const gr = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
+          { method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 32768 } }) }
+        );
+        if (!gr.ok) continue;
+        const gd: any = await gr.json();
+        let raw = gd?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        if (raw.includes("```html")) raw = raw.split("```html")[1].split("```")[0].trim();
+        else if (raw.includes("```")) raw = raw.split("```")[1].split("```")[0].trim();
+        if (raw.includes("<html") || raw.startsWith("<!DOCTYPE")) { html = raw; break; }
+      } catch {}
+    }
+
+    if (!html) return res.status(503).send("<h1>Gemini indisponível. Tente novamente em instantes.</h1>");
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.send(html);
+  } catch(e: any) { res.status(500).send("<h1>Erro: " + e.message + "</h1>"); }
+});
+
+// ── /api/enviar-email — Envia email de prospecção personalizado via Resend ────
+app.post("/api/enviar-email", async (req, res) => {
+  try {
+    const { leadId, emailDestinatario, nomeDestinatario } = req.body;
+    if (!leadId || !emailDestinatario) return res.status(400).json({ error: "leadId e emailDestinatario obrigatórios" });
+
+    const resendKey = process.env.RESEND_API_KEY || "";
+    const geminiKey = process.env.GEMINI_API_KEY || process.env.CUSTOM_GEMINI_KEY || "";
+    if (!resendKey) return res.status(500).json({ error: "RESEND_API_KEY não configurada" });
+
+    // Busca lead no Supabase
+    const rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(leadId)}&select=*&limit=1`);
+    if (!rows || rows.length === 0) return res.status(404).json({ error: "Lead não encontrado" });
+    const lead = rows[0];
+
+    const siteGeradoUrl = lead.site_gerado || "";
+    const analisePdfUrl = `https://www.escomstudio.com.br/api/gerar-analise/${leadId}`;
+    const ps = lead.diagnostico?.pagespeed || {};
+
+    // Gera o corpo do email com Gemini (ou usa template fixo como fallback)
+    let emailHtml = "";
+    let assunto = `${lead.nome} — uma análise que preparei especialmente para você`;
+
+    if (geminiKey) {
+      try {
+        const prompt = `Você é Eduardo Santos, fundador da ESCOM Studio, uma agência de sites e marketing digital.
+Escreva um email de prospecção HUMANIZADO e PERSONALIZADO para o seguinte negócio:
+
+Nome: ${lead.nome}
+Nicho: ${lead.categoria}
+Cidade: ${lead.cidade}
+Avaliação Google: ${lead.rating || "N/A"} estrelas (${lead.reviews_count || 0} avaliações)
+Site atual: ${lead.website || "não possui"}
+PageSpeed mobile: Performance ${ps.performance ?? "N/A"}%, SEO ${ps.seo ?? "N/A"}%
+
+O email deve:
+1. Cumprimentar pelo nome do negócio de forma natural (não "Prezado Sr/Sra")
+2. Mostrar que você conhece o negócio deles (mencionar a cidade, nicho e avaliação Google)
+3. Mencionar 1-2 problemas específicos identificados no site deles (baseado nos dados de PageSpeed e nicho)
+4. Apresentar que preparou um site-amostra e uma análise estratégica gratuita
+5. Convidar para uma conversa rápida de 15 minutos sem compromisso
+6. Tom: direto, caloroso, sem ser vendedor. Parecer um profissional que encontrou uma oportunidade e quer compartilhar.
+7. Assinatura: Eduardo Santos — ESCOM Studio — (14) 99831-5675
+
+Retorne APENAS o HTML do corpo do email (sem <html>/<head>/<body>).
+Use fonte Arial/sans-serif, cores #0a0a14 para texto e #00d1ff para destaques.
+Máximo 200 palavras no texto. Inclua os botões abaixo no email:
+${siteGeradoUrl ? `<a href="${siteGeradoUrl}" style="background:#00d1ff;color:#000;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;display:inline-block;margin:8px 4px">Ver site-amostra gratuito</a>` : ""}
+<a href="${analisePdfUrl}" style="background:#0a0a14;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;display:inline-block;margin:8px 4px">Ver análise estratégica</a>`;
+
+        const models = ["gemini-2.5-flash", "gemini-3.6-flash", "gemini-2.5-flash-lite"];
+        for (const model of models) {
+          try {
+            const gr = await fetch(
+              `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
+              { method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.7, maxOutputTokens: 4096 } }) }
+            );
+            if (!gr.ok) continue;
+            const gd: any = await gr.json();
+            let raw = gd?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+            if (raw.includes("```html")) raw = raw.split("```html")[1].split("```")[0].trim();
+            else if (raw.includes("```")) raw = raw.split("```")[1].split("```")[0].trim();
+            if (raw.length > 50) { emailHtml = raw; break; }
+          } catch {}
+        }
+      } catch {}
+    }
+
+    // Fallback: template fixo se Gemini falhar
+    if (!emailHtml) {
+      const temSite = !!lead.website;
+      const problemaSite = ps.performance && ps.performance < 50
+        ? `Vi que o site de vocês está com ${ps.performance}% de performance no mobile — isso afasta clientes que tentam acessar pelo celular.`
+        : temSite ? "Analisei o site de vocês e identifiquei algumas oportunidades de melhoria que podem impactar diretamente a captação de clientes."
+        : "Vi que vocês ainda não têm presença digital — e com ${lead.reviews_count || 0} avaliações no Google, certamente há clientes procurando por vocês online.";
+
+      emailHtml = `
+        <p style="font-family:Arial,sans-serif;color:#0a0a14;font-size:15px;line-height:1.7">
+          Olá, ${lead.nome}!
+        </p>
+        <p style="font-family:Arial,sans-serif;color:#333;font-size:15px;line-height:1.7">
+          Me chamo Eduardo, sou da ESCOM Studio, uma agência especializada em sites de alta conversão para negócios locais aqui em ${lead.cidade}.
+        </p>
+        <p style="font-family:Arial,sans-serif;color:#333;font-size:15px;line-height:1.7">
+          ${problemaSite}
+        </p>
+        <p style="font-family:Arial,sans-serif;color:#333;font-size:15px;line-height:1.7">
+          Preparei gratuitamente uma <strong style="color:#00d1ff">análise estratégica completa</strong> e um <strong style="color:#00d1ff">site-amostra personalizado</strong> para vocês — sem custo e sem compromisso.
+        </p>
+        <p style="text-align:center;margin:24px 0">
+          ${siteGeradoUrl ? `<a href="${siteGeradoUrl}" style="background:#00d1ff;color:#000;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;display:inline-block;margin:8px 4px">Ver site-amostra gratuito</a>` : ""}
+          <a href="${analisePdfUrl}" style="background:#0a0a14;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;display:inline-block;margin:8px 4px">Ver análise estratégica</a>
+        </p>
+        <p style="font-family:Arial,sans-serif;color:#333;font-size:15px;line-height:1.7">
+          Posso bater um papo rápido de 15 minutos? Sem enrolação — só quero mostrar o que preparei e ouvir o que vocês acham.
+        </p>
+        <p style="font-family:Arial,sans-serif;color:#0a0a14;font-size:14px;margin-top:32px;border-top:2px solid #00d1ff;padding-top:16px">
+          <strong>Eduardo Santos</strong><br>
+          ESCOM Studio<br>
+          <a href="https://wa.me/5514998315675" style="color:#00d1ff">(14) 99831-5675</a>
+        </p>`;
+    }
+
+    const emailFinal = `
+      <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1)">
+        <div style="background:#0a0a14;padding:24px 32px;text-align:center">
+          <span style="color:#00d1ff;font-family:Arial,sans-serif;font-size:22px;font-weight:bold;letter-spacing:2px">ESCOM STUDIO</span>
+        </div>
+        <div style="padding:32px">${emailHtml}</div>
+        <div style="background:#f8f8f8;padding:16px 32px;text-align:center">
+          <p style="font-family:Arial,sans-serif;color:#999;font-size:11px;margin:0">
+            Você recebeu este email pois preparamos uma análise gratuita para o seu negócio.
+            Para não receber mais, é só responder com "remover".
+          </p>
+        </div>
+      </div>`;
+
+    const resend = new Resend(resendKey);
+    await resend.emails.send({
+      from: "Eduardo — ESCOM Studio <onboarding@resend.dev>",
+      to: [emailDestinatario],
+      subject: assunto,
+      html: emailFinal,
+    });
+
+    // Registra no lead que o email foi enviado
+    try {
+      await sbFetch(`/leads?id=eq.${leadId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Prefer: "return=minimal" } as any,
+        body: JSON.stringify({ email_prospeccao_enviado: true, email_prospeccao_em: new Date().toISOString() }),
+      });
+    } catch {}
+
+    res.json({ success: true });
+  } catch(e: any) { res.status(500).json({ success: false, error: e.message }); }
 });
 
 app.listen(PORT, () => { console.log("Server running on port " + PORT); });

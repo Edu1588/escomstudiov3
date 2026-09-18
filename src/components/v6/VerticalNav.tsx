@@ -31,31 +31,50 @@ export function VerticalNav() {
     { id: "diagnostico", label: "DIAGNOSIS" },
   ];
 
+  const darkSections = ["top", "solucoes", "sobre", "diagnostico"];
+
   return (
     <div className="fixed left-0 top-0 bottom-0 z-40 hidden xl:flex flex-col pointer-events-none mix-blend-difference text-[#ECECE3]">
-      {/* 4-square icon (like Pear's logo in the corner) */}
+      {/* 4-square icon */}
       <div className="absolute left-[8vw] top-[10vh] grid grid-cols-2 gap-[2px] opacity-80">
         <div className="w-1.5 h-1.5 bg-current"></div>
         <div className="w-1.5 h-1.5 bg-current"></div>
         <div className="w-1.5 h-1.5 bg-current"></div>
         <div className="w-1.5 h-1.5 bg-current"></div>
       </div>
-      
+
       {/* Left & Right vertical lines */}
       <div className="absolute left-[8vw] top-0 bottom-0 border-l border-current opacity-30" />
       <div className="fixed right-[8vw] top-0 bottom-0 border-r border-current opacity-30 pointer-events-none mix-blend-difference text-[#ECECE3] z-40 hidden xl:block" />
-      
+
       <div className="flex-1 flex flex-col justify-center w-64 relative z-10 space-y-12">
         {menu.map((item) => {
           const isActive = item.id === activeSection;
+          const isDark = darkSections.includes(item.id);
+
           return (
-            <div key={item.id} className="relative flex items-center transition-all duration-500 h-4">
+            <div
+              key={item.id}
+              className="relative flex items-center transition-all duration-500 h-4"
+            >
               {/* Horizontal line extending outwards */}
-              <div 
-                className={`absolute left-[8vw] h-px bg-current transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${isActive ? 'w-8 opacity-100' : 'w-2 opacity-50'}`}
+              <div
+                className={`absolute left-[8vw] h-px transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                  isActive
+                    ? isDark
+                      ? "w-8 opacity-100 bg-[#00d1ff]"
+                      : "w-8 opacity-100 bg-current"
+                    : "w-2 opacity-50 bg-current"
+                }`}
               />
-              <span 
-                className={`absolute left-[calc(8vw+3rem)] font-mono text-[9px] uppercase tracking-[0.2em] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${isActive ? 'opacity-100 translate-x-0 font-bold' : 'opacity-0 -translate-x-2'}`}
+              <span
+                className={`absolute left-[calc(8vw+3rem)] font-mono text-[9px] uppercase tracking-[0.2em] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                  isActive
+                    ? isDark
+                      ? "opacity-100 translate-x-0 font-bold text-[#00d1ff]"
+                      : "opacity-100 translate-x-0 font-bold text-current"
+                    : "opacity-0 -translate-x-2 text-current"
+                }`}
               >
                 {item.label}
               </span>
