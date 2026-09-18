@@ -29,8 +29,8 @@ export default function RobotBust3D() {
       camera.position.set(0, 0.08, 6.80);
       camera.lookAt(0, 0.02, 0);
     } else {
-      camera.position.set(0, 0.08, 3.20);
-      camera.lookAt(0, 0.01, 0);
+      camera.position.set(0, -0.02, 2.95);
+      camera.lookAt(0, 0.10, 0);
     }
 
     const renderer = new THREE.WebGLRenderer({
@@ -184,7 +184,7 @@ export default function RobotBust3D() {
         const size = box.getSize(new THREE.Vector3());
 
         const maxDim = Math.max(size.x, size.y, size.z);
-        const targetScale = isMobileViewport ? 0.45 : 2.18;
+        const targetScale = isMobileViewport ? 0.45 : 2.62;
         const scale = targetScale / (maxDim || 1);
         robotWrapper.scale.set(scale, scale, scale);
 
@@ -264,7 +264,7 @@ export default function RobotBust3D() {
       animationFrameId = requestAnimationFrame(animate);
       time += 0.015;
 
-      const isMobile = window.innerWidth < 768;
+      const isMobile = window.innerWidth < 1024;
 
       // Movimento suave no mobile
       if (isMobile && !isDesktopMouseActive) {
@@ -318,8 +318,9 @@ export default function RobotBust3D() {
         headPivotRef.rotation.x = currentRotX;
       }
 
-      // Micro-respiração orgânica do robô
-      robotWrapper.position.y = Math.sin(time * 1.5) * 0.01;
+      // Micro-respiração orgânica do robô com elevação no desktop
+      const basePosY = isMobile ? 0 : 0.08;
+      robotWrapper.position.y = basePosY + Math.sin(time * 1.5) * 0.01;
 
       renderer.render(scene, camera);
     };
@@ -336,8 +337,8 @@ export default function RobotBust3D() {
         camera.position.set(0, 0.08, 6.80);
         camera.lookAt(0, 0.02, 0);
       } else {
-        camera.position.set(0, 0.08, 3.20);
-        camera.lookAt(0, 0.01, 0);
+        camera.position.set(0, -0.02, 2.95);
+        camera.lookAt(0, 0.10, 0);
       }
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);

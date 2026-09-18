@@ -5,6 +5,7 @@ import { PixelTransitionCanvas } from "@/components/v6/PixelTransitionCanvas";
 import { ArrowRight, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 export function DiagnosisStage({
   Eyebrow,
@@ -23,10 +24,28 @@ export function DiagnosisStage({
   const progressRef = useRef(0.0);
   const [mounted, setMounted] = useState(false);
   const [sent, setSent] = useState(false);
+  const [formData, setFormData] = useState({
+    nome: "",
+    empresa: "",
+    email: "",
+    whatsapp: "",
+    mensagem: "",
+  });
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSent(true);
+
+    const text = encodeURIComponent(
+      `*Novo Contato via Site ESCOM STUDIO*\n\n` +
+      `• *Nome:* ${formData.nome}\n` +
+      `• *Empresa:* ${formData.empresa}\n` +
+      `• *E-mail:* ${formData.email}\n` +
+      `• *WhatsApp:* ${formData.whatsapp || "Não informado"}\n` +
+      `• *Objetivo:* ${formData.mensagem}`
+    );
+
+    window.open(`https://wa.me/5513981062787?text=${text}`, "_blank");
   };
 
   useEffect(() => {
@@ -144,7 +163,9 @@ export function DiagnosisStage({
                   caminho.
                 </p>
                 <a
-                  href="https://wa.me/"
+                  href="https://wa.me/5513981062787?text=Ol%C3%A1!%20Gostaria%20de%20conversar%20sobre%20um%20projeto%20com%20a%20ESCOM%20Studio."
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="mt-8 inline-flex items-center gap-2 border-b border-cyan pb-1 text-xs font-semibold text-cyan hover:opacity-80 transition-opacity"
                 >
                   Falar com a ESCOM no WhatsApp <ArrowRight className="size-3" />
@@ -158,8 +179,7 @@ export function DiagnosisStage({
                       Recebemos suas informações.
                     </h3>
                     <p className="mt-3 max-w-md text-sm leading-6 text-muted-foreground">
-                      Vamos analisar o contexto e retornaremos com o próximo
-                      passo mais adequado para o seu projeto.
+                      Abrimos o WhatsApp com o resumo do seu projeto e entraremos em contato rapidamente.
                     </p>
                   </div>
                 ) : (
@@ -171,11 +191,15 @@ export function DiagnosisStage({
                       <Input
                         required
                         placeholder="Nome"
+                        value={formData.nome}
+                        onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
                         className="border-border bg-transparent text-foreground placeholder:text-muted-foreground"
                       />
                       <Input
                         required
                         placeholder="Empresa"
+                        value={formData.empresa}
+                        onChange={(e) => setFormData({ ...formData, empresa: e.target.value })}
                         className="border-border bg-transparent text-foreground placeholder:text-muted-foreground"
                       />
                     </div>
@@ -184,10 +208,14 @@ export function DiagnosisStage({
                         required
                         type="email"
                         placeholder="E-mail profissional"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         className="border-border bg-transparent text-foreground placeholder:text-muted-foreground"
                       />
                       <Input
-                        placeholder="WhatsApp"
+                        placeholder="WhatsApp (com DDD)"
+                        value={formData.whatsapp}
+                        onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
                         className="border-border bg-transparent text-foreground placeholder:text-muted-foreground"
                       />
                     </div>
@@ -195,10 +223,19 @@ export function DiagnosisStage({
                       required
                       rows={3}
                       placeholder="Qual é o momento do negócio e o objetivo que precisa ser resolvido?"
+                      value={formData.mensagem}
+                      onChange={(e) => setFormData({ ...formData, mensagem: e.target.value })}
                       className="border-border bg-transparent text-foreground placeholder:text-muted-foreground"
                     />
                     <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
-                      <AnchorButton>Enviar informações</AnchorButton>
+                      <Button
+                        type="submit"
+                        size="xl"
+                        variant="editorial"
+                      >
+                        Enviar informações
+                        <ArrowRight />
+                      </Button>
                       <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
                         Retorno em até 1 dia útil
                       </span>
