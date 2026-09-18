@@ -23,7 +23,6 @@ if (process.env.Groq && !process.env.GROQ_API_KEY) process.env.GROQ_API_KEY = pr
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-import { Resend } from "resend";
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, collection, addDoc, serverTimestamp, Timestamp, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, orderBy, where, writeBatch, limit } from 'firebase/firestore';
