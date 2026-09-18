@@ -196,7 +196,7 @@ export function HeroManifestoStage({
           className="absolute inset-0 z-10 flex flex-col justify-between pt-12 md:pt-14 dark bg-[#000000] text-foreground"
         >
           {/* Robô 3D interativo à direita (Busto fixo, cabeça seguindo o cursor) */}
-          <div className="absolute right-0 top-12 bottom-0 w-full lg:top-0 lg:w-[50vw] z-0 pointer-events-auto flex items-center justify-center opacity-35 lg:opacity-100 scale-90 lg:scale-105 lg:-translate-y-8 transition-all">
+          <div className="absolute right-0 top-12 bottom-0 w-full lg:top-0 lg:w-[44vw] z-0 pointer-events-auto flex items-center justify-center opacity-35 lg:opacity-100 scale-90 lg:scale-100 lg:-translate-y-8 transition-all">
             <RobotBust3D />
           </div>
 

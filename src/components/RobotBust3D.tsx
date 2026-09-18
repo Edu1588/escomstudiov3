@@ -29,8 +29,8 @@ export default function RobotBust3D() {
       camera.position.set(0, 0.08, 6.80);
       camera.lookAt(0, 0.02, 0);
     } else {
-      camera.position.set(0, -0.02, 2.95);
-      camera.lookAt(0, 0.10, 0);
+      camera.position.set(0, 0.04, 3.40);
+      camera.lookAt(0, 0.12, 0);
     }
 
     const renderer = new THREE.WebGLRenderer({
@@ -184,7 +184,7 @@ export default function RobotBust3D() {
         const size = box.getSize(new THREE.Vector3());
 
         const maxDim = Math.max(size.x, size.y, size.z);
-        const targetScale = isMobileViewport ? 0.45 : 2.62;
+        const targetScale = isMobileViewport ? 0.45 : 2.05;
         const scale = targetScale / (maxDim || 1);
         robotWrapper.scale.set(scale, scale, scale);
 
@@ -337,8 +337,8 @@ export default function RobotBust3D() {
         camera.position.set(0, 0.08, 6.80);
         camera.lookAt(0, 0.02, 0);
       } else {
-        camera.position.set(0, -0.02, 2.95);
-        camera.lookAt(0, 0.10, 0);
+        camera.position.set(0, 0.04, 3.40);
+        camera.lookAt(0, 0.12, 0);
       }
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
