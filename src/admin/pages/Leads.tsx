@@ -88,7 +88,7 @@ export default function Leads() {
   const [filterCidade, setFilterCidade] = useState("todas");
   const [filterStatus, setFilterStatus] = useState("todos");
   const [filterOportunidade, setFilterOportunidade] = useState("todas");
-  const [filterSite, setFilterSite] = useState("todos"); // "todos" | "sem_site" | "com_site"
+  const [filterSite, setFilterSite] = useState("todos"); // "todos" | "sem_site" | "com_site" | "site_gerado" | "com_analise"
 
   const [leads, setLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -352,8 +352,11 @@ export default function Leads() {
       const matchOportunidade = filterOportunidade === "todas" || 
         (l.oportunidade || (l.score >= 80 ? "Alta" : "Média")).toLowerCase() === filterOportunidade.toLowerCase();
 
-      const matchSite = filterSite === "todos" || 
-        (filterSite === "sem_site" ? !l.temSite : l.temSite);
+      const matchSite = filterSite === "todos" ||
+        (filterSite === "sem_site"    ? !l.temSite : false) ||
+        (filterSite === "com_site"    ? l.temSite : false) ||
+        (filterSite === "site_gerado" ? !!(l.siteGerado || generatedSiteUrls[l.id]) : false) ||
+        (filterSite === "com_analise" ? !!l.diagnostico : false);
 
       return matchSearch && matchCidade && matchOportunidade && matchSite;
     });
@@ -468,6 +471,8 @@ export default function Leads() {
               <option value="todos">Com ou sem site</option>
               <option value="sem_site">Sem site próprio</option>
               <option value="com_site">Com site próprio</option>
+              <option value="site_gerado">🖥 Site gerado pela ESCOM</option>
+              <option value="com_analise">📄 Com análise</option>
             </select>
           </div>
 
@@ -603,6 +608,35 @@ export default function Leads() {
                           <div className="text-white/40 text-xs font-mono mt-0.5 truncate">
                             {lead.cidade}
                           </div>
+                          {/* Indicadores de assets gerados */}
+                          {(lead.siteGerado || generatedSiteUrls[lead.id] || lead.diagnostico) && (
+                            <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                              {(lead.siteGerado || generatedSiteUrls[lead.id]) && (
+                                <a
+                                  href={lead.siteGerado || generatedSiteUrls[lead.id]}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-cyan/10 border border-cyan/30 text-cyan text-[10px] font-mono hover:bg-cyan/20 transition-colors"
+                                  title="Ver site gerado"
+                                >
+                                  <Globe size={9} />
+                                  <span>Site gerado</span>
+                                </a>
+                              )}
+                              {lead.diagnostico && (
+                                <a
+                                  href={`/api/gerar-analise/${lead.id}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-violet-500/10 border border-violet-500/30 text-violet-300 text-[10px] font-mono hover:bg-violet-500/20 transition-colors"
+                                  title="Ver análise"
+                                >
+                                  <Download size={9} />
+                                  <span>Análise</span>
+                                </a>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </td>

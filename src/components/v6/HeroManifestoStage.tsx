@@ -193,31 +193,31 @@ export function HeroManifestoStage({
         <section
           id="top"
           ref={heroRef}
-          className="absolute inset-0 z-10 flex flex-col justify-between pt-20 dark bg-[#000000] text-foreground"
+          className="absolute inset-0 z-10 flex flex-col justify-between pt-12 md:pt-14 dark bg-[#000000] text-foreground"
         >
           {/* Robô 3D interativo à direita (Busto fixo, cabeça seguindo o cursor) */}
-          <div className="absolute right-0 top-16 bottom-0 w-full lg:top-0 lg:w-[50vw] z-0 pointer-events-auto flex items-center justify-center opacity-35 lg:opacity-100 scale-90 lg:scale-105 lg:-translate-y-8 transition-all">
+          <div className="absolute right-0 top-12 bottom-0 w-full lg:top-0 lg:w-[50vw] z-0 pointer-events-auto flex items-center justify-center opacity-35 lg:opacity-100 scale-90 lg:scale-105 lg:-translate-y-8 transition-all">
             <RobotBust3D />
           </div>
 
-          <div className="relative z-10 flex min-h-[calc(100vh-5rem)] flex-1 flex-col justify-between px-5 py-8 md:px-12 xl:px-[22vw] md:py-12 pointer-events-none">
+          <div className="relative z-10 flex h-full flex-1 flex-col justify-between px-5 pt-2 pb-6 md:px-12 xl:px-[22vw] md:pt-4 md:pb-8 pointer-events-none">
             <div className="pointer-events-auto">
               <Eyebrow cyan>ESCOM STUDIO · DIGITAL GROWTH SYSTEMS</Eyebrow>
             </div>
             
-            <div className="max-w-3xl py-12 pointer-events-auto">
+            <div className="max-w-3xl py-3 md:py-5 pointer-events-auto">
               <SplitTextReveal
                 type="words"
                 className="max-w-2xl font-serif text-5xl leading-[0.95] font-light md:text-7xl lg:text-[5.5rem]"
               >
                 Transformamos presença digital em sistemas que geram crescimento.
               </SplitTextReveal>
-              <p className="mt-7 max-w-xl text-sm leading-6 md:text-base text-muted-foreground">
+              <p className="mt-5 max-w-xl text-sm leading-6 md:text-base text-muted-foreground">
                 Criamos sites, marcas, automações, experiências com inteligência
                 artificial e operações de tráfego pago para empresas que precisam
                 atrair melhor, vender mais e operar com menos fricção.
               </p>
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="mt-6 flex flex-wrap gap-3">
                 <AnchorButton>Iniciar diagnóstico</AnchorButton>
                 <Button asChild variant="editorialOutline" size="xl">
                   <a href="#solucoes">
@@ -226,13 +226,13 @@ export function HeroManifestoStage({
                   </a>
                 </Button>
               </div>
-              <p className="mt-5 max-w-lg text-xs leading-5 text-muted-foreground/80">
+              <p className="mt-4 max-w-lg text-xs leading-5 text-muted-foreground/80">
                 Conte-nos onde você está e onde quer chegar. Identificamos as
                 oportunidades mais importantes para o seu próximo ciclo.
               </p>
             </div>
 
-            <div className="flex flex-wrap justify-between gap-3 border-t border-border/50 pt-4 font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground pointer-events-auto">
+            <div className="flex flex-wrap justify-between gap-3 border-t border-border/50 pt-3 pb-2 font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground pointer-events-auto">
               <span>Strategy // Design // Code // Automation // Media</span>
               <span>System status: ready</span>
               <span>Built for conversion</span>
