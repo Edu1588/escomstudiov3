@@ -7,7 +7,7 @@ import { VerticalNav } from "@/components/v6/VerticalNav";
 import { SplitTextReveal } from "@/components/v6/SplitTextReveal";
 import { LenisProvider } from "@/components/v6/LenisProvider";
 import { HeroManifestoStage } from "@/components/v6/HeroManifestoStage";
-import { GlobalPixelTransitions } from "@/components/v6/GlobalPixelTransitions";
+import { PixelBoundaryTransition } from "@/components/v6/PixelBoundaryTransition";
 
 import {
   Accordion,
@@ -211,7 +211,6 @@ export function HomeV6() {
   return (
     <main className="relative overflow-x-hidden bg-background text-foreground">
       <VerticalNav />
-      <GlobalPixelTransitions />
       <div className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/90 backdrop-blur-md xl:hidden">
         <div className="flex h-9 items-center justify-center border-b border-border px-4 font-mono text-[9px] uppercase tracking-[0.14em] md:text-[10px]">
           Engenharia digital para empresas que querem operar na próxima fase do
@@ -265,6 +264,7 @@ export function HomeV6() {
       </div>
 
       <HeroManifestoStage Eyebrow={Eyebrow} AnchorButton={AnchorButton} />
+      <PixelBoundaryTransition toColor="#000000" />
       <section
         id="solucoes"
         className="relative bg-background px-5 py-28 md:px-12 xl:px-[22vw] md:py-36 dark bg-background text-foreground"
@@ -311,6 +311,7 @@ export function HomeV6() {
         </div>
       </section>
 
+      <PixelBoundaryTransition toColor="#ECECE3" />
       <section
         id="metodo"
         className="relative px-5 py-28 text-foreground md:px-12 xl:px-[22vw] md:py-40 bg-background text-foreground"
@@ -446,6 +447,7 @@ export function HomeV6() {
           ))}
         </div>
       </section>
+      <PixelBoundaryTransition toColor="#000000" />
       <section
         id="sobre"
         className="relative px-5 py-28 text-foreground md:px-12 xl:px-[22vw] md:py-36 dark bg-background text-foreground"
@@ -487,6 +489,7 @@ export function HomeV6() {
           ))}
         </div>
       </section>
+      <PixelBoundaryTransition toColor="#ECECE3" />
       <section
         id="insights"
         className="relative bg-background px-5 py-28 md:px-12 xl:px-[22vw] md:py-36"
@@ -551,6 +554,7 @@ export function HomeV6() {
         </div>
       </section>
 
+      <PixelBoundaryTransition toColor="#000000" />
       <section
         id="diagnostico"
         className="relative px-5 py-28 text-foreground md:px-12 xl:px-[22vw] md:py-36 dark bg-background text-foreground"

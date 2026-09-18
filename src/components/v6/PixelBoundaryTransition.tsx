@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+﻿import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import gsap from "gsap";
@@ -30,7 +31,7 @@ const fragmentShader = `
       discard;
     }
 
-    // Micro-pixels densos: grãos ultra finos (~1.5px a 2px)
+    // Micro-pixels densos: escala fina ultra definida (~1.5px)
     float pixelsX = clamp(uResolution.x * 0.48, 700.0, 1000.0); 
     float pixelsY = pixelsX * (uResolution.y / uResolution.x);
     vec2 grid = vec2(pixelsX, pixelsY);
@@ -72,18 +73,23 @@ const fragmentShader = `
 `;
 
 function Scene({
-  colorRef,
+  color,
   progressRef,
 }: {
-  colorRef: React.MutableRefObject<THREE.Color>;
+  color: string;
   progressRef: React.MutableRefObject<number>;
 }) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
+  const colorVec = useRef(new THREE.Color(color));
   const { size } = useThree();
+
+  useEffect(() => {
+    colorVec.current.set(color);
+  }, [color]);
 
   useFrame((state) => {
     if (materialRef.current) {
-      materialRef.current.uniforms.uColor.value.copy(colorRef.current);
+      materialRef.current.uniforms.uColor.value.copy(colorVec.current);
       materialRef.current.uniforms.uProgress.value = progressRef.current;
       materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
       materialRef.current.uniforms.uResolution.value.set(size.width, size.height);
@@ -99,7 +105,7 @@ function Scene({
         fragmentShader={fragmentShader}
         transparent={true}
         uniforms={{
-          uColor: { value: colorRef.current },
+          uColor: { value: colorVec.current },
           uProgress: { value: 0 },
           uTime: { value: 0 },
           uResolution: { value: new THREE.Vector2(size.width, size.height) },
@@ -109,9 +115,9 @@ function Scene({
   );
 }
 
-export function GlobalPixelTransitions() {
+export function PixelBoundaryTransition({ toColor }: { toColor: string }) {
+  const triggerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const colorRef = useRef<THREE.Color>(new THREE.Color("#000000"));
   const progressRef = useRef(0.0);
   const [mounted, setMounted] = useState(false);
 
@@ -123,99 +129,74 @@ export function GlobalPixelTransitions() {
     if (!mounted || typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
 
+    const trigger = triggerRef.current;
     const container = containerRef.current;
-    if (!container) return;
+    if (!trigger || !container) return;
 
     let ctx = gsap.context(() => {
-      // Configuração das transições de seção em toda a extensão da página
-      const transitions = [
-        { trigger: "#solucoes", color: "#000000" },
-        { trigger: "#metodo", color: "#ECECE3" },
-        { trigger: "#sobre", color: "#000000" },
-        { trigger: "#insights", color: "#ECECE3" },
-        { trigger: "#diagnostico", color: "#000000" },
-      ];
-
-      transitions.forEach(({ trigger, color }) => {
-        const el = document.querySelector(trigger);
-        if (!el) return;
-
-        ScrollTrigger.create({
-          trigger: el,
-          start: "top 88%",
-          end: "top 25%",
-          scrub: 0.5,
-          onEnter: () => {
-            colorRef.current.set(color);
+      // Dispara estritamente quando a linha de fronteira entre as seções cruza a tela
+      ScrollTrigger.create({
+        trigger: trigger,
+        start: "top 85%",
+        end: "bottom 15%",
+        scrub: 0.4,
+        onEnter: () => {
+          container.style.opacity = "1";
+        },
+        onEnterBack: () => {
+          container.style.opacity = "1";
+        },
+        onLeave: () => {
+          container.style.opacity = "0";
+          progressRef.current = 0.0;
+        },
+        onLeaveBack: () => {
+          container.style.opacity = "0";
+          progressRef.current = 0.0;
+        },
+        onUpdate: (self) => {
+          // De 0.0 a 0.5: micro-pixels stardust crescem da nova cor e cobrem a viewport
+          // De 0.5 a 1.0: transição desvanece suavemente revelando a nova seção
+          if (self.progress <= 0.5) {
+            progressRef.current = self.progress * 2.0 * 1.35;
             container.style.opacity = "1";
-          },
-          onEnterBack: () => {
-            colorRef.current.set(color);
-            container.style.opacity = "1";
-          },
-          onLeave: () => {
-            container.style.opacity = "0";
-            progressRef.current = 0.0;
-          },
-          onLeaveBack: () => {
-            container.style.opacity = "0";
-            progressRef.current = 0.0;
-          },
-          onUpdate: (self) => {
-            // De 0.0 a 0.5: micro-pixels stardust crescem e cobrem a viewport
-            // De 0.5 a 1.0: transição desvanece suavemente revelando a seção seguinte
-            if (self.progress <= 0.5) {
-              progressRef.current = self.progress * 2.0 * 1.35;
-              container.style.opacity = "1";
-            } else {
-              progressRef.current = 1.35;
-              const fade = 1.0 - (self.progress - 0.5) * 2.0;
-              container.style.opacity = String(Math.max(0, fade));
-            }
-          },
-        });
-      });
-
-      // Efeito de revelação de foco óptico (blur -> nítido) nos títulos de seção
-      gsap.utils.toArray<HTMLElement>(".reveal-focus").forEach((el) => {
-        gsap.fromTo(
-          el,
-          { opacity: 0.15, filter: "blur(14px)", y: 22 },
-          {
-            opacity: 1,
-            filter: "blur(0px)",
-            y: 0,
-            duration: 0.8,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: el,
-              start: "top 85%",
-              toggleActions: "play none none reverse",
-            },
+          } else {
+            progressRef.current = 1.35;
+            const fade = 1.0 - (self.progress - 0.5) * 2.0;
+            container.style.opacity = String(Math.max(0, fade));
           }
-        );
+        },
       });
     });
 
     return () => {
       ctx.revert();
     };
-  }, [mounted]);
-
-  if (!mounted) return null;
+  }, [mounted, toColor]);
 
   return (
-    <div
-      ref={containerRef}
-      className="fixed inset-0 z-30 pointer-events-none opacity-0 transition-opacity duration-150"
-    >
-      <Canvas
-        camera={{ position: [0, 0, 1] }}
-        gl={{ alpha: true, antialias: false }}
-        resize={{ scroll: false }}
-      >
-        <Scene colorRef={colorRef} progressRef={progressRef} />
-      </Canvas>
-    </div>
+    <>
+      <div
+        ref={triggerRef}
+        className="pointer-events-none relative h-px w-full"
+        style={{ zIndex: 1 }}
+      />
+      {mounted &&
+        createPortal(
+          <div
+            ref={containerRef}
+            className="pointer-events-none fixed inset-0 z-30 opacity-0 transition-opacity duration-150"
+          >
+            <Canvas
+              camera={{ position: [0, 0, 1] }}
+              gl={{ alpha: true, antialias: false }}
+              resize={{ scroll: false }}
+            >
+              <Scene color={toColor} progressRef={progressRef} />
+            </Canvas>
+          </div>,
+          document.body
+        )}
+    </>
   );
 }
