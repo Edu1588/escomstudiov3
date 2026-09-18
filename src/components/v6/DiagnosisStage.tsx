@@ -113,10 +113,14 @@ export function DiagnosisStage({
         ref={screenRef}
         className="relative min-h-screen w-full overflow-hidden bg-[#ecece3]"
       >
-        {/* THREE.JS PIXEL SHADER PRETO (#000000) cobrindo FAQ (Bege) */}
+        {/* THREE.JS PIXEL SHADER PRETO (#000000) cobrindo FAQ (Bege) - CENTER */}
         {mounted && (
           <div className="z-10 absolute inset-0 pointer-events-none">
-            <PixelTransitionCanvas color="#000000" progressRef={progressRef} />
+            <PixelTransitionCanvas
+              color="#000000"
+              progressRef={progressRef}
+              direction="center"
+            />
           </div>
         )}
 

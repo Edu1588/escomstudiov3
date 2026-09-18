@@ -171,7 +171,11 @@ export function AboutInsightsStage({
         {/* THREE.JS PIXEL SHADER PRETO (#000000) cobrindo Projetos (Bege) */}
         {mounted && (
           <div className="z-10 absolute inset-0 pointer-events-none">
-            <PixelTransitionCanvas color="#000000" progressRef={progress1Ref} />
+            <PixelTransitionCanvas
+              color="#000000"
+              progressRef={progress1Ref}
+              direction="center"
+            />
           </div>
         )}
 
@@ -223,7 +227,11 @@ export function AboutInsightsStage({
         {/* THREE.JS PIXEL SHADER BEGE (#ecece3) cobrindo Sobre (Preto) */}
         {mounted && (
           <div className="z-30 absolute inset-0 pointer-events-none">
-            <PixelTransitionCanvas color="#ecece3" progressRef={progress2Ref} />
+            <PixelTransitionCanvas
+              color="#ecece3"
+              progressRef={progress2Ref}
+              direction="center"
+            />
           </div>
         )}
 

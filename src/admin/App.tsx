@@ -99,16 +99,16 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
       {isOpen && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 xl:hidden" onClick={() => setIsOpen(false)} />
       )}
-      <div className={`fixed inset-y-0 left-0 z-50 transform ${isOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 w-64 h-full bg-[#0b1324] border-r border-[#16233b] flex flex-col pt-5 pb-4 shrink-0 overflow-hidden ${isOpen ? 'xl:relative xl:translate-x-0' : ''}`}>
+      <div className={`fixed inset-y-0 left-0 z-50 transform ${isOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 w-64 h-full bg-[#000000] border-r border-white/10 flex flex-col pt-6 pb-4 shrink-0 overflow-hidden ${isOpen ? 'xl:relative xl:translate-x-0' : ''}`}>
         
         {/* Brand Header */}
-        <div className="px-5 mb-6 flex items-center justify-between shrink-0">
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#2563eb] to-[#38bdf8] flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-              <Box size={18} className="text-white fill-white/20" />
-            </div>
-            <span className="font-bold text-lg text-white tracking-tight">
-              ESCOM Studio
+        <div className="px-5 mb-8 flex items-center justify-between shrink-0">
+          <Link to="/" className="flex flex-col group">
+            <span className="font-serif text-2xl font-light text-white tracking-tight">
+              ESCOM<span className="text-cyan">.</span>
+            </span>
+            <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-white/40 mt-1">
+              Studio Operating System
             </span>
           </Link>
         </div>
@@ -123,16 +123,16 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
                   <Link 
                     to={item.path} 
                     onClick={() => handleMenuClick(item.name)}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                    className={`flex items-center gap-3 px-3 py-2 text-xs transition-all ${
                       isActive 
-                        ? "bg-[#132342] text-white border-l-4 border-[#2563eb] shadow-sm" 
-                        : "text-gray-400 hover:text-white hover:bg-[#101b33]"
+                        ? "bg-white/[0.05] text-white border-l-2 border-cyan shadow-none" 
+                        : "text-white/50 hover:text-white hover:bg-white/[0.02]"
                     }`}
                   >
-                    <span className={isActive ? "text-[#3b82f6]" : "text-gray-400"}>
+                    <span className={isActive ? "text-cyan" : "text-white/40"}>
                       {item.icon}
                     </span>
-                    <span>{item.name}</span>
+                    <span className="font-mono text-[11px] uppercase tracking-[0.06em]">{item.name}</span>
                   </Link>
                 </li>
               );
@@ -141,15 +141,15 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
         </div>
 
         {/* User Profile Info Footer */}
-        <div className="px-3 shrink-0 pt-2 border-t border-[#15223a]">
-          <div className="flex items-center justify-between bg-[#0e1930] border border-[#1b2b4a] rounded-2xl p-2.5">
+        <div className="px-3 shrink-0 pt-3 border-t border-white/10">
+          <div className="flex items-center justify-between bg-[#09090b] border border-white/10 p-2.5">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-full bg-[#1e2e4a] border border-[#2b4168] flex items-center justify-center text-xs font-bold text-white shrink-0">
+              <div className="w-7 h-7 bg-cyan/10 border border-cyan/30 flex items-center justify-center font-mono text-[10px] font-bold text-cyan shrink-0">
                 ES
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-xs font-bold text-white truncate">Eduardo Santos</div>
-                <div className="text-[10px] text-gray-400 truncate">admin@escom.studio</div>
+                <div className="font-serif text-xs font-medium text-white truncate">Eduardo Santos</div>
+                <div className="font-mono text-[9px] uppercase tracking-[0.06em] text-white/40 truncate">admin@escom.studio</div>
               </div>
             </div>
             <button 
@@ -157,10 +157,10 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
                 localStorage.removeItem("admin_auth");
                 window.location.reload();
               }}
-              className="text-gray-400 hover:text-white p-1 rounded-lg transition-colors"
+              className="text-white/40 hover:text-white p-1 transition-colors"
               title="Opções / Sair"
             >
-              <ChevronDown size={16} />
+              <ChevronDown size={14} />
             </button>
           </div>
         </div>
@@ -219,7 +219,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex h-screen bg-[#070c18] text-white overflow-hidden font-sans relative">
+    <div className="flex h-screen bg-[#000000] text-white overflow-hidden font-sans relative">
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
       <main className="flex-1 h-full overflow-hidden flex flex-col relative w-full">
         <Routes>

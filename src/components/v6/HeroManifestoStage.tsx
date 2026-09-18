@@ -5,7 +5,7 @@ import { SplitTextReveal } from "@/components/v6/SplitTextReveal";
 import { PixelTransitionCanvas } from "@/components/v6/PixelTransitionCanvas";
 import { Button } from "@/components/ui/button";
 import { ArrowDown } from "lucide-react";
-import heroImage from "@/assets/escom-hero.jpg";
+import RobotBust3D from "@/components/RobotBust3D";
 
 export function HeroManifestoStage({
   Eyebrow,
@@ -70,6 +70,7 @@ export function HeroManifestoStage({
         0.02
       );
 
+      // Micro-pixels beges sobem de baixo para cima cobrindo o Hero
       tl.fromTo(
         progress1Ref,
         { current: 0.0 },
@@ -131,6 +132,7 @@ export function HeroManifestoStage({
         0.58
       );
 
+      // Micro-pixels pretos sobem de baixo para cima cobrindo o Manifesto
       tl.fromTo(
         progress2Ref,
         { current: 0.0 },
@@ -187,30 +189,30 @@ export function HeroManifestoStage({
         ref={screenRef}
         className="relative h-screen w-full overflow-hidden bg-[#000000]"
       >
-        {/* CAMADA 1 (Z-10): HERO (Preto) */}
+        {/* CAMADA 1 (Z-10): HERO (Preto com Robô 3D à direita) */}
         <section
           id="top"
           ref={heroRef}
           className="absolute inset-0 z-10 flex flex-col justify-between pt-20 dark bg-[#000000] text-foreground"
         >
-          <img
-            src={heroImage}
-            alt="Diretor criativo observa uma esfera azul, símbolo de um sistema digital em evolução"
-            width={1536}
-            height={1024}
-            className="absolute inset-0 h-full w-full object-cover object-[62%_center]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/75 to-transparent" />
-          <div className="relative flex min-h-[calc(100vh-5rem)] flex-1 flex-col justify-between px-5 py-8 md:px-12 xl:px-[22vw] md:py-12">
-            <Eyebrow cyan>ESCOM STUDIO · DIGITAL GROWTH SYSTEMS</Eyebrow>
-            <div className="max-w-4xl py-16">
+          {/* Robô 3D interativo à direita (Busto fixo, cabeça seguindo o cursor) */}
+          <div className="absolute right-0 top-0 bottom-0 w-full lg:w-[48vw] z-0 pointer-events-auto flex items-center justify-center opacity-90 lg:opacity-100">
+            <RobotBust3D />
+          </div>
+
+          <div className="relative z-10 flex min-h-[calc(100vh-5rem)] flex-1 flex-col justify-between px-5 py-8 md:px-12 xl:px-[22vw] md:py-12 pointer-events-none">
+            <div className="pointer-events-auto">
+              <Eyebrow cyan>ESCOM STUDIO · DIGITAL GROWTH SYSTEMS</Eyebrow>
+            </div>
+            
+            <div className="max-w-3xl py-12 pointer-events-auto">
               <SplitTextReveal
                 type="words"
-                className="max-w-3xl font-serif text-5xl leading-[0.95] font-light md:text-7xl lg:text-[5.5rem]"
+                className="max-w-2xl font-serif text-5xl leading-[0.95] font-light md:text-7xl lg:text-[5.5rem]"
               >
                 Transformamos presença digital em sistemas que geram crescimento.
               </SplitTextReveal>
-              <p className="mt-7 max-w-2xl text-sm leading-6 md:text-base">
+              <p className="mt-7 max-w-xl text-sm leading-6 md:text-base text-muted-foreground">
                 Criamos sites, marcas, automações, experiências com inteligência
                 artificial e operações de tráfego pago para empresas que precisam
                 atrair melhor, vender mais e operar com menos fricção.
@@ -224,12 +226,13 @@ export function HeroManifestoStage({
                   </a>
                 </Button>
               </div>
-              <p className="mt-5 max-w-xl text-xs leading-5 text-muted-foreground">
+              <p className="mt-5 max-w-lg text-xs leading-5 text-muted-foreground/80">
                 Conte-nos onde você está e onde quer chegar. Identificamos as
                 oportunidades mais importantes para o seu próximo ciclo.
               </p>
             </div>
-            <div className="flex flex-wrap justify-between gap-3 border-t border-border pt-4 font-mono text-[9px] uppercase tracking-[0.12em]">
+
+            <div className="flex flex-wrap justify-between gap-3 border-t border-border/50 pt-4 font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground pointer-events-auto">
               <span>Strategy // Design // Code // Automation // Media</span>
               <span>System status: ready</span>
               <span>Built for conversion</span>
@@ -237,17 +240,21 @@ export function HeroManifestoStage({
           </div>
         </section>
 
-        {/* CAMADA 2 (Z-20): THREE.JS PIXEL SHADER BEGE (#ecece3) */}
+        {/* CAMADA 2 (Z-20): THREE.JS PIXEL SHADER BEGE (#ecece3) - CENTER */}
         {mounted && (
           <div className="z-20 absolute inset-0 pointer-events-none">
-            <PixelTransitionCanvas color="#ecece3" progressRef={progress1Ref} />
+            <PixelTransitionCanvas
+              color="#ecece3"
+              progressRef={progress1Ref}
+              direction="center"
+            />
           </div>
         )}
 
         {/* CAMADA 3 (Z-30): MANIFESTO (Bege) */}
         <section
           ref={manifestoRef}
-          className="absolute inset-0 z-30 flex flex-col justify-center px-5 py-12 text-[#000000] md:px-12 xl:px-[22vw] opacity-0 pointer-events-none"
+          className="absolute inset-0 z-30 flex flex-col justify-center px-5 py-12 text-[#000000] md:px-12 xl:px-[22vw] opacity-0 pointer-events-none bg-[#ecece3]"
         >
           <Eyebrow light>O crescimento não acontece em partes isoladas</Eyebrow>
           <h2 className="mt-12 max-w-6xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl">
@@ -268,10 +275,14 @@ export function HeroManifestoStage({
           </div>
         </section>
 
-        {/* CAMADA 4 (Z-40): THREE.JS PIXEL SHADER PRETO (#000000) */}
+        {/* CAMADA 4 (Z-40): THREE.JS PIXEL SHADER PRETO (#000000) - CENTER */}
         {mounted && (
           <div className="z-40 absolute inset-0 pointer-events-none">
-            <PixelTransitionCanvas color="#000000" progressRef={progress2Ref} />
+            <PixelTransitionCanvas
+              color="#000000"
+              progressRef={progress2Ref}
+              direction="center"
+            />
           </div>
         )}
 

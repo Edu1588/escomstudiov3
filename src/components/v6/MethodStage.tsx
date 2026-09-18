@@ -103,10 +103,14 @@ export function MethodStage({
         ref={screenRef}
         className="relative h-screen w-full overflow-hidden bg-[#000000]"
       >
-        {/* THREE.JS PIXEL SHADER BEGE (#ecece3) */}
+        {/* THREE.JS PIXEL SHADER BEGE (#ecece3) - BOTTOM-UP (ÚNICA SEÇÃO DE BAIXO PARA CIMA) */}
         {mounted && (
           <div className="z-10 absolute inset-0 pointer-events-none">
-            <PixelTransitionCanvas color="#ecece3" progressRef={progressRef} />
+            <PixelTransitionCanvas
+              color="#ecece3"
+              progressRef={progressRef}
+              direction="bottom-up"
+            />
           </div>
         )}
 

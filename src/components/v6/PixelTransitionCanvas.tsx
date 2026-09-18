@@ -16,6 +16,7 @@ const fragmentShader = `
   uniform float uProgress;
   uniform vec2 uResolution;
   uniform float uTime;
+  uniform float uDirection; // 0.0 = radial/centro, 1.0 = bottom-up (de baixo para cima)
   
   float hash(vec2 p) {
     vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -34,19 +35,31 @@ const fragmentShader = `
     vec2 grid = vec2(pixelsX, pixelsY);
     
     vec2 pUv = floor(vUv * grid) / grid;
-    
-    vec2 aspectUv = pUv;
-    aspectUv.x *= uResolution.x / uResolution.y;
-    vec2 aspectCenter = vec2(0.5 * (uResolution.x / uResolution.y), 0.5);
-    
-    vec2 dBox = abs(aspectUv - aspectCenter);
-    float boxDist = max(dBox.x / aspectCenter.x, dBox.y / aspectCenter.y);
-    float radialDist = length(dBox) / length(aspectCenter);
-    float shapeDist = mix(boxDist, radialDist, 0.35);
-    
     float n = hash(pUv * 876.54);
-    float threshold = 0.04 + shapeDist * 0.70 + n * 0.26;
-    float band = 0.18;
+    
+    float threshold;
+    float band;
+
+    if (uDirection > 0.5) {
+      // ONDA DE BAIXO PARA CIMA (Bottom-Up Wave):
+      // A parte inferior (vUv.y = 0.0) é preenchida primeiro e a onda de micro-pixels stardust sobe
+      float waveDist = 1.0 - pUv.y;
+      threshold = waveDist * 0.80 + n * 0.24;
+      band = 0.16;
+    } else {
+      // DISPERSÃO RADIAL DO CENTRO
+      vec2 aspectUv = pUv;
+      aspectUv.x *= uResolution.x / uResolution.y;
+      vec2 aspectCenter = vec2(0.5 * (uResolution.x / uResolution.y), 0.5);
+      
+      vec2 dBox = abs(aspectUv - aspectCenter);
+      float boxDist = max(dBox.x / aspectCenter.x, dBox.y / aspectCenter.y);
+      float radialDist = length(dBox) / length(aspectCenter);
+      float shapeDist = mix(boxDist, radialDist, 0.35);
+      
+      threshold = 0.04 + shapeDist * 0.70 + n * 0.26;
+      band = 0.18;
+    }
     
     bool show = false;
     if (uProgress >= threshold + band) {
@@ -72,12 +85,15 @@ const fragmentShader = `
 function Scene({
   color,
   progressRef,
+  direction = "bottom-up",
 }: {
   color: string;
   progressRef: React.MutableRefObject<number>;
+  direction?: "center" | "bottom-up";
 }) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   const colorVec = useRef(new THREE.Color(color));
+  const dirValue = direction === "bottom-up" ? 1.0 : 0.0;
   const { size } = useThree();
 
   useEffect(() => {
@@ -90,6 +106,7 @@ function Scene({
       materialRef.current.uniforms.uProgress.value = progressRef.current;
       materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
       materialRef.current.uniforms.uResolution.value.set(size.width, size.height);
+      materialRef.current.uniforms.uDirection.value = dirValue;
     }
   });
 
@@ -106,6 +123,7 @@ function Scene({
           uProgress: { value: 0 },
           uTime: { value: 0 },
           uResolution: { value: new THREE.Vector2(size.width, size.height) },
+          uDirection: { value: dirValue },
         }}
       />
     </mesh>
@@ -115,9 +133,11 @@ function Scene({
 export function PixelTransitionCanvas({
   color,
   progressRef,
+  direction = "bottom-up",
 }: {
   color: string;
   progressRef: React.MutableRefObject<number>;
+  direction?: "center" | "bottom-up";
 }) {
   return (
     <div className="absolute inset-0 pointer-events-none">
@@ -126,7 +146,7 @@ export function PixelTransitionCanvas({
         gl={{ alpha: true, antialias: false }}
         resize={{ scroll: false }}
       >
-        <Scene color={color} progressRef={progressRef} />
+        <Scene color={color} progressRef={progressRef} direction={direction} />
       </Canvas>
     </div>
   );

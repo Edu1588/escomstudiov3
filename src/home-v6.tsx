@@ -213,38 +213,28 @@ export function HomeV6() {
     <main className="relative overflow-x-hidden bg-[#000000] text-foreground">
       <VerticalNav />
 
-      {/* HEADER MOBILE FIXO */}
-      <div className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/90 backdrop-blur-md xl:hidden">
-        <div className="flex h-9 items-center justify-center border-b border-border px-4 font-mono text-[9px] uppercase tracking-[0.14em] md:text-[10px]">
+      {/* HEADER MOBILE FIXO COM FUNDO TRANSPARENTE E BLUR */}
+      <div className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-black/40 backdrop-blur-xl text-[#ecece3] xl:hidden">
+        <div className="flex h-8 items-center justify-center border-b border-white/10 px-4 font-mono text-[9px] uppercase tracking-[0.14em] text-white/70">
           Engenharia digital para empresas que querem operar na próxima fase do
           mercado.
         </div>
-        <header className="flex h-16 items-center justify-between px-4 md:px-10">
-          <a href="#top" className="font-serif text-2xl">
+        <header className="flex h-14 items-center justify-between px-4 md:px-10">
+          <a href="#top" className="font-serif text-2xl text-white">
             ESCOM<span className="text-cyan">.</span>
           </a>
-          <nav className="hidden items-center gap-7 font-mono text-[9px] uppercase tracking-[0.14em] lg:flex">
-            <a href="#solucoes">Soluções</a>
-            <a href="#processo">Como funciona</a>
-            <a href="#projetos">Projetos</a>
-            <a href="#sobre">Sobre a ESCOM</a>
-            <a href="#insights">Insights</a>
-          </nav>
-          <div className="hidden lg:block">
-            <AnchorButton>Iniciar diagnóstico</AnchorButton>
-          </div>
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden"
+            className="text-white hover:bg-white/10 hover:text-cyan"
             aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
             onClick={() => setMenuOpen(!menuOpen)}
           >
-            {menuOpen ? <X /> : <Menu />}
+            {menuOpen ? <X className="size-6" /> : <Menu className="size-6" />}
           </Button>
         </header>
         {menuOpen && (
-          <nav className="grid border-t border-border bg-background p-5 font-serif text-3xl lg:hidden">
+          <nav className="grid border-t border-white/10 bg-black/85 backdrop-blur-2xl p-6 font-serif text-2xl">
             {[
               ["Soluções", "solucoes"],
               ["Como funciona", "processo"],
@@ -257,7 +247,7 @@ export function HomeV6() {
                 key={id}
                 href={`#${id}`}
                 onClick={() => setMenuOpen(false)}
-                className="border-b border-border py-3"
+                className="border-b border-white/10 py-3 text-white/90 transition-colors hover:text-cyan"
               >
                 {label}
               </a>
