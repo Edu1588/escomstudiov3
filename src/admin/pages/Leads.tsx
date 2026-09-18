@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Header } from "../components/Header";
 import { 
   Search, Plus, Trash2, ChevronDown, Globe, Phone, MapPin, 
-  Sparkles, CheckSquare, Square, Download, Send, Loader2, Star
+  Sparkles, CheckSquare, Square, Download, Send, Loader2, Star,
+  Copy, Check, ExternalLink, Instagram, MessageCircle, RefreshCw,
+  Filter, ArrowUpRight
 } from "lucide-react";
 import { db } from "../../lib/firebase";
 import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
@@ -55,10 +57,11 @@ export const CIDADES_LIST = [
 ];
 
 export const CATEGORIAS_LIST = [
+  "Hamburgueria",
+  "Bar / Restaurante",
   "Barbearia",
   "Odontologia",
-  "Clínicas Odontológicas (Foco em Implantes e Lentes de Contato)",
-  "Restaurante",
+  "Clínicas Odontológicas (Implantes e Lentes)",
   "Salão de Beleza",
   "Academia",
   "Clínica Médica",
@@ -67,42 +70,45 @@ export const CATEGORIAS_LIST = [
   "Advocacia",
   "Agência de Viagens",
   "Auto Elétrica",
-  "Auto Peças",
-  "Bar / Botequim",
-  "Borracharia",
   "Cafeteria",
-  "Chaveiro",
   "Clínica Estética",
-  "Concessionária",
   "Contabilidade",
-  "Creche / Escola Infantil",
-  "Cursos / Treinamentos",
-  "Eletricista"
+  "Cursos / Treinamentos"
 ];
 
 export default function Leads() {
   const navigate = useNavigate();
   const [selectedEstado, setSelectedEstado] = useState("SP — São Paulo");
   const [selectedCidade, setSelectedCidade] = useState("São Paulo");
-  const [selectedCategoria, setSelectedCategoria] = useState("Barbearia");
-  const [leadLimit, setLeadLimit] = useState(20);
+  const [selectedCategoria, setSelectedCategoria] = useState("Hamburgueria");
+  const [leadLimit, setLeadLimit] = useState(25);
+
+  // Estados de Busca e Filtros Inspirados no CRM
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterCidade, setFilterCidade] = useState("todas");
+  const [filterStatus, setFilterStatus] = useState("todos");
+  const [filterOportunidade, setFilterOportunidade] = useState("todas");
+  const [filterSite, setFilterSite] = useState("todos"); // "todos" | "sem_site" | "com_site"
 
   const [leads, setLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
+  const [bookmarkedIds, setBookmarkedIds] = useState<string[]>([]);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
   const [generatingSiteId, setGeneratingSiteId] = useState<string | null>(null);
   const [generatedSiteUrls, setGeneratedSiteUrls] = useState<Record<string, string>>({});
   const [notification, setNotification] = useState<{ msg: string; type: "success" | "error" } | null>(null);
   const [emailModal, setEmailModal] = useState<{ lead: any } | null>(null);
   const [emailInput, setEmailInput] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [showMineradorModal, setShowMineradorModal] = useState(false);
 
   const notify = (msg: string, type: "success" | "error" = "success") => {
     setNotification({ msg, type });
     setTimeout(() => setNotification(null), 4000);
   };
 
-  // Inicializar com leads de exemplo ou buscar da API
   useEffect(() => {
     fetchLeads();
   }, []);
@@ -115,74 +121,116 @@ export default function Leads() {
         const data = await res.json();
         if (data.leads && data.leads.length > 0) {
           setLeads(data.leads);
-        } else {
-          // Leads iniciais de demonstração idênticos ao print
-          setLeads([
-            {
-              id: "lead-1",
-              nome: "Barbearia Corleone | Itaim Bibi",
-              categoria: "Barbearia",
-              cidade: "São Paulo, SP",
-              endereco: "R. Dr. Renato Paes de Barros, 390 - Itaim Bibi, São Paulo - SP, 04530-000",
-              telefone: "(11) 2538-8009",
-              rating: 4.7,
-              reviewsCount: 1000,
-              temSite: true,
-              temp: "Frio",
-              score: 18,
-              siteUrl: "https://barbeariacorleone.com.br",
-              etapa: "Base"
-            },
-            {
-              id: "lead-2",
-              nome: "Barbearia Bearzil Barber Shop",
-              categoria: "Barbearia",
-              cidade: "São Paulo, SP",
-              endereco: "Alameda Joaquim Eugênio de Lima, 1756 - Jardim Paulista, São Paulo - SP",
-              telefone: "(11) 97656-7032",
-              rating: 4.9,
-              reviewsCount: 275,
-              temSite: true,
-              temp: "Frio",
-              score: 37,
-              siteUrl: "https://bearzilbarber.com.br",
-              etapa: "Base"
-            },
-            {
-              id: "lead-3",
-              nome: "Barbearia Barba de Rei - Ba...",
-              categoria: "Barbearia",
-              cidade: "São Paulo, SP",
-              endereco: "R. Dona Antônia de Queirós, 83 - Consolação, São Paulo - SP, 01307-012",
-              telefone: "(11) 93322-3080",
-              rating: 4.9,
-              reviewsCount: 379,
-              temSite: true,
-              temp: "Frio",
-              score: 10,
-              siteUrl: "",
-              etapa: "Base"
-            },
-            {
-              id: "lead-4",
-              nome: "CI Odontologia",
-              categoria: "Clínicas Odontológicas (Foco em Implantes e Lentes de Contato)",
-              cidade: "São Paulo, SP",
-              endereco: "R. Bela Vista, 590 - Chácara Santo Antônio, São Paulo - SP, 04709-001",
-              telefone: "(11) 99753-3611",
-              rating: 4.9,
-              reviewsCount: 58,
-              temSite: true,
-              temp: "Frio",
-              score: 21,
-              siteUrl: "https://cursoimplantes.com.br",
-              etapa: "Base"
-            }
-          ]);
+          return;
         }
       }
+      
+      // Leads padrão inspirados exatamente no CRM de referência
+      setLeads([
+        {
+          id: "crm-lead-1",
+          nome: "Mobi Hamburgueria",
+          categoria: "Hamburgueria",
+          cidade: "São Paulo, SP",
+          endereco: "R. Prof. Atílio Innocenti, 531 - Itaim Bibi, São Paulo - SP",
+          telefone: "(11) 98123-4567",
+          rating: 4.7,
+          reviewsCount: 2422,
+          temSite: false,
+          oportunidade: "Alta",
+          score: 95,
+          photoUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=120&h=120&fit=crop"
+        },
+        {
+          id: "crm-lead-2",
+          nome: "Bar e Lanches Estadão",
+          categoria: "Lanchonete",
+          cidade: "São Paulo, SP",
+          endereco: "Viaduto Nove de Julho, 193 - Centro Histórico, São Paulo - SP",
+          telefone: "(11) 3257-7121",
+          rating: 4.6,
+          reviewsCount: 32533,
+          temSite: false,
+          oportunidade: "Alta",
+          score: 91,
+          photoUrl: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=120&h=120&fit=crop"
+        },
+        {
+          id: "crm-lead-3",
+          nome: "Iron Burguer Hamburgueria",
+          categoria: "Hamburgueria",
+          cidade: "São Paulo, SP",
+          endereco: "R. São Caetano do Sul, 120 - Tatuapé, São Paulo - SP",
+          telefone: "(11) 97122-8890",
+          rating: 4.4,
+          reviewsCount: 5812,
+          temSite: false,
+          siteUrl: "https://ironburguer.com.br",
+          oportunidade: "Alta",
+          score: 91,
+          photoUrl: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=120&h=120&fit=crop"
+        },
+        {
+          id: "crm-lead-4",
+          nome: "Asterix Cervejaria",
+          categoria: "Bar / Restaurante",
+          cidade: "São Paulo, SP",
+          endereco: "Alameda dos Anapurus, 1312 - Moema, São Paulo - SP",
+          telefone: "(11) 99455-1200",
+          rating: 4.4,
+          reviewsCount: 5141,
+          temSite: false,
+          siteUrl: "https://asterixcervejaria.com.br",
+          instagram: "asterixcervejaria",
+          oportunidade: "Alta",
+          score: 91,
+          photoUrl: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=120&h=120&fit=crop"
+        },
+        {
+          id: "crm-lead-5",
+          nome: "Buteco de Minas",
+          categoria: "Bar / Botequim",
+          cidade: "São Paulo, SP",
+          endereco: "Rua Gomes de Carvalho, 900 - Vila Olímpia, São Paulo - SP",
+          telefone: "(11) 98344-9011",
+          rating: 4.5,
+          reviewsCount: 4262,
+          temSite: false,
+          oportunidade: "Alta",
+          score: 91,
+          photoUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=120&h=120&fit=crop"
+        },
+        {
+          id: "crm-lead-6",
+          nome: "Void Lojas Gerais - Largo da Batata",
+          categoria: "Bar / Restaurante",
+          cidade: "São Paulo, SP",
+          endereco: "Rua Martim Carrasco, 56 - Pinheiros, São Paulo - SP",
+          telefone: "(11) 96123-9900",
+          rating: 4.4,
+          reviewsCount: 2938,
+          temSite: false,
+          oportunidade: "Alta",
+          score: 91,
+          photoUrl: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=120&h=120&fit=crop"
+        },
+        {
+          id: "crm-lead-7",
+          nome: "Novo Hamburger Artesanal",
+          categoria: "Hamburgueria",
+          cidade: "São Paulo, SP",
+          endereco: "Av. Paulista, 2073 - Bela Vista, São Paulo - SP",
+          telefone: "(11) 99233-1122",
+          rating: 4.4,
+          reviewsCount: 1965,
+          temSite: false,
+          oportunidade: "Alta",
+          score: 91,
+          photoUrl: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=120&h=120&fit=crop"
+        }
+      ]);
     } catch (err) {
-      console.warn("Erro ao buscar leads da API, usando padrão.", err);
+      console.warn("Erro ao buscar leads da API, usando dados locais.", err);
     } finally {
       setLoading(false);
     }
@@ -203,24 +251,39 @@ export default function Leads() {
         })
       });
       if (res.ok) {
-        notify("Busca concluída! Carregando leads...");
+        notify("Raspagem concluída! Leads atualizados com sucesso.");
+        setShowMineradorModal(false);
         await fetchLeads();
       } else {
-        throw new Error("Falha ao acionar o n8n");
+        throw new Error("Falha ao acionar raspagem");
       }
     } catch (err) {
-      notify("Erro ao buscar leads. Verifique o console.", "error");
+      notify("Erro ao buscar leads. Verifique a conexão.", "error");
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleCopyPhone = (lead: any) => {
+    const cleanPhone = (lead.telefone || "").replace(/\D/g, "");
+    navigator.clipboard.writeText(lead.telefone || cleanPhone);
+    setCopiedId(lead.id);
+    notify(`Telefone de ${lead.nome} copiado!`);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleToggleBookmark = (id: string) => {
+    setBookmarkedIds(prev => 
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
   const handleToggleSelectAll = () => {
-    if (selectedLeadIds.length === leads.length) {
+    if (selectedLeadIds.length === filteredLeads.length && filteredLeads.length > 0) {
       setSelectedLeadIds([]);
     } else {
-      setSelectedLeadIds(leads.map(l => l.id));
+      setSelectedLeadIds(filteredLeads.map(l => l.id));
     }
   };
 
@@ -235,7 +298,6 @@ export default function Leads() {
       alert("Selecione pelo menos um lead para enviar ao CRM.");
       return;
     }
-
     const selectedLeads = leads.filter(l => selectedLeadIds.includes(l.id));
     try {
       for (const lead of selectedLeads) {
@@ -249,435 +311,495 @@ export default function Leads() {
       navigate("/prospect");
     } catch (err) {
       console.error("Erro ao enviar pro CRM", err);
-      alert("Leads salvos localmente e direcionando para o CRM!");
       navigate("/prospect");
     }
   };
 
-  const handleGenerateSite = async (lead: any) => {
-    setGeneratingSiteId(lead.id);
-    try {
-      if (lead.nome?.toLowerCase().includes("ci odontologia") || lead.nome?.toLowerCase().includes("odontologia")) {
-        window.open("/template-ci-odontologia/index.html", "_blank");
-        return;
-      }
-      const res = await fetch("/api/build-and-deploy-site", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          companyName: lead.nome,
-          niche: lead.categoria,
-          phone: lead.telefone,
-          address: lead.endereco,
-          website: lead.siteUrl || "",
-          city: lead.cidade
-        })
-      });
-      const data = await res.json();
-      if (data.success || data.deployedUrl || data.projectId) {
-        const url = data.deployedUrl || `/api/site-preview/${data.projectId}`;
-        setGeneratedSiteUrls(prev => ({ ...prev, [lead.id]: url }));
-        notify(`Site gerado para ${lead.nome}!`);
-        window.open(url, "_blank");
-      } else {
-        notify("Erro ao gerar site. Tente novamente.", "error");
-      }
-    } catch (err) {
-      notify("Erro ao gerar site. Tente novamente.", "error");
-    } finally {
-      setGeneratingSiteId(null);
-    }
-  };
-
-  const handleEnviarEmail = async () => {
-    if (!emailModal || !emailInput.trim()) return;
-    setSendingEmail(true);
-    try {
-      const res = await fetch("/api/enviar-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          leadId: emailModal.lead.id,
-          emailDestinatario: emailInput.trim(),
-          nomeDestinatario: emailModal.lead.nome,
-        }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        notify(`Email enviado para ${emailInput}!`);
-        setEmailModal(null);
-        setEmailInput("");
-      } else {
-        notify(data.error || "Erro ao enviar email.", "error");
-      }
-    } catch {
-      notify("Erro ao enviar email.", "error");
-    } finally {
-      setSendingEmail(false);
-    }
-  };
-
-  const handleDeleteLead = (id: string) => {
-    if (confirm("Deseja excluir este lead?")) {
-      setLeads(prev => prev.filter(l => l.id !== id));
-      setSelectedLeadIds(prev => prev.filter(i => i !== id));
-    }
-  };
-
-  const semSiteCount = leads.filter(l => !l.temSite).length;
-  const totalCount = leads.length;
-
   const handleExportCSV = () => {
-    if (leads.length === 0) return;
-    const headers = ["Nome", "Categoria", "Cidade", "Telefone", "Endereço", "Tem Site", "Rating"];
-    const rows = leads.map(l => [
+    if (filteredLeads.length === 0) return;
+    const headers = ["Nome", "Categoria", "Cidade", "Telefone", "Endereço", "Tem Site", "Rating", "Reviews"];
+    const rows = filteredLeads.map(l => [
       `"${l.nome || ''}"`,
       `"${l.categoria || ''}"`,
       `"${l.cidade || ''}"`,
       `"${l.telefone || ''}"`,
       `"${l.endereco || ''}"`,
       `"${l.temSite ? 'Sim' : 'Não'}"`,
-      `"${l.rating || ''}"`
+      `"${l.rating || ''}"`,
+      `"${l.reviewsCount || ''}"`
     ]);
     const csvContent = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `leads_${selectedCategoria.toLowerCase()}_${new Date().toISOString().split('T')[0]}.csv`;
+    link.download = `leads_escom_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
   };
 
+  // Filtragem inteligente
+  const filteredLeads = useMemo(() => {
+    return leads.filter(l => {
+      const term = searchTerm.toLowerCase();
+      const matchSearch = !term || 
+        l.nome?.toLowerCase().includes(term) ||
+        l.endereco?.toLowerCase().includes(term) ||
+        l.cidade?.toLowerCase().includes(term) ||
+        l.telefone?.includes(term);
+
+      const matchCidade = filterCidade === "todas" || l.cidade?.toLowerCase().includes(filterCidade.toLowerCase());
+      
+      const matchOportunidade = filterOportunidade === "todas" || 
+        (l.oportunidade || (l.score >= 80 ? "Alta" : "Média")).toLowerCase() === filterOportunidade.toLowerCase();
+
+      const matchSite = filterSite === "todos" || 
+        (filterSite === "sem_site" ? !l.temSite : l.temSite);
+
+      return matchSearch && matchCidade && matchOportunidade && matchSite;
+    });
+  }, [leads, searchTerm, filterCidade, filterOportunidade, filterSite]);
+
+  // Métricas para os Cards do Topo
+  const totalLeads = leads.length;
+  const altaOportunidadeCount = leads.filter(l => (l.score && l.score >= 85) || l.oportunidade === "Alta").length;
+  const semSiteCount = leads.filter(l => !l.temSite).length;
+  const telefoneValidoCount = leads.filter(l => l.telefone && l.telefone.replace(/\D/g, "").length >= 10).length;
+
   return (
-    <div className="flex-1 overflow-y-auto w-full bg-[#f8fafc] dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 min-h-screen p-6 md:p-8">
-      {/* HEADER DA PÁGINA */}
-      <div className="mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Buscar Leads</h1>
-        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Encontre negócios locais por categoria e localização</p>
-      </div>
+    <div className="flex-1 overflow-y-auto w-full bg-[#000000] text-foreground min-h-screen p-4 md:p-8">
+      <Header title="Organização de Leads" subtitle="CRM de Prospecção // Extração e Contatos Rápidos" />
 
       {/* NOTIFICAÇÃO */}
       {notification && (
-        <div className={`mb-4 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2 ${notification.type === "error" ? "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800" : "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800"}`}>
-          {notification.msg}
-        </div>
-      )}
-      {loading && (
-        <div className="mb-4 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-          <Loader2 className="animate-spin" size={14} />
-          Buscando leads e analisando sites... Os resultados aparecerão em alguns minutos.
+        <div className={`mt-4 px-4 py-3 border text-xs font-mono uppercase tracking-[0.1em] flex items-center justify-between ${notification.type === "error" ? "bg-red-950/40 text-red-300 border-red-800" : "bg-cyan/10 text-cyan border-cyan/30"}`}>
+          <span>{notification.msg}</span>
         </div>
       )}
 
-      {/* FORMULÁRIO DE FILTROS SUPERIOR */}
-      <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-          
-          {/* Select Estado */}
-          <div className="md:col-span-3">
-            <select
-              value={selectedEstado}
-              onChange={(e) => setSelectedEstado(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-sm rounded-xl px-4 py-3 font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            >
-              {ESTADOS_LIST.map((uf) => (
-                <option key={uf} value={uf}>{uf}</option>
-              ))}
-            </select>
+      {/* 1. CARDS DE MÉTRICAS SUPERIORES (Inspirados no CRM de Referência) */}
+      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Card 1: Leads Totais */}
+        <div className="bg-[#09090b] border border-white/10 p-5 flex flex-col justify-between">
+          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/50">Leads totais</span>
+          <div className="my-2">
+            <span className="font-serif text-4xl font-light text-white tracking-tight">{totalLeads}</span>
           </div>
-
-          {/* Select Cidade */}
-          <div className="md:col-span-3">
-            <select
-              value={selectedCidade}
-              onChange={(e) => setSelectedCidade(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-sm rounded-xl px-4 py-3 font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            >
-              {CIDADES_LIST.map((cid) => (
-                <option key={cid} value={cid}>{cid}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Select Categoria */}
-          <div className="md:col-span-4">
-            <select
-              value={selectedCategoria}
-              onChange={(e) => setSelectedCategoria(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-sm rounded-xl px-4 py-3 font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            >
-              {CATEGORIAS_LIST.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Botão Buscar */}
-          <div className="md:col-span-2">
-            <button
-              onClick={handleSearchLeads}
-              disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-2"
-            >
-              {loading ? <Loader2 className="animate-spin" size={18} /> : "Buscar"}
-            </button>
-          </div>
+          <span className="text-xs text-white/40 font-mono">registros da planilha</span>
         </div>
 
-        {/* Range Slider de Limite */}
-        <div className="mt-6 flex items-center gap-4 pt-4 border-t border-slate-100 dark:border-slate-800/60">
-          <span className="text-xs text-slate-400 font-mono">0</span>
-          <input
-            type="range"
-            min="5"
-            max="50"
-            step="5"
-            value={leadLimit}
-            onChange={(e) => setLeadLimit(Number(e.target.value))}
-            className="flex-1 h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
-          />
-          <span className="text-xs text-slate-400 font-mono">30</span>
-          <span className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/80 px-3 py-1 rounded-full border border-blue-200 dark:border-blue-800">
-            {leadLimit} leads
+        {/* Card 2: Alta Oportunidade */}
+        <div className="bg-[#09090b] border border-white/10 p-5 flex flex-col justify-between">
+          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/50">Alta oportunidade</span>
+          <div className="my-2">
+            <span className="font-serif text-4xl font-light text-cyan tracking-tight">{altaOportunidadeCount}</span>
+          </div>
+          <span className="text-xs text-white/40 font-mono">bom potencial para site</span>
+        </div>
+
+        {/* Card 3: Sem Site Próprio */}
+        <div className="bg-[#09090b] border border-white/10 p-5 flex flex-col justify-between">
+          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/50">Sem site próprio</span>
+          <div className="my-2">
+            <span className="font-serif text-4xl font-light text-amber-400 tracking-tight">{semSiteCount}</span>
+          </div>
+          <span className="text-xs text-white/40 font-mono">inclui perfis só em redes sociais</span>
+        </div>
+
+        {/* Card 4: Telefone Válido */}
+        <div className="bg-[#09090b] border border-white/10 p-5 flex flex-col justify-between">
+          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/50">Telefone válido</span>
+          <div className="my-2">
+            <span className="font-serif text-4xl font-light text-emerald-400 tracking-tight">{telefoneValidoCount}</span>
+          </div>
+          <span className="text-xs text-white/40 font-mono">pronto para copiar/WhatsApp</span>
+        </div>
+      </div>
+
+      {/* 2. BARRA DE FILTROS E BUSCA (Inspirada no layout horizontal da imagem) */}
+      <div className="mt-6 bg-[#09090b] border border-white/10 p-4">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
+          {/* Campo de Busca */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-white/40" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Buscar nome, endereço, cidade, telefone..."
+              className="w-full bg-[#000000] border border-white/10 pl-10 pr-4 py-2.5 text-xs text-white placeholder:text-white/40 font-mono focus:border-cyan/50 focus:outline-none transition-colors"
+            />
+          </div>
+
+          {/* Select Cidades */}
+          <div className="w-full lg:w-44">
+            <select
+              value={filterCidade}
+              onChange={(e) => setFilterCidade(e.target.value)}
+              className="w-full bg-[#000000] border border-white/10 px-3 py-2.5 text-xs text-white/80 font-mono focus:border-cyan/50 focus:outline-none"
+            >
+              <option value="todas">Todas as cidades</option>
+              <option value="São Paulo">São Paulo</option>
+              <option value="Santo André">Santo André</option>
+              <option value="Campinas">Campinas</option>
+              <option value="Santos">Santos</option>
+            </select>
+          </div>
+
+          {/* Select Oportunidade */}
+          <div className="w-full lg:w-44">
+            <select
+              value={filterOportunidade}
+              onChange={(e) => setFilterOportunidade(e.target.value)}
+              className="w-full bg-[#000000] border border-white/10 px-3 py-2.5 text-xs text-white/80 font-mono focus:border-cyan/50 focus:outline-none"
+            >
+              <option value="todas">Toda oportunidade</option>
+              <option value="alta">Alta oportunidade</option>
+              <option value="média">Média oportunidade</option>
+            </select>
+          </div>
+
+          {/* Select Com ou Sem Site */}
+          <div className="w-full lg:w-44">
+            <select
+              value={filterSite}
+              onChange={(e) => setFilterSite(e.target.value)}
+              className="w-full bg-[#000000] border border-white/10 px-3 py-2.5 text-xs text-white/80 font-mono focus:border-cyan/50 focus:outline-none"
+            >
+              <option value="todos">Com ou sem site</option>
+              <option value="sem_site">Sem site próprio</option>
+              <option value="com_site">Com site próprio</option>
+            </select>
+          </div>
+
+          {/* Botão Novo Minerador */}
+          <button
+            onClick={() => setShowMineradorModal(true)}
+            className="bg-cyan hover:bg-cyan/90 text-black font-mono text-[11px] uppercase tracking-[0.12em] font-semibold px-4 py-2.5 flex items-center justify-center gap-2 transition-all active:scale-95 whitespace-nowrap shadow-[0_0_15px_rgba(0,209,255,0.2)]"
+          >
+            <Plus size={14} strokeWidth={2.5} />
+            <span>Raspar Novos Leads</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 3. BARRA DE STATUS / SELEÇÃO / EXPORTAÇÃO */}
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <span className="font-mono text-xs text-white/60">
+            <strong className="text-white font-medium">{filteredLeads.length}</strong> leads exibidos
           </span>
-        </div>
-      </div>
 
-      {/* CARDS RESUMO */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-5 flex items-center justify-between shadow-sm">
-          <div>
-            <span className="text-3xl font-extrabold text-red-500">{semSiteCount}</span>
-            <span className="text-sm font-medium text-slate-600 dark:text-slate-400 ml-3">Sem site</span>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-5 flex items-center justify-between shadow-sm">
-          <div>
-            <span className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">{totalCount}</span>
-            <span className="text-sm font-medium text-slate-600 dark:text-slate-400 ml-3">Total</span>
-          </div>
-        </div>
-      </div>
-
-      {/* BARRA DE AÇÕES (SELECIONAR TODOS / ENVIAR PRO CRM / EXPORTAR) */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3">
-          <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-slate-700 dark:text-slate-300">
+          <label className="flex items-center gap-2 cursor-pointer text-xs font-mono text-white/60 hover:text-white">
             <input
               type="checkbox"
-              checked={selectedLeadIds.length === leads.length && leads.length > 0}
+              checked={selectedLeadIds.length === filteredLeads.length && filteredLeads.length > 0}
               onChange={handleToggleSelectAll}
-              className="w-4 h-4 rounded text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500"
+              className="accent-cyan cursor-pointer"
             />
-            <span>Selecionar todos ({selectedLeadIds.length} selecionados)</span>
+            <span>Selecionar todos ({selectedLeadIds.length})</span>
           </label>
 
           {selectedLeadIds.length > 0 && (
             <button
               onClick={handleSendToCRM}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-md shadow-emerald-500/20 flex items-center gap-2"
+              className="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-mono text-[10px] uppercase tracking-[0.1em] px-3 py-1.5 flex items-center gap-2 transition-colors"
             >
-              <Send size={14} /> Enviar para o CRM
+              <Send size={12} className="text-cyan" />
+              <span>Enviar para CRM</span>
             </button>
           )}
         </div>
 
         <button
           onClick={handleExportCSV}
-          className="text-xs font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-white flex items-center gap-1 transition-colors"
+          className="text-xs font-mono uppercase tracking-[0.1em] text-white/50 hover:text-white flex items-center gap-1.5 transition-colors"
         >
-          <Download size={14} /> Exportar CSV
+          <Download size={13} />
+          <span>Exportar Planilha (CSV)</span>
         </button>
       </div>
 
-      {/* CARDS GRID DE LEADS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {loading ? (
-          <div className="col-span-3 py-16 text-center text-slate-400 flex flex-col items-center gap-3">
-            <Loader2 className="animate-spin text-blue-500" size={32} />
-            <span>Buscando leads e analisando sites...</span>
-          </div>
-        ) : leads.length === 0 ? (
-          <div className="col-span-3 py-16 text-center text-slate-400">
-            Nenhum lead encontrado para os filtros selecionados.
-          </div>
-        ) : (
-          leads.map((lead) => {
-            const isSelected = selectedLeadIds.includes(lead.id);
-            return (
-              <div
-                key={lead.id}
-                className={`bg-white dark:bg-[#0f172a] border ${isSelected ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200 dark:border-slate-800'} rounded-2xl p-6 flex flex-col justify-between space-y-4 hover:shadow-lg transition-all relative`}
-              >
-                {/* Score & Checkbox Top Right */}
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-bold text-base text-slate-900 dark:text-white pr-8 leading-snug line-clamp-2">
-                      {lead.nome}
-                    </h3>
-                    <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                      <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                        {lead.categoria}
-                      </span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                        {lead.temp || "Frio"}
-                      </span>
-                      {lead.rating && (
-                        <span className="text-[11px] font-semibold text-amber-500 flex items-center gap-1">
-                          <Star size={12} fill="currentColor" /> {lead.rating} - {lead.reviewsCount || 100}
+      {/* 4. TABELA DE LEADS (Layout Fiel ao Print do CRM) */}
+      <div className="mt-4 bg-[#09090b] border border-white/10 overflow-x-auto">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="border-b border-white/10 font-mono text-[10px] uppercase tracking-[0.14em] text-white/40">
+              <th className="py-3 px-4 w-10 text-center"></th>
+              <th className="py-3 px-4">LEAD</th>
+              <th className="py-3 px-4">OPORTUNIDADE</th>
+              <th className="py-3 px-4">GOOGLE</th>
+              <th className="py-3 px-4">SITE</th>
+              <th className="py-3 px-4 text-right">CONTATOS RÁPIDOS</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/5 text-xs font-sans">
+            {loading ? (
+              <tr>
+                <td colSpan={6} className="py-16 text-center text-white/40 font-mono">
+                  <div className="flex flex-col items-center gap-2">
+                    <Loader2 className="animate-spin text-cyan size-6" />
+                    <span>Carregando leads raspados...</span>
+                  </div>
+                </td>
+              </tr>
+            ) : filteredLeads.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="py-16 text-center text-white/40 font-mono">
+                  Nenhum lead encontrado com os filtros atuais.
+                </td>
+              </tr>
+            ) : (
+              filteredLeads.map((lead) => {
+                const isSelected = selectedLeadIds.includes(lead.id);
+                const isBookmarked = bookmarkedIds.includes(lead.id);
+                const isCopied = copiedId === lead.id;
+                const cleanPhone = (lead.telefone || "").replace(/\D/g, "");
+                const mapsQuery = encodeURIComponent(`${lead.nome} ${lead.endereco || lead.cidade || ''}`);
+
+                return (
+                  <tr 
+                    key={lead.id} 
+                    className={`hover:bg-white/[0.02] transition-colors ${isSelected ? 'bg-white/[0.04]' : ''}`}
+                  >
+                    {/* Estrela / Favoritar */}
+                    <td className="py-4 px-4 text-center">
+                      <button 
+                        onClick={() => handleToggleBookmark(lead.id)}
+                        className="text-white/30 hover:text-amber-400 transition-colors"
+                        title={isBookmarked ? "Remover dos favoritos" : "Favoritar lead"}
+                      >
+                        <Star 
+                          size={15} 
+                          fill={isBookmarked ? "#f59e0b" : "none"} 
+                          className={isBookmarked ? "text-amber-400" : "text-white/30"} 
+                        />
+                      </button>
+                    </td>
+
+                    {/* LEAD: Foto + Nome + Cidade */}
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => handleToggleSelectLead(lead.id)}
+                          className="accent-cyan cursor-pointer mr-1"
+                        />
+                        {lead.photoUrl ? (
+                          <img 
+                            src={lead.photoUrl} 
+                            alt={lead.nome} 
+                            className="size-10 rounded-lg object-cover border border-white/10 shrink-0" 
+                          />
+                        ) : (
+                          <div className="size-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center font-serif text-sm font-semibold text-white/80 shrink-0">
+                            {lead.nome?.charAt(0) || "L"}
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <div className="font-semibold text-white text-sm hover:text-cyan transition-colors truncate max-w-xs md:max-w-md">
+                            {lead.nome}
+                          </div>
+                          <div className="text-white/40 text-xs font-mono mt-0.5 truncate">
+                            {lead.cidade}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* OPORTUNIDADE: Dot verde + Alta 95 */}
+                    <td className="py-4 px-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2 font-mono text-xs">
+                        <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)] shrink-0" />
+                        <span className="text-white font-medium">
+                          {lead.oportunidade || "Alta"} · <span className="text-white/50">{lead.score || 91}</span>
+                        </span>
+                      </div>
+                    </td>
+
+                    {/* GOOGLE: Estrela + Rating + Avaliações */}
+                    <td className="py-4 px-4 whitespace-nowrap">
+                      <div className="flex items-center gap-1.5 font-mono text-xs">
+                        <span className="text-amber-400">★</span>
+                        <span className="text-white font-semibold">{lead.rating || "4.5"}</span>
+                        <span className="text-white/40 text-[11px]">
+                          {(lead.reviewsCount || 100).toLocaleString()} aval.
+                        </span>
+                      </div>
+                    </td>
+
+                    {/* SITE: Badge Amarelo Sem Site ou Verde Com Site */}
+                    <td className="py-4 px-4 whitespace-nowrap">
+                      {lead.temSite ? (
+                        <span className="inline-flex items-center px-2.5 py-1 text-[11px] font-mono text-emerald-300 bg-emerald-950/40 border border-emerald-800/60">
+                          Com site
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2.5 py-1 text-[11px] font-mono text-amber-300 bg-amber-950/40 border border-amber-800/60">
+                          Sem site próprio
                         </span>
                       )}
-                    </div>
-                  </div>
+                    </td>
 
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-bold text-slate-400">{lead.score || 18}</span>
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => handleToggleSelectLead(lead.id)}
-                      className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                    />
-                  </div>
-                </div>
+                    {/* CONTATOS RÁPIDOS: Copiar, WhatsApp, Site, Maps */}
+                    <td className="py-4 px-4 text-right whitespace-nowrap">
+                      <div className="inline-flex items-center justify-end gap-1.5 font-mono text-[11px]">
+                        {/* Botão Copiar */}
+                        <button
+                          onClick={() => handleCopyPhone(lead)}
+                          className="px-2.5 py-1 bg-white/5 hover:bg-white/10 text-white/80 hover:text-white border border-white/10 flex items-center gap-1 transition-colors"
+                          title="Copiar número de telefone"
+                        >
+                          {isCopied ? <Check size={12} className="text-emerald-400" /> : <Phone size={12} />}
+                          <span>{isCopied ? "Copiado!" : "Copiar"}</span>
+                        </button>
 
-                {/* Telefone & Endereço */}
-                <div className="space-y-2 text-xs text-slate-600 dark:text-slate-400">
-                  <div className="flex items-center gap-2 text-rose-500 font-medium">
-                    <Phone size={14} />
-                    <span>{lead.telefone || "(11) 99999-0000"}</span>
-                  </div>
-                  <div className="flex items-start gap-2 line-clamp-2">
-                    <MapPin size={14} className="shrink-0 mt-0.5" />
-                    <span>{lead.endereco || lead.cidade}</span>
-                  </div>
-                  
-                  {/* Status do Site */}
-                  <div className="pt-1 flex items-center gap-1.5 font-semibold text-emerald-500">
-                    <Globe size={14} />
-                    <span>{lead.temSite ? "Tem site" : "Sem site"}</span>
-                  </div>
-                </div>
+                        {/* Botão WhatsApp */}
+                        {cleanPhone ? (
+                          <a
+                            href={`https://wa.me/55${cleanPhone}?text=${encodeURIComponent(`Olá! Sou da ESCOM Studio. Vi o perfil da ${lead.nome} no Google e gostaria de conversar.`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-2.5 py-1 bg-emerald-950/30 hover:bg-emerald-900/50 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 transition-colors"
+                          >
+                            <span>WhatsApp</span>
+                          </a>
+                        ) : null}
 
-                {/* Botões de Ação */}
-                <div className="flex flex-col gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                  {/* Link do site gerado + botão enviar email */}
-                  {(generatedSiteUrls[lead.id] || lead.siteGerado) && (
-                    <div className="flex gap-2">
-                      <a
-                        href={generatedSiteUrls[lead.id] || lead.siteGerado}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-cyan-950/40 border border-cyan-500/40 text-cyan-400 text-xs font-bold hover:bg-cyan-900/50 transition-colors"
-                      >
-                        <Sparkles size={13} />
-                        Ver site gerado
-                      </a>
-                      <button
-                        onClick={() => { setEmailModal({ lead }); setEmailInput(lead.email || ""); }}
-                        title="Enviar email de prospecção"
-                        className="px-3 py-2 rounded-xl bg-cyan-950/40 border border-cyan-500/40 text-cyan-400 hover:bg-cyan-900/50 transition-colors"
-                      >
-                        <Send size={13} />
-                      </button>
-                    </div>
-                  )}
+                        {/* Botão Site */}
+                        {lead.siteUrl ? (
+                          <a
+                            href={lead.siteUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-2.5 py-1 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white border border-white/10 flex items-center gap-1 transition-colors"
+                          >
+                            <span>Site</span>
+                            <ArrowUpRight size={10} className="text-white/40" />
+                          </a>
+                        ) : null}
 
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleGenerateSite(lead)}
-                      disabled={generatingSiteId === lead.id}
-                      className="flex-1 bg-[#0F172A] hover:bg-slate-800 text-white dark:bg-slate-900 dark:hover:bg-slate-800 text-xs font-bold py-2.5 px-3 rounded-xl transition-all border border-slate-700 flex items-center justify-center gap-1.5 shadow-sm"
-                    >
-                      {generatingSiteId === lead.id ? (
-                        <Loader2 className="animate-spin" size={14} />
-                      ) : (
-                        <Sparkles size={14} className="text-cyan-400" />
-                      )}
-                      <span>{(generatedSiteUrls[lead.id] || lead.siteGerado) ? "Regerar site" : "Gerar site"}</span>
-                    </button>
+                        {/* Botão Maps */}
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2.5 py-1 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white border border-white/10 flex items-center gap-1 transition-colors"
+                        >
+                          <span>Maps</span>
+                        </a>
 
-                    {/* Botão Análise PDF */}
-                    <a
-                      href={`/api/gerar-analise/${lead.id}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      title="Análise Estratégica PDF"
-                      className="p-2.5 rounded-xl border border-cyan-500/30 bg-cyan-950/20 text-cyan-400 hover:bg-cyan-900/40 hover:border-cyan-400 transition-colors"
-                    >
-                      <Download size={14} />
-                    </a>
-
-                    {lead.siteUrl && (
-                      <a
-                        href={lead.siteUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-400 text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-1 transition-colors"
-                      >
-                        <Globe size={14} />
-                        <span>Site atual</span>
-                      </a>
-                    )}
-
-                    <button
-                      onClick={() => handleDeleteLead(lead.id)}
-                      className="p-2.5 rounded-xl bg-red-50 dark:bg-red-950/30 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })
-        )}
+                        {/* Botão Instagram */}
+                        {lead.instagram ? (
+                          <a
+                            href={`https://instagram.com/${lead.instagram.replace('@', '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-2.5 py-1 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white border border-white/10 flex items-center gap-1 transition-colors"
+                          >
+                            <span>Instagram</span>
+                          </a>
+                        ) : null}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
 
-      {/* Modal de Envio de Email */}
-      {emailModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-[#0f172a] border border-slate-700 rounded-2xl shadow-2xl w-full max-w-md p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-9 h-9 rounded-xl bg-cyan-950/50 border border-cyan-500/30 flex items-center justify-center">
-                <Send size={16} className="text-cyan-400" />
-              </div>
+      {/* MODAL DE RASPAGEM / MINERADOR DE LEADS */}
+      {showMineradorModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="w-full max-w-xl bg-[#09090b] border border-white/20 p-6 space-y-6">
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div>
-                <h3 className="text-white font-bold text-sm">Enviar prospecção por email</h3>
-                <p className="text-slate-400 text-xs">{emailModal.lead.nome}</p>
+                <h2 className="font-serif text-2xl font-light text-white">Raspar Novos Leads</h2>
+                <p className="font-mono text-xs text-white/40 mt-1 uppercase tracking-[0.1em]">
+                  Extração automatizada no Google Maps & Redes
+                </p>
+              </div>
+              <button 
+                onClick={() => setShowMineradorModal(false)}
+                className="text-white/40 hover:text-white p-1 font-mono text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4 font-mono text-xs">
+              <div>
+                <label className="block uppercase tracking-[0.1em] text-white/60 mb-2">Estado</label>
+                <select
+                  value={selectedEstado}
+                  onChange={(e) => setSelectedEstado(e.target.value)}
+                  className="w-full bg-[#000000] border border-white/15 px-3 py-2.5 text-white focus:border-cyan/50 focus:outline-none"
+                >
+                  {ESTADOS_LIST.map((uf) => (
+                    <option key={uf} value={uf}>{uf}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block uppercase tracking-[0.1em] text-white/60 mb-2">Cidade</label>
+                <select
+                  value={selectedCidade}
+                  onChange={(e) => setSelectedCidade(e.target.value)}
+                  className="w-full bg-[#000000] border border-white/15 px-3 py-2.5 text-white focus:border-cyan/50 focus:outline-none"
+                >
+                  {CIDADES_LIST.map((cid) => (
+                    <option key={cid} value={cid}>{cid}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block uppercase tracking-[0.1em] text-white/60 mb-2">Categoria / Nicho</label>
+                <select
+                  value={selectedCategoria}
+                  onChange={(e) => setSelectedCategoria(e.target.value)}
+                  className="w-full bg-[#000000] border border-white/15 px-3 py-2.5 text-white focus:border-cyan/50 focus:outline-none"
+                >
+                  {CATEGORIAS_LIST.map((cat) => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="uppercase tracking-[0.1em] text-white/60">Limite de Leads</label>
+                  <span className="text-cyan font-bold">{leadLimit} leads</span>
+                </div>
+                <input
+                  type="range"
+                  min="5"
+                  max="50"
+                  step="5"
+                  value={leadLimit}
+                  onChange={(e) => setLeadLimit(Number(e.target.value))}
+                  className="w-full accent-cyan cursor-pointer"
+                />
               </div>
             </div>
 
-            <p className="text-slate-400 text-xs mb-4 leading-relaxed">
-              O email incluirá o site-amostra, a análise estratégica e uma mensagem humanizada gerada pelo Gemini com convite para conversa.
-            </p>
-
-            <div className="mb-4">
-              <label className="text-xs font-semibold text-slate-300 mb-1.5 block">Email do destinatário</label>
-              <input
-                type="email"
-                value={emailInput}
-                onChange={e => setEmailInput(e.target.value)}
-                placeholder="contato@empresa.com.br"
-                className="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 placeholder-slate-500"
-              />
-            </div>
-
-            <div className="flex gap-2">
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
               <button
-                onClick={() => { setEmailModal(null); setEmailInput(""); }}
-                className="flex-1 py-2.5 rounded-xl border border-slate-700 text-slate-300 text-sm font-semibold hover:bg-slate-800 transition-colors"
+                onClick={() => setShowMineradorModal(false)}
+                className="px-4 py-2 font-mono text-xs text-white/60 hover:text-white"
               >
                 Cancelar
               </button>
               <button
-                onClick={handleEnviarEmail}
-                disabled={sendingEmail || !emailInput.trim()}
-                className="flex-1 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black text-sm font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleSearchLeads}
+                disabled={loading}
+                className="bg-cyan hover:bg-cyan/90 text-black font-mono text-xs uppercase tracking-[0.12em] font-semibold px-6 py-2.5 flex items-center gap-2 transition-all active:scale-95"
               >
-                {sendingEmail ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
-                {sendingEmail ? "Enviando..." : "Enviar email"}
+                {loading ? <Loader2 className="animate-spin size-4" /> : <Sparkles className="size-4" />}
+                <span>Iniciar Raspagem</span>
               </button>
             </div>
           </div>
