@@ -57,7 +57,20 @@ export function MethodStage({
         0.05
       );
 
-      // 2. Revela Método com foco óptico no fundo bege
+      // 2. Linhas dinâmicas que se expandem com a rolagem (Referência The Model)
+      tl.fromTo(".method-line-top", { top: "45%" }, { top: "10%", duration: 0.35, ease: "power2.out" }, 0.30);
+      tl.fromTo(".method-line-bottom", { bottom: "45%" }, { bottom: "10%", duration: 0.35, ease: "power2.out" }, 0.30);
+      tl.fromTo(".method-line-left", { left: "45%" }, { left: "8vw", duration: 0.35, ease: "power2.out" }, 0.30);
+      tl.fromTo(".method-line-right", { right: "45%" }, { right: "8vw", duration: 0.35, ease: "power2.out" }, 0.30);
+
+      tl.fromTo(".method-star-tl", { top: "45%", left: "45%", opacity: 0 }, { top: "10%", left: "8vw", opacity: 1, duration: 0.35, ease: "power2.out" }, 0.30);
+      tl.fromTo(".method-star-tr", { top: "45%", right: "45%", opacity: 0 }, { top: "10%", right: "8vw", opacity: 1, duration: 0.35, ease: "power2.out" }, 0.30);
+      tl.fromTo(".method-star-bl", { bottom: "45%", left: "45%", opacity: 0 }, { bottom: "10%", left: "8vw", opacity: 1, duration: 0.35, ease: "power2.out" }, 0.30);
+      tl.fromTo(".method-star-br", { bottom: "45%", right: "45%", opacity: 0 }, { bottom: "10%", right: "8vw", opacity: 1, duration: 0.35, ease: "power2.out" }, 0.30);
+
+      tl.fromTo(".method-tag", { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.20, ease: "power2.out" }, 0.35);
+
+      // 3. Revela Método com foco óptico no fundo bege
       const children = Array.from(content.children);
       tl.fromTo(
         content,
@@ -114,12 +127,36 @@ export function MethodStage({
           </div>
         )}
 
-        {/* MÉTODO (Fundo Claro Bege #ecece3) */}
+        {/* MÉTODO (Fundo Claro Bege #ecece3 com Linhas Dinâmicas) */}
         <section
           id="metodo"
           ref={contentRef}
-          className="absolute inset-0 z-20 flex flex-col justify-center px-5 py-12 text-[#000000] md:px-12 xl:px-[22vw] opacity-0 pointer-events-none bg-[#ecece3]"
+          className="absolute inset-0 z-20 flex flex-col justify-center px-5 py-12 text-[#000000] md:px-12 xl:px-[22vw] opacity-0 pointer-events-none bg-[#ecece3] overflow-hidden"
         >
+          {/* Grade de Linhas Dinâmicas com nós ✦ (Referência The Model) */}
+          <div className="method-grid-frame absolute inset-0 pointer-events-none z-0">
+            <div className="method-tag absolute top-[calc(10%-26px)] left-[8vw] font-mono text-[9px] uppercase tracking-[0.2em] text-black/60 flex items-center gap-2">
+              <div className="grid grid-cols-2 gap-[2px] opacity-70">
+                <div className="size-1 bg-current" />
+                <div className="size-1 bg-current" />
+                <div className="size-1 bg-current" />
+                <div className="size-1 bg-current" />
+              </div>
+              <span>-- OPERATIONAL METHOD</span>
+            </div>
+
+            <div className="method-line-top absolute inset-x-0 h-px bg-black/15" />
+            <div className="method-line-bottom absolute inset-x-0 h-px bg-black/15" />
+            <div className="method-line-left absolute inset-y-0 w-px bg-black/15" />
+            <div className="method-line-right absolute inset-y-0 w-px bg-black/15" />
+
+            <div className="method-star-tl absolute -translate-x-1/2 -translate-y-1/2 text-black/80 font-serif text-sm">✦</div>
+            <div className="method-star-tr absolute translate-x-1/2 -translate-y-1/2 text-black/80 font-serif text-sm">✦</div>
+            <div className="method-star-bl absolute -translate-x-1/2 translate-y-1/2 text-black/80 font-serif text-sm">✦</div>
+            <div className="method-star-br absolute translate-x-1/2 translate-y-1/2 text-black/80 font-serif text-sm">✦</div>
+          </div>
+
+          <div className="relative z-10">
           <Eyebrow light>Não somos uma fábrica de entregáveis</Eyebrow>
           <h2 className="mt-10 max-w-5xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl text-[#000000]">
             Cada projeto começa pelo problema. E termina em uma estrutura que
@@ -153,6 +190,7 @@ export function MethodStage({
                 </div>
               ))}
             </div>
+          </div>
           </div>
         </section>
       </div>

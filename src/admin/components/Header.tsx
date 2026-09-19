@@ -94,10 +94,10 @@ export function Header({ title, subtitle }: HeaderProps) {
         {/* Botão Nova Proposta */}
         <button 
           onClick={handleNovaProposta} 
-          className="bg-cyan hover:bg-cyan/90 text-black font-mono text-[11px] uppercase tracking-[0.12em] font-semibold px-4 py-2 flex items-center gap-2 transition-all active:scale-95 whitespace-nowrap shadow-[0_0_15px_rgba(0,209,255,0.2)]"
+          className="bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-mono text-[11px] uppercase tracking-[0.12em] font-bold px-4 py-2 flex items-center gap-2 transition-all active:scale-95 whitespace-nowrap shadow-[0_0_15px_rgba(0,209,255,0.35)]"
         >
-          <Plus size={14} strokeWidth={2.5} />
-          <span>Nova Proposta</span>
+          <Plus size={14} strokeWidth={2.5} className="text-black" />
+          <span className="text-black font-bold">Nova Proposta</span>
         </button>
       </div>
     </div>

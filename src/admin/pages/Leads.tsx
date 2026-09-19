@@ -479,10 +479,10 @@ export default function Leads() {
           {/* Botão Novo Minerador */}
           <button
             onClick={() => setShowMineradorModal(true)}
-            className="bg-cyan hover:bg-cyan/90 text-black font-mono text-[11px] uppercase tracking-[0.12em] font-semibold px-4 py-2.5 flex items-center justify-center gap-2 transition-all active:scale-95 whitespace-nowrap shadow-[0_0_15px_rgba(0,209,255,0.2)]"
+            className="bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-mono text-[11px] uppercase tracking-[0.12em] font-bold px-4 py-2.5 flex items-center justify-center gap-2 transition-all active:scale-95 whitespace-nowrap shadow-[0_0_20px_rgba(0,209,255,0.35)] cursor-pointer"
           >
-            <Plus size={14} strokeWidth={2.5} />
-            <span>Raspar Novos Leads</span>
+            <Plus size={14} strokeWidth={2.5} className="text-black" />
+            <span className="text-black font-bold">Raspar Novos Leads</span>
           </button>
         </div>
       </div>
@@ -499,7 +499,7 @@ export default function Leads() {
               type="checkbox"
               checked={selectedLeadIds.length === filteredLeads.length && filteredLeads.length > 0}
               onChange={handleToggleSelectAll}
-              className="accent-cyan cursor-pointer"
+              className="accent-[#00d1ff] cursor-pointer"
             />
             <span>Selecionar todos ({selectedLeadIds.length})</span>
           </label>
@@ -507,9 +507,9 @@ export default function Leads() {
           {selectedLeadIds.length > 0 && (
             <button
               onClick={handleSendToCRM}
-              className="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-mono text-[10px] uppercase tracking-[0.1em] px-3 py-1.5 flex items-center gap-2 transition-colors"
+              className="bg-[#00d1ff]/10 hover:bg-[#00d1ff]/20 border border-[#00d1ff]/40 text-[#00d1ff] font-mono text-[10px] uppercase tracking-[0.1em] px-3 py-1.5 flex items-center gap-2 transition-colors cursor-pointer"
             >
-              <Send size={12} className="text-cyan" />
+              <Send size={12} className="text-[#00d1ff]" />
               <span>Enviar para CRM</span>
             </button>
           )}
@@ -517,9 +517,9 @@ export default function Leads() {
 
         <button
           onClick={handleExportCSV}
-          className="text-xs font-mono uppercase tracking-[0.1em] text-white/50 hover:text-white flex items-center gap-1.5 transition-colors"
+          className="text-xs font-mono uppercase tracking-[0.1em] text-white/80 hover:text-[#00d1ff] bg-white/[0.03] border border-white/15 hover:border-[#00d1ff]/40 px-3 py-1.5 flex items-center gap-2 transition-all cursor-pointer"
         >
-          <Download size={13} />
+          <Download size={13} className="text-[#00d1ff]" />
           <span>Exportar Planilha (CSV)</span>
         </button>
       </div>
@@ -830,10 +830,10 @@ export default function Leads() {
               <button
                 onClick={handleSearchLeads}
                 disabled={loading}
-                className="bg-cyan hover:bg-cyan/90 text-black font-mono text-xs uppercase tracking-[0.12em] font-semibold px-6 py-2.5 flex items-center gap-2 transition-all active:scale-95"
+                className="bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-mono text-xs uppercase tracking-[0.12em] font-bold px-6 py-2.5 flex items-center gap-2 transition-all active:scale-95 shadow-[0_0_20px_rgba(0,209,255,0.35)] cursor-pointer"
               >
-                {loading ? <Loader2 className="animate-spin size-4" /> : <Sparkles className="size-4" />}
-                <span>Iniciar Raspagem</span>
+                {loading ? <Loader2 className="animate-spin size-4 text-black" /> : <Sparkles className="size-4 text-black" />}
+                <span className="text-black font-bold">Iniciar Raspagem</span>
               </button>
             </div>
           </div>

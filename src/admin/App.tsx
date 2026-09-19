@@ -77,20 +77,20 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
     }
   };
   const navItems = [
-    { name: "Resumo Geral", path: "/", icon: <LayoutDashboard size={18} /> },
-    { name: "Leads", path: "/leads", icon: <Users size={18} /> },
-    { name: "Propostas", path: "/propostas", icon: <FileText size={18} /> },
-    { name: "Clientes", path: "/prospect", icon: <Briefcase size={18} /> },
-    { name: "Gestão de Páginas", path: "/paginas", icon: <Layers size={18} /> },
-    { name: "Contratos", path: "/contratos", icon: <FileSignature size={18} /> },
-    { name: "Finanças", path: "/financas", icon: <DollarSign size={18} /> },
-    { name: "Saúde", path: "/saude", icon: <HeartPulse size={18} /> },
-    { name: "Portfólio", path: "/portfolio", icon: <Briefcase size={18} /> },
-    { name: "Instagram GEM", path: "/instagram", icon: <Instagram size={18} /> },
-    { name: "Tarefas", path: "/agendamentos", icon: <CheckSquare size={18} /> },
-    { name: "Relatórios", path: "/projetos-no-ar", icon: <BarChart2 size={18} /> },
-    { name: "Integrações", path: "/servicos", icon: <Plug size={18} /> },
-    { name: "Configurações", path: "/configuracoes", icon: <Settings size={18} /> },
+    { name: "Resumo Geral", path: "/", icon: <LayoutDashboard size={18} />, hoverColor: "group-hover:text-cyan text-cyan" },
+    { name: "Leads", path: "/leads", icon: <Users size={18} />, hoverColor: "group-hover:text-sky-400 text-sky-400" },
+    { name: "Propostas", path: "/propostas", icon: <FileText size={18} />, hoverColor: "group-hover:text-amber-400 text-amber-400" },
+    { name: "Clientes", path: "/prospect", icon: <Briefcase size={18} />, hoverColor: "group-hover:text-blue-400 text-blue-400" },
+    { name: "Gestão de Páginas", path: "/paginas", icon: <Layers size={18} />, hoverColor: "group-hover:text-indigo-400 text-indigo-400" },
+    { name: "Contratos", path: "/contratos", icon: <FileSignature size={18} />, hoverColor: "group-hover:text-orange-400 text-orange-400" },
+    { name: "Finanças", path: "/financas", icon: <DollarSign size={18} />, hoverColor: "group-hover:text-emerald-400 text-emerald-400" },
+    { name: "Saúde", path: "/saude", icon: <HeartPulse size={18} />, hoverColor: "group-hover:text-rose-500 text-rose-500" },
+    { name: "Portfólio", path: "/portfolio", icon: <Briefcase size={18} />, hoverColor: "group-hover:text-fuchsia-400 text-fuchsia-400" },
+    { name: "Instagram GEM", path: "/instagram", icon: <Instagram size={18} />, hoverColor: "group-hover:text-pink-500 text-pink-500" },
+    { name: "Tarefas", path: "/agendamentos", icon: <CheckSquare size={18} />, hoverColor: "group-hover:text-teal-400 text-teal-400" },
+    { name: "Relatórios", path: "/projetos-no-ar", icon: <BarChart2 size={18} />, hoverColor: "group-hover:text-cyan-400 text-cyan-400" },
+    { name: "Integrações", path: "/servicos", icon: <Plug size={18} />, hoverColor: "group-hover:text-yellow-400 text-yellow-400" },
+    { name: "Configurações", path: "/configuracoes", icon: <Settings size={18} />, hoverColor: "group-hover:text-slate-200 text-slate-200" },
   ];
 
   return (
@@ -123,16 +123,18 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
                   <Link 
                     to={item.path} 
                     onClick={() => handleMenuClick(item.name)}
-                    className={`flex items-center gap-3 px-3 py-2 text-xs transition-all ${
+                    className={`group flex items-center gap-3 px-3 py-2 text-xs transition-all duration-200 border-l-2 ${
                       isActive 
-                        ? "bg-white/[0.05] text-white border-l-2 border-cyan shadow-none" 
-                        : "text-white/50 hover:text-white hover:bg-white/[0.02]"
+                        ? "bg-cyan-950/30 text-cyan border-cyan shadow-none" 
+                        : "border-transparent text-white/50 hover:text-cyan hover:bg-cyan-950/20 hover:border-cyan/60"
                     }`}
                   >
-                    <span className={isActive ? "text-cyan" : "text-white/40"}>
+                    <span className={`transition-colors duration-200 ${isActive ? item.hoverColor.split(' ')[1] : `text-white/40 ${item.hoverColor.split(' ')[0]}`}`}>
                       {item.icon}
                     </span>
-                    <span className="font-mono text-[11px] uppercase tracking-[0.06em]">{item.name}</span>
+                    <span className="font-mono text-[11px] uppercase tracking-[0.06em] transition-colors group-hover:text-cyan">
+                      {item.name}
+                    </span>
                   </Link>
                 </li>
               );

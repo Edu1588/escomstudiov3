@@ -82,6 +82,19 @@ export function HeroManifestoStage({
         0.02
       );
 
+      // Linhas dinâmicas que se movem abrindo o quadro (Referência The Model)
+      tl.fromTo(".manifesto-line-top", { top: "46%" }, { top: "10%", duration: 0.32, ease: "power2.out" }, 0.10);
+      tl.fromTo(".manifesto-line-bottom", { bottom: "46%" }, { bottom: "10%", duration: 0.32, ease: "power2.out" }, 0.10);
+      tl.fromTo(".manifesto-line-left", { left: "46%" }, { left: "8vw", duration: 0.32, ease: "power2.out" }, 0.10);
+      tl.fromTo(".manifesto-line-right", { right: "46%" }, { right: "8vw", duration: 0.32, ease: "power2.out" }, 0.10);
+
+      tl.fromTo(".manifesto-star-tl", { top: "46%", left: "46%", opacity: 0 }, { top: "10%", left: "8vw", opacity: 1, duration: 0.32, ease: "power2.out" }, 0.10);
+      tl.fromTo(".manifesto-star-tr", { top: "46%", right: "46%", opacity: 0 }, { top: "10%", right: "8vw", opacity: 1, duration: 0.32, ease: "power2.out" }, 0.10);
+      tl.fromTo(".manifesto-star-bl", { bottom: "46%", left: "46%", opacity: 0 }, { bottom: "10%", left: "8vw", opacity: 1, duration: 0.32, ease: "power2.out" }, 0.10);
+      tl.fromTo(".manifesto-star-br", { bottom: "46%", right: "46%", opacity: 0 }, { bottom: "10%", right: "8vw", opacity: 1, duration: 0.32, ease: "power2.out" }, 0.10);
+
+      tl.fromTo(".manifesto-tag", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.20, ease: "power2.out" }, 0.18);
+
       const manifestoChildren = Array.from(manifesto.children);
       tl.fromTo(
         manifesto,
@@ -131,6 +144,7 @@ export function HeroManifestoStage({
         },
         0.58
       );
+      tl.to(".manifesto-grid-frame", { opacity: 0, duration: 0.14, ease: "power1.inOut" }, 0.58);
 
       // Micro-pixels pretos sobem de baixo para cima cobrindo o Manifesto
       tl.fromTo(
@@ -251,27 +265,55 @@ export function HeroManifestoStage({
           </div>
         )}
 
-        {/* CAMADA 3 (Z-30): MANIFESTO (Bege) */}
+        {/* CAMADA 3 (Z-30): MANIFESTO (Bege com Linhas Dinâmicas The Model) */}
         <section
           ref={manifestoRef}
-          className="absolute inset-0 z-30 flex flex-col justify-center px-5 py-12 text-[#000000] md:px-12 xl:px-[22vw] opacity-0 pointer-events-none bg-[#ecece3]"
+          className="absolute inset-0 z-30 flex flex-col justify-center px-5 py-12 text-[#000000] md:px-12 xl:px-[22vw] opacity-0 pointer-events-none bg-[#ecece3] overflow-hidden"
         >
-          <Eyebrow light>O crescimento não acontece em partes isoladas</Eyebrow>
-          <h2 className="mt-12 max-w-6xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl">
-            Um site desconectado. Uma marca sem direção. Tráfego sem estratégia.
-            Automação sem contexto.
-          </h2>
-          <div className="mt-14 grid gap-8 border-t border-black/15 pt-8 md:grid-cols-12">
-            <p className="md:col-span-5 md:col-start-7 text-base leading-7 md:text-lg md:leading-8 text-black/80">
-              Muitas empresas investem em canais, ferramentas e campanhas que não
-              conversam entre si. O resultado é uma operação difícil de medir,
-              leads perdidos e uma presença digital que não acompanha a ambição
-              do negócio.
-            </p>
-            <p className="font-serif text-2xl md:col-span-6 md:col-start-7 md:text-3xl text-black">
-              A ESCOM organiza as partes para que o sistema inteiro trabalhe a
-              favor do crescimento.
-            </p>
+          {/* Grade de Linhas Dinâmicas com nós ✦ (Referência The Model) */}
+          <div className="manifesto-grid-frame absolute inset-0 pointer-events-none z-0">
+            {/* Tag editorial de topo */}
+            <div className="manifesto-tag absolute top-[calc(10%-26px)] left-[8vw] font-mono text-[9px] uppercase tracking-[0.2em] text-black/60 flex items-center gap-2">
+              <div className="grid grid-cols-2 gap-[2px] opacity-70">
+                <div className="size-1 bg-current" />
+                <div className="size-1 bg-current" />
+                <div className="size-1 bg-current" />
+                <div className="size-1 bg-current" />
+              </div>
+              <span>-- SYSTEM ARCHITECTURE</span>
+            </div>
+
+            {/* Linhas que se expandem com o scroll */}
+            <div className="manifesto-line-top absolute inset-x-0 h-px bg-black/15" />
+            <div className="manifesto-line-bottom absolute inset-x-0 h-px bg-black/15" />
+            <div className="manifesto-line-left absolute inset-y-0 w-px bg-black/15" />
+            <div className="manifesto-line-right absolute inset-y-0 w-px bg-black/15" />
+
+            {/* Cruzes de interseção nos 4 cantos */}
+            <div className="manifesto-star-tl absolute -translate-x-1/2 -translate-y-1/2 text-black/80 font-serif text-sm">✦</div>
+            <div className="manifesto-star-tr absolute translate-x-1/2 -translate-y-1/2 text-black/80 font-serif text-sm">✦</div>
+            <div className="manifesto-star-bl absolute -translate-x-1/2 translate-y-1/2 text-black/80 font-serif text-sm">✦</div>
+            <div className="manifesto-star-br absolute translate-x-1/2 translate-y-1/2 text-black/80 font-serif text-sm">✦</div>
+          </div>
+
+          <div className="relative z-10">
+            <Eyebrow light>O crescimento não acontece em partes isoladas</Eyebrow>
+            <h2 className="mt-12 max-w-6xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl">
+              Um site desconectado. Uma marca sem direção. Tráfego sem estratégia.
+              Automação sem contexto.
+            </h2>
+            <div className="mt-14 grid gap-8 border-t border-black/15 pt-8 md:grid-cols-12">
+              <p className="md:col-span-5 md:col-start-7 text-base leading-7 md:text-lg md:leading-8 text-black/80">
+                Muitas empresas investem em canais, ferramentas e campanhas que não
+                conversam entre si. O resultado é uma operação difícil de medir,
+                leads perdidos e uma presença digital que não acompanha a ambição
+                do negócio.
+              </p>
+              <p className="font-serif text-2xl md:col-span-6 md:col-start-7 md:text-3xl text-black">
+                A ESCOM organiza as partes para que o sistema inteiro trabalhe a
+                favor do crescimento.
+              </p>
+            </div>
           </div>
         </section>
 

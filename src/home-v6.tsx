@@ -8,6 +8,7 @@ import { HeroManifestoStage } from "@/components/v6/HeroManifestoStage";
 import { MethodStage } from "@/components/v6/MethodStage";
 import { AboutInsightsStage } from "@/components/v6/AboutInsightsStage";
 import { DiagnosisStage } from "@/components/v6/DiagnosisStage";
+import { FixedContactButton, FixedBottomBar } from "@/components/v6/FixedUIElements";
 
 import {
   Accordion,
@@ -210,7 +211,13 @@ export function HomeV6() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <main className="relative overflow-x-hidden bg-[#000000] text-foreground">
+    <main className="relative overflow-x-hidden bg-[#000000] text-foreground pb-8">
+      {/* BOTÃO FIXO NO CANTO SUPERIOR DIREITO DE CONTATO (Ref: APPLY ->) */}
+      <FixedContactButton />
+
+      {/* BARRA FIXA NO RODAPÉ COM IDIOMAS EN/ES/PT E HORÁRIO DE SP AO VIVO */}
+      <FixedBottomBar />
+
       <VerticalNav />
 
       {/* HEADER MOBILE FIXO COM FUNDO TRANSPARENTE E BLUR */}
