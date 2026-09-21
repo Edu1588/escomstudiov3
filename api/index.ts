@@ -2924,14 +2924,67 @@ app.post("/api/buscar-leads", async (req, res) => {
 app.get("/api/gerar-analise/:leadId", async (req, res) => {
   try {
     const geminiKey = process.env.GEMINI_API_KEY || process.env.CUSTOM_GEMINI_KEY || process.env.STITCH_API_KEY || "";
+    const serperKey = process.env.SERPER_API_KEY || "";
     if (!geminiKey) return res.status(500).send("<h1>GEMINI_API_KEY não configurada</h1>");
 
-    // Busca lead no Supabase
+    // 1. Busca lead no Supabase
     const rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(req.params.leadId)}&select=*&limit=1`);
     if (!rows || rows.length === 0) return res.status(404).send("<h1>Lead não encontrado</h1>");
     const lead = rows[0];
     const diag = lead.diagnostico || {};
     const ps = diag.pagespeed || {};
+
+    // 2. Busca concorrentes REAIS via Serper
+    type Concorrente = { nome: string; rating: number | null; reviews: number | null; temSite: boolean; site: string | null; endereco: string | null };
+    let concorrentes: Concorrente[] = [];
+    if (serperKey && lead.categoria && lead.cidade) {
+      try {
+        const sr = await fetch("https://google.serper.dev/places", {
+          method: "POST",
+          headers: { "X-API-KEY": serperKey, "Content-Type": "application/json" },
+          body: JSON.stringify({ q: `${lead.categoria} em ${lead.cidade}`, gl: "br", hl: "pt-br" }),
+        });
+        if (sr.ok) {
+          const sd: any = await sr.json();
+          concorrentes = (sd.places || [])
+            .filter((p: any) => p.title && p.title.toLowerCase() !== lead.nome.toLowerCase())
+            .slice(0, 5)
+            .map((p: any): Concorrente => ({
+              nome:     p.title,
+              rating:   p.rating ?? null,
+              reviews:  p.ratingCount ?? null,
+              temSite:  !!p.website,
+              site:     p.website || null,
+              endereco: p.address || null,
+            }));
+        }
+      } catch {}
+    }
+
+    // 3. PageSpeed dos concorrentes com site
+    type ConcorrentePS = Concorrente & { pagespeed?: { performance: number | null; seo: number | null } };
+    const concorrentesComPS: ConcorrentePS[] = await Promise.all(
+      concorrentes.map(async (c): Promise<ConcorrentePS> => {
+        if (!c.site || !process.env.PAGESPEED_API_KEY) return c;
+        try {
+          const params = new URLSearchParams({ url: c.site, strategy: "MOBILE", category: "PERFORMANCE", key: process.env.PAGESPEED_API_KEY! });
+          params.append("category", "SEO");
+          const pr = await fetch(`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?${params}`);
+          if (!pr.ok) return c;
+          const pd: any = await pr.json();
+          const cats = pd.lighthouseResult?.categories || {};
+          return { ...c, pagespeed: { performance: cats.performance ? Math.round(cats.performance.score * 100) : null, seo: cats.seo ? Math.round(cats.seo.score * 100) : null } };
+        } catch { return c; }
+      })
+    );
+
+    const concorrentesStr = concorrentesComPS.length > 0
+      ? concorrentesComPS.map((c, i) => `${i + 1}. ${c.nome}
+   - Rating: ${c.rating ?? "sem dados"} (${c.reviews ?? 0} avaliações)
+   - Site: ${c.site || "não possui"}
+   - PageSpeed: ${c.pagespeed ? `Performance ${c.pagespeed.performance}%, SEO ${c.pagespeed.seo}%` : "não analisado"}
+   - Endereço: ${c.endereco || "não disponível"}`).join("\n\n")
+      : "Dados de concorrentes não disponíveis (Serper não configurado).";
 
     const prompt = `Você é um estrategista sênior da ESCOM Studio. Gere um Relatório de Análise Estratégica completo em HTML para o lead abaixo.
 
@@ -2939,44 +2992,52 @@ DADOS DO LEAD:
 Nome: ${lead.nome}
 Nicho: ${lead.categoria}
 Cidade: ${lead.cidade}
-Rating Google: ${lead.rating || "N/A"} (${lead.reviews_count || 0} avaliações)
-Site: ${lead.website || "não possui"}
+Rating Google: ${lead.rating || "não disponível"} estrelas (${lead.reviews_count || 0} avaliações)
+Site atual: ${lead.website || "não possui site próprio"}
 Score de oportunidade: ${lead.score_oportunidade || 0}/100
-PageSpeed mobile: Performance ${ps.performance ?? "N/A"}%, SEO ${ps.seo ?? "N/A"}%, Acessibilidade ${ps.acessibilidade ?? "N/A"}%
-Diagnóstico UX: ${diag.identidadeVisualUI ? JSON.stringify(diag) : "não disponível"}
+PageSpeed mobile: Performance ${ps.performance ?? "não disponível"}%, SEO ${ps.seo ?? "não disponível"}%, Acessibilidade ${ps.acessibilidade ?? "não disponível"}%
+Diagnóstico UX: ${diag.identidadeVisualUI ? JSON.stringify({ identidadeVisual: diag.identidadeVisualUI, heuristicas: diag.heuristicasNielsen, arquitetura: diag.arquiteturaInformacao, acessibilidade: diag.acessibilidade }) : "não disponível"}
+
+CONCORRENTES REAIS (dados coletados via Google Maps):
+${concorrentesStr}
+
+REGRA CRÍTICA — DADOS:
+- Use APENAS os dados acima. PROIBIDO inventar nomes, ratings, sites ou qualquer informação não listada.
+- Se um dado não está disponível, escreva "dado não disponível" — nunca substitua por estimativa ou suposição.
+- Para o campo de batalha: use APENAS os concorrentes listados acima. Se a lista estiver vazia, informe que a análise competitiva não pôde ser realizada por ausência de dados.
+- ROI estimado: baseie no ticket médio do nicho ${lead.categoria} e no número de avaliações como proxy de volume — não invente percentuais sem base.
 
 Gere um relatório HTML COMPLETO, profissional, imprimível (A4), com as seguintes seções:
 
-1. CAPA: Logo "ESCOM Studio" em #00d1ff, título "Análise Estratégica", nome do lead, data, elementos geométricos
-2. CONTEXTO DO NICHO: panorama do mercado de ${lead.categoria} em ${lead.cidade}
-3. CAMPO DE BATALHA: análise dos concorrentes diretos (invente 3 concorrentes plausíveis com dados verossímeis)
-4. DIAGNÓSTICO DIGITAL: tabela com notas de Performance, SEO, UX, Acessibilidade — codificadas por cor (FORTE/MÉDIO/FRACO)
-5. CONTRASTE REPUTAÇÃO × PRESENÇA DIGITAL: caixa de destaque — nota ${lead.rating || "?"} no Google vs qualidade do site
-6. ESPAÇO VAZIO (OCEANO AZUL): 3 oportunidades não exploradas pelos concorrentes
-7. JANELA DE OPORTUNIDADE: por que agir agora (dados de mercado e sazonalidade)
-8. DIFERENCIAIS DISPONÍVEIS: 5 ações concretas que ${lead.nome} pode tomar para se destacar
-9. SÍNTESE ESTRATÉGICA: 3 prioridades imediatas + ROI estimado em 6 meses
-10. PROPOSTA ESCOM: CTA final para contratar a ESCOM Studio
+1. CAPA: Logo "ESCOM Studio" em #00d1ff, título "Análise Estratégica", nome "${lead.nome}", data atual, elementos geométricos decorativos
+2. CONTEXTO DO NICHO: panorama do mercado de ${lead.categoria} em ${lead.cidade} — tendências de consumo, comportamento digital do público local
+3. CAMPO DE BATALHA: tabela comparativa dos concorrentes reais listados acima — colunas: Nome, Rating, Nº Avaliações, Tem Site, Performance, SEO. Destaque onde ${lead.nome} está à frente e onde está atrás.
+4. DIAGNÓSTICO DIGITAL: tabela de ${lead.nome} com notas de Performance, SEO, UX, Acessibilidade — badges FORTE/MÉDIO/FRACO baseados nos dados reais do PageSpeed e diagnóstico UX
+5. CONTRASTE REPUTAÇÃO × PRESENÇA DIGITAL: caixa de destaque comparando a nota ${lead.rating || "do lead"} no Google com a qualidade (ou ausência) do site — argumento central da proposta
+6. ESPAÇO VAZIO (OCEANO AZUL): oportunidades não exploradas identificadas a partir dos dados reais dos concorrentes — o que nenhum deles faz bem
+7. JANELA DE OPORTUNIDADE: por que agir agora — baseado na posição atual vs concorrentes, não em dados inventados
+8. DIFERENCIAIS DISPONÍVEIS: 5 ações concretas e específicas para ${lead.nome} se destacar, baseadas nos gaps reais identificados
+9. SÍNTESE ESTRATÉGICA: 3 prioridades imediatas em ordem de impacto + estimativa de retorno baseada no volume de avaliações como proxy
+10. PROPOSTA ESCOM STUDIO: CTA final — o que a ESCOM entrega, prazo, valor R$990, botão "Contratar Agora"
 
 DESIGN OBRIGATÓRIO (cores ESCOM Studio):
 - Fundo das páginas: #ffffff
 - Cor primária ESCOM: #00d1ff (ciano)
 - Cor secundária: #0a0a14 (azul escuro)
 - Tabelas: header #0a0a14 texto #ffffff, linhas alternadas #f0f9ff
-- Badges FORTE: bg #00d1ff20 texto #006680 borda #00d1ff
-- Badges MÉDIO: bg #fef3c720 texto #92400e borda #f59e0b
-- Badges FRACO: bg #fee2e220 texto #991b1b borda #ef4444
+- Badges FORTE: bg #dcfce7 texto #166534 borda #16a34a
+- Badges MÉDIO: bg #fef3c7 texto #92400e borda #f59e0b
+- Badges FRACO: bg #fee2e2 texto #991b1b borda #ef4444
 - Fontes: Playfair Display (títulos) + Plus Jakarta Sans (corpo) via Google Fonts
 - Cada "página" A4: width 210mm, min-height 297mm, padding 20mm, page-break-after: always
 - CSS @media print: remover box-shadow, garantir cores, font-size 11pt
 
-REGRAS:
+REGRAS DE FORMATO:
 - Retorne APENAS o HTML completo (<!DOCTYPE html>...)
-- Sem markdown, sem explicações
-- Dados específicos do lead, nunca genérico
-- Proibido inventar estatísticas nacionais — use apenas dados plausíveis do nicho/cidade`;
+- Sem markdown, sem explicações fora do HTML
+- Toda copy específica ao lead — nunca frases genéricas`;
 
-    // Chama Gemini com fallback de modelos
+    // 4. Chama Gemini com fallback de modelos
     const models = ["gemini-2.5-flash", "gemini-3.6-flash", "gemini-2.5-flash-lite"];
     let html = "";
     for (const model of models) {
@@ -2984,7 +3045,7 @@ REGRAS:
         const gr = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
           { method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 32768 } }) }
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.2, maxOutputTokens: 32768 } }) }
         );
         if (!gr.ok) continue;
         const gd: any = await gr.json();
