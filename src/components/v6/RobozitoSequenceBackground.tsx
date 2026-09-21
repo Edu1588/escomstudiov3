@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 
 const TOTAL_FRAMES = 95;
+// Meta: esperar carregar ao menos metade dos frames (48 imagens) para liberar o site com fluidez
+const TARGET_LOAD_FRAMES = Math.ceil(TOTAL_FRAMES / 2);
 
 interface RobozitoSequenceBackgroundProps {
   currentFrame?: number; // 0 to 94
   frameRef?: React.MutableRefObject<number>;
   progressRef?: React.MutableRefObject<number>; // 0.0 to 1.0
   className?: string;
+  onProgress?: (progressPercent: number) => void;
   onLoaded?: () => void;
 }
 
@@ -15,6 +18,7 @@ export function RobozitoSequenceBackground({
   frameRef,
   progressRef,
   className = "",
+  onProgress,
   onLoaded,
 }: RobozitoSequenceBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -23,19 +27,37 @@ export function RobozitoSequenceBackground({
   const [initialLoaded, setInitialLoaded] = useState(false);
   const lastDrawnFrameRef = useRef<number>(-1);
 
-  // Pre-carregamento dos 95 frames
+  // Pre-carregamento dos 95 frames com monitoramento da meta (metade das imagens)
   useEffect(() => {
     let isMounted = true;
     const images: HTMLImageElement[] = [];
     imagesRef.current = images;
 
-    // Carregar primeiro o frame 0 para visualização imediata
+    const notifyProgress = () => {
+      if (!isMounted) return;
+      const count = loadedCountRef.current;
+      const pct = Math.min(100, Math.round((count / TARGET_LOAD_FRAMES) * 100));
+      if (onProgress) {
+        onProgress(pct);
+      }
+      if (count >= TOTAL_FRAMES && onLoaded) {
+        onLoaded();
+      }
+    };
+
+    // Timeout de segurança: após 4.5 segundos, se a rede for lenta, completa para não travar
+    const safetyTimer = setTimeout(() => {
+      if (isMounted && onProgress) {
+        onProgress(100);
+      }
+    }, 4500);
+
     for (let i = 0; i < TOTAL_FRAMES; i++) {
       const img = new Image();
       const frameNum = String(i + 1).padStart(3, "0");
       img.src = `/robozitosequence/ezgif-frame-${frameNum}.png`;
 
-      img.onload = () => {
+      const handleSingleLoad = () => {
         if (!isMounted) return;
         loadedCountRef.current += 1;
 
@@ -44,20 +66,26 @@ export function RobozitoSequenceBackground({
           renderFrame(0);
         }
 
-        if (loadedCountRef.current === TOTAL_FRAMES && onLoaded) {
-          onLoaded();
-        }
+        notifyProgress();
       };
+
+      if (img.complete && img.naturalWidth > 0) {
+        handleSingleLoad();
+      } else {
+        img.onload = handleSingleLoad;
+        img.onerror = handleSingleLoad; // Erro em frame individual não bloqueia o carregamento
+      }
 
       images.push(img);
     }
 
     return () => {
       isMounted = false;
+      clearTimeout(safetyTimer);
     };
   }, []);
 
-  // Função para desenhar o frame com aspect-ratio "cover" de alta resolução
+  // Função para desenhar o frame com aspect-ratio "cover" de alta resolução e brilho natural
   const renderFrame = (targetIndex: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -166,9 +194,9 @@ export function RobozitoSequenceBackground({
         ref={canvasRef}
         className="absolute inset-0 w-full h-full object-cover"
       />
-      {/* Overlay gradiente cinematográfico para contraste editorial e legibilidade perfeita */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-transparent pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/50 pointer-events-none" />
+      {/* Removidos os filtros escuros pesados. Apenas uma sombra lateral suave à esquerda para garantir legibilidade dos textos sem escurecer o robô */}
+      <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-black/40 to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/35 to-transparent pointer-events-none" />
     </div>
   );
 }
