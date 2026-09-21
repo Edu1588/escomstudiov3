@@ -3,6 +3,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PixelTransitionCanvas } from "@/components/v6/PixelTransitionCanvas";
 import { Check } from "lucide-react";
+import { useLanguage } from "@/components/v6/LanguageContext";
 
 export function AboutInsightsStage({
   Eyebrow,
@@ -13,6 +14,7 @@ export function AboutInsightsStage({
     cyan?: boolean;
   }>;
 }) {
+  const { t } = useLanguage();
   const stageRef = useRef<HTMLDivElement>(null);
   const screenRef = useRef<HTMLDivElement>(null);
   const aboutRef = useRef<HTMLDivElement>(null);
@@ -186,33 +188,18 @@ export function AboutInsightsStage({
           className="absolute inset-0 z-20 flex flex-col justify-center px-5 py-10 dark bg-[#000000] text-foreground md:px-12 xl:px-[22vw] opacity-0 pointer-events-none"
         >
           {/* Eyebrow na cor azul do brand da ESCOM */}
-          <Eyebrow cyan>Sobre a ESCOM</Eyebrow>
+          <Eyebrow cyan>{t.about.eyebrow}</Eyebrow>
           <div className="mt-10 grid gap-8 md:grid-cols-12">
             <h2 className="font-serif text-4xl leading-tight font-light md:col-span-7 md:text-6xl lg:text-7xl">
-              Somos uma equipe de estratégia, design e tecnologia para empresas em
-              movimento.
+              {t.about.title}
             </h2>
             <div className="space-y-5 text-sm leading-6 md:text-base md:leading-7 text-muted-foreground md:col-span-4 md:col-start-9">
-              <p>
-                A ESCOM nasceu da convicção de que presença digital precisa
-                cumprir uma função clara dentro do negócio.
-              </p>
-              <p>
-                Pensamos na marca, desenhamos a experiência, escrevemos a
-                mensagem, construímos a tecnologia, conectamos os dados e
-                observamos o que acontece depois do lançamento.
-              </p>
+              <p>{t.about.p1}</p>
+              <p>{t.about.p2}</p>
             </div>
           </div>
           <div className="mt-14 grid border-t border-border/40 md:grid-cols-3">
-            {[
-              "Clareza antes do ruído",
-              "Estratégia antes da ferramenta",
-              "Tecnologia a serviço do resultado",
-              "Design com intenção",
-              "Experimentos com responsabilidade",
-              "Crescimento que pode ser melhorado",
-            ].map((x, i) => (
+            {t.about.principles.map((x, i) => (
               <div
                 key={x}
                 className="border-b border-border/30 py-4 font-mono text-[9px] md:text-[10px] uppercase tracking-[0.1em] text-muted-foreground md:border-r"
@@ -241,26 +228,17 @@ export function AboutInsightsStage({
           ref={insightsRef}
           className="absolute inset-0 z-40 flex flex-col justify-center px-5 py-10 text-[#000000] md:px-12 xl:px-[22vw] opacity-0 pointer-events-none bg-[#ecece3]"
         >
-          <Eyebrow light>Para quem é</Eyebrow>
+          <Eyebrow light>{t.insights.eyebrow}</Eyebrow>
           <div className="mt-8 grid gap-8 md:grid-cols-12">
             <h2 className="font-serif text-4xl leading-tight font-light md:col-span-7 md:text-6xl lg:text-7xl text-[#000000]">
-              Para empresas que já entenderam que o próximo estágio exige mais do
-              que presença.
+              {t.insights.title}
             </h2>
             <div className="md:col-span-4 md:col-start-9">
               <p className="text-sm leading-6 md:text-base md:leading-7 text-black/80">
-                Empresas lançando, reposicionando ou acelerando uma operação — e
-                prontas para transformar intenção em estrutura.
+                {t.insights.desc}
               </p>
               <ul className="mt-6 space-y-3 text-xs md:text-sm">
-                {[
-                  "Lançar ou reconstruir um site",
-                  "Reposicionar uma marca",
-                  "Criar uma jornada de conversão",
-                  "Automatizar atendimento e vendas",
-                  "Aplicar IA em uma operação concreta",
-                  "Conectar marketing, tecnologia e vendas",
-                ].map((x) => (
+                {t.insights.items.map((x) => (
                   <li
                     key={x}
                     className="flex items-center gap-3 border-t border-black/15 pt-2 text-black/90"
@@ -273,9 +251,7 @@ export function AboutInsightsStage({
             </div>
           </div>
           <p className="mt-10 max-w-4xl font-serif text-2xl md:text-3xl text-black">
-            Se você procura apenas uma peça pelo menor preço, talvez não sejamos a
-            melhor escolha. Se procura uma solução pensada para o contexto,
-            podemos conversar.
+            {t.insights.footerQuote}
           </p>
         </section>
       </div>

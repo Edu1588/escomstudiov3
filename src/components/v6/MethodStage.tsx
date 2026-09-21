@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PixelTransitionCanvas } from "@/components/v6/PixelTransitionCanvas";
+import { useLanguage } from "@/components/v6/LanguageContext";
 
 export function MethodStage({
   Eyebrow,
@@ -12,6 +13,7 @@ export function MethodStage({
     cyan?: boolean;
   }>;
 }) {
+  const { t } = useLanguage();
   const stageRef = useRef<HTMLDivElement>(null);
   const screenRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -142,7 +144,7 @@ export function MethodStage({
                 <div className="size-1 bg-current" />
                 <div className="size-1 bg-current" />
               </div>
-              <span>-- OPERATIONAL METHOD</span>
+              <span>-- {t.method.tag}</span>
             </div>
 
             <div className="method-line-top absolute inset-x-0 h-px bg-black/15" />
@@ -157,26 +159,16 @@ export function MethodStage({
           </div>
 
           <div className="relative z-10">
-          <Eyebrow light>Não somos uma fábrica de entregáveis</Eyebrow>
+          <Eyebrow light>{t.method.eyebrow}</Eyebrow>
           <h2 className="mt-10 max-w-5xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl text-[#000000]">
-            Cada projeto começa pelo problema. E termina em uma estrutura que
-            pode evoluir.
+            {t.method.title}
           </h2>
           <div className="mt-12 grid gap-12 md:grid-cols-12">
             <p className="text-base leading-7 md:col-span-5 md:text-lg md:leading-8 text-black/80">
-              A ESCOM não começa perguntando qual peça você quer produzir. Começa
-              entendendo o que precisa mudar no negócio. Combinamos pensamento
-              estratégico, design, código, dados e automação para construir
-              somente o que tem função no seu crescimento.
+              {t.method.desc}
             </p>
             <div className="md:col-span-6 md:col-start-7">
-              {[
-                "Estratégia antes da execução.",
-                "Tecnologia com função.",
-                "Design que orienta decisões.",
-                "Operação conectada.",
-                "Evolução contínua.",
-              ].map((x, i) => (
+              {t.method.steps.map((x, i) => (
                 <div
                   key={x}
                   className="flex gap-5 border-t border-black/15 py-4"

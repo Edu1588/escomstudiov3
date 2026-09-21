@@ -6,6 +6,7 @@ import { ArrowRight, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/components/v6/LanguageContext";
 
 export function DiagnosisStage({
   Eyebrow,
@@ -18,6 +19,7 @@ export function DiagnosisStage({
   }>;
   AnchorButton: React.ComponentType<{ children: React.ReactNode }>;
 }) {
+  const { t } = useLanguage();
   const stageRef = useRef<HTMLDivElement>(null);
   const screenRef = useRef<HTMLDivElement>(null);
   const diagnosisRef = useRef<HTMLDivElement>(null);
@@ -151,16 +153,14 @@ export function DiagnosisStage({
         >
           <div>
             {/* Eyebrow em azul do brand da ESCOM */}
-            <Eyebrow cyan>O próximo sistema começa com uma conversa</Eyebrow>
+            <Eyebrow cyan>{t.diagnosis.eyebrow}</Eyebrow>
             <div className="mt-8 grid gap-12 md:grid-cols-12">
               <div className="md:col-span-5">
                 <h2 className="font-serif text-4xl leading-tight font-light md:text-6xl lg:text-7xl">
-                  O que sua empresa precisa construir agora?
+                  {t.diagnosis.title}
                 </h2>
                 <p className="mt-6 max-w-md text-sm leading-6 md:text-base md:leading-7 text-muted-foreground">
-                  Conte-nos qual é o desafio, onde você quer chegar e o que já
-                  tentou. Primeiro entendemos o contexto. Depois indicamos o
-                  caminho.
+                  {t.diagnosis.desc}
                 </p>
                 <a
                   href="https://wa.me/5513981062787?text=Ol%C3%A1!%20Gostaria%20de%20conversar%20sobre%20um%20projeto%20com%20a%20ESCOM%20Studio."
@@ -168,7 +168,7 @@ export function DiagnosisStage({
                   rel="noopener noreferrer"
                   className="mt-8 inline-flex items-center gap-2 border-b border-cyan pb-1 text-xs font-semibold text-cyan hover:opacity-80 transition-opacity"
                 >
-                  Falar com a ESCOM no WhatsApp <ArrowRight className="size-3" />
+                  {t.diagnosis.whatsappBtn} <ArrowRight className="size-3" />
                 </a>
               </div>
               <div className="md:col-span-6 md:col-start-7">
@@ -176,28 +176,28 @@ export function DiagnosisStage({
                   <div className="flex min-h-72 flex-col justify-center border-y border-border p-6">
                     <Check className="mb-4 size-8 text-cyan" />
                     <h3 className="font-serif text-3xl">
-                      Recebemos suas informações.
+                      {t.diagnosis.successTitle}
                     </h3>
                     <p className="mt-3 max-w-md text-sm leading-6 text-muted-foreground">
-                      Abrimos o WhatsApp com o resumo do seu projeto e entraremos em contato rapidamente.
+                      {t.diagnosis.successDesc}
                     </p>
                   </div>
                 ) : (
                   <form onSubmit={submit} className="space-y-4">
                     <h3 className="font-serif text-2xl md:text-3xl">
-                      Vamos mapear sua próxima oportunidade.
+                      {t.diagnosis.formTitle}
                     </h3>
                     <div className="grid gap-4 sm:grid-cols-2">
                       <Input
                         required
-                        placeholder="Nome"
+                        placeholder={t.diagnosis.namePlaceholder}
                         value={formData.nome}
                         onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
                         className="border-border bg-transparent text-foreground placeholder:text-muted-foreground"
                       />
                       <Input
                         required
-                        placeholder="Empresa"
+                        placeholder={t.diagnosis.companyPlaceholder}
                         value={formData.empresa}
                         onChange={(e) => setFormData({ ...formData, empresa: e.target.value })}
                         className="border-border bg-transparent text-foreground placeholder:text-muted-foreground"
@@ -207,13 +207,13 @@ export function DiagnosisStage({
                       <Input
                         required
                         type="email"
-                        placeholder="E-mail profissional"
+                        placeholder={t.diagnosis.emailPlaceholder}
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         className="border-border bg-transparent text-foreground placeholder:text-muted-foreground"
                       />
                       <Input
-                        placeholder="WhatsApp (com DDD)"
+                        placeholder={t.diagnosis.phonePlaceholder}
                         value={formData.whatsapp}
                         onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
                         className="border-border bg-transparent text-foreground placeholder:text-muted-foreground"
@@ -222,7 +222,7 @@ export function DiagnosisStage({
                     <Textarea
                       required
                       rows={3}
-                      placeholder="Qual é o momento do negócio e o objetivo que precisa ser resolvido?"
+                      placeholder={t.diagnosis.msgPlaceholder}
                       value={formData.mensagem}
                       onChange={(e) => setFormData({ ...formData, mensagem: e.target.value })}
                       className="border-border bg-transparent text-foreground placeholder:text-muted-foreground"
@@ -233,11 +233,11 @@ export function DiagnosisStage({
                         size="xl"
                         variant="editorial"
                       >
-                        Enviar informações
+                        {t.diagnosis.submitBtn}
                         <ArrowRight />
                       </Button>
                       <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
-                        Retorno em até 1 dia útil
+                        {t.diagnosis.sla}
                       </span>
                     </div>
                   </form>
@@ -250,8 +250,8 @@ export function DiagnosisStage({
             <div className="font-serif text-base text-foreground tracking-normal">
               ESCOM<span className="text-cyan">.</span>
             </div>
-            <div>São Paulo · Atendimento global</div>
-            <div>© {new Date().getFullYear()} ESCOM Studio</div>
+            <div>{t.footer.location}</div>
+            <div>© {new Date().getFullYear()} {t.footer.rights}</div>
           </footer>
         </section>
       </div>

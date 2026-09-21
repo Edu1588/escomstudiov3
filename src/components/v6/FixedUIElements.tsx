@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
+import { useLanguage } from "@/components/v6/LanguageContext";
 
 export function FixedContactButton() {
+  const { t } = useLanguage();
+
   return (
     <a
       href="#diagnostico"
       className="fixed top-5 right-5 md:top-6 md:right-10 z-50 flex items-center gap-3 bg-black/90 hover:bg-black text-white hover:text-cyan border border-white/25 hover:border-cyan px-4 py-2 font-mono text-[11px] uppercase tracking-[0.20em] transition-all duration-200 backdrop-blur-md shadow-2xl group cursor-pointer"
       title="Iniciar diagnóstico e contato com a ESCOM"
     >
-      <span className="font-semibold">CONTATO</span>
+      <span className="font-semibold">{t.nav.contactBtn}</span>
       <span className="size-5 border border-white/30 group-hover:border-cyan flex items-center justify-center transition-colors">
         <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
       </span>
@@ -17,7 +20,7 @@ export function FixedContactButton() {
 }
 
 export function FixedBottomBar() {
-  const [lang, setLang] = useState<"EN" | "ES" | "PT">("PT");
+  const { language, setLanguage } = useLanguage();
   const [spTime, setSpTime] = useState<string>("");
 
   useEffect(() => {
@@ -55,9 +58,9 @@ export function FixedBottomBar() {
           {(["EN", "ES", "PT"] as const).map((l, index) => (
             <React.Fragment key={l}>
               <button
-                onClick={() => setLang(l)}
+                onClick={() => setLanguage(l)}
                 className={`transition-colors cursor-pointer px-1 py-0.5 ${
-                  lang === l
+                  language === l
                     ? "text-cyan font-bold border-b border-cyan"
                     : "text-white/40 hover:text-white"
                 }`}

@@ -6,6 +6,7 @@ import { PixelTransitionCanvas } from "@/components/v6/PixelTransitionCanvas";
 import { Button } from "@/components/ui/button";
 import { ArrowDown } from "lucide-react";
 import RobotBust3D from "@/components/RobotBust3D";
+import { useLanguage } from "@/components/v6/LanguageContext";
 
 export function HeroManifestoStage({
   Eyebrow,
@@ -18,6 +19,7 @@ export function HeroManifestoStage({
   }>;
   AnchorButton: React.ComponentType<{ children: React.ReactNode }>;
 }) {
+  const { t } = useLanguage();
   const stageRef = useRef<HTMLDivElement>(null);
   const screenRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -216,7 +218,7 @@ export function HeroManifestoStage({
 
           <div className="relative z-10 flex h-full flex-1 flex-col justify-between px-5 pt-2 pb-6 md:px-12 xl:px-[22vw] md:pt-4 md:pb-8 pointer-events-none">
             <div className="pointer-events-auto">
-              <Eyebrow cyan>ESCOM STUDIO · DIGITAL GROWTH SYSTEMS</Eyebrow>
+              <Eyebrow cyan>{t.hero.eyebrow}</Eyebrow>
             </div>
             
             <div className="max-w-3xl py-3 md:py-5 pointer-events-auto">
@@ -224,30 +226,27 @@ export function HeroManifestoStage({
                 type="words"
                 className="max-w-2xl font-serif text-5xl leading-[0.95] font-light md:text-7xl lg:text-[5.5rem]"
               >
-                Transformamos presença digital em sistemas que geram crescimento.
+                {t.hero.title}
               </SplitTextReveal>
               <p className="mt-5 max-w-xl text-sm leading-6 md:text-base text-muted-foreground">
-                Criamos sites, marcas, automações, experiências com inteligência
-                artificial e operações de tráfego pago para empresas que precisam
-                atrair melhor, vender mais e operar com menos fricção.
+                {t.hero.subtitle}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <AnchorButton>Iniciar diagnóstico</AnchorButton>
+                <AnchorButton>{t.hero.ctaPrimary}</AnchorButton>
                 <Button asChild variant="editorialOutline" size="xl">
                   <a href="#solucoes">
-                    Explorar soluções
+                    {t.hero.ctaSecondary}
                     <ArrowDown />
                   </a>
                 </Button>
               </div>
               <p className="mt-4 max-w-lg text-xs leading-5 text-muted-foreground/80">
-                Conte-nos onde você está e onde quer chegar. Identificamos as
-                oportunidades mais importantes para o seu próximo ciclo.
+                {t.hero.hint}
               </p>
             </div>
 
             <div className="flex flex-wrap justify-between gap-3 border-t border-border/50 pt-3 pb-2 font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground pointer-events-auto">
-              <span>Strategy // Design // Code // Automation // Media</span>
+              <span>{t.hero.footerStatus}</span>
               <span>System status: ready</span>
               <span>Built for conversion</span>
             </div>
@@ -280,7 +279,7 @@ export function HeroManifestoStage({
                 <div className="size-1 bg-current" />
                 <div className="size-1 bg-current" />
               </div>
-              <span>-- SYSTEM ARCHITECTURE</span>
+              <span>-- {t.manifesto.tag}</span>
             </div>
 
             {/* Linhas que se expandem com o scroll */}
@@ -297,21 +296,16 @@ export function HeroManifestoStage({
           </div>
 
           <div className="relative z-10">
-            <Eyebrow light>O crescimento não acontece em partes isoladas</Eyebrow>
+            <Eyebrow light>{t.manifesto.eyebrow}</Eyebrow>
             <h2 className="mt-12 max-w-6xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl">
-              Um site desconectado. Uma marca sem direção. Tráfego sem estratégia.
-              Automação sem contexto.
+              {t.manifesto.title}
             </h2>
             <div className="mt-14 grid gap-8 border-t border-black/15 pt-8 md:grid-cols-12">
               <p className="md:col-span-5 md:col-start-7 text-base leading-7 md:text-lg md:leading-8 text-black/80">
-                Muitas empresas investem em canais, ferramentas e campanhas que não
-                conversam entre si. O resultado é uma operação difícil de medir,
-                leads perdidos e uma presença digital que não acompanha a ambição
-                do negócio.
+                {t.manifesto.text}
               </p>
               <p className="font-serif text-2xl md:col-span-6 md:col-start-7 md:text-3xl text-black">
-                A ESCOM organiza as partes para que o sistema inteiro trabalhe a
-                favor do crescimento.
+                {t.manifesto.highlight}
               </p>
             </div>
           </div>
