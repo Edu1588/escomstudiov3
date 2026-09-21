@@ -2,10 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitTextReveal } from "@/components/v6/SplitTextReveal";
-import { PixelTransitionCanvas } from "@/components/v6/PixelTransitionCanvas";
 import { Button } from "@/components/ui/button";
 import { ArrowDown } from "lucide-react";
-import RobotBust3D from "@/components/RobotBust3D";
+import { RobozitoSequenceBackground } from "@/components/v6/RobozitoSequenceBackground";
 import { useLanguage } from "@/components/v6/LanguageContext";
 
 export function HeroManifestoStage({
@@ -25,8 +24,7 @@ export function HeroManifestoStage({
   const heroRef = useRef<HTMLDivElement>(null);
   const manifestoRef = useRef<HTMLDivElement>(null);
   const solutionsIntroRef = useRef<HTMLDivElement>(null);
-  const progress1Ref = useRef(0.0);
-  const progress2Ref = useRef(0.0);
+  const frameRef = useRef(0);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -59,6 +57,20 @@ export function HeroManifestoStage({
       });
 
       // ==========================================
+      // SEQUÊNCIA DO ROBÔ (FRAME 001 A 095)
+      // Conecta o Hero, Seção 2 (Manifesto) e Seção 3 (Soluções)
+      // ==========================================
+      tl.to(
+        frameRef,
+        {
+          current: 94,
+          ease: "none",
+          duration: 1.0,
+        },
+        0
+      );
+
+      // ==========================================
       // ETAPA 1: HERO -> MANIFESTO (0.0 a 0.45)
       // ==========================================
       tl.to(
@@ -68,18 +80,6 @@ export function HeroManifestoStage({
           y: -25,
           duration: 0.20,
           ease: "power1.inOut",
-        },
-        0.02
-      );
-
-      // Micro-pixels beges sobem de baixo para cima cobrindo o Hero
-      tl.fromTo(
-        progress1Ref,
-        { current: 0.0 },
-        {
-          current: 1.35,
-          duration: 0.30,
-          ease: "none",
         },
         0.02
       );
@@ -148,18 +148,6 @@ export function HeroManifestoStage({
       );
       tl.to(".manifesto-grid-frame", { opacity: 0, duration: 0.14, ease: "power1.inOut" }, 0.58);
 
-      // Micro-pixels pretos sobem de baixo para cima cobrindo o Manifesto
-      tl.fromTo(
-        progress2Ref,
-        { current: 0.0 },
-        {
-          current: 1.35,
-          duration: 0.27,
-          ease: "none",
-        },
-        0.58
-      );
-
       const solutionsChildren = Array.from(solutionsIntro.children);
       tl.fromTo(
         solutionsIntro,
@@ -200,22 +188,20 @@ export function HeroManifestoStage({
 
   return (
     <div ref={stageRef} className="relative w-full">
-      {/* Viewport fixado onde as 3 telas ocorrem em tela cheia fixa */}
+      {/* Viewport fixado onde as 3 seções ocorrem com o Robô de fundo animando no scroll */}
       <div
         ref={screenRef}
         className="relative h-screen w-full overflow-hidden bg-[#000000]"
       >
-        {/* CAMADA 1 (Z-10): HERO (Preto com Robô 3D à direita) */}
+        {/* SEQUÊNCIA DE FUNDO DO ROBÔ (Frames 001 a 095 fluindo no scroll) */}
+        <RobozitoSequenceBackground frameRef={frameRef} />
+
+        {/* CAMADA 1: SEÇÃO 1 - HERO */}
         <section
           id="top"
           ref={heroRef}
-          className="absolute inset-0 z-10 flex flex-col justify-between pt-12 md:pt-14 dark bg-[#000000] text-foreground"
+          className="absolute inset-0 z-10 flex flex-col justify-between pt-12 md:pt-14 dark bg-transparent text-foreground"
         >
-          {/* Robô 3D interativo à direita (Busto fixo, cabeça seguindo o cursor) */}
-          <div className="absolute right-0 top-12 bottom-0 w-full lg:top-0 lg:w-[44vw] z-0 pointer-events-auto flex items-center justify-center opacity-35 lg:opacity-100 scale-90 lg:scale-100 lg:-translate-y-8 transition-all">
-            <RobotBust3D />
-          </div>
-
           <div className="relative z-10 flex h-full flex-1 flex-col justify-between px-5 pt-2 pb-6 md:px-12 xl:px-[22vw] md:pt-4 md:pb-8 pointer-events-none">
             <div className="pointer-events-auto">
               <Eyebrow cyan>{t.hero.eyebrow}</Eyebrow>
@@ -224,11 +210,11 @@ export function HeroManifestoStage({
             <div className="max-w-3xl py-3 md:py-5 pointer-events-auto">
               <SplitTextReveal
                 type="words"
-                className="max-w-2xl font-serif text-5xl leading-[0.95] font-light md:text-7xl lg:text-[5.5rem]"
+                className="max-w-2xl font-serif text-5xl leading-[0.95] font-light md:text-7xl lg:text-[5.5rem] text-white"
               >
                 {t.hero.title}
               </SplitTextReveal>
-              <p className="mt-5 max-w-xl text-sm leading-6 md:text-base text-muted-foreground">
+              <p className="mt-5 max-w-xl text-sm leading-6 md:text-base text-zinc-300">
                 {t.hero.subtitle}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
@@ -240,12 +226,12 @@ export function HeroManifestoStage({
                   </a>
                 </Button>
               </div>
-              <p className="mt-4 max-w-lg text-xs leading-5 text-muted-foreground/80">
+              <p className="mt-4 max-w-lg text-xs leading-5 text-zinc-400">
                 {t.hero.hint}
               </p>
             </div>
 
-            <div className="flex flex-wrap justify-between gap-3 border-t border-border/50 pt-3 pb-2 font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground pointer-events-auto">
+            <div className="flex flex-wrap justify-between gap-3 border-t border-white/15 pt-3 pb-2 font-mono text-[9px] uppercase tracking-[0.12em] text-zinc-400 pointer-events-auto">
               <span>{t.hero.footerStatus}</span>
               <span>System status: ready</span>
               <span>Built for conversion</span>
@@ -253,88 +239,66 @@ export function HeroManifestoStage({
           </div>
         </section>
 
-        {/* CAMADA 2 (Z-20): THREE.JS PIXEL SHADER BEGE (#ecece3) - CENTER */}
-        {mounted && (
-          <div className="z-20 absolute inset-0 pointer-events-none">
-            <PixelTransitionCanvas
-              color="#ecece3"
-              progressRef={progress1Ref}
-              direction="center"
-            />
-          </div>
-        )}
-
-        {/* CAMADA 3 (Z-30): MANIFESTO (Bege com Linhas Dinâmicas The Model) */}
+        {/* CAMADA 2: SEÇÃO 2 - MANIFESTO COM LINHAS DINÂMICAS */}
         <section
           ref={manifestoRef}
-          className="absolute inset-0 z-30 flex flex-col justify-center px-5 py-12 text-[#000000] md:px-12 xl:px-[22vw] opacity-0 pointer-events-none bg-[#ecece3] overflow-hidden"
+          className="absolute inset-0 z-20 flex flex-col justify-center px-5 py-12 text-white md:px-12 xl:px-[22vw] opacity-0 pointer-events-none bg-black/40 backdrop-blur-[2px] overflow-hidden"
         >
           {/* Grade de Linhas Dinâmicas com nós ✦ (Referência The Model) */}
           <div className="manifesto-grid-frame absolute inset-0 pointer-events-none z-0">
             {/* Tag editorial de topo */}
-            <div className="manifesto-tag absolute top-[calc(10%-26px)] left-[8vw] font-mono text-[9px] uppercase tracking-[0.2em] text-black/60 flex items-center gap-2">
+            <div className="manifesto-tag absolute top-[calc(10%-26px)] left-[8vw] font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-400 flex items-center gap-2">
               <div className="grid grid-cols-2 gap-[2px] opacity-70">
-                <div className="size-1 bg-current" />
-                <div className="size-1 bg-current" />
-                <div className="size-1 bg-current" />
-                <div className="size-1 bg-current" />
+                <div className="size-1 bg-cyan-400" />
+                <div className="size-1 bg-cyan-400" />
+                <div className="size-1 bg-cyan-400" />
+                <div className="size-1 bg-cyan-400" />
               </div>
               <span>-- {t.manifesto.tag}</span>
             </div>
 
             {/* Linhas que se expandem com o scroll */}
-            <div className="manifesto-line-top absolute inset-x-0 h-px bg-black/15" />
-            <div className="manifesto-line-bottom absolute inset-x-0 h-px bg-black/15" />
-            <div className="manifesto-line-left absolute inset-y-0 w-px bg-black/15" />
-            <div className="manifesto-line-right absolute inset-y-0 w-px bg-black/15" />
+            <div className="manifesto-line-top absolute inset-x-0 h-px bg-white/20" />
+            <div className="manifesto-line-bottom absolute inset-x-0 h-px bg-white/20" />
+            <div className="manifesto-line-left absolute inset-y-0 w-px bg-white/20" />
+            <div className="manifesto-line-right absolute inset-y-0 w-px bg-white/20" />
 
             {/* Cruzes de interseção nos 4 cantos */}
-            <div className="manifesto-star-tl absolute -translate-x-1/2 -translate-y-1/2 text-black/80 font-serif text-sm">✦</div>
-            <div className="manifesto-star-tr absolute translate-x-1/2 -translate-y-1/2 text-black/80 font-serif text-sm">✦</div>
-            <div className="manifesto-star-bl absolute -translate-x-1/2 translate-y-1/2 text-black/80 font-serif text-sm">✦</div>
-            <div className="manifesto-star-br absolute translate-x-1/2 translate-y-1/2 text-black/80 font-serif text-sm">✦</div>
+            <div className="manifesto-star-tl absolute -translate-x-1/2 -translate-y-1/2 text-cyan-400 font-serif text-sm">✦</div>
+            <div className="manifesto-star-tr absolute translate-x-1/2 -translate-y-1/2 text-cyan-400 font-serif text-sm">✦</div>
+            <div className="manifesto-star-bl absolute -translate-x-1/2 translate-y-1/2 text-cyan-400 font-serif text-sm">✦</div>
+            <div className="manifesto-star-br absolute translate-x-1/2 translate-y-1/2 text-cyan-400 font-serif text-sm">✦</div>
           </div>
 
           <div className="relative z-10">
-            <Eyebrow light>{t.manifesto.eyebrow}</Eyebrow>
-            <h2 className="mt-12 max-w-6xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl">
+            <Eyebrow cyan>{t.manifesto.eyebrow}</Eyebrow>
+            <h2 className="mt-12 max-w-6xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl text-white">
               {t.manifesto.title}
             </h2>
-            <div className="mt-14 grid gap-8 border-t border-black/15 pt-8 md:grid-cols-12">
-              <p className="md:col-span-5 md:col-start-7 text-base leading-7 md:text-lg md:leading-8 text-black/80">
+            <div className="mt-14 grid gap-8 border-t border-white/15 pt-8 md:grid-cols-12">
+              <p className="md:col-span-5 md:col-start-7 text-base leading-7 md:text-lg md:leading-8 text-zinc-300">
                 {t.manifesto.text}
               </p>
-              <p className="font-serif text-2xl md:col-span-6 md:col-start-7 md:text-3xl text-black">
+              <p className="font-serif text-2xl md:col-span-6 md:col-start-7 md:text-3xl text-cyan-300">
                 {t.manifesto.highlight}
               </p>
             </div>
           </div>
         </section>
 
-        {/* CAMADA 4 (Z-40): THREE.JS PIXEL SHADER PRETO (#000000) - CENTER */}
-        {mounted && (
-          <div className="z-40 absolute inset-0 pointer-events-none">
-            <PixelTransitionCanvas
-              color="#000000"
-              progressRef={progress2Ref}
-              direction="center"
-            />
-          </div>
-        )}
-
-        {/* CAMADA 5 (Z-50): CABEÇALHO DE SOLUÇÕES (Preto) */}
+        {/* CAMADA 3: SEÇÃO 3 - INTRODUÇÃO DE SOLUÇÕES */}
         <section
           id="solucoes-intro"
           ref={solutionsIntroRef}
-          className="absolute inset-0 z-50 flex flex-col justify-center px-5 py-12 dark bg-[#000000] text-foreground md:px-12 xl:px-[22vw] opacity-0 pointer-events-none"
+          className="absolute inset-0 z-30 flex flex-col justify-center px-5 py-12 dark bg-black/40 backdrop-blur-[2px] text-foreground md:px-12 xl:px-[22vw] opacity-0 pointer-events-none"
         >
           <Eyebrow cyan>Um sistema digital, várias frentes de crescimento</Eyebrow>
           <div className="mt-14 grid gap-8 md:grid-cols-12">
-            <h2 className="font-serif text-5xl leading-none md:col-span-8 md:text-7xl">
+            <h2 className="font-serif text-5xl leading-none md:col-span-8 md:text-7xl text-white">
               Tudo o que sua empresa precisa para ser percebida, encontrada e
               escolhida.
             </h2>
-            <p className="self-end text-sm leading-6 md:col-span-4 text-muted-foreground">
+            <p className="self-end text-sm leading-6 md:col-span-4 text-zinc-300">
               Unimos marca, experiência digital, aquisição e automação. Cada
               solução pode existir sozinha ou fazer parte de um sistema mais
               amplo.

@@ -11,6 +11,7 @@ import { DiagnosisStage } from "@/components/v6/DiagnosisStage";
 import { FixedContactButton, FixedBottomBar } from "@/components/v6/FixedUIElements";
 import { LanguageProvider, useLanguage } from "@/components/v6/LanguageContext";
 import { DynamicSectionFrame } from "@/components/v6/DynamicSectionFrame";
+import RobotBust3D from "@/components/RobotBust3D";
 
 import {
   Accordion,
@@ -230,23 +231,31 @@ export function HomeV6() {
           </div>
         </section>
 
-        {/* INTELIGÊNCIA ARTIFICIAL APLICADA (COM MOLDURA DINÂMICA DE LINHAS NO SCROLL) */}
-        <DynamicSectionFrame tag="INTELLIGENCE ENGINE" dark={false} className="border-t border-black/10">
-          <section className="relative min-h-[70vh] px-5 py-24 md:px-12 xl:px-[22vw] md:py-32">
-            <div className="absolute -right-24 top-1/2 size-[36rem] -translate-y-1/2 rounded-full border border-black/10 pointer-events-none" />
-            <div className="absolute right-16 top-1/2 size-72 -translate-y-1/2 rounded-full border border-black/10 pointer-events-none" />
-            <div className="relative">
-              <Eyebrow light>{t.aiSection.eyebrow}</Eyebrow>
-              <h2 className="mt-12 max-w-4xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl text-black">
-                {t.aiSection.title}
-              </h2>
-              <p className="mt-8 max-w-xl text-base leading-7 md:text-lg md:leading-8 text-black/80">
-                {t.aiSection.desc}
-              </p>
-              <div className="mt-10">
-                <AnchorButton outline>
-                  {t.aiSection.cta}
-                </AnchorButton>
+        {/* INTELIGÊNCIA ARTIFICIAL APLICADA (COM MOLDURA DINÂMICA DE LINHAS NO SCROLL & ROBÔ 3D INTERATIVO) */}
+        <DynamicSectionFrame tag="INTELLIGENCE ENGINE" dark={false} className="border-t border-black/10 overflow-hidden">
+          <section className="relative min-h-[70vh] px-5 py-20 md:px-12 xl:px-[18vw] md:py-28">
+            <div className="grid gap-12 lg:grid-cols-12 items-center">
+              <div className="relative z-10 lg:col-span-7">
+                <Eyebrow light>{t.aiSection.eyebrow}</Eyebrow>
+                <h2 className="mt-8 max-w-2xl font-serif text-4xl leading-[1.05] font-light md:text-5xl lg:text-6xl text-black">
+                  {t.aiSection.title}
+                </h2>
+                <p className="mt-6 max-w-xl text-base leading-7 md:text-lg md:leading-8 text-black/80">
+                  {t.aiSection.desc}
+                </p>
+                <div className="mt-10">
+                  <AnchorButton outline>
+                    {t.aiSection.cta}
+                  </AnchorButton>
+                </div>
+              </div>
+
+              {/* ROBÔ 3D INTERATIVO */}
+              <div className="relative z-10 lg:col-span-5 flex items-center justify-center">
+                <div className="relative w-full h-[420px] sm:h-[480px] lg:h-[540px] flex items-center justify-center">
+                  <div className="absolute size-72 md:size-96 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
+                  <RobotBust3D />
+                </div>
               </div>
             </div>
           </section>
