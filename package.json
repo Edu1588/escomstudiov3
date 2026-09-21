@@ -55,6 +55,7 @@
     "lucide-react": "^0.546.0",
     "mathjs": "^15.2.0",
     "matter-js": "^0.20.0",
+    "mercadopago": "^3.6.1",
     "motion": "^12.42.2",
     "motion-v": "^2.2.1",
     "node-cron": "^4.2.1",

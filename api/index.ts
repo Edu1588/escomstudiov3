@@ -3140,6 +3140,93 @@ ${siteGeradoUrl ? `<a href="${siteGeradoUrl}" style="background:#00d1ff;color:#0
   } catch(e: any) { res.status(500).json({ success: false, error: e.message }); }
 });
 
+// ── /api/mp-webhook — Recebe notificações de pagamento do Mercado Pago ────────
+app.post("/api/mp-webhook", async (req, res) => {
+  try {
+    const { type, data } = req.body;
+    res.sendStatus(200); // responde rápido pro MP não reenviar
+
+    if (type !== "payment") return;
+    const paymentId = data?.id;
+    if (!paymentId) return;
+
+    const mpToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+    if (!mpToken) return;
+
+    // Busca detalhes do pagamento na API do MP
+    const mpRes = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+      headers: { Authorization: `Bearer ${mpToken}` },
+    });
+    if (!mpRes.ok) return;
+    const payment = await mpRes.json();
+
+    const status = payment.status;           // approved | pending | rejected
+    const pid    = payment.external_reference; // nosso project id
+    const valor  = payment.transaction_amount;
+    const nome   = payment.payer?.first_name || "";
+    const email  = payment.payer?.email || "";
+
+    console.log(`[MP-WEBHOOK] payment ${paymentId} status=${status} pid=${pid}`);
+
+    if (status === "approved" && pid) {
+      // 1. Atualiza Firebase
+      try {
+        const { getFirestore, doc, updateDoc } = await import("firebase/firestore");
+        const fsDb = getFirestore();
+        await updateDoc(doc(fsDb, "generated_sites", pid), {
+          status: "pago",
+          mpPaymentId: paymentId,
+          pagoEm: Date.now(),
+          pagoValor: valor,
+          pagadorEmail: email,
+        });
+      } catch(e: any) { console.warn("[MP-WEBHOOK] Firebase update error:", e.message); }
+
+      // 2. Atualiza Supabase — marca lead como convertido
+      try {
+        const sbUrl = process.env.SUPABASE_URL?.replace(/\/$/, "");
+        const sbKey = process.env.SUPABASE_SERVICE_KEY;
+        if (sbUrl && sbKey) {
+          await fetch(`${sbUrl}/rest/v1/leads?site_gerado=ilike.%25${pid}%25`, {
+            method: "PATCH",
+            headers: {
+              apikey: sbKey,
+              Authorization: `Bearer ${sbKey}`,
+              "Content-Type": "application/json",
+              Prefer: "return=minimal",
+            },
+            body: JSON.stringify({ status: "convertido", email_prospeccao_enviado: true }),
+          });
+        }
+      } catch(e: any) { console.warn("[MP-WEBHOOK] Supabase update error:", e.message); }
+
+      // 3. Notifica Eduardo por email
+      try {
+        const resendKey = process.env.RESEND_API_KEY;
+        if (resendKey) {
+          const { Resend } = await import("resend");
+          const resend = new Resend(resendKey);
+          await resend.emails.send({
+            from: "ESCOM Studio <onboarding@resend.dev>",
+            to: "es.comunicacao@outlook.com",
+            subject: `💰 Pagamento aprovado — R$${valor} — ${pid}`,
+            html: `<p><strong>Pagamento aprovado!</strong></p>
+              <ul>
+                <li>Site: ${pid}</li>
+                <li>Valor: R$ ${valor}</li>
+                <li>Pagador: ${nome} &lt;${email}&gt;</li>
+                <li>Payment ID: ${paymentId}</li>
+              </ul>
+              <p>Acesse o CRM para dar continuidade.</p>`,
+          });
+        }
+      } catch(e: any) { console.warn("[MP-WEBHOOK] Email error:", e.message); }
+    }
+  } catch(e: any) {
+    console.error("[MP-WEBHOOK] Erro:", e.message);
+  }
+});
+
 app.listen(PORT, () => { console.log("Server running on port " + PORT); });
 
 export default app;

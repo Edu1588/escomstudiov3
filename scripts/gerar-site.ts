@@ -10,6 +10,7 @@
 import { config } from "dotenv";
 config({ path: ".env.local" });
 
+import { MercadoPagoConfig, Preference } from "mercadopago";
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
@@ -33,6 +34,8 @@ const ESTADO   = arg("estado",   "SP");
 const GEMINI_KEY       = process.env.GEMINI_API_KEY || "";
 const SUPABASE_URL     = process.env.SUPABASE_URL || "";
 const SUPABASE_SVC_KEY = process.env.SUPABASE_SERVICE_KEY || "";
+const MP_ACCESS_TOKEN  = process.env.MERCADOPAGO_ACCESS_TOKEN || "";
+const MP_PRECO         = Number(process.env.MERCADOPAGO_PRECO || "990");
 
 if (!GEMINI_KEY) { console.error("❌ GEMINI_API_KEY não encontrada no .env.local"); process.exit(1); }
 
@@ -50,7 +53,10 @@ const db = getFirestore(firebaseApp);
 
 async function ensureAuth() {
   if (!auth.currentUser) {
-    await signInWithEmailAndPassword(auth, "admin@escom.com", "Edu@1508001");
+    const email = process.env.FIREBASE_ADMIN_EMAIL || "";
+    const password = process.env.FIREBASE_ADMIN_PASSWORD || "";
+    if (!email || !password) throw new Error("FIREBASE_ADMIN_EMAIL e FIREBASE_ADMIN_PASSWORD não configurados");
+    await signInWithEmailAndPassword(auth, email, password);
   }
 }
 
@@ -256,15 +262,15 @@ BLOCO A — PROPOSTA ESCOM STUDIO (acento: #00d1ff)
 
 11. URGÊNCIA (id="banner-urgencia"): Fundo #00d1ff. Texto escuro #0a0a0a. Texto: "Proposta exclusiva para ${NOME} — válida por 72 horas". Contador regressivo animado em JS (72:00:00 decrescente).
 
-12. DOSSIÊ (id="dossie"): Fundo #0a0a14. Borda superior 3px #00d1ff. Label em #00d1ff. H2 "Diagnóstico Digital: ${NOME}". 4 métricas em cards: Score ${scoreStr} / PageSpeed ${psStr} / Oportunidade identificada / ROI projetado em 6 meses. CTA "Ver Relatório Completo" → https://escomstudio.com.br/proposta-escom-${pid}.
+12. DOSSIÊ (id="dossie"): Fundo #0a0a14. Borda superior 3px #00d1ff. Label em #00d1ff. H2 "Diagnóstico Digital: ${NOME}". 4 métricas em cards: Score ${scoreStr} / PageSpeed ${psStr} / Oportunidade identificada / ROI projetado em 6 meses. CTA "Ver Análise Completa" → /api/gerar-analise/${lead?.id || pid}.
 
-13. INVESTIMENTO (id="investimento"): Fundo #0a0a14. De R$ 4.500 (riscado) por R$ 990 (grande, negrito). Lista de 8 entregáveis com check #00d1ff. Badge "Oferta válida 72h" piscando suavemente. CTA "Quero Contratar" → https://wa.me/5514991234567?text=Quero+contratar+o+pacote+ESCOM.
+13. INVESTIMENTO (id="investimento"): Fundo #0a0a14. De R$ 4.500 (riscado) por R$ ${MP_PRECO} (grande, negrito, cor #00d1ff). Lista de 8 entregáveis com check #00d1ff (site profissional, domínio 1 ano, hospedagem 1 ano, SEO técnico, painel admin, suporte 30 dias, integração WhatsApp, Google Analytics). Badge "Oferta válida 72h" piscando suavemente. CTA principal "Contratar Agora" → {{CHECKOUT_URL}} (botão grande, fundo #00d1ff, texto #0a0a0a, font-weight 700). Abaixo do botão: texto pequeno "Pagamento seguro via Pix, cartão ou boleto".
 
 14. EXPANSÕES (id="expansoes"): Fundo #060610. H3 "Módulos de Expansão". Grid 2x2: CRM Inteligente R$97/mês, Chatbot IA R$147/mês, Dashboard Analytics R$97/mês, WhatsApp Bot R$197/mês. Cards com borda #00d1ff20 hover #00d1ff60.
 
 BLOCO C — ESCOM STUDIO (acento: #00d1ff)
 
-15. RODAPÉ (id="footer"): Fundo #03030a. Logo ESCOM STUDIO em #00d1ff. Tagline da agência. Coluna contatos. Formulário simples: Nome + E-mail + botão "Aceitar Proposta" (apenas visual, sem backend). Copyright. Botão WhatsApp FIXO (position:fixed bottom:24px right:24px z-index:9999) → https://wa.me/55${phone}?text=Quero+saber+mais+sobre+a+proposta.
+15. RODAPÉ (id="footer"): Fundo #03030a. Logo ESCOM STUDIO em #00d1ff. Tagline da agência. Coluna contatos. Botão "Contratar Agora" → {{CHECKOUT_URL}} com ícone de cadeado e texto "Pagamento 100% seguro". Copyright. Botão WhatsApp FIXO (position:fixed bottom:24px right:24px z-index:9999) → https://wa.me/55${phone}?text=Quero+saber+mais+sobre+a+proposta.
 
 ════════════════════════════════════════
 REGRAS ABSOLUTAS
@@ -346,8 +352,42 @@ async function gerarHtml(prompt: string): Promise<string> {
   throw new Error("Todos os modelos Gemini falharam");
 }
 
+// ── Mercado Pago ──────────────────────────────────────────────────────────────
+async function criarPreferenciaMp(pid: string): Promise<{ checkoutUrl: string; preferenceId: string }> {
+  if (!MP_ACCESS_TOKEN) {
+    console.warn("   ⚠️  MERCADOPAGO_ACCESS_TOKEN não configurado — usando link de fallback WhatsApp");
+    return { checkoutUrl: `https://wa.me/5514991234567?text=Quero+contratar+o+pacote+ESCOM`, preferenceId: "" };
+  }
+  const mp = new MercadoPagoConfig({ accessToken: MP_ACCESS_TOKEN });
+  const preference = new Preference(mp);
+  const result = await preference.create({
+    body: {
+      items: [{
+        id: pid,
+        title: `Site Profissional + Domínio 1 ano — ${NOME}`,
+        quantity: 1,
+        unit_price: MP_PRECO,
+        currency_id: "BRL",
+      }],
+      notification_url: `https://www.escomstudio.com.br/api/mp-webhook`,
+      back_urls: {
+        success: `https://www.escomstudio.com.br/api/site-preview/${pid}?pago=1`,
+        failure: `https://www.escomstudio.com.br/api/site-preview/${pid}?pago=0`,
+        pending: `https://www.escomstudio.com.br/api/site-preview/${pid}?pago=pendente`,
+      },
+      auto_return: "approved",
+      external_reference: pid,
+      statement_descriptor: "ESCOM STUDIO",
+    },
+  });
+  const checkoutUrl = result.init_point || result.sandbox_init_point || "";
+  const preferenceId = result.id || "";
+  console.log(`   💳 Preferência MP criada: ${preferenceId}`);
+  return { checkoutUrl, preferenceId };
+}
+
 // ── Salva no Firebase ─────────────────────────────────────────────────────────
-async function salvarNoFirebase(pid: string, html: string, lead: any) {
+async function salvarNoFirebase(pid: string, html: string, lead: any, mpData: { checkoutUrl: string; preferenceId: string }) {
   console.log("🔥 Autenticando no Firebase...");
   await ensureAuth();
   const record = {
@@ -362,8 +402,12 @@ async function salvarNoFirebase(pid: string, html: string, lead: any) {
     city: CIDADE,
     score: lead?.score_oportunidade || 0,
     rating: lead?.rating || null,
+    mpPreferenceId: mpData.preferenceId,
+    mpCheckoutUrl: mpData.checkoutUrl,
+    mpPreco: MP_PRECO,
     createdAt: Date.now(),
     updatedAt: Date.now(),
+    expiraEm: Date.now() + 72 * 60 * 60 * 1000,
   };
   await setDoc(doc(db, "generated_sites", pid), record, { merge: true });
   console.log(`🔥 Salvo no Firebase: generated_sites/${pid}`);
@@ -390,11 +434,16 @@ async function main() {
 
   console.log("\n⏳ Gerando HTML (pode levar 30-120s)...");
   const startTime = Date.now();
-  const html = await gerarHtml(prompt);
+  let html = await gerarHtml(prompt);
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
   console.log(`   ✅ HTML gerado em ${elapsed}s (${html.length.toLocaleString()} chars)`);
 
-  await salvarNoFirebase(pid, html, lead);
+  console.log("\n💳 Criando preferência de pagamento no Mercado Pago...");
+  const mpData = await criarPreferenciaMp(pid);
+  html = html.replace(/\{\{CHECKOUT_URL\}\}/g, mpData.checkoutUrl);
+  console.log(`   ✅ Link de checkout injetado no HTML`);
+
+  await salvarNoFirebase(pid, html, lead, mpData);
 
   const previewUrl = `https://www.escomstudio.com.br/api/site-preview/${pid}`;
 
