@@ -265,45 +265,31 @@ export function HomeV6() {
             </h2>
 
             {/* LAYOUT DE 2 COLUNAS: ESQUERDA CARDS COM SCROLL | DIREITA ROBÔ 3D FIXO (STICKY) */}
-            <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start relative">
+            <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start relative">
               {/* COLUNA ESQUERDA: 6 CARDS DE CONTEÚDO SUBINDO COM O SCROLL */}
-              <div className="lg:col-span-7 flex flex-col gap-6 order-2 lg:order-1">
+              <div className="lg:col-span-7 flex flex-col gap-4">
                 {t.systemsSection.items.map((item, i) => (
                   <article
                     key={item}
-                    className="group relative flex min-h-[220px] flex-col justify-between bg-[#ecece3] border border-black/15 p-7 md:p-9 hover:border-black/40 hover:bg-[#e4e4db] transition-all duration-300 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.06)]"
+                    className="group flex min-h-56 flex-col justify-between bg-[#ecece3] border border-black/15 p-8 hover:bg-[#e4e4db] transition-colors"
                   >
-                    <div className="flex items-center justify-between border-b border-black/10 pb-4">
-                      <span className="font-mono text-xs tracking-widest text-black/50 group-hover:text-black transition-colors">
-                        FIELD // 0{i + 1}
-                      </span>
-                      <span className="font-mono text-[10px] tracking-wider uppercase text-black/40 px-2.5 py-0.5 border border-black/10 rounded-full">
-                        CAPABILITY
-                      </span>
-                    </div>
-
-                    <div className="my-6">
-                      <h3 className="font-serif text-2xl md:text-3xl font-light text-black group-hover:translate-x-1 transition-transform duration-300">
-                        {item}
-                      </h3>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-4 border-t border-black/5">
-                      <span className="font-mono text-[11px] uppercase tracking-wider text-black/60 group-hover:text-black transition-colors">
-                        Explorar arquitetura
-                      </span>
-                      <div className="size-8 rounded-full border border-black/15 flex items-center justify-center group-hover:border-black group-hover:bg-black group-hover:text-white transition-all duration-300">
-                        <ArrowRight className="size-4 text-current transition-transform group-hover:translate-x-0.5" />
-                      </div>
+                    <span className="font-mono text-[10px] text-black/50">
+                      FIELD / 0{i + 1}
+                    </span>
+                    <h3 className="font-serif text-2xl md:text-3xl text-black font-light leading-snug">
+                      {item}
+                    </h3>
+                    <div className="flex justify-end pt-4">
+                      <ArrowRight className="size-5 text-black/60 transition-transform group-hover:translate-x-2" />
                     </div>
                   </article>
                 ))}
               </div>
 
-              {/* COLUNA DIREITA: ROBÔ 3D FIXO (STICKY) COM EFEITO BLUEPRINT NO HOVER */}
-              <div className="lg:col-span-5 lg:sticky lg:top-24 order-1 lg:order-2 self-start">
-                <div className="relative w-full h-[460px] sm:h-[540px] lg:h-[calc(100vh-8rem)] max-h-[700px] rounded-2xl border border-black/15 bg-[#e7e7de]/60 backdrop-blur-sm overflow-hidden flex items-center justify-center shadow-[0_10px_35px_rgba(0,0,0,0.04)]">
-                  <div className="absolute size-72 md:size-88 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
+              {/* COLUNA DIREITA: ROBÔ 3D FIXO (STICKY) ACOMPANHANDO A ROLAGEM */}
+              <div className="lg:col-span-5 lg:sticky lg:top-28 flex items-center justify-center">
+                <div className="relative w-full h-[460px] sm:h-[520px] lg:h-[620px] flex items-center justify-center">
+                  <div className="absolute size-72 md:size-96 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
                   <RobotBust3D />
                 </div>
               </div>
