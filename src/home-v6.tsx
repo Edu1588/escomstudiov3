@@ -82,7 +82,7 @@ export function HomeV6() {
   ];
 
   return (
-    <main className="relative overflow-x-hidden bg-[#000000] text-foreground pb-8">
+    <main className="relative bg-[#000000] text-foreground pb-8">
       {/* BOTÃO FIXO NO CANTO SUPERIOR DIREITO DE CONTATO (Ref: APPLY ->) */}
       <FixedContactButton />
 
@@ -264,14 +264,14 @@ export function HomeV6() {
           </h2>
 
           {/* LAYOUT DE 2 COLUNAS: ESQUERDA CARDS COM SCROLL | DIREITA ROBÔ 3D FIXO (STICKY) */}
-          <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start relative">
+          <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 relative">
             {/* COLUNA ESQUERDA: 6 CARDS SUBINDO E SOBREPONDO O ANTERIOR NO SCROLL */}
-            <div className="lg:col-span-7 relative pb-32">
+            <div className="lg:col-span-7 relative pb-56">
               {t.systemsSection.items.map((item, i) => (
                 <div
                   key={item}
                   style={{
-                    top: `calc(5.5rem + ${i * 18}px)`,
+                    top: `calc(5.5rem + ${i * 20}px)`,
                     zIndex: i + 1,
                   }}
                   className="sticky mb-24 last:mb-0"
@@ -301,10 +301,12 @@ export function HomeV6() {
             </div>
 
             {/* COLUNA DIREITA: ROBÔ 3D FIXO (STICKY) ACOMPANHANDO A ROLAGEM */}
-            <div className="lg:col-span-5 lg:sticky lg:top-24 self-start flex items-center justify-center">
-              <div className="relative w-full h-[520px] sm:h-[600px] lg:h-[680px] flex items-center justify-center overflow-visible">
-                <div className="absolute size-88 md:size-[28rem] rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
-                <RobotBust3D />
+            <div className="lg:col-span-5 relative">
+              <div className="lg:sticky lg:top-24 flex items-center justify-center">
+                <div className="relative w-full h-[520px] sm:h-[600px] lg:h-[680px] flex items-center justify-center overflow-visible">
+                  <div className="absolute size-88 md:size-[28rem] rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
+                  <RobotBust3D />
+                </div>
               </div>
             </div>
           </div>
