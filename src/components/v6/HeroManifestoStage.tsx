@@ -59,13 +59,13 @@ export function HeroManifestoStage({
       });
 
       // ==========================================
-      // SEQUÊNCIA DO ROBÔ (FRAME 001 A 095)
+      // SEQUÊNCIA DO ROBÔ (FRAME 001 A 096)
       // Conecta o Hero, Seção 2 (Manifesto) e Seção 3 (Soluções)
       // ==========================================
       tl.to(
         frameRef,
         {
-          current: 94,
+          current: 95,
           ease: "none",
           duration: 1.0,
         },

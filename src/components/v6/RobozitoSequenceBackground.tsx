@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const TOTAL_FRAMES = 95;
+const TOTAL_FRAMES = 96;
 // Meta: esperar carregar ao menos metade dos frames (48 imagens) para liberar o site com fluidez
 const TARGET_LOAD_FRAMES = Math.ceil(TOTAL_FRAMES / 2);
 
 interface RobozitoSequenceBackgroundProps {
-  currentFrame?: number; // 0 to 94
+  currentFrame?: number; // 0 to 95
   frameRef?: React.MutableRefObject<number>;
   progressRef?: React.MutableRefObject<number>; // 0.0 to 1.0
   className?: string;

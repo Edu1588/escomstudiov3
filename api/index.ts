@@ -3081,36 +3081,60 @@ app.post("/api/enviar-email", async (req, res) => {
     const analisePdfUrl = `https://www.escomstudio.com.br/api/gerar-analise/${leadId}`;
     const ps = lead.diagnostico?.pagespeed || {};
 
+    // Slug do negócio para URL amigável no subject
+    const nomeSlug = lead.nome.toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 20);
+    const siteUrl = siteGeradoUrl || `https://${nomeSlug}.escomstudio.com.br`;
+
     // Gera o corpo do email com Gemini (ou usa template fixo como fallback)
     let emailHtml = "";
-    let assunto = `${lead.nome} — uma análise que preparei especialmente para você`;
+    let assunto = `RE: Sua página ${lead.nome} para aumentar seus lucros → ${siteUrl}`;
 
     if (geminiKey) {
       try {
-        const prompt = `Você é Eduardo Santos, fundador da ESCOM Studio, uma agência de sites e marketing digital.
-Escreva um email de prospecção HUMANIZADO e PERSONALIZADO para o seguinte negócio:
+        const prompt = `Você é Eduardo Santos, especialista em estratégias para aumentar a lucratividade de negócios locais.
+Escreva um email de prospecção PERSONALIZADO seguindo EXATAMENTE o formato abaixo. Substitua apenas os campos entre colchetes.
 
-Nome: ${lead.nome}
-Nicho: ${lead.categoria}
-Cidade: ${lead.cidade}
-Avaliação Google: ${lead.rating || "N/A"} estrelas (${lead.reviews_count || 0} avaliações)
-Site atual: ${lead.website || "não possui"}
-PageSpeed mobile: Performance ${ps.performance ?? "N/A"}%, SEO ${ps.seo ?? "N/A"}%
+Dados do negócio:
+- Nome: ${lead.nome}
+- Nicho: ${lead.categoria}
+- Cidade: ${lead.cidade}
+- Avaliação Google: ${lead.rating || "N/A"} estrelas (${lead.reviews_count || 0} avaliações)
+- URL do site gerado: ${siteUrl}
 
-O email deve:
-1. Cumprimentar pelo nome do negócio de forma natural (não "Prezado Sr/Sra")
-2. Mostrar que você conhece o negócio deles (mencionar a cidade, nicho e avaliação Google)
-3. Mencionar 1-2 problemas específicos identificados no site deles (baseado nos dados de PageSpeed e nicho)
-4. Apresentar que preparou um site-amostra e uma análise estratégica gratuita
-5. Convidar para uma conversa rápida de 15 minutos sem compromisso
-6. Tom: direto, caloroso, sem ser vendedor. Parecer um profissional que encontrou uma oportunidade e quer compartilhar.
-7. Assinatura: Eduardo Santos — ESCOM Studio — (14) 99831-5675
+FORMATO OBRIGATÓRIO (siga a estrutura e o tom exatos — apenas personalize onde indicado):
 
-Retorne APENAS o HTML do corpo do email (sem <html>/<head>/<body>).
-Use fonte Arial/sans-serif, cores #0a0a14 para texto e #00d1ff para destaques.
-Máximo 200 palavras no texto. Inclua os botões abaixo no email:
-${siteGeradoUrl ? `<a href="${siteGeradoUrl}" style="background:#00d1ff;color:#000;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;display:inline-block;margin:8px 4px">Ver site-amostra gratuito</a>` : ""}
-<a href="${analisePdfUrl}" style="background:#0a0a14;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;display:inline-block;margin:8px 4px">Ver análise estratégica</a>`;
+Oi, [primeiro nome do negócio ou nome curto].
+
+Sou Eduardo Santos, especialista em estratégias para aumentar a lucratividade de negócios locais.
+
+Encontrei a [nome do negócio] no Google e vi que vocês têm [X] estrelas e [Y] avaliações.
+
+Ou seja: vocês já têm reputação.
+
+E para gerar mais oportunidades de negócio, montei essa página especificamente para vocês:
+→ ${siteUrl}
+
+E para aumentar seus lucros...
+
+Quero fazer uma análise gratuita e sem compromisso da [nome do negócio] e mostrar, na prática, onde vejo as brechas deixadas pelos concorrentes, as oportunidades lucrativas do seu mercado.
+
+A partir dessa análise, respeitando seu momento atual, podemos estruturar a sua estratégia.
+
+Para alinhar os detalhes, marcamos uma conversa de 15 minutos.
+Eu mostro o que encontrei, explico como fazer um projeto lucrativo no seu negócio.
+
+55 13 98106-2787
+Eduardo Santos
+
+REGRAS:
+- Tom: conversa direta entre profissionais, sem ser vendedor
+- NÃO mencione ESCOM Studio no corpo (só na assinatura se necessário)
+- NÃO use palavras como "Prezado", "Atenciosamente", "Por favor"
+- NÃO ofereça o site como produto — o produto é a análise gratuita e a conversa
+- Retorne APENAS o HTML do corpo (sem <html>/<head>/<body>)
+- Use fonte Arial/sans-serif, cor #333 para texto, line-height 1.8
+- NÃO adicione botões estilizados — apenas os links de texto já estão no template
+- Máximo 180 palavras`;
 
         const models = ["gemini-2.5-flash", "gemini-3.6-flash", "gemini-2.5-flash-lite"];
         for (const model of models) {
@@ -3118,7 +3142,7 @@ ${siteGeradoUrl ? `<a href="${siteGeradoUrl}" style="background:#00d1ff;color:#0
             const gr = await fetch(
               `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
               { method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.7, maxOutputTokens: 4096 } }) }
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.6, maxOutputTokens: 4096 } }) }
             );
             if (!gr.ok) continue;
             const gd: any = await gr.json();
@@ -3133,56 +3157,57 @@ ${siteGeradoUrl ? `<a href="${siteGeradoUrl}" style="background:#00d1ff;color:#0
 
     // Fallback: template fixo se Gemini falhar
     if (!emailHtml) {
-      const temSite = !!lead.website;
-      const problemaSite = ps.performance && ps.performance < 50
-        ? `Vi que o site de vocês está com ${ps.performance}% de performance no mobile — isso afasta clientes que tentam acessar pelo celular.`
-        : temSite ? "Analisei o site de vocês e identifiquei algumas oportunidades de melhoria que podem impactar diretamente a captação de clientes."
-        : "Vi que vocês ainda não têm presença digital — e com ${lead.reviews_count || 0} avaliações no Google, certamente há clientes procurando por vocês online.";
+      const primeiroNome = lead.nome.split(/[\s']/)[0];
+      const rating = lead.rating ? `${lead.rating} estrelas` : "avaliações";
+      const reviews = lead.reviews_count ? `${lead.reviews_count} avaliações` : "avaliações";
 
       emailHtml = `
-        <p style="font-family:Arial,sans-serif;color:#0a0a14;font-size:15px;line-height:1.7">
-          Olá, ${lead.nome}!
+        <p style="font-family:Arial,sans-serif;color:#333;font-size:15px;line-height:1.8;margin:0 0 16px">
+          Oi, ${primeiroNome}.
         </p>
-        <p style="font-family:Arial,sans-serif;color:#333;font-size:15px;line-height:1.7">
-          Me chamo Eduardo, sou da ESCOM Studio, uma agência especializada em sites de alta conversão para negócios locais aqui em ${lead.cidade}.
+        <p style="font-family:Arial,sans-serif;color:#333;font-size:15px;line-height:1.8;margin:0 0 16px">
+          Sou Eduardo Santos, especialista em estratégias para aumentar a lucratividade de negócios locais.
         </p>
-        <p style="font-family:Arial,sans-serif;color:#333;font-size:15px;line-height:1.7">
-          ${problemaSite}
+        <p style="font-family:Arial,sans-serif;color:#333;font-size:15px;line-height:1.8;margin:0 0 16px">
+          Encontrei a ${lead.nome} no Google e vi que vocês têm ${rating} e ${reviews}.
         </p>
-        <p style="font-family:Arial,sans-serif;color:#333;font-size:15px;line-height:1.7">
-          Preparei gratuitamente uma <strong style="color:#00d1ff">análise estratégica completa</strong> e um <strong style="color:#00d1ff">site-amostra personalizado</strong> para vocês — sem custo e sem compromisso.
+        <p style="font-family:Arial,sans-serif;color:#333;font-size:15px;line-height:1.8;margin:0 0 16px">
+          Ou seja: vocês já têm reputação.
         </p>
-        <p style="text-align:center;margin:24px 0">
-          ${siteGeradoUrl ? `<a href="${siteGeradoUrl}" style="background:#00d1ff;color:#000;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;display:inline-block;margin:8px 4px">Ver site-amostra gratuito</a>` : ""}
-          <a href="${analisePdfUrl}" style="background:#0a0a14;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;display:inline-block;margin:8px 4px">Ver análise estratégica</a>
+        <p style="font-family:Arial,sans-serif;color:#333;font-size:15px;line-height:1.8;margin:0 0 16px">
+          E para gerar mais oportunidades de negócio, montei essa página especificamente para vocês:<br>
+          → <a href="${siteUrl}" style="color:#0a0a14">${siteUrl}</a>
         </p>
-        <p style="font-family:Arial,sans-serif;color:#333;font-size:15px;line-height:1.7">
-          Posso bater um papo rápido de 15 minutos? Sem enrolação — só quero mostrar o que preparei e ouvir o que vocês acham.
+        <p style="font-family:Arial,sans-serif;color:#333;font-size:15px;line-height:1.8;margin:0 0 16px">
+          E para aumentar seus lucros...
         </p>
-        <p style="font-family:Arial,sans-serif;color:#0a0a14;font-size:14px;margin-top:32px;border-top:2px solid #00d1ff;padding-top:16px">
-          <strong>Eduardo Santos</strong><br>
-          ESCOM Studio<br>
-          <a href="https://wa.me/5514998315675" style="color:#00d1ff">(14) 99831-5675</a>
+        <p style="font-family:Arial,sans-serif;color:#333;font-size:15px;line-height:1.8;margin:0 0 16px">
+          Quero fazer uma análise gratuita e sem compromisso da ${lead.nome} e mostrar, na prática, onde vejo as brechas deixadas pelos concorrentes, as oportunidades lucrativas do seu mercado.
+        </p>
+        <p style="font-family:Arial,sans-serif;color:#333;font-size:15px;line-height:1.8;margin:0 0 16px">
+          A partir dessa análise, respeitando seu momento atual, podemos estruturar a sua estratégia.
+        </p>
+        <p style="font-family:Arial,sans-serif;color:#333;font-size:15px;line-height:1.8;margin:0 0 16px">
+          Para alinhar os detalhes, marcamos uma conversa de 15 minutos.<br>
+          Eu mostro o que encontrei, explico como fazer um projeto lucrativo no seu negócio.
+        </p>
+        <p style="font-family:Arial,sans-serif;color:#333;font-size:15px;line-height:1.8;margin:32px 0 0">
+          <a href="https://wa.me/5513981062787" style="color:#0a0a14;text-decoration:none">55 13 98106-2787</a><br>
+          <strong>Eduardo Santos</strong>
         </p>`;
     }
 
     const emailFinal = `
-      <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1)">
-        <div style="background:#0a0a14;padding:24px 32px;text-align:center">
-          <span style="color:#00d1ff;font-family:Arial,sans-serif;font-size:22px;font-weight:bold;letter-spacing:2px">ESCOM STUDIO</span>
-        </div>
-        <div style="padding:32px">${emailHtml}</div>
-        <div style="background:#f8f8f8;padding:16px 32px;text-align:center">
-          <p style="font-family:Arial,sans-serif;color:#999;font-size:11px;margin:0">
-            Você recebeu este email pois preparamos uma análise gratuita para o seu negócio.
-            Para não receber mais, é só responder com "remover".
-          </p>
-        </div>
+      <div style="max-width:580px;margin:0 auto;background:#fff;padding:40px 32px">
+        ${emailHtml}
+        <p style="font-family:Arial,sans-serif;color:#bbb;font-size:10px;margin-top:48px;border-top:1px solid #eee;padding-top:16px">
+          Para não receber mais mensagens, responda com "remover".
+        </p>
       </div>`;
 
     const resend = new Resend(resendKey);
     await resend.emails.send({
-      from: "Eduardo — ESCOM Studio <onboarding@resend.dev>",
+      from: "Eduardo Santos <onboarding@resend.dev>",
       to: [emailDestinatario],
       subject: assunto,
       html: emailFinal,
