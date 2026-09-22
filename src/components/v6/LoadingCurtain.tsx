@@ -11,6 +11,36 @@ export function LoadingCurtain({ progress, onFinished }: LoadingCurtainProps) {
   const [openCurtains, setOpenCurtains] = useState(false);
   const [isRemoved, setIsRemoved] = useState(false);
 
+  // Garantir que a página sempre abra no topo e sem barra de rolagem durante o loading
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if ("scrollRestoration" in window.history) {
+        window.history.scrollRestoration = "manual";
+      }
+      window.scrollTo(0, 0);
+
+      const prevHtmlOverflow = document.documentElement.style.overflow;
+      const prevBodyOverflow = document.body.style.overflow;
+
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+
+      return () => {
+        document.documentElement.style.overflow = prevHtmlOverflow;
+        document.body.style.overflow = prevBodyOverflow;
+      };
+    }
+  }, []);
+
+  // Quando as cortinas abrem, destrava a rolagem da página e garante o topo
+  useEffect(() => {
+    if (openCurtains && typeof window !== "undefined") {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+      window.scrollTo(0, 0);
+    }
+  }, [openCurtains]);
+
   // Interpolação suave do número de 0 a 100%
   useEffect(() => {
     const timer = setInterval(() => {
@@ -43,6 +73,11 @@ export function LoadingCurtain({ progress, onFinished }: LoadingCurtainProps) {
       // 3. Remove o elemento do DOM após a conclusão da animação
       const finishTimer = setTimeout(() => {
         setIsRemoved(true);
+        if (typeof window !== "undefined") {
+          document.documentElement.style.overflow = "";
+          document.body.style.overflow = "";
+          window.scrollTo(0, 0);
+        }
         if (onFinished) onFinished();
       }, 1500);
 
@@ -58,7 +93,7 @@ export function LoadingCurtain({ progress, onFinished }: LoadingCurtainProps) {
 
   return (
     <div
-      className={`fixed inset-0 z-[99999] pointer-events-none transition-opacity duration-300 ${
+      className={`fixed inset-0 z-[99999] overflow-hidden select-none pointer-events-none transition-opacity duration-300 ${
         openCurtains ? "pointer-events-none" : "pointer-events-auto"
       }`}
       aria-hidden={openCurtains}
@@ -81,7 +116,7 @@ export function LoadingCurtain({ progress, onFinished }: LoadingCurtainProps) {
 
       {/* Conteúdo Central: Numeração Fina e Elegante de 0 a 100% */}
       <div
-        className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 transition-all duration-300"
+        className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 transition-all duration-300 overflow-hidden"
         style={{
           opacity: hideNumber ? 0 : 1,
           transform: hideNumber ? "scale(0.94) translateY(12px)" : "scale(1) translateY(0)",

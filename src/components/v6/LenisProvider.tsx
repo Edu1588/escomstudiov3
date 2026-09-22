@@ -8,6 +8,11 @@ export function LenisProvider({ children }: { children: ReactNode }) {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
 
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -18,6 +23,8 @@ export function LenisProvider({ children }: { children: ReactNode }) {
       touchMultiplier: 1.5,
       infinite: false,
     });
+
+    lenis.scrollTo(0, { immediate: true });
 
     lenis.on("scroll", ScrollTrigger.update);
 
