@@ -52,7 +52,7 @@ export function HeroManifestoStage({
         scrollTrigger: {
           trigger: stage,
           start: "top top",
-          end: "+=320%",
+          end: "+=260%",
           pin: screen,
           pinSpacing: true,
           scrub: 0.7,
@@ -61,21 +61,21 @@ export function HeroManifestoStage({
       });
 
       // ==========================================
-      // SEQUÊNCIA DO ROBÔ (FRAME 001 A 096)
-      // Chega no último frame (frame 95) em 0.78
+      // 1. SEQUÊNCIA DO ROBÔ (FRAME 001 A 096)
+      // Chega no último frame (frame 95) em 0.62
       // ==========================================
       tl.to(
         frameRef,
         {
           current: 95,
           ease: "none",
-          duration: 0.78,
+          duration: 0.62,
         },
         0
       );
 
       // ==========================================
-      // ETAPA 1: HERO -> MANIFESTO (0.0 a 0.45)
+      // 2. HERO -> MANIFESTO (0.0 a 0.45)
       // ==========================================
       tl.to(
         hero,
@@ -134,24 +134,39 @@ export function HeroManifestoStage({
       );
 
       // ==========================================
-      // ETAPA 2: MANIFESTO FICA ESTÁTICO (0.35 a 0.50)
-      // ==========================================
-
-      // ==========================================
-      // ETAPA 3: MANIFESTO -> SOLUÇÕES INTRO (0.50 a 0.70)
+      // 3. MANIFESTO FICA ESTÁTICO (0.35 a 0.44) E SAI (0.44 a 0.56)
       // ==========================================
       tl.to(
         manifesto,
         {
           opacity: 0,
           y: -25,
-          duration: 0.14,
+          duration: 0.12,
           ease: "power1.inOut",
         },
-        0.50
+        0.44
       );
-      tl.to(".manifesto-grid-frame", { opacity: 0, duration: 0.12, ease: "power1.inOut" }, 0.50);
+      tl.to(".manifesto-grid-frame", { opacity: 0, duration: 0.10, ease: "power1.inOut" }, 0.44);
 
+      // ==========================================
+      // 4. ÚLTIMO FRAME -> TRANSIÇÃO PIXEL PRETO (#000000) DO CENTRO (0.54 a 0.74)
+      // No último frame, os micro-pixels pretos abrem radialmente do centro cobrindo o robô
+      // ==========================================
+      tl.fromTo(
+        pixelProgressRef,
+        { current: 0.0 },
+        {
+          current: 1.35,
+          duration: 0.20,
+          ease: "none",
+        },
+        0.54
+      );
+
+      // ==========================================
+      // 5. SOLUÇÕES INTRO APARECE SOBRE OS PIXELS (0.62 a 0.80) E PERMANECE VISÍVEL!
+      // Conteúdo nunca desaparece para evitar tela vazia
+      // ==========================================
       const solutionsChildren = Array.from(solutionsIntro.children);
       tl.fromTo(
         solutionsIntro,
@@ -182,32 +197,6 @@ export function HeroManifestoStage({
           ease: "power2.out",
         },
         0.64
-      );
-
-      // ==========================================
-      // ETAPA 4: ÚLTIMO FRAME -> TRANSIÇÃO PIXEL AZUL (#1496d5) DO CENTRO (0.80 a 1.0)
-      // No último frame, os micro-pixels abrem radialmente do centro para transitar à próxima seção
-      // ==========================================
-      tl.to(
-        solutionsIntro,
-        {
-          opacity: 0,
-          y: -20,
-          duration: 0.12,
-          ease: "power1.inOut",
-        },
-        0.82
-      );
-
-      tl.fromTo(
-        pixelProgressRef,
-        { current: 0.0 },
-        {
-          current: 1.35,
-          duration: 0.18,
-          ease: "none",
-        },
-        0.82
       );
     }, stage);
 
@@ -322,11 +311,22 @@ export function HeroManifestoStage({
           </div>
         </section>
 
-        {/* CAMADA 3: SEÇÃO 3 - INTRODUÇÃO DE SOLUÇÕES (Sobre o último frame do robô) */}
+        {/* CAMADA 3 (Z-30): THREE.JS PIXEL SHADER PRETO (#000000) - ABRINDO DO CENTRO */}
+        {mounted && (
+          <div className="z-30 absolute inset-0 pointer-events-none">
+            <PixelTransitionCanvas
+              color="#000000"
+              progressRef={pixelProgressRef}
+              direction="center"
+            />
+          </div>
+        )}
+
+        {/* CAMADA 4 (Z-40): INTRODUÇÃO DE SOLUÇÕES (Sobre o fundo preto com pixels abrindo do centro) */}
         <section
           id="solucoes-intro"
           ref={solutionsIntroRef}
-          className="absolute inset-0 z-30 flex flex-col justify-center px-5 py-12 dark bg-transparent text-foreground md:px-12 xl:px-[22vw] opacity-0 pointer-events-none"
+          className="absolute inset-0 z-40 flex flex-col justify-center px-5 py-12 dark bg-transparent text-foreground md:px-12 xl:px-[22vw] opacity-0 pointer-events-none"
         >
           <Eyebrow cyan>Um sistema digital, várias frentes de crescimento</Eyebrow>
           <div className="mt-14 grid gap-8 md:grid-cols-12">
@@ -341,17 +341,6 @@ export function HeroManifestoStage({
             </p>
           </div>
         </section>
-
-        {/* CAMADA 4 (Z-40): THREE.JS PIXEL SHADER AZUL (#1496d5) - ABRINDO DO CENTRO */}
-        {mounted && (
-          <div className="z-40 absolute inset-0 pointer-events-none">
-            <PixelTransitionCanvas
-              color="#1496d5"
-              progressRef={pixelProgressRef}
-              direction="center"
-            />
-          </div>
-        )}
       </div>
     </div>
   );
