@@ -8,7 +8,6 @@ export default function RobotBust3D() {
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [hasError, setHasError] = useState<boolean>(false);
-  const [isBlueprintActive, setIsBlueprintActive] = useState<boolean>(false);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -68,7 +67,7 @@ export default function RobotBust3D() {
     accentLight.position.set(3, -2, 3);
     scene.add(accentLight);
 
-    // 2.1 Luzes de Alta Precisão dos Olhos / Face (Azul Neon Puro 0x00f0ff / 0x00d8ff)
+    // 2.1 Luzes dos Olhos / Face (Azul Neon Puro 0x00f0ff / 0x00d8ff)
     const faceGlowLight = new THREE.PointLight(0x00d8ff, 0, 2.2);
     faceGlowLight.position.set(0, 0.40, 0.42);
 
@@ -88,22 +87,14 @@ export default function RobotBust3D() {
     let currentRotY = 0;
     let isDesktopMouseActive = false;
 
-    // 4. Modo Blueprint / Wireframe no Hover
-    let isBlueprint = false;
-    const meshesList: { mesh: THREE.Mesh; origMat: THREE.Material | THREE.Material[] }[] = [];
-
-    const blueprintMaterial = new THREE.MeshBasicMaterial({
-      color: 0x00f0ff,
-      wireframe: true,
-    });
-
-    const setBlueprintMode = (active: boolean) => {
-      isBlueprint = active;
-      setIsBlueprintActive(active);
-      meshesList.forEach(({ mesh, origMat }) => {
-        mesh.material = active ? blueprintMaterial : origMat;
-      });
+    // 4. Uniforms do Modo Blueprint Procedural 3D
+    const blueprintUniforms = {
+      uBlueprint: { value: 0.0 },
+      uTime: { value: 0.0 },
     };
+
+    let isHovered = false;
+    let hoverProgress = 0.0;
 
     // 5. Controle de Luzes dos Olhos
     let isEyesOn = false;
@@ -164,16 +155,16 @@ export default function RobotBust3D() {
     };
 
     const handleMouseEnter = () => {
-      setBlueprintMode(true);
+      isHovered = true;
       handleToggleEyes();
     };
 
     const handleMouseLeave = () => {
-      setBlueprintMode(false);
+      isHovered = false;
     };
 
     const handleClick = () => {
-      setBlueprintMode(!isBlueprint);
+      isHovered = !isHovered;
       handleToggleEyes();
     };
 
@@ -215,11 +206,64 @@ export default function RobotBust3D() {
             mesh.castShadow = true;
             mesh.receiveShadow = true;
             if (mesh.material) {
-              const mat = mesh.material as THREE.MeshStandardMaterial;
+              const origMat = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
+              const mat = (origMat as THREE.MeshStandardMaterial).clone();
+              mesh.material = mat;
               mat.roughness = 0.32;
               mat.metalness = 0.68;
+
+              // Shader Hook: Transição fluida de material PBR para grade procedural Blueprint 3D no hover
+              mat.onBeforeCompile = (shader) => {
+                shader.uniforms.uBlueprint = blueprintUniforms.uBlueprint;
+                shader.uniforms.uTime = blueprintUniforms.uTime;
+
+                shader.vertexShader = `
+                  varying vec3 vObjPos;
+                  varying vec3 vObjNormal;
+                  ${shader.vertexShader}
+                `.replace(
+                  "#include <begin_vertex>",
+                  `#include <begin_vertex>
+                  vObjPos = position;
+                  vObjNormal = normal;`
+                );
+
+                shader.fragmentShader = `
+                  uniform float uBlueprint;
+                  uniform float uTime;
+                  varying vec3 vObjPos;
+                  varying vec3 vObjNormal;
+                  ${shader.fragmentShader}
+                `.replace(
+                  "#include <dithering_fragment>",
+                  `#include <dithering_fragment>
+                  if (uBlueprint > 0.001) {
+                    // Grade técnica procedural 3D perfeitamente calibrada
+                    vec3 gridScale = vObjPos * 22.0;
+                    vec3 gridDeriv = fwidth(gridScale);
+                    vec3 gridDist = abs(fract(gridScale - 0.5) - 0.5) / max(gridDeriv, vec3(0.001));
+                    float minLine = min(min(gridDist.x, gridDist.y), gridDist.z);
+                    float gridMask = 1.0 - min(minLine, 1.0);
+
+                    // Scanline holográfica vertical dinâmica
+                    float scan = sin(vObjPos.y * 38.0 - uTime * 3.2) * 0.5 + 0.5;
+
+                    // Realce de contorno Fresnel holográfico
+                    float fresnel = pow(1.0 - abs(dot(normalize(vNormal), vec3(0.0, 0.0, 1.0))), 2.2);
+
+                    // Paleta Blueprint: azul petróleo CAD profundo + linhas ciano néon 3D
+                    vec3 cadNavy = vec3(0.02, 0.07, 0.15);
+                    vec3 cadCyan = vec3(0.0, 0.95, 1.0);
+
+                    float pattern = clamp(gridMask * 0.90 + scan * 0.15 + fresnel * 0.50, 0.0, 1.0);
+                    vec3 blueprintOutput = mix(cadNavy, cadCyan, pattern);
+
+                    gl_FragColor.rgb = mix(gl_FragColor.rgb, blueprintOutput, uBlueprint);
+                  }`
+                );
+              };
+
               mat.needsUpdate = true;
-              meshesList.push({ mesh, origMat: mesh.material });
             }
           }
         });
@@ -297,6 +341,12 @@ export default function RobotBust3D() {
         targetRotX = THREE.MathUtils.clamp(autoX, -0.28, 0.28);
       }
 
+      // Transição fluida do efeito Blueprint no hover
+      const targetHover = isHovered ? 1.0 : 0.0;
+      hoverProgress += (targetHover - hoverProgress) * 0.08;
+      blueprintUniforms.uBlueprint.value = hoverProgress;
+      blueprintUniforms.uTime.value = time;
+
       // Execução da animação de acendimento/apagamento dos olhos
       if (isAnimatingToggle && toggleSequence.length > 0) {
         const elapsed = performance.now() - toggleStartTime;
@@ -325,15 +375,13 @@ export default function RobotBust3D() {
         finalIntensity = currentEyeIntensity * pulse;
       }
 
-      // No modo blueprint ativo, garante iluminação viva
-      if (isBlueprint) {
-        finalIntensity = Math.max(finalIntensity, 2.0);
-      }
+      // Intensidade combinada das luzes com o modo blueprint
+      const totalFaceLight = Math.max(finalIntensity, hoverProgress * 2.2);
 
-      faceGlowLight.intensity = finalIntensity * 2.8;
-      eyeL.intensity = finalIntensity * 3.5;
-      eyeR.intensity = finalIntensity * 3.5;
-      chinUnderglow.intensity = finalIntensity * 1.5;
+      faceGlowLight.intensity = totalFaceLight * 2.8;
+      eyeL.intensity = totalFaceLight * 3.5;
+      eyeR.intensity = totalFaceLight * 3.5;
+      chinUnderglow.intensity = totalFaceLight * 1.5;
 
       // Suavização ultra fluida do movimento da cabeça com Lerp
       currentRotX += (targetRotX - currentRotX) * 0.055;
@@ -383,17 +431,15 @@ export default function RobotBust3D() {
       cancelAnimationFrame(animationFrameId);
       renderer.dispose();
       dracoLoader.dispose();
-      blueprintMaterial.dispose();
     };
   }, []);
 
   return (
     <div className="relative w-full h-full flex items-center justify-center select-none overflow-visible group cursor-pointer">
-      {/* Contêiner WebGL Canvas */}
+      {/* Contêiner WebGL Canvas (sem atributo title para evitar tooltip nativo do navegador) */}
       <div
         ref={containerRef}
         className="w-full h-full relative z-20 flex items-center justify-center overflow-visible"
-        title="Passe o mouse para ver a malha em grid blueprint 3D"
       />
     </div>
   );
