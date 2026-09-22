@@ -256,17 +256,17 @@ export function HomeV6() {
         {/* PROJETOS (Sistemas em Movimento) COM CARDS STACKING E ROBÔ 3D FIXO */}
         <section
           id="projetos"
-          className="border-t border-black/10 bg-[#ecece3] px-5 py-24 md:px-10 xl:px-[6vw] 2xl:px-[8vw] md:py-32 relative"
+          className="border-t border-black/10 bg-[#ecece3] px-5 py-24 md:px-12 xl:pl-[14vw] xl:pr-12 2xl:pr-16 md:py-32 relative"
         >
           <Eyebrow light>{t.systemsSection.eyebrow}</Eyebrow>
           <h2 className="mt-12 max-w-4xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl text-black">
             {t.systemsSection.title}
           </h2>
 
-          {/* LAYOUT DE 2 COLUNAS: ESQUERDA CARDS COM SCROLL (5 col) | DIREITA ROBÔ 3D FIXO COM ÁREA AMPLIADA (7 col) */}
+          {/* LAYOUT DE 2 COLUNAS: ESQUERDA CARDS COM SCROLL (6 col) | DIREITA ROBÔ 3D FIXO (6 col) */}
           <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 relative">
             {/* COLUNA ESQUERDA: 6 CARDS SUBINDO E SOBREPONDO O ANTERIOR NO SCROLL */}
-            <div className="lg:col-span-5 relative pb-56">
+            <div className="lg:col-span-6 relative pb-56">
               {t.systemsSection.items.map((item, i) => (
                 <div
                   key={item}
@@ -300,8 +300,8 @@ export function HomeV6() {
               ))}
             </div>
 
-            {/* COLUNA DIREITA: ROBÔ 3D FIXO (STICKY) COM ÁREA AMPLIADA E SEM CORTES */}
-            <div className="lg:col-span-7 relative">
+            {/* COLUNA DIREITA: ROBÔ 3D FIXO (STICKY) APROVEITANDO O ESPAÇO À DIREITA */}
+            <div className="lg:col-span-6 relative">
               <div className="lg:sticky lg:top-20 flex items-center justify-center">
                 <div className="relative w-full h-[560px] sm:h-[640px] lg:h-[720px] xl:h-[780px] flex items-center justify-center overflow-visible">
                   <div className="absolute size-96 md:size-[32rem] rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
