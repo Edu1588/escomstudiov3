@@ -24,15 +24,25 @@ export default function RobotBust3D() {
     let aspect = width / height;
     const isMobileViewport = window.innerWidth < 1024;
 
-    // Câmera perfeitamente calibrada para não cortar chifres no topo nem ombros nas laterais
+    // Câmera com enquadramento dinâmico inteligente que impede cortes nos ombros e chifres
     const camera = new THREE.PerspectiveCamera(38, aspect, 0.1, 1000);
-    if (isMobileViewport) {
-      camera.position.set(0, 0.06, 6.40);
-      camera.lookAt(0, 0.04, 0);
-    } else {
-      camera.position.set(0, 0.03, 3.45);
-      camera.lookAt(0, 0.08, 0);
-    }
+    const applyCameraFraming = (currentAspect: number, isMobile: boolean) => {
+      camera.aspect = currentAspect;
+      if (isMobile) {
+        camera.position.set(0, 0.05, 6.20);
+        camera.lookAt(0, 0.03, 0);
+      } else {
+        // Compensação horizontal dinâmica: se o aspect ratio for mais estreito que 1.15,
+        // ajusta a distância proporcionalmente para que os ombros NUNCA toquem as laterais
+        const baseDist = 3.35;
+        const targetDist = currentAspect < 1.15 ? baseDist * (1.15 / Math.max(currentAspect, 0.55)) : baseDist;
+        camera.position.set(0, 0.04, targetDist);
+        camera.lookAt(0, 0.08, 0);
+      }
+      camera.updateProjectionMatrix();
+    };
+
+    applyCameraFraming(aspect, isMobileViewport);
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -218,8 +228,8 @@ export default function RobotBust3D() {
         const size = box.getSize(new THREE.Vector3());
 
         const maxDim = Math.max(size.x, size.y, size.z);
-        // Escala calibrada: imponente sem cortar nas extremidades
-        const targetScale = isMobileViewport ? 0.45 : 2.15;
+        // Escala calibrada: imponente e com folga segura para nunca cortar ombros ou chifres
+        const targetScale = isMobileViewport ? 0.40 : 1.90;
         const scale = targetScale / (maxDim || 1);
         robotWrapper.scale.set(scale, scale, scale);
 
@@ -441,16 +451,8 @@ export default function RobotBust3D() {
       const w = getWidth();
       const h = getHeight();
       aspect = w / h;
-      camera.aspect = aspect;
       const isMobile = window.innerWidth < 1024;
-      if (isMobile) {
-        camera.position.set(0, 0.06, 6.40);
-        camera.lookAt(0, 0.04, 0);
-      } else {
-        camera.position.set(0, 0.03, 3.45);
-        camera.lookAt(0, 0.08, 0);
-      }
-      camera.updateProjectionMatrix();
+      applyCameraFraming(aspect, isMobile);
       renderer.setSize(w, h);
     };
 
