@@ -8,6 +8,7 @@ export default function RobotBust3D() {
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [hasError, setHasError] = useState<boolean>(false);
+  const [isBlueprintHovered, setIsBlueprintHovered] = useState<boolean>(false);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -67,7 +68,7 @@ export default function RobotBust3D() {
     accentLight.position.set(3, -2, 3);
     scene.add(accentLight);
 
-    // 2.1 Luzes de Alta Precisão dos Olhos / Face (Azul Neon Puro 0x00f0ff / 0x00d8ff, sem sprites/bolas)
+    // 2.1 Luzes de Alta Precisão dos Olhos / Face (Azul Neon Puro 0x00f0ff / 0x00d8ff)
     const faceGlowLight = new THREE.PointLight(0x00d8ff, 0, 2.2);
     faceGlowLight.position.set(0, 0.40, 0.42);
 
@@ -87,7 +88,24 @@ export default function RobotBust3D() {
     let currentRotY = 0;
     let isDesktopMouseActive = false;
 
-    // 4. Controle de Acendimento no Clique com Desligamento Automático (Timer 3.5s)
+    // 4. Modo Blueprint / Wireframe no Hover
+    let isHovered = false;
+    let hoverProgress = 0.0;
+    const blueprintDarkColor = new THREE.Color(0x02182b);
+    const blueprintEmissive = new THREE.Color(0x003355);
+
+    const wireMaterial = new THREE.MeshBasicMaterial({
+      color: 0x00f0ff,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.0,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+
+    const allMeshes: THREE.Mesh[] = [];
+
+    // 5. Controle de Luzes dos Olhos
     let isEyesOn = false;
     let currentEyeIntensity = 0.0;
     let isAnimatingToggle = false;
@@ -107,7 +125,6 @@ export default function RobotBust3D() {
       toggleStartTime = performance.now();
       isAnimatingToggle = true;
 
-      // Sequência de Ignição Cyberpunk: Flashes de alta voltagem neon e estabilização
       toggleSequence = [
         { time: 0, intensity: 0.0 },
         { time: 40, intensity: 4.5 },
@@ -119,50 +136,58 @@ export default function RobotBust3D() {
         { time: 600, intensity: 2.0 },
       ];
 
-      // Ativa o visual neon do botão no DOM
-      const toggleBtn = document.getElementById("robot-light-toggle-btn");
-      if (toggleBtn) {
-        toggleBtn.classList.add("border-cyan-400", "bg-cyan-950/80", "shadow-[0_0_15px_rgba(0,240,255,0.6)]");
-        toggleBtn.classList.remove("border-zinc-700", "bg-zinc-950/90");
-      }
-
-      // Temporizador: Fica acesa por 3.5 segundos e desliga automaticamente
       autoTurnOffTimer = window.setTimeout(() => {
         isEyesOn = false;
         toggleStartTime = performance.now();
         isAnimatingToggle = true;
-
-        // Sequência de Desligamento Automático suave
         toggleSequence = [
           { time: 0, intensity: 2.0 },
           { time: 100, intensity: 1.2 },
           { time: 250, intensity: 0.4 },
           { time: 450, intensity: 0.0 },
         ];
-
-        // Restaura o botão ao estado padrão
-        if (toggleBtn) {
-          toggleBtn.classList.remove("border-cyan-400", "bg-cyan-950/80", "shadow-[0_0_15px_rgba(0,240,255,0.6)]");
-          toggleBtn.classList.add("border-zinc-700", "bg-zinc-950/90");
-        }
       }, 3500);
     };
 
     const handleMouseMove = (e: MouseEvent) => {
       isDesktopMouseActive = true;
       const rect = container.getBoundingClientRect();
-      const x = (e.clientX - (rect.left + rect.width / 2)) / (window.innerWidth / 2);
-      const y = (e.clientY - (rect.top + rect.height / 2)) / (window.innerHeight / 2);
+      const centerX = rect.left + rect.width * 0.5;
+      const centerY = rect.top + rect.height * 0.5;
 
-      targetRotY = THREE.MathUtils.clamp(x * 0.70, -0.65, 0.65);
-      targetRotX = THREE.MathUtils.clamp(y * 0.40, -0.32, 0.32);
+      const x = (e.clientX - centerX) / (window.innerWidth * 0.5);
+      const y = (e.clientY - centerY) / (window.innerHeight * 0.5);
+
+      targetRotY = THREE.MathUtils.clamp(x * 0.95, -0.85, 0.85);
+      targetRotX = THREE.MathUtils.clamp(y * 0.55, -0.38, 0.38);
+    };
+
+    const handleMouseEnter = () => {
+      isHovered = true;
+      setIsBlueprintHovered(true);
+    };
+
+    const handleMouseLeave = () => {
+      isHovered = false;
+      setIsBlueprintHovered(false);
+    };
+
+    const handleClick = () => {
+      // No clique ou toque, além de disparar a sequência de olhos, alterna o modo blueprint no mobile
+      if (window.innerWidth < 1024) {
+        isHovered = !isHovered;
+        setIsBlueprintHovered(isHovered);
+      }
+      handleToggleEyes();
     };
 
     window.addEventListener("mousemove", handleMouseMove);
-    container.addEventListener("click", handleToggleEyes);
+    container.addEventListener("mouseenter", handleMouseEnter);
+    container.addEventListener("mouseleave", handleMouseLeave);
+    container.addEventListener("click", handleClick);
     window.addEventListener("toggle-robot-eyes", handleToggleEyes);
 
-    // 5. Carregamento do Robô 3D
+    // 6. Carregamento do Robô 3D
     const robotWrapper = new THREE.Group();
     scene.add(robotWrapper);
 
@@ -198,7 +223,17 @@ export default function RobotBust3D() {
               mat.roughness = 0.32;
               mat.metalness = 0.68;
               mat.needsUpdate = true;
+              mesh.userData.origRoughness = mat.roughness;
+              mesh.userData.origMetalness = mat.metalness;
+              mesh.userData.origColor = mat.color.clone();
+              mesh.userData.origEmissive = mat.emissive.clone();
+              allMeshes.push(mesh);
             }
+
+            // Cria malha wireframe idêntica em overlay como filha da mesh original
+            const wireMesh = new THREE.Mesh(mesh.geometry, wireMaterial);
+            wireMesh.name = "wireframe_blueprint";
+            mesh.add(wireMesh);
           }
         });
 
@@ -256,7 +291,7 @@ export default function RobotBust3D() {
       }
     );
 
-    // 6. Render & Animation Loop
+    // 7. Render & Animation Loop
     let animationFrameId: number;
     let time = 0;
 
@@ -275,7 +310,30 @@ export default function RobotBust3D() {
         targetRotX = THREE.MathUtils.clamp(autoX, -0.28, 0.28);
       }
 
-      // Execução da animação de acendimento/apagamento
+      // Interpolação suave do efeito Blueprint no Hover
+      const targetHover = isHovered ? 1.0 : 0.0;
+      hoverProgress += (targetHover - hoverProgress) * 0.085;
+
+      if (hoverProgress > 0.002) {
+        wireMaterial.opacity = hoverProgress * 0.95;
+        wireMaterial.visible = true;
+      } else {
+        wireMaterial.opacity = 0.0;
+        wireMaterial.visible = false;
+      }
+
+      // Transição da cor base e emissive dos materiais para blueprint escuro
+      if (allMeshes.length > 0) {
+        allMeshes.forEach((mesh) => {
+          if (mesh.material && mesh.userData.origColor) {
+            const mat = mesh.material as THREE.MeshStandardMaterial;
+            mat.color.lerpColors(mesh.userData.origColor, blueprintDarkColor, hoverProgress);
+            mat.emissive.lerpColors(mesh.userData.origEmissive, blueprintEmissive, hoverProgress);
+          }
+        });
+      }
+
+      // Execução da animação de acendimento/apagamento dos olhos
       if (isAnimatingToggle && toggleSequence.length > 0) {
         const elapsed = performance.now() - toggleStartTime;
         const lastKeyframe = toggleSequence[toggleSequence.length - 1];
@@ -296,22 +354,24 @@ export default function RobotBust3D() {
         }
       }
 
-      // Micro-pulsação bio-elétrica sutil quando aceso
+      // Micro-pulsação bio-elétrica sutil quando aceso ou em hover blueprint
       let finalIntensity = currentEyeIntensity;
       if (isEyesOn && !isAnimatingToggle) {
         const pulse = 1.0 + Math.sin(time * 3.5) * 0.06 + Math.sin(time * 8.0) * 0.02;
         finalIntensity = currentEyeIntensity * pulse;
       }
 
-      // Aplica as intensidades de luz azul neon
-      faceGlowLight.intensity = finalIntensity * 2.8;
-      eyeL.intensity = finalIntensity * 3.5;
-      eyeR.intensity = finalIntensity * 3.5;
-      chinUnderglow.intensity = finalIntensity * 1.5;
+      // No modo blueprint, acende também as luzes da face proporcionalmente ao hover
+      const combinedEyeIntensity = Math.max(finalIntensity, hoverProgress * 2.2);
+
+      faceGlowLight.intensity = combinedEyeIntensity * 2.8;
+      eyeL.intensity = combinedEyeIntensity * 3.5;
+      eyeR.intensity = combinedEyeIntensity * 3.5;
+      chinUnderglow.intensity = combinedEyeIntensity * 1.5;
 
       // Suavização ultra fluida do movimento da cabeça com Lerp
-      currentRotX += (targetRotX - currentRotX) * 0.045;
-      currentRotY += (targetRotY - currentRotY) * 0.045;
+      currentRotX += (targetRotX - currentRotX) * 0.055;
+      currentRotY += (targetRotY - currentRotY) * 0.055;
 
       if (headPivotRef) {
         headPivotRef.rotation.y = currentRotY;
@@ -349,21 +409,78 @@ export default function RobotBust3D() {
     return () => {
       if (autoTurnOffTimer) clearTimeout(autoTurnOffTimer);
       window.removeEventListener("mousemove", handleMouseMove);
-      container.removeEventListener("click", handleToggleEyes);
+      container.removeEventListener("mouseenter", handleMouseEnter);
+      container.removeEventListener("mouseleave", handleMouseLeave);
+      container.removeEventListener("click", handleClick);
       window.removeEventListener("toggle-robot-eyes", handleToggleEyes);
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(animationFrameId);
       renderer.dispose();
       dracoLoader.dispose();
+      wireMaterial.dispose();
     };
   }, []);
 
   return (
-    <div className="relative w-full h-full flex items-end justify-center select-none overflow-visible group cursor-pointer">
+    <div className="relative w-full h-full flex items-center justify-center select-none overflow-hidden group cursor-crosshair">
+      {/* Grade Blueprint de Fundo (ativada no Hover) */}
+      <div
+        className={`absolute inset-0 pointer-events-none transition-all duration-500 z-10 ${
+          isBlueprintHovered ? "opacity-100 scale-100" : "opacity-0 scale-95"
+        }`}
+        style={{
+          backgroundImage: `
+            radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.16) 0%, transparent 75%),
+            linear-gradient(to right, rgba(0, 240, 255, 0.12) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0, 240, 255, 0.12) 1px, transparent 1px)
+          `,
+          backgroundSize: "100% 100%, 32px 32px, 32px 32px",
+        }}
+      />
+
+      {/* Retículas Técnicas HUD CAD (ativadas no Hover) */}
+      <div
+        className={`absolute inset-5 pointer-events-none z-20 flex flex-col justify-between transition-opacity duration-300 font-mono text-[10px] tracking-widest text-cyan-400 ${
+          isBlueprintHovered ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        <div className="flex justify-between items-start">
+          <div className="flex items-center gap-2">
+            <span className="size-1.5 rounded-full bg-cyan-400 animate-ping" />
+            <span className="bg-black/75 px-2.5 py-1 rounded border border-cyan-500/40 shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+              SYS.CAD // WIREFRAME 3D
+            </span>
+          </div>
+          <span className="bg-black/75 px-2.5 py-1 rounded border border-cyan-500/40 shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+            TOPOLOGY // MESH ACTIVE
+          </span>
+        </div>
+
+        <div className="flex justify-between items-end">
+          <span className="bg-black/75 px-2.5 py-1 rounded border border-cyan-500/40 shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+            HEAD TRACK: ACTIVE (LERP)
+          </span>
+          <span className="bg-black/75 px-2.5 py-1 rounded border border-cyan-500/40 shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+            [BLUEPRINT INSPECT]
+          </span>
+        </div>
+      </div>
+
+      {/* Indicador Flutuante Padrão (Sem Hover) */}
+      <div
+        className={`absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-none z-20 transition-opacity duration-300 font-mono text-[10px] tracking-wider uppercase text-black/60 bg-[#ecece3]/90 backdrop-blur-md px-3 py-1 rounded-full border border-black/15 flex items-center gap-2 shadow-sm ${
+          isBlueprintHovered ? "opacity-0" : "opacity-100"
+        }`}
+      >
+        <span className="size-1.5 rounded-full bg-cyan-500 animate-pulse" />
+        <span>Passe o cursor para ativar o Blueprint 3D</span>
+      </div>
+
+      {/* Contêiner WebGL Canvas */}
       <div
         ref={containerRef}
-        className="w-full h-full relative z-20 flex items-end justify-center cursor-pointer overflow-visible"
-        title="Clique no robô ou no botão para ligar/desligar a ótica"
+        className="w-full h-full relative z-20 flex items-center justify-center overflow-visible"
+        title="Passe o mouse para ver o modelo em grid blueprint"
       />
     </div>
   );

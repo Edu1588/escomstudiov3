@@ -231,59 +231,82 @@ export function HomeV6() {
           </div>
         </section>
 
-        {/* INTELIGÊNCIA ARTIFICIAL APLICADA (COM MOLDURA DINÂMICA DE LINHAS NO SCROLL & ROBÔ 3D INTERATIVO) */}
-        <DynamicSectionFrame tag="INTELLIGENCE ENGINE" dark={false} className="border-t border-black/10 overflow-hidden">
-          <section className="relative min-h-[70vh] px-5 py-20 md:px-12 xl:px-[18vw] md:py-28">
-            <div className="grid gap-12 lg:grid-cols-12 items-center">
-              <div className="relative z-10 lg:col-span-7">
-                <Eyebrow light>{t.aiSection.eyebrow}</Eyebrow>
-                <h2 className="mt-8 max-w-2xl font-serif text-4xl leading-[1.05] font-light md:text-5xl lg:text-6xl text-black">
-                  {t.aiSection.title}
-                </h2>
-                <p className="mt-6 max-w-xl text-base leading-7 md:text-lg md:leading-8 text-black/80">
-                  {t.aiSection.desc}
-                </p>
-                <div className="mt-10">
-                  <AnchorButton outline>
-                    {t.aiSection.cta}
-                  </AnchorButton>
-                </div>
-              </div>
-
-              {/* ROBÔ 3D INTERATIVO */}
-              <div className="relative z-10 lg:col-span-5 flex items-center justify-center">
-                <div className="relative w-full h-[420px] sm:h-[480px] lg:h-[540px] flex items-center justify-center">
-                  <div className="absolute size-72 md:size-96 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
-                  <RobotBust3D />
-                </div>
+        {/* INTELIGÊNCIA ARTIFICIAL APLICADA (COM MOLDURA DINÂMICA DE LINHAS NO SCROLL) */}
+        <DynamicSectionFrame tag="INTELLIGENCE ENGINE" dark={false} className="border-t border-black/10">
+          <section className="relative min-h-[70vh] px-5 py-24 md:px-12 xl:px-[22vw] md:py-32">
+            <div className="absolute -right-24 top-1/2 size-[36rem] -translate-y-1/2 rounded-full border border-black/10 pointer-events-none" />
+            <div className="absolute right-16 top-1/2 size-72 -translate-y-1/2 rounded-full border border-black/10 pointer-events-none" />
+            <div className="relative">
+              <Eyebrow light>{t.aiSection.eyebrow}</Eyebrow>
+              <h2 className="mt-12 max-w-4xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl text-black">
+                {t.aiSection.title}
+              </h2>
+              <p className="mt-8 max-w-xl text-base leading-7 md:text-lg md:leading-8 text-black/80">
+                {t.aiSection.desc}
+              </p>
+              <div className="mt-10">
+                <AnchorButton outline>
+                  {t.aiSection.cta}
+                </AnchorButton>
               </div>
             </div>
           </section>
         </DynamicSectionFrame>
 
-        {/* PROJETOS (Sistemas em Movimento) COM MOLDURA DINÂMICA DE LINHAS NO SCROLL */}
+        {/* PROJETOS (Sistemas em Movimento) COM MOLDURA DINÂMICA DE LINHAS NO SCROLL & ROBÔ 3D STICKY */}
         <DynamicSectionFrame tag="SYSTEMS IN MOTION" dark={false} className="border-t border-black/10">
           <section
             id="projetos"
-            className="px-5 py-24 md:px-12 xl:px-[22vw] md:py-32"
+            className="px-5 py-24 md:px-12 xl:px-[14vw] md:py-32"
           >
             <Eyebrow light>{t.systemsSection.eyebrow}</Eyebrow>
             <h2 className="mt-12 max-w-4xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl text-black">
               {t.systemsSection.title}
             </h2>
-            <div className="mt-16 grid gap-px bg-black/15 border border-black/15 md:grid-cols-3">
-              {t.systemsSection.items.map((item, i) => (
-                <article
-                  key={item}
-                  className="group flex min-h-64 flex-col justify-between bg-[#ecece3] p-6 hover:bg-[#e4e4db] transition-colors"
-                >
-                  <span className="font-mono text-[10px] text-black/50">
-                    FIELD / 0{i + 1}
-                  </span>
-                  <h3 className="font-serif text-2xl text-black">{item}</h3>
-                  <ArrowRight className="size-5 text-black/60 transition-transform group-hover:translate-x-2" />
-                </article>
-              ))}
+
+            {/* LAYOUT DE 2 COLUNAS: ESQUERDA CARDS COM SCROLL | DIREITA ROBÔ 3D FIXO (STICKY) */}
+            <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start relative">
+              {/* COLUNA ESQUERDA: 6 CARDS DE CONTEÚDO SUBINDO COM O SCROLL */}
+              <div className="lg:col-span-7 flex flex-col gap-6 order-2 lg:order-1">
+                {t.systemsSection.items.map((item, i) => (
+                  <article
+                    key={item}
+                    className="group relative flex min-h-[220px] flex-col justify-between bg-[#ecece3] border border-black/15 p-7 md:p-9 hover:border-black/40 hover:bg-[#e4e4db] transition-all duration-300 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.06)]"
+                  >
+                    <div className="flex items-center justify-between border-b border-black/10 pb-4">
+                      <span className="font-mono text-xs tracking-widest text-black/50 group-hover:text-black transition-colors">
+                        FIELD // 0{i + 1}
+                      </span>
+                      <span className="font-mono text-[10px] tracking-wider uppercase text-black/40 px-2.5 py-0.5 border border-black/10 rounded-full">
+                        CAPABILITY
+                      </span>
+                    </div>
+
+                    <div className="my-6">
+                      <h3 className="font-serif text-2xl md:text-3xl font-light text-black group-hover:translate-x-1 transition-transform duration-300">
+                        {item}
+                      </h3>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-4 border-t border-black/5">
+                      <span className="font-mono text-[11px] uppercase tracking-wider text-black/60 group-hover:text-black transition-colors">
+                        Explorar arquitetura
+                      </span>
+                      <div className="size-8 rounded-full border border-black/15 flex items-center justify-center group-hover:border-black group-hover:bg-black group-hover:text-white transition-all duration-300">
+                        <ArrowRight className="size-4 text-current transition-transform group-hover:translate-x-0.5" />
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+
+              {/* COLUNA DIREITA: ROBÔ 3D FIXO (STICKY) COM EFEITO BLUEPRINT NO HOVER */}
+              <div className="lg:col-span-5 lg:sticky lg:top-24 order-1 lg:order-2 self-start">
+                <div className="relative w-full h-[460px] sm:h-[540px] lg:h-[calc(100vh-8rem)] max-h-[700px] rounded-2xl border border-black/15 bg-[#e7e7de]/60 backdrop-blur-sm overflow-hidden flex items-center justify-center shadow-[0_10px_35px_rgba(0,0,0,0.04)]">
+                  <div className="absolute size-72 md:size-88 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
+                  <RobotBust3D />
+                </div>
+              </div>
             </div>
           </section>
         </DynamicSectionFrame>
