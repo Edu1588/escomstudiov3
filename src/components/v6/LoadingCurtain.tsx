@@ -63,27 +63,20 @@ export function LoadingCurtain({ progress, onFinished }: LoadingCurtainProps) {
       }`}
       aria-hidden={openCurtains}
     >
-      {/* Cortina Metade Esquerda */}
+      {/* Cortina Metade Esquerda (sem bordas/riscados para fundo 100% limpo) */}
       <div
-        className="absolute top-0 bottom-0 left-0 w-1/2 bg-[#050505] transition-transform duration-1000 ease-[cubic-bezier(0.77,0,0.175,1)] will-change-transform border-r border-white/5"
+        className="absolute top-0 bottom-0 left-0 w-1/2 bg-[#050505] transition-transform duration-1000 ease-[cubic-bezier(0.77,0,0.175,1)] will-change-transform"
         style={{
           transform: openCurtains ? "translateX(-100%)" : "translateX(0)",
         }}
       />
 
-      {/* Cortina Metade Direita */}
+      {/* Cortina Metade Direita (sem bordas/riscados para fundo 100% limpo) */}
       <div
-        className="absolute top-0 bottom-0 right-0 w-1/2 bg-[#050505] transition-transform duration-1000 ease-[cubic-bezier(0.77,0,0.175,1)] will-change-transform border-l border-white/5"
+        className="absolute top-0 bottom-0 right-0 w-1/2 bg-[#050505] transition-transform duration-1000 ease-[cubic-bezier(0.77,0,0.175,1)] will-change-transform"
         style={{
           transform: openCurtains ? "translateX(100%)" : "translateX(0)",
         }}
-      />
-
-      {/* Linha central sutil no meio que se divide com a cortina */}
-      <div
-        className={`absolute top-0 bottom-0 left-1/2 w-px bg-cyan-400/25 -translate-x-1/2 transition-opacity duration-300 pointer-events-none ${
-          openCurtains || hideNumber ? "opacity-0" : "opacity-100"
-        }`}
       />
 
       {/* Conteúdo Central: Numeração Fina e Elegante de 0 a 100% */}
@@ -91,24 +84,24 @@ export function LoadingCurtain({ progress, onFinished }: LoadingCurtainProps) {
         className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 transition-all duration-300"
         style={{
           opacity: hideNumber ? 0 : 1,
-          transform: hideNumber ? "scale(0.94) translateY(6px)" : "scale(1) translateY(0)",
+          transform: hideNumber ? "scale(0.94) translateY(12px)" : "scale(1) translateY(0)",
         }}
       >
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-4 translate-y-8 md:translate-y-12">
           {/* Tag editorial de topo */}
           <div className="flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.3em] text-zinc-500 font-light">
             <span className="size-1.5 rounded-full bg-cyan-400 animate-ping" />
             <span>ESCOM STUDIO // SYSTEM INITIALIZING</span>
           </div>
 
-          {/* Numeração Fina de 0 a 100% */}
-          <div className="flex items-baseline font-serif font-extralight text-7xl sm:text-8xl md:text-9xl text-white tracking-tighter tabular-nums select-none">
+          {/* Numeração Fina de 0 a 100% (afastada para baixo com respiro editorial) */}
+          <div className="flex items-baseline font-serif font-extralight text-7xl sm:text-8xl md:text-9xl text-white tracking-tighter tabular-nums select-none mt-1">
             <span>{displayProgress}</span>
-            <span className="text-3xl sm:text-4xl md:text-5xl font-light text-cyan-400/90 ml-1">%</span>
+            <span className="text-3xl sm:text-4xl md:text-5xl font-light text-cyan-400/90 ml-1.5">%</span>
           </div>
 
           {/* Micro linha técnica editorial */}
-          <div className="w-36 h-[1px] bg-white/10 overflow-hidden relative mt-1">
+          <div className="w-36 h-[1px] bg-white/10 overflow-hidden relative mt-2">
             <div
               className="h-full bg-gradient-to-r from-cyan-500 to-white transition-all duration-150 ease-out"
               style={{ width: `${displayProgress}%` }}
