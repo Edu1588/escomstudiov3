@@ -43,7 +43,7 @@ const fragmentShader = `
     if (uDirection > 0.5) {
       // ONDA DE BAIXO PARA CIMA (Bottom-Up Wave):
       // A parte inferior (vUv.y = 0.0) é preenchida primeiro e a onda de micro-pixels stardust sobe
-      float waveDist = 1.0 - pUv.y;
+      float waveDist = pUv.y;
       threshold = waveDist * 0.80 + n * 0.24;
       band = 0.16;
     } else {
