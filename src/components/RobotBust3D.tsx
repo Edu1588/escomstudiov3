@@ -24,13 +24,14 @@ export default function RobotBust3D() {
     let aspect = width / height;
     const isMobileViewport = window.innerWidth < 1024;
 
+    // Câmera perfeitamente calibrada para não cortar chifres no topo nem ombros nas laterais
     const camera = new THREE.PerspectiveCamera(38, aspect, 0.1, 1000);
     if (isMobileViewport) {
-      camera.position.set(0, 0.08, 6.80);
-      camera.lookAt(0, 0.02, 0);
+      camera.position.set(0, 0.06, 6.40);
+      camera.lookAt(0, 0.04, 0);
     } else {
-      camera.position.set(0, 0.05, 3.05);
-      camera.lookAt(0, 0.10, 0);
+      camera.position.set(0, 0.03, 3.45);
+      camera.lookAt(0, 0.08, 0);
     }
 
     const renderer = new THREE.WebGLRenderer({
@@ -87,7 +88,7 @@ export default function RobotBust3D() {
     let currentRotY = 0;
     let isDesktopMouseActive = false;
 
-    // 4. Uniforms do Modo Blueprint Spotlight Interativo
+    // 4. Uniforms do Modo Blueprint Interativo Localizado
     const targetMouse = new THREE.Vector2(999, 999);
     const currentMouse = new THREE.Vector2(999, 999);
 
@@ -101,7 +102,7 @@ export default function RobotBust3D() {
     let isHovered = false;
     let hoverProgress = 0.0;
 
-    // 5. Controle de Luzes dos Olhos
+    // 5. Controle de Luzes dos Olhos (apenas no clique)
     let isEyesOn = false;
     let currentEyeIntensity = 0.0;
     let isAnimatingToggle = false;
@@ -152,13 +153,14 @@ export default function RobotBust3D() {
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
 
+      // Movimento suave da cabeça
       const x = (e.clientX - centerX) / (window.innerWidth / 2);
       const y = (e.clientY - centerY) / (window.innerHeight / 2);
 
       targetRotY = THREE.MathUtils.clamp(x * 0.85, -0.75, 0.75);
       targetRotX = THREE.MathUtils.clamp(y * 0.45, -0.35, 0.35);
 
-      // Coordenadas normalizadas do cursor para o shader da lente Blueprint
+      // Posição normalizada do mouse para a grade blueprint
       const ndcX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       const ndcY = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
       targetMouse.set(ndcX, ndcY);
@@ -171,7 +173,6 @@ export default function RobotBust3D() {
       const ndcY = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
       targetMouse.set(ndcX, ndcY);
       currentMouse.set(ndcX, ndcY);
-      handleToggleEyes();
     };
 
     const handleMouseLeave = () => {
@@ -217,8 +218,8 @@ export default function RobotBust3D() {
         const size = box.getSize(new THREE.Vector3());
 
         const maxDim = Math.max(size.x, size.y, size.z);
-        // Aumentado o robô conforme solicitado
-        const targetScale = isMobileViewport ? 0.55 : 2.50;
+        // Escala calibrada: imponente sem cortar nas extremidades
+        const targetScale = isMobileViewport ? 0.45 : 2.15;
         const scale = targetScale / (maxDim || 1);
         robotWrapper.scale.set(scale, scale, scale);
 
@@ -234,7 +235,7 @@ export default function RobotBust3D() {
               mat.roughness = 0.32;
               mat.metalness = 0.68;
 
-              // Shader Hook: Revela a grade Blueprint apenas na região do cursor do mouse (Lente Interativa)
+              // Shader Hook: Grade Blueprint limpa e sutil desenhada diretamente na superfície metálica
               mat.onBeforeCompile = (shader) => {
                 shader.uniforms.uBlueprint = blueprintUniforms.uBlueprint;
                 shader.uniforms.uTime = blueprintUniforms.uTime;
@@ -265,46 +266,35 @@ export default function RobotBust3D() {
                   "#include <dithering_fragment>",
                   `#include <dithering_fragment>
                   if (uBlueprint > 0.001) {
-                    // Distância euclidiana com correção de aspect ratio até o cursor do mouse
                     vec2 diff = vScreenPos - uMouse;
                     diff.x *= uAspect;
                     float dist = length(diff);
 
-                    // Raio da lente interativa ao redor do mouse (área focal precisa)
-                    float lensRadius = 0.28;
+                    // Raio focal da passagem do mouse (sem luz ofuscante, sem anel neon)
+                    float lensRadius = 0.26;
                     float feather = 0.08;
                     float spotMask = 1.0 - smoothstep(lensRadius - feather, lensRadius + feather, dist);
 
                     if (spotMask > 0.001) {
-                      // Grade técnica procedural 3D
+                      // Grade técnica procedural 3D nítida
                       vec3 gridScale = vObjPos * 22.0;
                       vec3 gridDeriv = fwidth(gridScale);
                       vec3 gridDist = abs(fract(gridScale - 0.5) - 0.5) / max(gridDeriv, vec3(0.001));
                       float minLine = min(min(gridDist.x, gridDist.y), gridDist.z);
                       float gridMask = 1.0 - min(minLine, 1.0);
 
-                      // Scanline holográfica vertical sutil
-                      float scan = sin(vObjPos.y * 38.0 - uTime * 3.2) * 0.5 + 0.5;
+                      // Apenas as linhas ciano da grade, desenhadas sobre a textura metálica original
+                      // Sem fundo azul marinho e sem efeito de anel de luz
+                      vec3 cyanLine = vec3(0.0, 0.88, 1.0);
+                      float lineAlpha = gridMask * spotMask * uBlueprint * 0.95;
 
-                      // Anel de laser néon brilhante na borda da lente circular
-                      float ring = smoothstep(lensRadius - feather * 1.5, lensRadius, dist) * (1.0 - smoothstep(lensRadius, lensRadius + feather, dist)) * 2.2;
-
-                      // Paleta Blueprint: azul petróleo CAD profundo + linhas ciano néon 3D
-                      vec3 cadNavy = vec3(0.015, 0.06, 0.14);
-                      vec3 cadCyan = vec3(0.0, 0.95, 1.0);
-
-                      float pattern = clamp(gridMask * 0.90 + scan * 0.15 + ring * 0.75, 0.0, 1.0);
-                      vec3 blueprintOutput = mix(cadNavy, cadCyan, pattern);
-
-                      // Mescla apenas na região do cursor
-                      float finalFactor = spotMask * uBlueprint;
-                      gl_FragColor.rgb = mix(gl_FragColor.rgb, blueprintOutput, finalFactor);
+                      gl_FragColor.rgb = mix(gl_FragColor.rgb, cyanLine, lineAlpha);
                     }
                   }`
                 );
               };
 
-              mat.customProgramCacheKey = () => "blueprint-spotlight-lens-v2";
+              mat.customProgramCacheKey = () => "blueprint-subtle-grid-v3";
               mat.needsUpdate = true;
             }
           }
@@ -340,7 +330,6 @@ export default function RobotBust3D() {
           }
         });
 
-        // Adiciona as luzes de neon azul diretamente ao pivot da cabeça
         headPivot.add(faceGlowLight);
         headPivot.add(eyeL);
         headPivot.add(eyeR);
@@ -383,7 +372,7 @@ export default function RobotBust3D() {
         targetRotX = THREE.MathUtils.clamp(autoX, -0.28, 0.28);
       }
 
-      // Transição suave da lente Blueprint e interpolação do cursor
+      // Transição suave da grade e interpolação do cursor
       const targetHover = isHovered ? 1.0 : 0.0;
       hoverProgress += (targetHover - hoverProgress) * 0.08;
       blueprintUniforms.uBlueprint.value = hoverProgress;
@@ -397,7 +386,7 @@ export default function RobotBust3D() {
       blueprintUniforms.uMouse.value.copy(currentMouse);
       blueprintUniforms.uAspect.value = aspect;
 
-      // Execução da animação de acendimento/apagamento dos olhos
+      // Execução da animação de acendimento/apagamento dos olhos apenas no clique
       if (isAnimatingToggle && toggleSequence.length > 0) {
         const elapsed = performance.now() - toggleStartTime;
         const lastKeyframe = toggleSequence[toggleSequence.length - 1];
@@ -418,19 +407,16 @@ export default function RobotBust3D() {
         }
       }
 
-      // Micro-pulsação bio-elétrica sutil quando aceso
       let finalIntensity = currentEyeIntensity;
       if (isEyesOn && !isAnimatingToggle) {
         const pulse = 1.0 + Math.sin(time * 3.5) * 0.06 + Math.sin(time * 8.0) * 0.02;
         finalIntensity = currentEyeIntensity * pulse;
       }
 
-      const totalFaceLight = Math.max(finalIntensity, hoverProgress * 1.5);
-
-      faceGlowLight.intensity = totalFaceLight * 2.8;
-      eyeL.intensity = totalFaceLight * 3.5;
-      eyeR.intensity = totalFaceLight * 3.5;
-      chinUnderglow.intensity = totalFaceLight * 1.5;
+      faceGlowLight.intensity = finalIntensity * 2.8;
+      eyeL.intensity = finalIntensity * 3.5;
+      eyeR.intensity = finalIntensity * 3.5;
+      chinUnderglow.intensity = finalIntensity * 1.5;
 
       // Suavização ultra fluida do movimento da cabeça com Lerp
       currentRotX += (targetRotX - currentRotX) * 0.055;
@@ -441,9 +427,9 @@ export default function RobotBust3D() {
         headPivotRef.rotation.x = currentRotX;
       }
 
-      // Micro-respiração orgânica do robô com elevação no desktop
-      const basePosY = isMobile ? 0 : 0.08;
-      robotWrapper.position.y = basePosY + Math.sin(time * 1.5) * 0.01;
+      // Micro-respiração orgânica do robô
+      const basePosY = isMobile ? 0 : 0.05;
+      robotWrapper.position.y = basePosY + Math.sin(time * 1.5) * 0.008;
 
       renderer.render(scene, camera);
     };
@@ -458,11 +444,11 @@ export default function RobotBust3D() {
       camera.aspect = aspect;
       const isMobile = window.innerWidth < 1024;
       if (isMobile) {
-        camera.position.set(0, 0.08, 6.80);
-        camera.lookAt(0, 0.02, 0);
+        camera.position.set(0, 0.06, 6.40);
+        camera.lookAt(0, 0.04, 0);
       } else {
-        camera.position.set(0, 0.05, 3.05);
-        camera.lookAt(0, 0.10, 0);
+        camera.position.set(0, 0.03, 3.45);
+        camera.lookAt(0, 0.08, 0);
       }
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
