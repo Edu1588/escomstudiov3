@@ -254,7 +254,7 @@ export function HomeV6() {
         </DynamicSectionFrame>
 
         {/* PROJETOS (Sistemas em Movimento) COM MOLDURA DINÂMICA DE LINHAS NO SCROLL & ROBÔ 3D STICKY */}
-        <DynamicSectionFrame tag="SYSTEMS IN MOTION" dark={false} className="border-t border-black/10">
+        <DynamicSectionFrame tag="SYSTEMS IN MOTION" dark={false} overflowVisible className="border-t border-black/10">
           <section
             id="projetos"
             className="px-5 py-24 md:px-12 xl:px-[14vw] md:py-32"
@@ -267,15 +267,15 @@ export function HomeV6() {
             {/* LAYOUT DE 2 COLUNAS: ESQUERDA CARDS COM SCROLL | DIREITA ROBÔ 3D FIXO (STICKY) */}
             <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start relative">
               {/* COLUNA ESQUERDA: 6 CARDS SUBINDO E SOBREPONDO O ANTERIOR NO SCROLL */}
-              <div className="lg:col-span-7 flex flex-col relative pb-24">
+              <div className="lg:col-span-7 flex flex-col relative pb-32">
                 {t.systemsSection.items.map((item, i) => (
                   <article
                     key={item}
                     style={{
-                      top: `calc(7rem + ${i * 12}px)`,
+                      top: `calc(6.5rem + ${i * 14}px)`,
                       zIndex: i + 1,
                     }}
-                    className="sticky mb-16 last:mb-0 group flex min-h-60 md:min-h-64 flex-col justify-between bg-[#ecece3] border border-black/15 p-8 md:p-10 shadow-[0_-8px_25px_rgba(0,0,0,0.06)] hover:bg-[#e4e4db] transition-colors"
+                    className="sticky mb-24 last:mb-0 group flex min-h-64 md:min-h-72 flex-col justify-between bg-[#ecece3] border border-black/20 p-8 md:p-10 shadow-[0_-12px_32px_rgba(0,0,0,0.08)] hover:bg-[#e4e4db] transition-colors"
                   >
                     <div className="flex items-center justify-between border-b border-black/10 pb-4">
                       <span className="font-mono text-[10px] tracking-widest text-black/50 group-hover:text-black transition-colors">
@@ -300,9 +300,9 @@ export function HomeV6() {
               </div>
 
               {/* COLUNA DIREITA: ROBÔ 3D FIXO (STICKY) ACOMPANHANDO A ROLAGEM */}
-              <div className="lg:col-span-5 lg:sticky lg:top-28 flex items-center justify-center">
-                <div className="relative w-full h-[460px] sm:h-[520px] lg:h-[620px] flex items-center justify-center">
-                  <div className="absolute size-72 md:size-96 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
+              <div className="lg:col-span-5 lg:sticky lg:top-28 self-start flex items-center justify-center">
+                <div className="relative w-full h-[520px] sm:h-[600px] lg:h-[680px] flex items-center justify-center">
+                  <div className="absolute size-88 md:size-[28rem] rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
                   <RobotBust3D />
                 </div>
               </div>

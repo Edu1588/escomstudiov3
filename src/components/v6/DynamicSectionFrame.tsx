@@ -7,11 +7,13 @@ export function DynamicSectionFrame({
   tag,
   dark = false,
   className = "",
+  overflowVisible = false,
 }: {
   children: React.ReactNode;
   tag?: string;
   dark?: boolean;
   className?: string;
+  overflowVisible?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const lineTopRef = useRef<HTMLDivElement>(null);
@@ -59,7 +61,7 @@ export function DynamicSectionFrame({
   const tagColor = dark ? "text-white/60" : "text-black/60";
 
   return (
-    <div ref={containerRef} className={`relative overflow-hidden ${className}`}>
+    <div ref={containerRef} className={`relative ${overflowVisible ? "overflow-visible" : "overflow-hidden"} ${className}`}>
       {/* Moldura Editorial com Linhas Dinâmicas e estrelas ✦ */}
       <div className="absolute inset-0 pointer-events-none z-0">
         {tag && (
