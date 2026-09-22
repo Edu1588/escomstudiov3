@@ -266,20 +266,33 @@ export function HomeV6() {
 
             {/* LAYOUT DE 2 COLUNAS: ESQUERDA CARDS COM SCROLL | DIREITA ROBÔ 3D FIXO (STICKY) */}
             <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start relative">
-              {/* COLUNA ESQUERDA: 6 CARDS DE CONTEÚDO SUBINDO COM O SCROLL */}
-              <div className="lg:col-span-7 flex flex-col gap-4">
+              {/* COLUNA ESQUERDA: 6 CARDS SUBINDO E SOBREPONDO O ANTERIOR NO SCROLL */}
+              <div className="lg:col-span-7 flex flex-col relative pb-24">
                 {t.systemsSection.items.map((item, i) => (
                   <article
                     key={item}
-                    className="group flex min-h-56 flex-col justify-between bg-[#ecece3] border border-black/15 p-8 hover:bg-[#e4e4db] transition-colors"
+                    style={{
+                      top: `calc(7rem + ${i * 12}px)`,
+                      zIndex: i + 1,
+                    }}
+                    className="sticky mb-16 last:mb-0 group flex min-h-60 md:min-h-64 flex-col justify-between bg-[#ecece3] border border-black/15 p-8 md:p-10 shadow-[0_-8px_25px_rgba(0,0,0,0.06)] hover:bg-[#e4e4db] transition-colors"
                   >
-                    <span className="font-mono text-[10px] text-black/50">
-                      FIELD / 0{i + 1}
-                    </span>
-                    <h3 className="font-serif text-2xl md:text-3xl text-black font-light leading-snug">
-                      {item}
-                    </h3>
-                    <div className="flex justify-end pt-4">
+                    <div className="flex items-center justify-between border-b border-black/10 pb-4">
+                      <span className="font-mono text-[10px] tracking-widest text-black/50 group-hover:text-black transition-colors">
+                        FIELD // 0{i + 1}
+                      </span>
+                      <span className="font-mono text-[10px] text-black/40">
+                        0{i + 1} / 06
+                      </span>
+                    </div>
+
+                    <div className="my-6">
+                      <h3 className="font-serif text-2xl md:text-3xl lg:text-4xl text-black font-light leading-snug">
+                        {item}
+                      </h3>
+                    </div>
+
+                    <div className="flex justify-end pt-4 border-t border-black/5">
                       <ArrowRight className="size-5 text-black/60 transition-transform group-hover:translate-x-2" />
                     </div>
                   </article>

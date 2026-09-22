@@ -263,6 +263,7 @@ export default function RobotBust3D() {
                 );
               };
 
+              mat.customProgramCacheKey = () => "blueprint-cad-grid-v1";
               mat.needsUpdate = true;
             }
           }
