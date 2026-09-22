@@ -116,7 +116,7 @@ export function MethodStage({
     <div ref={stageRef} className="relative w-full">
       <div
         ref={screenRef}
-        className="relative h-screen w-full overflow-hidden bg-[#000000]"
+        className="relative h-screen w-full overflow-hidden bg-[#1496d5]"
       >
         {/* THREE.JS PIXEL SHADER BEGE (#ecece3) - BOTTOM-UP (ÚNICA SEÇÃO DE BAIXO PARA CIMA) */}
         {mounted && (

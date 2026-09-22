@@ -129,33 +129,33 @@ export function HomeV6() {
       {/* PALCO 1: HERO (Preto) -> MANIFESTO (Bege) -> SOLUÇÕES INTRO (Preto) */}
       <HeroManifestoStage Eyebrow={Eyebrow} AnchorButton={AnchorButton} />
 
-      {/* SOLUÇÕES: SEÇÃO LONGA (6 SERVIÇOS 01 a 06) EM FUNDO PRETO CONTÍNUO */}
+      {/* SOLUÇÕES: SEÇÃO LONGA (6 SERVIÇOS 01 a 06) EM FUNDO #1496d5 */}
       <section
         id="solucoes"
-        className="relative bg-[#000000] px-5 pb-28 md:px-12 xl:px-[22vw] md:pb-36 dark text-foreground"
+        className="relative bg-[#1496d5] px-5 pb-28 md:px-12 xl:px-[22vw] md:pb-36 text-white"
       >
-        <div className="border-t border-border/50">
+        <div className="border-t border-white/20">
           {t.services.map((service) => (
             <article
               key={service.num}
-              className="group grid gap-5 border-b border-border/40 py-9 md:grid-cols-12 md:items-start"
+              className="group grid gap-5 border-b border-white/20 py-9 md:grid-cols-12 md:items-start"
             >
-              <span className="font-mono text-xs text-cyan md:col-span-1">
+              <span className="font-mono text-xs text-white/80 md:col-span-1">
                 {service.num}
               </span>
-              <h3 className="font-serif text-3xl md:col-span-3 md:text-4xl text-foreground">
+              <h3 className="font-serif text-3xl md:col-span-3 md:text-4xl text-white">
                 {service.title}
               </h3>
-              <p className="text-sm leading-6 md:col-span-4 text-muted-foreground">
+              <p className="text-sm leading-6 md:col-span-4 text-white/90">
                 {service.desc}
               </p>
               <div className="md:col-span-3">
-                <p className="font-mono text-[9px] uppercase leading-5 tracking-[0.1em] text-muted-foreground/80">
+                <p className="font-mono text-[9px] uppercase leading-5 tracking-[0.1em] text-white/75">
                   {service.items}
                 </p>
                 <a
                   href="#diagnostico"
-                  className="mt-5 inline-flex items-center gap-2 border-b border-cyan pb-1 text-xs font-semibold text-cyan hover:opacity-80 transition-opacity"
+                  className="mt-5 inline-flex items-center gap-2 border-b border-white pb-1 text-xs font-semibold text-white hover:text-white/80 transition-colors"
                 >
                   {service.cta}
                   <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />

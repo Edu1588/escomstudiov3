@@ -5,6 +5,7 @@ import { SplitTextReveal } from "@/components/v6/SplitTextReveal";
 import { Button } from "@/components/ui/button";
 import { ArrowDown } from "lucide-react";
 import { RobozitoSequenceBackground } from "@/components/v6/RobozitoSequenceBackground";
+import { PixelTransitionCanvas } from "@/components/v6/PixelTransitionCanvas";
 import { LoadingCurtain } from "@/components/v6/LoadingCurtain";
 import { useLanguage } from "@/components/v6/LanguageContext";
 
@@ -26,6 +27,7 @@ export function HeroManifestoStage({
   const manifestoRef = useRef<HTMLDivElement>(null);
   const solutionsIntroRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef(0);
+  const pixelProgressRef = useRef(0.0);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [mounted, setMounted] = useState(false);
 
@@ -50,7 +52,7 @@ export function HeroManifestoStage({
         scrollTrigger: {
           trigger: stage,
           start: "top top",
-          end: "+=260%",
+          end: "+=320%",
           pin: screen,
           pinSpacing: true,
           scrub: 0.7,
@@ -60,14 +62,14 @@ export function HeroManifestoStage({
 
       // ==========================================
       // SEQUÊNCIA DO ROBÔ (FRAME 001 A 096)
-      // Conecta o Hero, Seção 2 (Manifesto) e Seção 3 (Soluções)
+      // Chega no último frame (frame 95) em 0.78
       // ==========================================
       tl.to(
         frameRef,
         {
           current: 95,
           ease: "none",
-          duration: 1.0,
+          duration: 0.78,
         },
         0
       );
@@ -80,24 +82,24 @@ export function HeroManifestoStage({
         {
           opacity: 0,
           y: -25,
-          duration: 0.20,
+          duration: 0.18,
           ease: "power1.inOut",
         },
         0.02
       );
 
       // Linhas dinâmicas que se movem abrindo o quadro (Referência The Model)
-      tl.fromTo(".manifesto-line-top", { top: "46%" }, { top: "10%", duration: 0.32, ease: "power2.out" }, 0.10);
-      tl.fromTo(".manifesto-line-bottom", { bottom: "46%" }, { bottom: "10%", duration: 0.32, ease: "power2.out" }, 0.10);
-      tl.fromTo(".manifesto-line-left", { left: "46%" }, { left: "8vw", duration: 0.32, ease: "power2.out" }, 0.10);
-      tl.fromTo(".manifesto-line-right", { right: "46%" }, { right: "8vw", duration: 0.32, ease: "power2.out" }, 0.10);
+      tl.fromTo(".manifesto-line-top", { top: "46%" }, { top: "10%", duration: 0.30, ease: "power2.out" }, 0.08);
+      tl.fromTo(".manifesto-line-bottom", { bottom: "46%" }, { bottom: "10%", duration: 0.30, ease: "power2.out" }, 0.08);
+      tl.fromTo(".manifesto-line-left", { left: "46%" }, { left: "8vw", duration: 0.30, ease: "power2.out" }, 0.08);
+      tl.fromTo(".manifesto-line-right", { right: "46%" }, { right: "8vw", duration: 0.30, ease: "power2.out" }, 0.08);
 
-      tl.fromTo(".manifesto-star-tl", { top: "46%", left: "46%", opacity: 0 }, { top: "10%", left: "8vw", opacity: 1, duration: 0.32, ease: "power2.out" }, 0.10);
-      tl.fromTo(".manifesto-star-tr", { top: "46%", right: "46%", opacity: 0 }, { top: "10%", right: "8vw", opacity: 1, duration: 0.32, ease: "power2.out" }, 0.10);
-      tl.fromTo(".manifesto-star-bl", { bottom: "46%", left: "46%", opacity: 0 }, { bottom: "10%", left: "8vw", opacity: 1, duration: 0.32, ease: "power2.out" }, 0.10);
-      tl.fromTo(".manifesto-star-br", { bottom: "46%", right: "46%", opacity: 0 }, { bottom: "10%", right: "8vw", opacity: 1, duration: 0.32, ease: "power2.out" }, 0.10);
+      tl.fromTo(".manifesto-star-tl", { top: "46%", left: "46%", opacity: 0 }, { top: "10%", left: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.08);
+      tl.fromTo(".manifesto-star-tr", { top: "46%", right: "46%", opacity: 0 }, { top: "10%", right: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.08);
+      tl.fromTo(".manifesto-star-bl", { bottom: "46%", left: "46%", opacity: 0 }, { bottom: "10%", left: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.08);
+      tl.fromTo(".manifesto-star-br", { bottom: "46%", right: "46%", opacity: 0 }, { bottom: "10%", right: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.08);
 
-      tl.fromTo(".manifesto-tag", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.20, ease: "power2.out" }, 0.18);
+      tl.fromTo(".manifesto-tag", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.14);
 
       const manifestoChildren = Array.from(manifesto.children);
       tl.fromTo(
@@ -105,13 +107,13 @@ export function HeroManifestoStage({
         { opacity: 0 },
         {
           opacity: 1,
-          duration: 0.22,
+          duration: 0.20,
           ease: "power2.out",
           onStart: () => {
             manifesto.style.pointerEvents = "auto";
           },
         },
-        0.12
+        0.10
       );
       tl.fromTo(
         manifestoChildren,
@@ -124,31 +126,31 @@ export function HeroManifestoStage({
           opacity: 1,
           filter: "blur(0px)",
           y: 0,
-          duration: 0.28,
+          duration: 0.24,
           stagger: 0.05,
           ease: "power2.out",
         },
-        0.14
+        0.12
       );
 
       // ==========================================
-      // ETAPA 2: MANIFESTO FICA ESTÁTICO (0.40 a 0.58)
+      // ETAPA 2: MANIFESTO FICA ESTÁTICO (0.35 a 0.50)
       // ==========================================
 
       // ==========================================
-      // ETAPA 3: MANIFESTO -> SOLUÇÕES INTRO (0.58 a 1.0)
+      // ETAPA 3: MANIFESTO -> SOLUÇÕES INTRO (0.50 a 0.70)
       // ==========================================
       tl.to(
         manifesto,
         {
           opacity: 0,
           y: -25,
-          duration: 0.16,
+          duration: 0.14,
           ease: "power1.inOut",
         },
-        0.58
+        0.50
       );
-      tl.to(".manifesto-grid-frame", { opacity: 0, duration: 0.14, ease: "power1.inOut" }, 0.58);
+      tl.to(".manifesto-grid-frame", { opacity: 0, duration: 0.12, ease: "power1.inOut" }, 0.50);
 
       const solutionsChildren = Array.from(solutionsIntro.children);
       tl.fromTo(
@@ -156,13 +158,13 @@ export function HeroManifestoStage({
         { opacity: 0 },
         {
           opacity: 1,
-          duration: 0.22,
+          duration: 0.18,
           ease: "power2.out",
           onStart: () => {
             solutionsIntro.style.pointerEvents = "auto";
           },
         },
-        0.70
+        0.62
       );
       tl.fromTo(
         solutionsChildren,
@@ -175,11 +177,37 @@ export function HeroManifestoStage({
           opacity: 1,
           filter: "blur(0px)",
           y: 0,
-          duration: 0.26,
-          stagger: 0.05,
+          duration: 0.22,
+          stagger: 0.04,
           ease: "power2.out",
         },
-        0.72
+        0.64
+      );
+
+      // ==========================================
+      // ETAPA 4: ÚLTIMO FRAME -> TRANSIÇÃO PIXEL AZUL (#1496d5) DO CENTRO (0.80 a 1.0)
+      // No último frame, os micro-pixels abrem radialmente do centro para transitar à próxima seção
+      // ==========================================
+      tl.to(
+        solutionsIntro,
+        {
+          opacity: 0,
+          y: -20,
+          duration: 0.12,
+          ease: "power1.inOut",
+        },
+        0.82
+      );
+
+      tl.fromTo(
+        pixelProgressRef,
+        { current: 0.0 },
+        {
+          current: 1.35,
+          duration: 0.18,
+          ease: "none",
+        },
+        0.82
       );
     }, stage);
 
@@ -198,7 +226,7 @@ export function HeroManifestoStage({
         ref={screenRef}
         className="relative h-screen w-full overflow-hidden bg-[#000000]"
       >
-        {/* SEQUÊNCIA DE FUNDO DO ROBÔ COM BRILHO NATURAL (Frames 001 a 095 fluindo no scroll) */}
+        {/* SEQUÊNCIA DE FUNDO DO ROBÔ COM BRILHO NATURAL (Frames 001 a 096 fluindo no scroll) */}
         <RobozitoSequenceBackground
           frameRef={frameRef}
           onProgress={setLoadingProgress}
@@ -294,7 +322,7 @@ export function HeroManifestoStage({
           </div>
         </section>
 
-        {/* CAMADA 3: SEÇÃO 3 - INTRODUÇÃO DE SOLUÇÕES */}
+        {/* CAMADA 3: SEÇÃO 3 - INTRODUÇÃO DE SOLUÇÕES (Sobre o último frame do robô) */}
         <section
           id="solucoes-intro"
           ref={solutionsIntroRef}
@@ -313,6 +341,17 @@ export function HeroManifestoStage({
             </p>
           </div>
         </section>
+
+        {/* CAMADA 4 (Z-40): THREE.JS PIXEL SHADER AZUL (#1496d5) - ABRINDO DO CENTRO */}
+        {mounted && (
+          <div className="z-40 absolute inset-0 pointer-events-none">
+            <PixelTransitionCanvas
+              color="#1496d5"
+              progressRef={pixelProgressRef}
+              direction="center"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
