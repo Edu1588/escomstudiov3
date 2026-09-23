@@ -252,66 +252,66 @@ export function HomeV6() {
             </div>
           </section>
         </DynamicSectionFrame>
+      </div>
 
-        {/* PROJETOS (Sistemas em Movimento) COM CARDS STACKING E ROBÔ 3D FIXO */}
-        <section
-          id="projetos"
-          className="border-t border-black/10 bg-[#ecece3] px-5 py-24 md:px-12 xl:pl-[14vw] xl:pr-12 2xl:pr-16 md:py-32 relative"
-        >
-          <Eyebrow light>{t.systemsSection.eyebrow}</Eyebrow>
-          <h2 className="mt-12 max-w-4xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl text-black">
-            {t.systemsSection.title}
-          </h2>
+      {/* PROJETOS (Sistemas em Movimento) COM CARDS STACKING E ROBÔ 3D FIXO (Fundo Preto #000000) */}
+      <section
+        id="projetos"
+        className="border-t border-white/15 bg-[#000000] px-5 py-24 md:px-12 xl:pl-[14vw] xl:pr-12 2xl:pr-16 md:py-32 relative text-white"
+      >
+        <Eyebrow cyan>{t.systemsSection.eyebrow}</Eyebrow>
+        <h2 className="mt-12 max-w-4xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl text-white">
+          {t.systemsSection.title}
+        </h2>
 
-          {/* LAYOUT DE 2 COLUNAS: ESQUERDA CARDS COM SCROLL (6 col) | DIREITA ROBÔ 3D FIXO (6 col) */}
-          <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 relative">
-            {/* COLUNA ESQUERDA: 6 CARDS SUBINDO E SOBREPONDO O ANTERIOR NO SCROLL */}
-            <div className="lg:col-span-6 relative pb-56">
-              {t.systemsSection.items.map((item, i) => (
-                <div
-                  key={item}
-                  style={{
-                    top: `calc(5.5rem + ${i * 20}px)`,
-                    zIndex: i + 1,
-                  }}
-                  className="sticky mb-24 last:mb-0"
-                >
-                  <article className="group flex min-h-[260px] md:min-h-[280px] flex-col justify-between bg-[#ecece3] border border-black/20 p-8 md:p-10 shadow-[0_-14px_35px_rgba(0,0,0,0.12)] hover:bg-[#e4e4db] transition-colors">
-                    <div className="flex items-center justify-between border-b border-black/10 pb-4">
-                      <span className="font-mono text-xs tracking-widest text-black/60 group-hover:text-black transition-colors">
-                        FIELD // 0{i + 1}
-                      </span>
-                      <span className="font-mono text-[10px] text-black/50">
-                        0{i + 1} / 06
-                      </span>
-                    </div>
+        {/* LAYOUT DE 2 COLUNAS: ESQUERDA CARDS COM SCROLL (6 col) | DIREITA ROBÔ 3D FIXO (6 col) */}
+        <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 relative">
+          {/* COLUNA ESQUERDA: 6 CARDS SUBINDO E SOBREPONDO O ANTERIOR NO SCROLL */}
+          <div className="lg:col-span-6 relative pb-56">
+            {t.systemsSection.items.map((item, i) => (
+              <div
+                key={item}
+                style={{
+                  top: `calc(5.5rem + ${i * 20}px)`,
+                  zIndex: i + 1,
+                }}
+                className="sticky mb-24 last:mb-0"
+              >
+                <article className="group flex min-h-[260px] md:min-h-[280px] flex-col justify-between bg-[#0d0d0d] border border-white/15 p-8 md:p-10 shadow-[0_-14px_35px_rgba(0,0,0,0.85)] hover:bg-[#141414] hover:border-white/30 transition-colors">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                    <span className="font-mono text-xs tracking-widest text-cyan group-hover:text-white transition-colors">
+                      FIELD // 0{i + 1}
+                    </span>
+                    <span className="font-mono text-[10px] text-white/50">
+                      0{i + 1} / 06
+                    </span>
+                  </div>
 
-                    <div className="my-6">
-                      <h3 className="font-serif text-2xl md:text-3xl text-black font-light leading-snug">
-                        {item}
-                      </h3>
-                    </div>
+                  <div className="my-6">
+                    <h3 className="font-serif text-2xl md:text-3xl text-white font-light leading-snug">
+                      {item}
+                    </h3>
+                  </div>
 
-                    <div className="flex justify-end pt-4 border-t border-black/5">
-                      <ArrowRight className="size-5 text-black/60 transition-transform group-hover:translate-x-2" />
-                    </div>
-                  </article>
-                </div>
-              ))}
-            </div>
+                  <div className="flex justify-end pt-4 border-t border-white/10">
+                    <ArrowRight className="size-5 text-white/60 transition-transform group-hover:translate-x-2 group-hover:text-cyan" />
+                  </div>
+                </article>
+              </div>
+            ))}
+          </div>
 
-            {/* COLUNA DIREITA: ROBÔ 3D FIXO (STICKY) APROVEITANDO O ESPAÇO À DIREITA */}
-            <div className="lg:col-span-6 relative">
-              <div className="lg:sticky lg:top-20 flex items-center justify-center">
-                <div className="relative w-full h-[560px] sm:h-[640px] lg:h-[720px] xl:h-[780px] flex items-center justify-center overflow-visible">
-                  <div className="absolute size-96 md:size-[32rem] rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
-                  <RobotBust3D />
-                </div>
+          {/* COLUNA DIREITA: ROBÔ 3D FIXO (STICKY) APROVEITANDO O ESPAÇO À DIREITA */}
+          <div className="lg:col-span-6 relative">
+            <div className="lg:sticky lg:top-20 flex items-center justify-center">
+              <div className="relative w-full h-[560px] sm:h-[640px] lg:h-[720px] xl:h-[780px] flex items-center justify-center overflow-visible">
+                <div className="absolute size-96 md:size-[32rem] rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
+                <RobotBust3D />
               </div>
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
 
       {/* PALCO 3: TRANSIÇÃO PROJETOS (Bege) -> SOBRE (Preto) -> INSIGHTS (Bege) */}
       <AboutInsightsStage Eyebrow={Eyebrow} />

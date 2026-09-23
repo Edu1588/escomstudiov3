@@ -19,7 +19,6 @@ export function AboutInsightsStage({
   const screenRef = useRef<HTMLDivElement>(null);
   const aboutRef = useRef<HTMLDivElement>(null);
   const insightsRef = useRef<HTMLDivElement>(null);
-  const progress1Ref = useRef(0.0);
   const progress2Ref = useRef(0.0);
   const [mounted, setMounted] = useState(false);
 
@@ -43,7 +42,7 @@ export function AboutInsightsStage({
         scrollTrigger: {
           trigger: stage,
           start: "top top",
-          end: "+=240%",
+          end: "+=160%",
           pin: screen,
           pinSpacing: true,
           scrub: 0.7,
@@ -51,68 +50,20 @@ export function AboutInsightsStage({
         },
       });
 
-      // ==========================================
-      // ETAPA 1: PROJETOS (Bege) -> SOBRE (Preto) (0.0 a 0.45)
-      // ==========================================
-      tl.fromTo(
-        progress1Ref,
-        { current: 0.0 },
-        {
-          current: 1.35,
-          duration: 0.32,
-          ease: "none",
-        },
-        0.02
-      );
-
-      const aboutChildren = Array.from(about.children);
-      tl.fromTo(
-        about,
-        { opacity: 0 },
-        {
-          opacity: 1,
-          duration: 0.22,
-          ease: "power2.out",
-          onStart: () => {
-            about.style.pointerEvents = "auto";
-          },
-        },
-        0.14
-      );
-      tl.fromTo(
-        aboutChildren,
-        {
-          opacity: 0,
-          filter: "blur(14px)",
-          y: 18,
-        },
-        {
-          opacity: 1,
-          filter: "blur(0px)",
-          y: 0,
-          duration: 0.28,
-          stagger: 0.05,
-          ease: "power2.out",
-        },
-        0.16
-      );
-
-      // ==========================================
-      // ETAPA 2: SOBRE FICA ESTÁTICO (0.42 a 0.58)
-      // ==========================================
-
-      // ==========================================
-      // ETAPA 3: SOBRE (Preto) -> INSIGHTS (Bege) (0.58 a 1.0)
-      // ==========================================
+      // SOBRE já inicia visível e ativo em fundo preto contínuo com Projetos
+      // Transição: SOBRE (Preto) -> INSIGHTS (Bege)
       tl.to(
         about,
         {
           opacity: 0,
-          y: -20,
-          duration: 0.16,
+          y: -24,
+          duration: 0.35,
           ease: "power1.inOut",
+          onComplete: () => {
+            about.style.pointerEvents = "none";
+          },
         },
-        0.58
+        0.25
       );
 
       tl.fromTo(
@@ -120,10 +71,10 @@ export function AboutInsightsStage({
         { current: 0.0 },
         {
           current: 1.35,
-          duration: 0.28,
+          duration: 0.45,
           ease: "none",
         },
-        0.58
+        0.25
       );
 
       const insightsChildren = Array.from(insights.children);
@@ -132,13 +83,13 @@ export function AboutInsightsStage({
         { opacity: 0 },
         {
           opacity: 1,
-          duration: 0.22,
+          duration: 0.35,
           ease: "power2.out",
           onStart: () => {
             insights.style.pointerEvents = "auto";
           },
         },
-        0.70
+        0.45
       );
       tl.fromTo(
         insightsChildren,
@@ -151,11 +102,11 @@ export function AboutInsightsStage({
           opacity: 1,
           filter: "blur(0px)",
           y: 0,
-          duration: 0.28,
-          stagger: 0.05,
+          duration: 0.40,
+          stagger: 0.06,
           ease: "power2.out",
         },
-        0.72
+        0.48
       );
     }, stage);
 
@@ -168,24 +119,13 @@ export function AboutInsightsStage({
     <div ref={stageRef} className="relative w-full">
       <div
         ref={screenRef}
-        className="relative h-screen w-full overflow-hidden bg-[#ecece3]"
+        className="relative h-screen w-full overflow-hidden bg-[#000000]"
       >
-        {/* THREE.JS PIXEL SHADER PRETO (#000000) cobrindo Projetos (Bege) */}
-        {mounted && (
-          <div className="z-10 absolute inset-0 pointer-events-none">
-            <PixelTransitionCanvas
-              color="#000000"
-              progressRef={progress1Ref}
-              direction="center"
-            />
-          </div>
-        )}
-
-        {/* SOBRE A ESCOM (Fundo Preto #000000) */}
+        {/* SOBRE A ESCOM (Fundo Preto #000000 Contínuo) */}
         <section
           id="sobre"
           ref={aboutRef}
-          className="absolute inset-0 z-20 flex flex-col justify-center px-5 py-10 dark bg-[#000000] text-foreground md:px-12 xl:px-[22vw] opacity-0 pointer-events-none"
+          className="absolute inset-0 z-20 flex flex-col justify-center px-5 py-10 dark bg-[#000000] text-foreground md:px-12 xl:px-[22vw] opacity-100 pointer-events-auto"
         >
           {/* Eyebrow na cor azul do brand da ESCOM */}
           <Eyebrow cyan>{t.about.eyebrow}</Eyebrow>
