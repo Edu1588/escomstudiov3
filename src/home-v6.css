@@ -133,37 +133,42 @@
 @keyframes interactiveLetterBlur {
   0% {
     filter: blur(8px);
-    opacity: 0.55;
-    transform: translateY(-2px) scale(1.04);
+    opacity: 0.35;
+    transform: translateY(-2px) scale(1.05);
   }
   25% {
     filter: blur(6px);
-    opacity: 0.7;
-    transform: translateY(-1px) scale(1.02);
+    opacity: 0.55;
+    transform: translateY(-1px) scale(1.03);
   }
-  60% {
-    filter: blur(2.5px);
-    opacity: 0.9;
+  65% {
+    filter: blur(2px);
+    opacity: 0.85;
     transform: translateY(0) scale(1);
   }
   100% {
-    filter: blur(0px);
+    filter: none;
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: none;
   }
 }
 
 .interactive-blur-char {
   display: inline-block;
+  cursor: default;
   will-change: filter, transform, opacity;
-  transition: filter 0.25s ease, opacity 0.25s ease;
+  transition: filter 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .interactive-blur-char.is-blurred {
-  animation: interactiveLetterBlur 1.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: interactiveLetterBlur 1.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .interactive-blur-char:hover {
-  filter: blur(7px);
-  opacity: 0.6;
+  filter: blur(8px) !important;
+  opacity: 0.35 !important;
+  transform: translateY(-2px) scale(1.05) !important;
+  transition: filter 0.04s ease-out, opacity 0.04s ease-out, transform 0.04s ease-out !important;
 }

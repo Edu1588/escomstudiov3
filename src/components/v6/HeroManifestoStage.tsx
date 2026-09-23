@@ -92,6 +92,7 @@ export function HeroManifestoStage({
         },
         0.02
       );
+      tl.set(hero, { pointerEvents: "none" }, 0.14);
 
       // Linhas dinâmicas que se movem abrindo o quadro (Referência The Model)
       tl.fromTo(".manifesto-line-top", { top: "46%" }, { top: "10%", duration: 0.25, ease: "power2.out" }, 0.06);
@@ -107,6 +108,7 @@ export function HeroManifestoStage({
       tl.fromTo(".manifesto-tag", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.15, ease: "power2.out" }, 0.10);
 
       const manifestoChildren = Array.from(manifesto.children);
+      tl.set(manifesto, { pointerEvents: "auto" }, 0.08);
       tl.fromTo(
         manifesto,
         { opacity: 0 },
@@ -114,9 +116,6 @@ export function HeroManifestoStage({
           opacity: 1,
           duration: 0.16,
           ease: "power2.out",
-          onStart: () => {
-            manifesto.style.pointerEvents = "auto";
-          },
         },
         0.08
       );
@@ -151,6 +150,7 @@ export function HeroManifestoStage({
         },
         0.38
       );
+      tl.set(manifesto, { pointerEvents: "none" }, 0.38);
       tl.to(".manifesto-grid-frame", { opacity: 0, duration: 0.08, ease: "power1.inOut" }, 0.38);
 
       // ==========================================
@@ -171,6 +171,7 @@ export function HeroManifestoStage({
       // 5. SOLUÇÕES INTRO APARECE SOBRE OS PIXELS (0.54 a 0.70) E PERMANECE VISÍVEL ATÉ O FIM!
       // ==========================================
       const solutionsChildren = Array.from(solutionsIntro.children);
+      tl.set(solutionsIntro, { pointerEvents: "auto" }, 0.54);
       tl.fromTo(
         solutionsIntro,
         { opacity: 0 },
@@ -178,9 +179,6 @@ export function HeroManifestoStage({
           opacity: 1,
           duration: 0.14,
           ease: "power2.out",
-          onStart: () => {
-            solutionsIntro.style.pointerEvents = "auto";
-          },
         },
         0.54
       );
@@ -228,14 +226,14 @@ export function HeroManifestoStage({
         <section
           id="top"
           ref={heroRef}
-          className="absolute inset-0 z-10 flex flex-col justify-between pt-12 md:pt-14 dark bg-transparent text-foreground"
+          className="absolute inset-0 z-20 flex flex-col justify-between pt-12 md:pt-14 dark bg-transparent text-foreground pointer-events-auto"
         >
-          <div className="relative z-10 flex h-full flex-1 flex-col justify-between px-5 pt-2 pb-6 md:px-12 xl:px-[22vw] md:pt-4 md:pb-8 pointer-events-none">
+          <div className="relative z-20 flex h-full flex-1 flex-col justify-between px-5 pt-2 pb-6 md:px-12 xl:px-[22vw] md:pt-4 md:pb-8 pointer-events-none">
             <div className="pointer-events-auto">
               <Eyebrow cyan>{t.hero.eyebrow}</Eyebrow>
             </div>
             
-            <div className="max-w-3xl py-2 md:py-5 pointer-events-auto">
+            <div className="relative z-30 max-w-3xl py-2 md:py-5 pointer-events-auto">
               <InteractiveBlurTitle
                 as="h1"
                 className="max-w-2xl font-serif text-2xl sm:text-3xl md:text-7xl lg:text-[5.5rem] leading-[1.08] md:leading-[0.95] font-light text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]"

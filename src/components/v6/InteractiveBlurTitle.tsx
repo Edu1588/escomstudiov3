@@ -31,19 +31,19 @@ export function InteractiveBlurTitle({
 
   return (
     <Component
-      className={`select-none cursor-default ${className}`}
+      className={`select-none cursor-default pointer-events-auto ${className}`}
       aria-label={children}
     >
       {words.map((word, wordIdx) => (
         <span
           key={wordIdx}
-          className="inline-block whitespace-nowrap"
+          className="inline-block whitespace-nowrap pointer-events-auto"
           aria-hidden="true"
         >
           {Array.from(word).map((char, charIdx) => (
             <span
               key={charIdx}
-              className="interactive-blur-char inline-block"
+              className="interactive-blur-char inline-block pointer-events-auto"
               onMouseEnter={handleMouseEnter}
               onAnimationEnd={handleAnimationEnd}
             >
