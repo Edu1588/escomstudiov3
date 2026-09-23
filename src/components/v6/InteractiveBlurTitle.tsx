@@ -17,12 +17,19 @@ export function InteractiveBlurTitle({
 
   const words = children.split(" ");
 
-  const handleMouseEnter = (e: React.MouseEvent<HTMLSpanElement>) => {
-    const el = e.currentTarget;
+  const triggerBlur = (el: HTMLElement) => {
     el.classList.remove("is-blurred");
     // Força reflow para reiniciar caso o mouse passe novamente
     void el.offsetWidth;
     el.classList.add("is-blurred");
+  };
+
+  const handlePointerEnter = (e: React.PointerEvent<HTMLSpanElement>) => {
+    triggerBlur(e.currentTarget);
+  };
+
+  const handleMouseEnter = (e: React.MouseEvent<HTMLSpanElement>) => {
+    triggerBlur(e.currentTarget);
   };
 
   const handleAnimationEnd = (e: React.AnimationEvent<HTMLSpanElement>) => {
@@ -44,6 +51,7 @@ export function InteractiveBlurTitle({
             <span
               key={charIdx}
               className="interactive-blur-char inline-block pointer-events-auto"
+              onPointerEnter={handlePointerEnter}
               onMouseEnter={handleMouseEnter}
               onAnimationEnd={handleAnimationEnd}
             >

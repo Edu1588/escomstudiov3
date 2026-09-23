@@ -228,7 +228,7 @@ export function HeroManifestoStage({
           ref={heroRef}
           className="absolute inset-0 z-20 flex flex-col justify-between pt-12 md:pt-14 dark bg-transparent text-foreground pointer-events-auto"
         >
-          <div className="relative z-20 flex h-full flex-1 flex-col justify-between px-5 pt-2 pb-6 md:px-12 xl:px-[22vw] md:pt-4 md:pb-8 pointer-events-none">
+          <div className="relative z-20 flex h-full flex-1 flex-col justify-between px-5 pt-2 pb-6 md:px-12 xl:px-[22vw] md:pt-4 md:pb-8 pointer-events-auto">
             <div className="pointer-events-auto">
               <Eyebrow cyan>{t.hero.eyebrow}</Eyebrow>
             </div>
