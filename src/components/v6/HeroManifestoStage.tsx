@@ -8,6 +8,7 @@ import { RobozitoSequenceBackground } from "@/components/v6/RobozitoSequenceBack
 import { PixelTransitionCanvas } from "@/components/v6/PixelTransitionCanvas";
 import { LoadingCurtain } from "@/components/v6/LoadingCurtain";
 import { useLanguage } from "@/components/v6/LanguageContext";
+import { InteractiveBlurTitle } from "@/components/v6/InteractiveBlurTitle";
 
 export function HeroManifestoStage({
   Eyebrow,
@@ -235,12 +236,12 @@ export function HeroManifestoStage({
             </div>
             
             <div className="max-w-3xl py-2 md:py-5 pointer-events-auto">
-              <SplitTextReveal
-                type="words"
+              <InteractiveBlurTitle
+                as="h1"
                 className="max-w-2xl font-serif text-2xl sm:text-3xl md:text-7xl lg:text-[5.5rem] leading-[1.08] md:leading-[0.95] font-light text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]"
               >
                 {t.hero.title}
-              </SplitTextReveal>
+              </InteractiveBlurTitle>
               <p className="mt-3 md:mt-5 max-w-sm md:max-w-xl text-xs sm:text-sm md:text-base leading-5 md:leading-6 text-zinc-300 drop-shadow-[0_1px_6px_rgba(0,0,0,0.8)]">
                 {t.hero.subtitle}
               </p>
@@ -299,9 +300,12 @@ export function HeroManifestoStage({
 
           <div className="relative z-10">
             <Eyebrow cyan>{t.manifesto.eyebrow}</Eyebrow>
-            <h2 className="mt-6 md:mt-12 max-w-6xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.1] md:leading-[1.05] font-light text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
+            <InteractiveBlurTitle
+              as="h2"
+              className="mt-6 md:mt-12 max-w-6xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.1] md:leading-[1.05] font-light text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]"
+            >
               {t.manifesto.title}
-            </h2>
+            </InteractiveBlurTitle>
             <div className="mt-6 md:mt-14 grid gap-6 md:gap-8 border-t border-white/15 pt-6 md:pt-8 md:grid-cols-12">
               <p className="md:col-span-5 md:col-start-7 text-xs sm:text-sm md:text-lg leading-5 md:leading-8 text-zinc-200 drop-shadow-[0_1px_6px_rgba(0,0,0,0.85)]">
                 {t.manifesto.text}
@@ -332,10 +336,12 @@ export function HeroManifestoStage({
         >
           <Eyebrow cyan>Um sistema digital, várias frentes de crescimento</Eyebrow>
           <div className="mt-6 md:mt-14 grid gap-6 md:gap-8 md:grid-cols-12">
-            <h2 className="font-serif text-2xl sm:text-3xl md:text-7xl leading-snug md:leading-none md:col-span-8 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)] font-light">
-              Tudo o que sua empresa precisa para ser percebida, encontrada e
-              escolhida.
-            </h2>
+            <InteractiveBlurTitle
+              as="h2"
+              className="font-serif text-2xl sm:text-3xl md:text-7xl leading-snug md:leading-none md:col-span-8 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)] font-light"
+            >
+              Tudo o que sua empresa precisa para ser percebida, encontrada e escolhida.
+            </InteractiveBlurTitle>
             <p className="self-end text-xs sm:text-sm leading-5 md:leading-6 md:col-span-4 text-zinc-300 drop-shadow-[0_1px_6px_rgba(0,0,0,0.85)]">
               Unimos marca, experiência digital, aquisição e automação. Cada
               solução pode existir sozinha ou fazer parte de um sistema mais

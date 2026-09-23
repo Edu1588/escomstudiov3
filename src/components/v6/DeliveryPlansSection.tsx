@@ -2,6 +2,7 @@ import React from "react";
 import { ArrowRight, Check } from "lucide-react";
 import { useLanguage } from "@/components/v6/LanguageContext";
 import { Button } from "@/components/ui/button";
+import { InteractiveBlurTitle } from "@/components/v6/InteractiveBlurTitle";
 
 export function DeliveryPlansSection({
   Eyebrow,
@@ -22,9 +23,12 @@ export function DeliveryPlansSection({
     >
       <div className="max-w-4xl">
         <Eyebrow light>{t.plansSection.eyebrow}</Eyebrow>
-        <h2 className="mt-8 md:mt-12 font-serif text-2xl sm:text-3xl md:text-5xl lg:text-6xl leading-[1.08] md:leading-[1.05] font-light text-black">
+        <InteractiveBlurTitle
+          as="h2"
+          className="mt-8 md:mt-12 font-serif text-2xl sm:text-3xl md:text-5xl lg:text-6xl leading-[1.08] md:leading-[1.05] font-light text-black"
+        >
           {t.plansSection.title}
-        </h2>
+        </InteractiveBlurTitle>
       </div>
 
       <div className="mt-12 md:mt-16 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">

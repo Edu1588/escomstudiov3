@@ -128,3 +128,42 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* EFEITO BLUR NO HOVER DOS TÍTULOS (dura poucos segundos e desfaz suavemente) */
+@keyframes interactiveLetterBlur {
+  0% {
+    filter: blur(8px);
+    opacity: 0.55;
+    transform: translateY(-2px) scale(1.04);
+  }
+  25% {
+    filter: blur(6px);
+    opacity: 0.7;
+    transform: translateY(-1px) scale(1.02);
+  }
+  60% {
+    filter: blur(2.5px);
+    opacity: 0.9;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    filter: blur(0px);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.interactive-blur-char {
+  display: inline-block;
+  will-change: filter, transform, opacity;
+  transition: filter 0.25s ease, opacity 0.25s ease;
+}
+
+.interactive-blur-char.is-blurred {
+  animation: interactiveLetterBlur 1.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.interactive-blur-char:hover {
+  filter: blur(7px);
+  opacity: 0.6;
+}

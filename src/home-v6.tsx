@@ -12,6 +12,7 @@ import { FixedContactButton, FixedBottomBar } from "@/components/v6/FixedUIEleme
 import { LanguageProvider, useLanguage } from "@/components/v6/LanguageContext";
 import { DynamicSectionFrame } from "@/components/v6/DynamicSectionFrame";
 import { DeliveryPlansSection } from "@/components/v6/DeliveryPlansSection";
+import { InteractiveBlurTitle } from "@/components/v6/InteractiveBlurTitle";
 import RobotBust3D from "@/components/RobotBust3D";
 
 import {
@@ -176,29 +177,36 @@ export function HomeV6() {
       {/* BLOCO CLARO CONTÍNUO (Fundo Bege #ecece3 sem nenhum pixel entre seções) */}
       <div className="bg-[#ecece3] text-[#000000]">
         {/* JORNADA DIGITAL (5 Colunas) */}
-        <section className="px-5 py-16 md:px-12 xl:px-[22vw] md:py-32 border-t border-black/10">
+        <section className="px-5 py-16 md:px-10 lg:px-12 xl:px-[8vw] 2xl:px-[11vw] md:py-32 border-t border-black/10">
           <Eyebrow light>{t.journey.eyebrow}</Eyebrow>
-          <h2 className="mt-8 md:mt-12 max-w-4xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.08] md:leading-[1.05] font-light text-black">
+          <InteractiveBlurTitle
+            as="h2"
+            className="mt-8 md:mt-12 max-w-4xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.08] md:leading-[1.05] font-light text-black"
+          >
             {t.journey.title}
-          </h2>
-          <div className="mt-10 md:mt-16 grid border-y border-black/15 md:grid-cols-5">
+          </InteractiveBlurTitle>
+          <div className="mt-10 md:mt-16 grid border-y md:border-l border-black/15 md:grid-cols-5">
             {t.journey.items.map((step) => (
               <article
                 key={step.num}
-                className="border-b border-black/15 p-5 md:min-h-96 md:border-r md:border-b-0"
+                className="border-b border-black/15 p-4 sm:p-5 lg:p-6 md:min-h-[380px] lg:min-h-[420px] md:border-r md:border-b-0 flex flex-col justify-between"
               >
-                <span className="font-mono text-[10px] text-black/50">{step.num}</span>
-                <h3 className="mt-8 md:mt-16 font-serif text-lg sm:text-xl md:text-3xl text-black">
-                  {step.title}
-                </h3>
-                <p className="mt-3 md:mt-5 text-xs sm:text-sm leading-5 md:leading-6 text-black/80">{step.desc}</p>
-                <p className="mt-6 md:mt-8 font-mono text-[9px] uppercase leading-5 text-black/60">
+                <div>
+                  <span className="font-mono text-[10px] text-black/50">{step.num}</span>
+                  <h3 className="mt-6 md:mt-8 lg:mt-10 font-serif text-lg sm:text-xl md:text-xl lg:text-2xl xl:text-[1.65rem] text-black font-light leading-snug whitespace-normal md:whitespace-nowrap">
+                    {step.title}
+                  </h3>
+                  <p className="mt-4 md:mt-6 text-xs sm:text-sm leading-5 md:leading-6 text-black/80">
+                    {step.desc}
+                  </p>
+                </div>
+                <p className="mt-6 md:mt-8 font-mono text-[9px] uppercase leading-5 text-black/60 pt-4 border-t border-black/10">
                   {step.related}
                 </p>
               </article>
             ))}
           </div>
-          <p className="mt-8 md:mt-10 text-right font-serif text-lg sm:text-xl md:text-3xl text-black">
+          <p className="mt-8 md:mt-12 text-center md:text-right font-serif text-lg sm:text-xl md:text-3xl text-black">
             {t.journey.footer}
           </p>
         </section>
@@ -209,9 +217,12 @@ export function HomeV6() {
           className="px-5 py-16 md:px-12 xl:px-[22vw] md:py-32 border-t border-black/10"
         >
           <Eyebrow light>{t.processSection.eyebrow}</Eyebrow>
-          <h2 className="mt-8 md:mt-12 max-w-4xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.08] md:leading-[1.05] font-light text-black">
+          <InteractiveBlurTitle
+            as="h2"
+            className="mt-8 md:mt-12 max-w-4xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.08] md:leading-[1.05] font-light text-black"
+          >
             {t.processSection.title}
-          </h2>
+          </InteractiveBlurTitle>
           <div className="mt-10 md:mt-16">
             {t.processSection.items.map((step) => (
               <article
@@ -242,9 +253,12 @@ export function HomeV6() {
             <div className="absolute right-16 top-1/2 size-72 -translate-y-1/2 rounded-full border border-black/10 pointer-events-none" />
             <div className="relative">
               <Eyebrow light>{t.aiSection.eyebrow}</Eyebrow>
-              <h2 className="mt-8 md:mt-12 max-w-4xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.08] md:leading-[1.05] font-light text-black">
+              <InteractiveBlurTitle
+                as="h2"
+                className="mt-8 md:mt-12 max-w-4xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.08] md:leading-[1.05] font-light text-black"
+              >
                 {t.aiSection.title}
-              </h2>
+              </InteractiveBlurTitle>
               <p className="mt-4 md:mt-8 max-w-xl text-xs sm:text-sm md:text-base leading-5 md:leading-7 text-black/80">
                 {t.aiSection.desc}
               </p>
@@ -267,9 +281,12 @@ export function HomeV6() {
         className="border-t border-white/15 bg-[#000000] px-5 py-16 md:px-12 xl:pl-[14vw] xl:pr-12 2xl:pr-16 md:py-32 relative text-white"
       >
         <Eyebrow cyan>{t.systemsSection.eyebrow}</Eyebrow>
-        <h2 className="mt-8 md:mt-12 max-w-4xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.08] md:leading-[1.05] font-light text-white">
+        <InteractiveBlurTitle
+          as="h2"
+          className="mt-8 md:mt-12 max-w-4xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.08] md:leading-[1.05] font-light text-white"
+        >
           {t.systemsSection.title}
-        </h2>
+        </InteractiveBlurTitle>
 
         {/* LAYOUT DE 2 COLUNAS: ESQUERDA CARDS COM SCROLL (6 col) | DIREITA ROBÔ 3D FIXO (6 col) */}
         <div className="mt-10 md:mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 relative">

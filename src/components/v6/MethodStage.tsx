@@ -3,6 +3,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PixelTransitionCanvas } from "@/components/v6/PixelTransitionCanvas";
 import { useLanguage } from "@/components/v6/LanguageContext";
+import { InteractiveBlurTitle } from "@/components/v6/InteractiveBlurTitle";
 
 export function MethodStage({
   Eyebrow,
@@ -160,9 +161,12 @@ export function MethodStage({
 
           <div className="relative z-10">
           <Eyebrow light>{t.method.eyebrow}</Eyebrow>
-          <h2 className="mt-6 md:mt-10 max-w-5xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.1] md:leading-[1.05] font-light text-[#000000]">
+          <InteractiveBlurTitle
+            as="h2"
+            className="mt-6 md:mt-10 max-w-5xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.1] md:leading-[1.05] font-light text-[#000000]"
+          >
             {t.method.title}
-          </h2>
+          </InteractiveBlurTitle>
           <div className="mt-6 md:mt-12 grid gap-6 md:gap-12 md:grid-cols-12">
             <p className="text-xs sm:text-sm md:text-lg leading-5 md:leading-8 md:col-span-5 text-black/80">
               {t.method.desc}
