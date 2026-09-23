@@ -17,7 +17,11 @@ export function DiagnosisStage({
     light?: boolean;
     cyan?: boolean;
   }>;
-  AnchorButton: React.ComponentType<{ children: React.ReactNode }>;
+  AnchorButton: React.ComponentType<{
+    children: React.ReactNode;
+    outline?: boolean;
+    className?: string;
+  }>;
 }) {
   const { t } = useLanguage();
   const stageRef = useRef<HTMLDivElement>(null);
@@ -154,37 +158,37 @@ export function DiagnosisStage({
           <div>
             {/* Eyebrow em azul do brand da ESCOM */}
             <Eyebrow cyan>{t.diagnosis.eyebrow}</Eyebrow>
-            <div className="mt-8 grid gap-12 md:grid-cols-12">
+            <div className="mt-6 md:mt-8 grid gap-6 md:gap-12 md:grid-cols-12">
               <div className="md:col-span-5">
-                <h2 className="font-serif text-4xl leading-tight font-light md:text-6xl lg:text-7xl">
+                <h2 className="font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-snug md:leading-tight font-light">
                   {t.diagnosis.title}
                 </h2>
-                <p className="mt-6 max-w-md text-sm leading-6 md:text-base md:leading-7 text-muted-foreground">
+                <p className="mt-4 md:mt-6 max-w-md text-xs sm:text-sm md:text-base leading-5 md:leading-7 text-muted-foreground">
                   {t.diagnosis.desc}
                 </p>
                 <a
                   href="https://wa.me/5513981062787?text=Ol%C3%A1!%20Gostaria%20de%20conversar%20sobre%20um%20projeto%20com%20a%20ESCOM%20Studio."
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-8 inline-flex items-center gap-2 border-b border-cyan pb-1 text-xs font-semibold text-cyan hover:opacity-80 transition-opacity"
+                  className="mt-6 md:mt-8 inline-flex items-center gap-2 border-b border-cyan pb-1 text-xs font-semibold text-cyan hover:opacity-80 transition-opacity"
                 >
                   {t.diagnosis.whatsappBtn} <ArrowRight className="size-3" />
                 </a>
               </div>
               <div className="md:col-span-6 md:col-start-7">
                 {sent ? (
-                  <div className="flex min-h-72 flex-col justify-center border-y border-border p-6">
-                    <Check className="mb-4 size-8 text-cyan" />
-                    <h3 className="font-serif text-3xl">
+                  <div className="flex min-h-60 md:min-h-72 flex-col justify-center border-y border-border p-5 md:p-6">
+                    <Check className="mb-4 size-6 md:size-8 text-cyan" />
+                    <h3 className="font-serif text-2xl md:text-3xl">
                       {t.diagnosis.successTitle}
                     </h3>
-                    <p className="mt-3 max-w-md text-sm leading-6 text-muted-foreground">
+                    <p className="mt-3 max-w-md text-xs sm:text-sm leading-5 md:leading-6 text-muted-foreground">
                       {t.diagnosis.successDesc}
                     </p>
                   </div>
                 ) : (
-                  <form onSubmit={submit} className="space-y-4">
-                    <h3 className="font-serif text-2xl md:text-3xl">
+                  <form onSubmit={submit} className="space-y-3 md:space-y-4">
+                    <h3 className="font-serif text-lg sm:text-xl md:text-3xl">
                       {t.diagnosis.formTitle}
                     </h3>
                     <div className="grid gap-4 sm:grid-cols-2">

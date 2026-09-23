@@ -133,7 +133,7 @@ export function MethodStage({
         <section
           id="metodo"
           ref={contentRef}
-          className="absolute inset-0 z-20 flex flex-col justify-center px-5 py-12 text-[#000000] md:px-12 xl:px-[22vw] opacity-0 pointer-events-none bg-[#ecece3] overflow-hidden"
+          className="absolute inset-0 z-20 flex flex-col justify-center px-5 py-8 md:py-12 text-[#000000] md:px-12 xl:px-[22vw] opacity-0 pointer-events-none bg-[#ecece3] overflow-hidden"
         >
           {/* Grade de Linhas Dinâmicas com nós ✦ (Referência The Model) */}
           <div className="method-grid-frame absolute inset-0 pointer-events-none z-0">
@@ -160,23 +160,23 @@ export function MethodStage({
 
           <div className="relative z-10">
           <Eyebrow light>{t.method.eyebrow}</Eyebrow>
-          <h2 className="mt-10 max-w-5xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl text-[#000000]">
+          <h2 className="mt-6 md:mt-10 max-w-5xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.1] md:leading-[1.05] font-light text-[#000000]">
             {t.method.title}
           </h2>
-          <div className="mt-12 grid gap-12 md:grid-cols-12">
-            <p className="text-base leading-7 md:col-span-5 md:text-lg md:leading-8 text-black/80">
+          <div className="mt-6 md:mt-12 grid gap-6 md:gap-12 md:grid-cols-12">
+            <p className="text-xs sm:text-sm md:text-lg leading-5 md:leading-8 md:col-span-5 text-black/80">
               {t.method.desc}
             </p>
             <div className="md:col-span-6 md:col-start-7">
               {t.method.steps.map((x, i) => (
                 <div
                   key={x}
-                  className="flex gap-5 border-t border-black/15 py-4"
+                  className="flex gap-4 md:gap-5 border-t border-black/15 py-3 md:py-4"
                 >
-                  <span className="font-mono text-[10px] text-black/60">
+                  <span className="font-mono text-[9px] md:text-[10px] text-black/60">
                     0{i + 1}
                   </span>
-                  <p className="font-serif text-xl md:text-2xl text-black">
+                  <p className="font-serif text-base sm:text-lg md:text-2xl text-black">
                     {x}
                   </p>
                 </div>

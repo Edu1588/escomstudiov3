@@ -50,15 +50,18 @@ function Eyebrow({
 function AnchorButton({
   children,
   outline = false,
+  className,
 }: {
   children: React.ReactNode;
   outline?: boolean;
+  className?: string;
 }) {
   return (
     <Button
       asChild
       size="xl"
       variant={outline ? "editorialOutline" : "editorial"}
+      className={className}
     >
       <a href="#diagnostico">
         {children}
@@ -138,15 +141,15 @@ export function HomeV6() {
           {t.services.map((service) => (
             <article
               key={service.num}
-              className="group grid gap-5 border-b border-border/40 py-9 md:grid-cols-12 md:items-start"
+              className="group grid gap-4 md:gap-5 border-b border-border/40 py-6 md:py-9 md:grid-cols-12 md:items-start"
             >
               <span className="font-mono text-xs text-cyan md:col-span-1">
                 {service.num}
               </span>
-              <h3 className="font-serif text-3xl md:col-span-3 md:text-4xl text-foreground">
+              <h3 className="font-serif text-xl sm:text-2xl md:text-4xl text-foreground font-light leading-snug md:col-span-3">
                 {service.title}
               </h3>
-              <p className="text-sm leading-6 md:col-span-4 text-muted-foreground">
+              <p className="text-xs sm:text-sm leading-5 md:leading-6 md:col-span-4 text-muted-foreground">
                 {service.desc}
               </p>
               <div className="md:col-span-3">
@@ -155,7 +158,7 @@ export function HomeV6() {
                 </p>
                 <a
                   href="#diagnostico"
-                  className="mt-5 inline-flex items-center gap-2 border-b border-cyan pb-1 text-xs font-semibold text-cyan hover:opacity-80 transition-opacity"
+                  className="mt-4 md:mt-5 inline-flex items-center gap-2 border-b border-cyan pb-1 text-xs font-semibold text-cyan hover:opacity-80 transition-opacity"
                 >
                   {service.cta}
                   <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
@@ -172,29 +175,29 @@ export function HomeV6() {
       {/* BLOCO CLARO CONTÍNUO (Fundo Bege #ecece3 sem nenhum pixel entre seções) */}
       <div className="bg-[#ecece3] text-[#000000]">
         {/* JORNADA DIGITAL (5 Colunas) */}
-        <section className="px-5 py-24 md:px-12 xl:px-[22vw] md:py-32 border-t border-black/10">
+        <section className="px-5 py-16 md:px-12 xl:px-[22vw] md:py-32 border-t border-black/10">
           <Eyebrow light>{t.journey.eyebrow}</Eyebrow>
-          <h2 className="mt-12 max-w-4xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl text-black">
+          <h2 className="mt-8 md:mt-12 max-w-4xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.08] md:leading-[1.05] font-light text-black">
             {t.journey.title}
           </h2>
-          <div className="mt-16 grid border-y border-black/15 md:grid-cols-5">
+          <div className="mt-10 md:mt-16 grid border-y border-black/15 md:grid-cols-5">
             {t.journey.items.map((step) => (
               <article
                 key={step.num}
                 className="border-b border-black/15 p-5 md:min-h-96 md:border-r md:border-b-0"
               >
                 <span className="font-mono text-[10px] text-black/50">{step.num}</span>
-                <h3 className="mt-16 font-serif text-2xl md:text-3xl text-black">
+                <h3 className="mt-8 md:mt-16 font-serif text-lg sm:text-xl md:text-3xl text-black">
                   {step.title}
                 </h3>
-                <p className="mt-5 text-sm leading-6 text-black/80">{step.desc}</p>
-                <p className="mt-8 font-mono text-[9px] uppercase leading-5 text-black/60">
+                <p className="mt-3 md:mt-5 text-xs sm:text-sm leading-5 md:leading-6 text-black/80">{step.desc}</p>
+                <p className="mt-6 md:mt-8 font-mono text-[9px] uppercase leading-5 text-black/60">
                   {step.related}
                 </p>
               </article>
             ))}
           </div>
-          <p className="mt-10 text-right font-serif text-2xl md:text-3xl text-black">
+          <p className="mt-8 md:mt-10 text-right font-serif text-lg sm:text-xl md:text-3xl text-black">
             {t.journey.footer}
           </p>
         </section>
@@ -202,25 +205,25 @@ export function HomeV6() {
         {/* PROCESSO (5 Etapas) */}
         <section
           id="processo"
-          className="px-5 py-24 md:px-12 xl:px-[22vw] md:py-32 border-t border-black/10"
+          className="px-5 py-16 md:px-12 xl:px-[22vw] md:py-32 border-t border-black/10"
         >
           <Eyebrow light>{t.processSection.eyebrow}</Eyebrow>
-          <h2 className="mt-12 max-w-4xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl text-black">
+          <h2 className="mt-8 md:mt-12 max-w-4xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.08] md:leading-[1.05] font-light text-black">
             {t.processSection.title}
           </h2>
-          <div className="mt-16">
+          <div className="mt-10 md:mt-16">
             {t.processSection.items.map((step) => (
               <article
                 key={step.num}
-                className="grid gap-4 border-t border-black/15 py-6 md:grid-cols-12"
+                className="grid gap-3 md:gap-4 border-t border-black/15 py-5 md:py-6 md:grid-cols-12"
               >
                 <span className="font-mono text-xs text-black/60 md:col-span-1">
                   {step.num}
                 </span>
-                <h3 className="font-serif text-3xl md:col-span-3 text-black">
+                <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-black md:col-span-3">
                   {step.title}
                 </h3>
-                <p className="text-sm leading-6 md:col-span-4 text-black/80">
+                <p className="text-xs sm:text-sm leading-5 md:leading-6 md:col-span-4 text-black/80">
                   {step.desc}
                 </p>
                 <p className="font-mono text-[10px] uppercase leading-5 text-black/60 md:col-span-3 md:col-start-10">
@@ -233,19 +236,19 @@ export function HomeV6() {
 
         {/* INTELIGÊNCIA ARTIFICIAL APLICADA (COM MOLDURA DINÂMICA DE LINHAS NO SCROLL) */}
         <DynamicSectionFrame tag="INTELLIGENCE ENGINE" dark={false} className="border-t border-black/10">
-          <section className="relative min-h-[70vh] px-5 py-24 md:px-12 xl:px-[22vw] md:py-32">
+          <section className="relative min-h-[50vh] md:min-h-[70vh] px-5 py-16 md:px-12 xl:px-[22vw] md:py-32">
             <div className="absolute -right-24 top-1/2 size-[36rem] -translate-y-1/2 rounded-full border border-black/10 pointer-events-none" />
             <div className="absolute right-16 top-1/2 size-72 -translate-y-1/2 rounded-full border border-black/10 pointer-events-none" />
             <div className="relative">
               <Eyebrow light>{t.aiSection.eyebrow}</Eyebrow>
-              <h2 className="mt-12 max-w-4xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl text-black">
+              <h2 className="mt-8 md:mt-12 max-w-4xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.08] md:leading-[1.05] font-light text-black">
                 {t.aiSection.title}
               </h2>
-              <p className="mt-8 max-w-xl text-base leading-7 md:text-lg md:leading-8 text-black/80">
+              <p className="mt-4 md:mt-8 max-w-xl text-xs sm:text-sm md:text-base leading-5 md:leading-7 text-black/80">
                 {t.aiSection.desc}
               </p>
-              <div className="mt-10">
-                <AnchorButton outline>
+              <div className="mt-6 md:mt-10">
+                <AnchorButton outline className="h-9 px-4 text-[10px] tracking-[0.16em] md:h-12 md:px-6">
                   {t.aiSection.cta}
                 </AnchorButton>
               </div>
@@ -257,15 +260,15 @@ export function HomeV6() {
       {/* PROJETOS (Sistemas em Movimento) COM CARDS STACKING E ROBÔ 3D FIXO (Fundo Preto #000000) */}
       <section
         id="projetos"
-        className="border-t border-white/15 bg-[#000000] px-5 py-24 md:px-12 xl:pl-[14vw] xl:pr-12 2xl:pr-16 md:py-32 relative text-white"
+        className="border-t border-white/15 bg-[#000000] px-5 py-16 md:px-12 xl:pl-[14vw] xl:pr-12 2xl:pr-16 md:py-32 relative text-white"
       >
         <Eyebrow cyan>{t.systemsSection.eyebrow}</Eyebrow>
-        <h2 className="mt-12 max-w-4xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl text-white">
+        <h2 className="mt-8 md:mt-12 max-w-4xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.08] md:leading-[1.05] font-light text-white">
           {t.systemsSection.title}
         </h2>
 
         {/* LAYOUT DE 2 COLUNAS: ESQUERDA CARDS COM SCROLL (6 col) | DIREITA ROBÔ 3D FIXO (6 col) */}
-        <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 relative">
+        <div className="mt-10 md:mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 relative">
           {/* COLUNA ESQUERDA: 6 CARDS SUBINDO E SOBREPONDO O ANTERIOR NO SCROLL */}
           <div className="lg:col-span-6 relative pb-56">
             {t.systemsSection.items.map((item, i) => (
@@ -275,10 +278,10 @@ export function HomeV6() {
                   top: `calc(5.5rem + ${i * 20}px)`,
                   zIndex: i + 1,
                 }}
-                className="sticky mb-24 last:mb-0"
+                className="sticky mb-12 sm:mb-16 md:mb-24 last:mb-0"
               >
-                <article className="group flex min-h-[260px] md:min-h-[280px] flex-col justify-between bg-[#0d0d0d] border border-white/15 p-8 md:p-10 shadow-[0_-14px_35px_rgba(0,0,0,0.85)] hover:bg-[#141414] hover:border-white/30 transition-colors">
-                  <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <article className="group flex min-h-[190px] sm:min-h-[220px] md:min-h-[280px] flex-col justify-between bg-[#0d0d0d] border border-white/15 p-5 sm:p-6 md:p-10 shadow-[0_-14px_35px_rgba(0,0,0,0.85)] hover:bg-[#141414] hover:border-white/30 transition-colors">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-3 md:pb-4">
                     <span className="font-mono text-xs tracking-widest text-cyan group-hover:text-white transition-colors">
                       FIELD // 0{i + 1}
                     </span>
@@ -287,14 +290,14 @@ export function HomeV6() {
                     </span>
                   </div>
 
-                  <div className="my-6">
-                    <h3 className="font-serif text-2xl md:text-3xl text-white font-light leading-snug">
+                  <div className="my-4 md:my-6">
+                    <h3 className="font-serif text-lg sm:text-xl md:text-3xl text-white font-light leading-snug">
                       {item}
                     </h3>
                   </div>
 
-                  <div className="flex justify-end pt-4 border-t border-white/10">
-                    <ArrowRight className="size-5 text-white/60 transition-transform group-hover:translate-x-2 group-hover:text-cyan" />
+                  <div className="flex justify-end pt-3 md:pt-4 border-t border-white/10">
+                    <ArrowRight className="size-4 md:size-5 text-white/60 transition-transform group-hover:translate-x-2 group-hover:text-cyan" />
                   </div>
                 </article>
               </div>
@@ -317,10 +320,10 @@ export function HomeV6() {
       <AboutInsightsStage Eyebrow={Eyebrow} />
 
       {/* BLOCO CLARO CONTÍNUO: FAQ (Bege) */}
-      <section className="border-t border-black/15 bg-[#ecece3] px-5 py-24 text-black md:px-12 xl:px-[22vw] md:py-32">
+      <section className="border-t border-black/15 bg-[#ecece3] px-5 py-16 text-black md:px-12 xl:px-[22vw] md:py-32">
         <Eyebrow light>{t.faqsSection.eyebrow}</Eyebrow>
-        <div className="mt-12 grid gap-12 md:grid-cols-12">
-          <h2 className="font-serif text-4xl leading-tight font-light md:col-span-4 md:text-5xl lg:text-6xl text-black">
+        <div className="mt-8 md:mt-12 grid gap-8 md:gap-12 md:grid-cols-12">
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-5xl lg:text-6xl leading-snug md:leading-tight font-light md:col-span-4 text-black">
             {t.faqsSection.title}
           </h2>
           <Accordion
@@ -334,10 +337,10 @@ export function HomeV6() {
                 value={`faq-${i}`}
                 className="border-b border-black/15"
               >
-                <AccordionTrigger className="py-5 font-serif text-lg md:text-xl text-black no-underline hover:no-underline">
+                <AccordionTrigger className="py-4 md:py-5 font-serif text-base sm:text-lg md:text-xl text-black no-underline hover:no-underline text-left">
                   {faq.q}
                 </AccordionTrigger>
-                <AccordionContent className="max-w-xl pb-5 text-sm leading-6 text-black/75">
+                <AccordionContent className="max-w-xl pb-4 md:pb-5 text-xs sm:text-sm leading-5 md:leading-6 text-black/75">
                   {faq.a}
                 </AccordionContent>
               </AccordionItem>

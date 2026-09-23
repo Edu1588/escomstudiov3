@@ -18,7 +18,11 @@ export function HeroManifestoStage({
     light?: boolean;
     cyan?: boolean;
   }>;
-  AnchorButton: React.ComponentType<{ children: React.ReactNode }>;
+  AnchorButton: React.ComponentType<{
+    children: React.ReactNode;
+    outline?: boolean;
+    className?: string;
+  }>;
 }) {
   const { t } = useLanguage();
   const stageRef = useRef<HTMLDivElement>(null);
@@ -232,26 +236,26 @@ export function HeroManifestoStage({
               <Eyebrow cyan>{t.hero.eyebrow}</Eyebrow>
             </div>
             
-            <div className="max-w-3xl py-3 md:py-5 pointer-events-auto">
+            <div className="max-w-3xl py-2 md:py-5 pointer-events-auto">
               <SplitTextReveal
                 type="words"
-                className="max-w-2xl font-serif text-5xl leading-[0.95] font-light md:text-7xl lg:text-[5.5rem] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]"
+                className="max-w-2xl font-serif text-2xl sm:text-3xl md:text-7xl lg:text-[5.5rem] leading-[1.08] md:leading-[0.95] font-light text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]"
               >
                 {t.hero.title}
               </SplitTextReveal>
-              <p className="mt-5 max-w-xl text-sm leading-6 md:text-base text-zinc-300 drop-shadow-[0_1px_6px_rgba(0,0,0,0.8)]">
+              <p className="mt-3 md:mt-5 max-w-sm md:max-w-xl text-xs sm:text-sm md:text-base leading-5 md:leading-6 text-zinc-300 drop-shadow-[0_1px_6px_rgba(0,0,0,0.8)]">
                 {t.hero.subtitle}
               </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <AnchorButton>{t.hero.ctaPrimary}</AnchorButton>
-                <Button asChild variant="editorialOutline" size="xl">
+              <div className="mt-4 md:mt-6 flex flex-wrap gap-2.5 md:gap-3">
+                <AnchorButton className="h-9 px-4 text-[10px] tracking-[0.16em] md:h-12 md:px-6">{t.hero.ctaPrimary}</AnchorButton>
+                <Button asChild variant="editorialOutline" className="h-9 px-4 text-[10px] tracking-[0.16em] md:h-12 md:px-6">
                   <a href="#solucoes">
                     {t.hero.ctaSecondary}
-                    <ArrowDown />
+                    <ArrowDown className="size-3 md:size-4" />
                   </a>
                 </Button>
               </div>
-              <p className="mt-4 max-w-lg text-xs leading-5 text-zinc-400 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+              <p className="mt-3 md:mt-4 max-w-xs md:max-w-lg text-[10px] sm:text-xs leading-4 md:leading-5 text-zinc-400 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
                 {t.hero.hint}
               </p>
             </div>
@@ -267,7 +271,7 @@ export function HeroManifestoStage({
         {/* CAMADA 2: SEÇÃO 2 - MANIFESTO COM LINHAS DINÂMICAS */}
         <section
           ref={manifestoRef}
-          className="absolute inset-0 z-20 flex flex-col justify-center px-5 py-12 text-white md:px-12 xl:px-[22vw] opacity-0 pointer-events-none bg-transparent overflow-hidden"
+          className="absolute inset-0 z-20 flex flex-col justify-center px-5 py-8 md:py-12 text-white md:px-12 xl:px-[22vw] opacity-0 pointer-events-none bg-transparent overflow-hidden"
         >
           {/* Grade de Linhas Dinâmicas com nós ✦ (Referência The Model) */}
           <div className="manifesto-grid-frame absolute inset-0 pointer-events-none z-0">
@@ -297,14 +301,14 @@ export function HeroManifestoStage({
 
           <div className="relative z-10">
             <Eyebrow cyan>{t.manifesto.eyebrow}</Eyebrow>
-            <h2 className="mt-12 max-w-6xl font-serif text-4xl leading-[1.05] font-light md:text-6xl lg:text-7xl text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
+            <h2 className="mt-6 md:mt-12 max-w-6xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.1] md:leading-[1.05] font-light text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
               {t.manifesto.title}
             </h2>
-            <div className="mt-14 grid gap-8 border-t border-white/15 pt-8 md:grid-cols-12">
-              <p className="md:col-span-5 md:col-start-7 text-base leading-7 md:text-lg md:leading-8 text-zinc-200 drop-shadow-[0_1px_6px_rgba(0,0,0,0.85)]">
+            <div className="mt-6 md:mt-14 grid gap-6 md:gap-8 border-t border-white/15 pt-6 md:pt-8 md:grid-cols-12">
+              <p className="md:col-span-5 md:col-start-7 text-xs sm:text-sm md:text-lg leading-5 md:leading-8 text-zinc-200 drop-shadow-[0_1px_6px_rgba(0,0,0,0.85)]">
                 {t.manifesto.text}
               </p>
-              <p className="font-serif text-2xl md:col-span-6 md:col-start-7 md:text-3xl text-cyan-300 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
+              <p className="font-serif text-base sm:text-xl md:col-span-6 md:col-start-7 md:text-3xl text-cyan-300 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
                 {t.manifesto.highlight}
               </p>
             </div>
@@ -326,15 +330,15 @@ export function HeroManifestoStage({
         <section
           id="solucoes-intro"
           ref={solutionsIntroRef}
-          className="absolute inset-0 z-40 flex flex-col justify-center px-5 py-12 dark bg-transparent text-foreground md:px-12 xl:px-[22vw] opacity-0 pointer-events-none"
+          className="absolute inset-0 z-40 flex flex-col justify-center px-5 py-8 md:py-12 dark bg-transparent text-foreground md:px-12 xl:px-[22vw] opacity-0 pointer-events-none"
         >
           <Eyebrow cyan>Um sistema digital, várias frentes de crescimento</Eyebrow>
-          <div className="mt-14 grid gap-8 md:grid-cols-12">
-            <h2 className="font-serif text-5xl leading-none md:col-span-8 md:text-7xl text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
+          <div className="mt-6 md:mt-14 grid gap-6 md:gap-8 md:grid-cols-12">
+            <h2 className="font-serif text-2xl sm:text-3xl md:text-7xl leading-snug md:leading-none md:col-span-8 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)] font-light">
               Tudo o que sua empresa precisa para ser percebida, encontrada e
               escolhida.
             </h2>
-            <p className="self-end text-sm leading-6 md:col-span-4 text-zinc-300 drop-shadow-[0_1px_6px_rgba(0,0,0,0.85)]">
+            <p className="self-end text-xs sm:text-sm leading-5 md:leading-6 md:col-span-4 text-zinc-300 drop-shadow-[0_1px_6px_rgba(0,0,0,0.85)]">
               Unimos marca, experiência digital, aquisição e automação. Cada
               solução pode existir sozinha ou fazer parte de um sistema mais
               amplo.
