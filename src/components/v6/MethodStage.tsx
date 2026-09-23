@@ -39,7 +39,7 @@ export function MethodStage({
         scrollTrigger: {
           trigger: stage,
           start: "top top",
-          end: "+=130%",
+          end: "+=100%",
           pin: screen,
           pinSpacing: true,
           scrub: 0.7,
@@ -47,7 +47,7 @@ export function MethodStage({
         },
       });
 
-      // 1. Micro-pixels claros crescem sobre a tela preta de Soluções
+      // 1. Micro-pixels claros crescem sobre a tela preta de Soluções (começa imediatamente)
       tl.fromTo(
         progressRef,
         { current: 0.0 },
@@ -56,21 +56,21 @@ export function MethodStage({
           duration: 0.45,
           ease: "none",
         },
-        0.05
+        0.0
       );
 
       // 2. Linhas dinâmicas que se expandem com a rolagem (Referência The Model)
-      tl.fromTo(".method-line-top", { top: "45%" }, { top: "10%", duration: 0.35, ease: "power2.out" }, 0.30);
-      tl.fromTo(".method-line-bottom", { bottom: "45%" }, { bottom: "10%", duration: 0.35, ease: "power2.out" }, 0.30);
-      tl.fromTo(".method-line-left", { left: "45%" }, { left: "8vw", duration: 0.35, ease: "power2.out" }, 0.30);
-      tl.fromTo(".method-line-right", { right: "45%" }, { right: "8vw", duration: 0.35, ease: "power2.out" }, 0.30);
+      tl.fromTo(".method-line-top", { top: "45%" }, { top: "10%", duration: 0.30, ease: "power2.out" }, 0.22);
+      tl.fromTo(".method-line-bottom", { bottom: "45%" }, { bottom: "10%", duration: 0.30, ease: "power2.out" }, 0.22);
+      tl.fromTo(".method-line-left", { left: "45%" }, { left: "8vw", duration: 0.30, ease: "power2.out" }, 0.22);
+      tl.fromTo(".method-line-right", { right: "45%" }, { right: "8vw", duration: 0.30, ease: "power2.out" }, 0.22);
 
-      tl.fromTo(".method-star-tl", { top: "45%", left: "45%", opacity: 0 }, { top: "10%", left: "8vw", opacity: 1, duration: 0.35, ease: "power2.out" }, 0.30);
-      tl.fromTo(".method-star-tr", { top: "45%", right: "45%", opacity: 0 }, { top: "10%", right: "8vw", opacity: 1, duration: 0.35, ease: "power2.out" }, 0.30);
-      tl.fromTo(".method-star-bl", { bottom: "45%", left: "45%", opacity: 0 }, { bottom: "10%", left: "8vw", opacity: 1, duration: 0.35, ease: "power2.out" }, 0.30);
-      tl.fromTo(".method-star-br", { bottom: "45%", right: "45%", opacity: 0 }, { bottom: "10%", right: "8vw", opacity: 1, duration: 0.35, ease: "power2.out" }, 0.30);
+      tl.fromTo(".method-star-tl", { top: "45%", left: "45%", opacity: 0 }, { top: "10%", left: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.22);
+      tl.fromTo(".method-star-tr", { top: "45%", right: "45%", opacity: 0 }, { top: "10%", right: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.22);
+      tl.fromTo(".method-star-bl", { bottom: "45%", left: "45%", opacity: 0 }, { bottom: "10%", left: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.22);
+      tl.fromTo(".method-star-br", { bottom: "45%", right: "45%", opacity: 0 }, { bottom: "10%", right: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.22);
 
-      tl.fromTo(".method-tag", { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.20, ease: "power2.out" }, 0.35);
+      tl.fromTo(".method-tag", { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.28);
 
       // 3. Revela Método com foco óptico no fundo bege
       const children = Array.from(content.children);
@@ -79,13 +79,13 @@ export function MethodStage({
         { opacity: 0 },
         {
           opacity: 1,
-          duration: 0.25,
+          duration: 0.22,
           ease: "power2.out",
           onStart: () => {
             content.style.pointerEvents = "auto";
           },
         },
-        0.35
+        0.28
       );
 
       tl.fromTo(
@@ -99,11 +99,11 @@ export function MethodStage({
           opacity: 1,
           filter: "blur(0px)",
           y: 0,
-          duration: 0.35,
-          stagger: 0.06,
+          duration: 0.30,
+          stagger: 0.05,
           ease: "power2.out",
         },
-        0.38
+        0.30
       );
     }, stage);
 

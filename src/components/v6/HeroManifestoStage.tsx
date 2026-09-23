@@ -56,7 +56,7 @@ export function HeroManifestoStage({
         scrollTrigger: {
           trigger: stage,
           start: "top top",
-          end: "+=260%",
+          end: "+=200%",
           pin: screen,
           pinSpacing: true,
           scrub: 0.7,
@@ -66,44 +66,44 @@ export function HeroManifestoStage({
 
       // ==========================================
       // 1. SEQUÊNCIA DO ROBÔ (FRAME 001 A 096)
-      // Chega no último frame (frame 95) em 0.62
+      // Chega no último frame (frame 95) em 0.55
       // ==========================================
       tl.to(
         frameRef,
         {
           current: 95,
           ease: "none",
-          duration: 0.62,
+          duration: 0.55,
         },
         0
       );
 
       // ==========================================
-      // 2. HERO -> MANIFESTO (0.0 a 0.45)
+      // 2. HERO -> MANIFESTO (0.0 a 0.35)
       // ==========================================
       tl.to(
         hero,
         {
           opacity: 0,
           y: -25,
-          duration: 0.18,
+          duration: 0.15,
           ease: "power1.inOut",
         },
         0.02
       );
 
       // Linhas dinâmicas que se movem abrindo o quadro (Referência The Model)
-      tl.fromTo(".manifesto-line-top", { top: "46%" }, { top: "10%", duration: 0.30, ease: "power2.out" }, 0.08);
-      tl.fromTo(".manifesto-line-bottom", { bottom: "46%" }, { bottom: "10%", duration: 0.30, ease: "power2.out" }, 0.08);
-      tl.fromTo(".manifesto-line-left", { left: "46%" }, { left: "8vw", duration: 0.30, ease: "power2.out" }, 0.08);
-      tl.fromTo(".manifesto-line-right", { right: "46%" }, { right: "8vw", duration: 0.30, ease: "power2.out" }, 0.08);
+      tl.fromTo(".manifesto-line-top", { top: "46%" }, { top: "10%", duration: 0.25, ease: "power2.out" }, 0.06);
+      tl.fromTo(".manifesto-line-bottom", { bottom: "46%" }, { bottom: "10%", duration: 0.25, ease: "power2.out" }, 0.06);
+      tl.fromTo(".manifesto-line-left", { left: "46%" }, { left: "8vw", duration: 0.25, ease: "power2.out" }, 0.06);
+      tl.fromTo(".manifesto-line-right", { right: "46%" }, { right: "8vw", duration: 0.25, ease: "power2.out" }, 0.06);
 
-      tl.fromTo(".manifesto-star-tl", { top: "46%", left: "46%", opacity: 0 }, { top: "10%", left: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.08);
-      tl.fromTo(".manifesto-star-tr", { top: "46%", right: "46%", opacity: 0 }, { top: "10%", right: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.08);
-      tl.fromTo(".manifesto-star-bl", { bottom: "46%", left: "46%", opacity: 0 }, { bottom: "10%", left: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.08);
-      tl.fromTo(".manifesto-star-br", { bottom: "46%", right: "46%", opacity: 0 }, { bottom: "10%", right: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.08);
+      tl.fromTo(".manifesto-star-tl", { top: "46%", left: "46%", opacity: 0 }, { top: "10%", left: "8vw", opacity: 1, duration: 0.25, ease: "power2.out" }, 0.06);
+      tl.fromTo(".manifesto-star-tr", { top: "46%", right: "46%", opacity: 0 }, { top: "10%", right: "8vw", opacity: 1, duration: 0.25, ease: "power2.out" }, 0.06);
+      tl.fromTo(".manifesto-star-bl", { bottom: "46%", left: "46%", opacity: 0 }, { bottom: "10%", left: "8vw", opacity: 1, duration: 0.25, ease: "power2.out" }, 0.06);
+      tl.fromTo(".manifesto-star-br", { bottom: "46%", right: "46%", opacity: 0 }, { bottom: "10%", right: "8vw", opacity: 1, duration: 0.25, ease: "power2.out" }, 0.06);
 
-      tl.fromTo(".manifesto-tag", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.14);
+      tl.fromTo(".manifesto-tag", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.15, ease: "power2.out" }, 0.10);
 
       const manifestoChildren = Array.from(manifesto.children);
       tl.fromTo(
@@ -111,13 +111,13 @@ export function HeroManifestoStage({
         { opacity: 0 },
         {
           opacity: 1,
-          duration: 0.20,
+          duration: 0.16,
           ease: "power2.out",
           onStart: () => {
             manifesto.style.pointerEvents = "auto";
           },
         },
-        0.10
+        0.08
       );
       tl.fromTo(
         manifestoChildren,
@@ -130,46 +130,44 @@ export function HeroManifestoStage({
           opacity: 1,
           filter: "blur(0px)",
           y: 0,
-          duration: 0.24,
-          stagger: 0.05,
+          duration: 0.20,
+          stagger: 0.04,
           ease: "power2.out",
         },
-        0.12
+        0.10
       );
 
       // ==========================================
-      // 3. MANIFESTO FICA ESTÁTICO (0.35 a 0.44) E SAI (0.44 a 0.56)
+      // 3. MANIFESTO FICA ESTÁTICO (0.28 a 0.38) E SAI (0.38 a 0.48)
       // ==========================================
       tl.to(
         manifesto,
         {
           opacity: 0,
           y: -25,
-          duration: 0.12,
+          duration: 0.10,
           ease: "power1.inOut",
         },
-        0.44
+        0.38
       );
-      tl.to(".manifesto-grid-frame", { opacity: 0, duration: 0.10, ease: "power1.inOut" }, 0.44);
+      tl.to(".manifesto-grid-frame", { opacity: 0, duration: 0.08, ease: "power1.inOut" }, 0.38);
 
       // ==========================================
-      // 4. ÚLTIMO FRAME -> TRANSIÇÃO PIXEL PRETO (#000000) DO CENTRO (0.54 a 0.74)
-      // No último frame, os micro-pixels pretos abrem radialmente do centro cobrindo o robô
+      // 4. ÚLTIMO FRAME -> TRANSIÇÃO PIXEL PRETO (#000000) DO CENTRO (0.46 a 0.62)
       // ==========================================
       tl.fromTo(
         pixelProgressRef,
         { current: 0.0 },
         {
           current: 1.35,
-          duration: 0.20,
+          duration: 0.16,
           ease: "none",
         },
-        0.54
+        0.46
       );
 
       // ==========================================
-      // 5. SOLUÇÕES INTRO APARECE SOBRE OS PIXELS (0.62 a 0.80) E PERMANECE VISÍVEL!
-      // Conteúdo nunca desaparece para evitar tela vazia
+      // 5. SOLUÇÕES INTRO APARECE SOBRE OS PIXELS (0.54 a 0.70) E PERMANECE VISÍVEL ATÉ O FIM!
       // ==========================================
       const solutionsChildren = Array.from(solutionsIntro.children);
       tl.fromTo(
@@ -177,13 +175,13 @@ export function HeroManifestoStage({
         { opacity: 0 },
         {
           opacity: 1,
-          duration: 0.18,
+          duration: 0.14,
           ease: "power2.out",
           onStart: () => {
             solutionsIntro.style.pointerEvents = "auto";
           },
         },
-        0.62
+        0.54
       );
       tl.fromTo(
         solutionsChildren,
@@ -196,11 +194,11 @@ export function HeroManifestoStage({
           opacity: 1,
           filter: "blur(0px)",
           y: 0,
-          duration: 0.22,
+          duration: 0.18,
           stagger: 0.04,
           ease: "power2.out",
         },
-        0.64
+        0.56
       );
     }, stage);
 
