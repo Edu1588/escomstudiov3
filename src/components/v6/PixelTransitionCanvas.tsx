@@ -145,6 +145,7 @@ export function PixelTransitionCanvas({
         camera={{ position: [0, 0, 1] }}
         gl={{ alpha: true, antialias: false }}
         resize={{ scroll: false }}
+        style={{ pointerEvents: "none" }}
       >
         <Scene color={color} progressRef={progressRef} direction={direction} />
       </Canvas>

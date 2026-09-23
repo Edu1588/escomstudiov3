@@ -65,6 +65,11 @@ export function HeroManifestoStage({
         },
       });
 
+      // Inicialização rigorosa das camadas no topo (scroll = 0)
+      tl.set(hero, { zIndex: 40, pointerEvents: "auto" }, 0);
+      tl.set(manifesto, { zIndex: 10, pointerEvents: "none" }, 0);
+      tl.set(solutionsIntro, { zIndex: 10, pointerEvents: "none" }, 0);
+
       // ==========================================
       // 1. SEQUÊNCIA DO ROBÔ (FRAME 001 A 096)
       // Chega no último frame (frame 95) em 0.55
@@ -92,7 +97,7 @@ export function HeroManifestoStage({
         },
         0.02
       );
-      tl.set(hero, { pointerEvents: "none" }, 0.14);
+      tl.set(hero, { zIndex: 10, pointerEvents: "none" }, 0.14);
 
       // Linhas dinâmicas que se movem abrindo o quadro (Referência The Model)
       tl.fromTo(".manifesto-line-top", { top: "46%" }, { top: "10%", duration: 0.25, ease: "power2.out" }, 0.06);
@@ -108,7 +113,7 @@ export function HeroManifestoStage({
       tl.fromTo(".manifesto-tag", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.15, ease: "power2.out" }, 0.10);
 
       const manifestoChildren = Array.from(manifesto.children);
-      tl.set(manifesto, { pointerEvents: "auto" }, 0.08);
+      tl.set(manifesto, { zIndex: 40, pointerEvents: "auto" }, 0.08);
       tl.fromTo(
         manifesto,
         { opacity: 0 },
@@ -150,7 +155,7 @@ export function HeroManifestoStage({
         },
         0.38
       );
-      tl.set(manifesto, { pointerEvents: "none" }, 0.38);
+      tl.set(manifesto, { zIndex: 10, pointerEvents: "none" }, 0.38);
       tl.to(".manifesto-grid-frame", { opacity: 0, duration: 0.08, ease: "power1.inOut" }, 0.38);
 
       // ==========================================
@@ -171,7 +176,7 @@ export function HeroManifestoStage({
       // 5. SOLUÇÕES INTRO APARECE SOBRE OS PIXELS (0.54 a 0.70) E PERMANECE VISÍVEL ATÉ O FIM!
       // ==========================================
       const solutionsChildren = Array.from(solutionsIntro.children);
-      tl.set(solutionsIntro, { pointerEvents: "auto" }, 0.54);
+      tl.set(solutionsIntro, { zIndex: 40, pointerEvents: "auto" }, 0.54);
       tl.fromTo(
         solutionsIntro,
         { opacity: 0 },
@@ -268,7 +273,7 @@ export function HeroManifestoStage({
         {/* CAMADA 2: SEÇÃO 2 - MANIFESTO COM LINHAS DINÂMICAS */}
         <section
           ref={manifestoRef}
-          className="absolute inset-0 z-20 flex flex-col justify-center px-5 py-8 md:py-12 text-white md:px-12 xl:px-[22vw] opacity-0 pointer-events-none bg-transparent overflow-hidden"
+          className="absolute inset-0 z-10 flex flex-col justify-center px-5 py-8 md:py-12 text-white md:px-12 xl:px-[22vw] opacity-0 pointer-events-none bg-transparent overflow-hidden"
         >
           {/* Grade de Linhas Dinâmicas com nós ✦ (Referência The Model) */}
           <div className="manifesto-grid-frame absolute inset-0 pointer-events-none z-0">
@@ -296,7 +301,7 @@ export function HeroManifestoStage({
             <div className="manifesto-star-br absolute translate-x-1/2 translate-y-1/2 text-cyan-400 font-serif text-sm">✦</div>
           </div>
 
-          <div className="relative z-10">
+          <div className="relative z-30 pointer-events-auto">
             <Eyebrow cyan>{t.manifesto.eyebrow}</Eyebrow>
             <InteractiveBlurTitle
               as="h2"
@@ -315,9 +320,9 @@ export function HeroManifestoStage({
           </div>
         </section>
 
-        {/* CAMADA 3 (Z-30): THREE.JS PIXEL SHADER PRETO (#000000) - ABRINDO DO CENTRO */}
+        {/* CAMADA 3 (Z-15): THREE.JS PIXEL SHADER PRETO (#000000) - ABRINDO DO CENTRO */}
         {mounted && (
-          <div className="z-30 absolute inset-0 pointer-events-none">
+          <div className="z-15 absolute inset-0 pointer-events-none">
             <PixelTransitionCanvas
               color="#000000"
               progressRef={pixelProgressRef}
@@ -326,14 +331,15 @@ export function HeroManifestoStage({
           </div>
         )}
 
-        {/* CAMADA 4 (Z-40): INTRODUÇÃO DE SOLUÇÕES (Sobre o fundo preto com pixels abrindo do centro) */}
+        {/* CAMADA 4 (Z-10): INTRODUÇÃO DE SOLUÇÕES (Sobre o fundo preto com pixels abrindo do centro) */}
         <section
           id="solucoes-intro"
           ref={solutionsIntroRef}
-          className="absolute inset-0 z-40 flex flex-col justify-center px-5 py-8 md:py-12 dark bg-transparent text-foreground md:px-12 xl:px-[22vw] opacity-0 pointer-events-none"
+          className="absolute inset-0 z-10 flex flex-col justify-center px-5 py-8 md:py-12 dark bg-transparent text-foreground md:px-12 xl:px-[22vw] opacity-0 pointer-events-none"
         >
-          <Eyebrow cyan>Um sistema digital, várias frentes de crescimento</Eyebrow>
-          <div className="mt-6 md:mt-14 grid gap-6 md:gap-8 md:grid-cols-12">
+          <div className="relative z-30 pointer-events-auto">
+            <Eyebrow cyan>Um sistema digital, várias frentes de crescimento</Eyebrow>
+            <div className="mt-6 md:mt-14 grid gap-6 md:gap-8 md:grid-cols-12">
             <InteractiveBlurTitle
               as="h2"
               className="font-serif text-2xl sm:text-3xl md:text-7xl leading-snug md:leading-none md:col-span-8 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)] font-light"
@@ -345,6 +351,7 @@ export function HeroManifestoStage({
               solução pode existir sozinha ou fazer parte de um sistema mais
               amplo.
             </p>
+          </div>
           </div>
         </section>
       </div>
