@@ -80,6 +80,17 @@ export interface Translations {
     title: string;
     items: string[];
   };
+  plansSection: {
+    eyebrow: string;
+    title: string;
+    plans: Array<{
+      tag: string;
+      title: string;
+      items: string[];
+      cta: string;
+      featured?: boolean;
+    }>;
+  };
   about: {
     eyebrow: string;
     title: string;
@@ -308,6 +319,48 @@ const translations: Record<Language, Translations> = {
         "Mídia conectada à operação comercial",
         "Um agente de IA para uma tarefa específica",
         "Um sistema que substitui tarefas dispersas",
+      ],
+    },
+    plansSection: {
+      eyebrow: "O que entregamos",
+      title: "Cada projeto começa com construção. Depois, evolui com manutenção contínua.",
+      plans: [
+        {
+          tag: "CONSTRUÇÃO",
+          title: "Construção do Site",
+          items: [
+            "Site completo, sob medida",
+            "Textos escritos para vender",
+            "Suas fotos tratadas",
+            "Google Business organizado",
+            "No ar em poucos dias",
+          ],
+          cta: "Iniciar Diagnóstico",
+        },
+        {
+          tag: "MANUTENÇÃO",
+          title: "Manutenção Contínua",
+          items: [
+            "Perfil do Google em dia: posts, fotos, horários, respostas",
+            "2 artigos novos por semana, do seu ramo e da sua cidade",
+            "SEO, AEO e GEO contínuos",
+            "Hospedagem, domínio e alterações de texto e foto",
+            "Relatório mensal por e-mail: ligações, orçamentos, visualizações e publicações",
+            "Suporte direto no WhatsApp",
+          ],
+          cta: "Iniciar Diagnóstico",
+        },
+        {
+          tag: "MANUTENÇÃO + IA 24H",
+          title: "Manutenção + Agente IA",
+          items: [
+            "Tudo da Manutenção",
+            "Ligação perdida respondida por mensagem em segundos",
+            "Chat com IA no site, respondendo visitante 24h",
+          ],
+          cta: "Iniciar Diagnóstico",
+          featured: true,
+        },
       ],
     },
     about: {
@@ -567,6 +620,48 @@ const translations: Record<Language, Translations> = {
         "A unified system replacing scattered tools and spreadsheets",
       ],
     },
+    plansSection: {
+      eyebrow: "What We Deliver",
+      title: "Every project starts with construction. Then it evolves with continuous maintenance.",
+      plans: [
+        {
+          tag: "BUILD",
+          title: "Website Construction",
+          items: [
+            "Custom-built, complete website",
+            "Sales-driven copywriting",
+            "Your photos professionally treated",
+            "Google Business fully organized",
+            "Live within days",
+          ],
+          cta: "Start Diagnosis",
+        },
+        {
+          tag: "MAINTENANCE",
+          title: "Ongoing Maintenance",
+          items: [
+            "Google profile up to date: posts, photos, hours, responses",
+            "2 new articles per week, tailored to your industry and city",
+            "Continuous SEO, AEO and GEO",
+            "Hosting, domain, and text/photo updates",
+            "Monthly email report: calls, quote requests, views, and publications",
+            "Direct WhatsApp support",
+          ],
+          cta: "Start Diagnosis",
+        },
+        {
+          tag: "MAINTENANCE + AI 24H",
+          title: "Maintenance + AI Agent",
+          items: [
+            "Everything in Maintenance",
+            "Missed calls answered by message in seconds",
+            "AI chat on site, responding to visitors 24h",
+          ],
+          cta: "Start Diagnosis",
+          featured: true,
+        },
+      ],
+    },
     about: {
       eyebrow: "About ESCOM",
       title: "We are a multidisciplinary team combining strategy, design, and technology for forward-moving businesses.",
@@ -822,6 +917,48 @@ const translations: Record<Language, Translations> = {
         "Campañas de medios conectadas directamente al equipo comercial",
         "Un agente de IA dedicado a optimizar un proceso crítico",
         "Un sistema integral que reemplaza herramientas dispersas",
+      ],
+    },
+    plansSection: {
+      eyebrow: "Lo que entregamos",
+      title: "Cada proyecto comienza con construcción. Luego evoluciona con mantenimiento continuo.",
+      plans: [
+        {
+          tag: "CONSTRUCCIÓN",
+          title: "Construcción del Sitio Web",
+          items: [
+            "Sitio web completo y a medida",
+            "Textos persuasivos para vender",
+            "Tus fotos tratadas profesionalmente",
+            "Google Business totalmente optimizado",
+            "En línea en pocos días",
+          ],
+          cta: "Iniciar Diagnóstico",
+        },
+        {
+          tag: "MANTENIMIENTO",
+          title: "Mantenimiento Continuo",
+          items: [
+            "Perfil de Google al día: publicaciones, fotos, horarios, respuestas",
+            "2 artículos nuevos por semana, de tu rubro y tu ciudad",
+            "SEO, AEO y GEO continuos",
+            "Alojamiento, dominio y modificaciones de texto y foto",
+            "Reporte mensual por correo: llamadas, solicitudes de presupuesto, visitas y publicaciones",
+            "Soporte directo por WhatsApp",
+          ],
+          cta: "Iniciar Diagnóstico",
+        },
+        {
+          tag: "MANTENIMIENTO + IA 24H",
+          title: "Mantenimiento + Agente de IA",
+          items: [
+            "Todo lo del Mantenimiento",
+            "Llamada perdida respondida por mensaje en segundos",
+            "Chat con IA en el sitio web, respondiendo visitantes 24h",
+          ],
+          cta: "Iniciar Diagnóstico",
+          featured: true,
+        },
       ],
     },
     about: {

@@ -11,6 +11,7 @@ import { DiagnosisStage } from "@/components/v6/DiagnosisStage";
 import { FixedContactButton, FixedBottomBar } from "@/components/v6/FixedUIElements";
 import { LanguageProvider, useLanguage } from "@/components/v6/LanguageContext";
 import { DynamicSectionFrame } from "@/components/v6/DynamicSectionFrame";
+import { DeliveryPlansSection } from "@/components/v6/DeliveryPlansSection";
 import RobotBust3D from "@/components/RobotBust3D";
 
 import {
@@ -255,6 +256,9 @@ export function HomeV6() {
             </div>
           </section>
         </DynamicSectionFrame>
+
+        {/* MODELOS DE ENTREGA: CONSTRUÇÃO, MANUTENÇÃO CONTÍNUA E MANUTENÇÃO COM AGENTE IA 24H */}
+        <DeliveryPlansSection Eyebrow={Eyebrow} />
       </div>
 
       {/* PROJETOS (Sistemas em Movimento) COM CARDS STACKING E ROBÔ 3D FIXO (Fundo Preto #000000) */}
