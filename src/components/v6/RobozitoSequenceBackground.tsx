@@ -54,8 +54,9 @@ export function RobozitoSequenceBackground({
 
     for (let i = 0; i < TOTAL_FRAMES; i++) {
       const img = new Image();
-      const frameNum = String(i + 1).padStart(3, "0");
-      img.src = `/robozitosequence/ezgif-frame-${frameNum}.png`;
+      img.crossOrigin = "anonymous";
+      const frameNum = i + 1;
+      img.src = `https://res.cloudinary.com/ifuatk2z/image/upload/v1790263032/roboescom_${frameNum}.png`;
 
       const handleSingleLoad = () => {
         if (!isMounted) return;
