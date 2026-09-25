@@ -47,23 +47,23 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 min-h-screen">
         {/* COLUNA 1 (FIXA / STICKY): Conteúdo editorial da ESCOM Studio */}
-        <div className="lg:col-span-5 px-6 sm:px-10 md:px-12 xl:pl-[8vw] xl:pr-12 py-16 lg:py-0 flex flex-col justify-center lg:sticky lg:top-0 lg:h-screen z-20 bg-[#000000]">
+        <div className="lg:col-span-5 px-6 sm:px-10 md:px-12 xl:pl-[14vw] 2xl:pl-[16vw] xl:pr-10 py-16 lg:py-0 flex flex-col justify-center lg:sticky lg:top-0 lg:h-screen z-20 bg-[#000000]">
           <div>
             <Eyebrow cyan>Portfólio Selecionado // Casos Reais</Eyebrow>
 
             <InteractiveBlurTitle
               as="h2"
-              className="mt-6 md:mt-8 font-serif text-3xl sm:text-4xl md:text-5xl xl:text-6xl text-white font-light leading-[1.08] tracking-tight"
+              className="mt-6 md:mt-8 font-serif text-2xl sm:text-3xl lg:text-4xl xl:text-5xl text-white font-light leading-[1.12] tracking-tight"
             >
               Alguns de nossos trabalhos
             </InteractiveBlurTitle>
 
-            <p className="mt-6 text-xs sm:text-sm md:text-base leading-relaxed text-zinc-400 font-sans max-w-lg">
+            <p className="mt-6 text-xs sm:text-sm md:text-base leading-relaxed text-zinc-400 font-sans max-w-md">
               Soluções completas onde estratégia de posicionamento, design suíço de alta precisão e engenharia de software se unem para transformar empresas em líderes de mercado.
             </p>
 
             {/* Marcadores Técnicos de Excelência */}
-            <div className="mt-8 md:mt-10 space-y-4 border-t border-white/10 pt-6 max-w-lg">
+            <div className="mt-8 md:mt-10 space-y-4 border-t border-white/10 pt-6 max-w-md">
               <div className="flex items-start gap-3">
                 <span className="font-mono text-[10px] text-cyan pt-0.5">01 //</span>
                 <div>
@@ -116,11 +116,17 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
         </div>
 
         {/* COLUNA 2: Efeito de Scroll com Vídeos em Looping Contínuo sem controles e sem textos sobrepostos */}
-        <div className="lg:col-span-7 relative border-t lg:border-t-0 lg:border-l border-white/10 bg-black">
+        <div className="lg:col-span-7 relative border-t lg:border-t-0 lg:border-l border-white/10 bg-black flex items-center justify-center">
           <ScrollGallery
             slides={worksSlides}
             variant="studio"
             embedded={true}
+            contained={true}
+            timing={{
+              scaleFrom: 1,
+              scaleTo: 1,
+              stripRevealSpeed: 2.2,
+            }}
             scroller={scrollerTarget}
             embeddedScrollPerTransition={110}
             stripsCount={24}

@@ -19,9 +19,6 @@ const MASK_HIDDEN =
   "linear-gradient(to bottom, transparent 0%, transparent 100%)";
 const MASK_REVEALED = "linear-gradient(to bottom, black 0%, black 100%)";
 
-const MASKED_IMAGE_STYLE =
-  "width:100%;height:100%;object-fit:cover;transform-origin:center center;backface-visibility:hidden;mask-size:100% 100%;-webkit-mask-size:100% 100%;mask-repeat:no-repeat;-webkit-mask-repeat:no-repeat;will-change:transform,mask-image;";
-
 const IMAGE_CONTAINER_STYLE =
   "position:absolute;top:0;left:0;width:100%;height:100%;transform:translateZ(0);backface-visibility:hidden;";
 
@@ -192,22 +189,45 @@ export interface ScrollGalleryProps {
    * @default "minimal"
    */
   variant?: ScrollGalleryVariant;
+  /**
+   * When enabled, centers images/videos inside a bounded 16:9 container
+   * with object-fit: contain so that the full video frame is never cut off.
+   * @default false
+   */
+  contained?: boolean;
 }
 
 function resolveScrollGalleryClasses(
   variant: ScrollGalleryVariant,
   classNames: ScrollGalleryClassNames | undefined,
+  contained: boolean,
 ) {
   const preset =
     variant === "studio"
       ? SCROLL_GALLERY_STUDIO_CLASSES
       : SCROLL_GALLERY_MINIMAL_CLASSES;
 
+  const defaultRoot = contained
+    ? "relative h-svh w-full flex items-center justify-center p-3 sm:p-6 md:p-8 xl:p-10 overflow-hidden"
+    : preset.root;
+
+  const defaultImages = contained
+    ? "relative w-full max-w-[90%] sm:max-w-[480px] md:max-w-[540px] lg:max-w-[580px] xl:max-w-[660px] 2xl:max-w-[740px] aspect-video rounded-xl sm:rounded-2xl overflow-hidden border border-white/20 bg-black shadow-[0_20px_50px_rgba(0,0,0,0.85)]"
+    : preset.images;
+
+  const defaultImageFrame = contained
+    ? "absolute inset-0 h-full w-full overflow-hidden"
+    : preset.imageFrame;
+
+  const defaultImage = contained
+    ? "h-full w-full object-contain bg-black"
+    : preset.image;
+
   return {
-    rootPreset: preset.root,
-    images: cn(preset.images, classNames?.images),
-    imageFrame: cn(preset.imageFrame, classNames?.imageFrame),
-    image: cn(preset.image, classNames?.image),
+    rootPreset: defaultRoot,
+    images: cn(defaultImages, classNames?.images),
+    imageFrame: cn(defaultImageFrame, classNames?.imageFrame),
+    image: cn(defaultImage, classNames?.image),
     info: cn(preset.info, classNames?.info),
     infoInner: cn(preset.infoInner, classNames?.infoInner),
     prefix: cn(preset.prefix, classNames?.prefix),
@@ -234,8 +254,8 @@ interface ResolvedTiming {
   titleOffset: string;
 }
 
-function resolveTiming(timing?: ScrollGalleryTiming): ResolvedTiming {
-  const scaleFrom = timing?.scaleFrom ?? 1.25;
+function resolveTiming(timing?: ScrollGalleryTiming, contained = false): ResolvedTiming {
+  const scaleFrom = timing?.scaleFrom ?? (contained ? 1 : 1.25);
   const scaleTo = timing?.scaleTo ?? 1;
   const scaleRange = scaleFrom - scaleTo;
 
@@ -414,13 +434,18 @@ export function ScrollGallery({
   classNames,
   refreshPriority = -1,
   variant = "minimal",
+  contained = false,
 }: ScrollGalleryProps) {
   const classes = useMemo(
-    () => resolveScrollGalleryClasses(variant, classNames),
-    [variant, classNames],
+    () => resolveScrollGalleryClasses(variant, classNames, contained),
+    [variant, classNames, contained],
   );
 
-  const resolvedTiming = useMemo(() => resolveTiming(timingProp), [timingProp]);
+  const resolvedTiming = useMemo(
+    () => resolveTiming(timingProp, contained),
+    [timingProp, contained],
+  );
+
   const scrollConfig = useMemo(() => {
     if (!embedded) {
       return {
@@ -548,6 +573,10 @@ export function ScrollGallery({
 
         const slideLayers: SlideLayer[] = [];
 
+        const maskedStyle = contained
+          ? "width:100%;height:100%;object-fit:contain;transform-origin:center center;backface-visibility:hidden;mask-size:100% 100%;-webkit-mask-size:100% 100%;mask-repeat:no-repeat;-webkit-mask-repeat:no-repeat;will-change:transform,mask-image;"
+          : MASKED_IMAGE_STYLE;
+
         for (let i = 1; i < totalSlides; i++) {
           const container = document.createElement("div");
           container.style.cssText = IMAGE_CONTAINER_STYLE;
@@ -557,7 +586,7 @@ export function ScrollGallery({
           const media = isVid
             ? document.createElement("video")
             : document.createElement("img");
-          media.style.cssText = MASKED_IMAGE_STYLE;
+          media.style.cssText = maskedStyle;
 
           if (isVid) {
             const v = media as HTMLVideoElement;
@@ -882,6 +911,7 @@ export function ScrollGallery({
         linkLabel,
         embedded,
         refreshPriority,
+        contained,
       ],
     },
   );
@@ -898,7 +928,9 @@ export function ScrollGallery({
     <section
       className={cn(
         embedded
-          ? "relative h-full w-full overflow-hidden"
+          ? contained
+            ? "relative h-full w-full flex items-center justify-center p-3 sm:p-6 md:p-8 xl:p-10 overflow-hidden"
+            : "relative h-full w-full overflow-hidden"
           : classes.rootPreset,
         className,
       )}
