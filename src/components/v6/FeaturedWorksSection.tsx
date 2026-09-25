@@ -6,28 +6,25 @@ import { Button } from "@/components/ui/button";
 
 const worksSlides: ScrollGallerySlide[] = [
   {
-    title: "Eion Studio // 3D Architecture",
-    image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1600",
-    linkLabel: "Ver Case",
-    url: "#diagnostico",
+    video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1790374497/450e2001cc633e92a38d435f6f4c232b.mp4",
   },
   {
-    title: "Clínica CI // Medical Growth & AI",
-    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=1600",
-    linkLabel: "Ver Case",
-    url: "#diagnostico",
+    video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1790374497/b3ecccbe43103abe5da4f3b610af3a37.mp4",
   },
   {
-    title: "Nexus Capital // Enterprise Portal",
-    image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=1600",
-    linkLabel: "Ver Case",
-    url: "#diagnostico",
+    video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1790374501/dk5kshrywj6gti0f816w.mp4",
   },
   {
-    title: "Apex Luxury // Editorial E-commerce",
-    image: "https://images.unsplash.com/photo-1600132806370-bf17e65e942f?auto=format&fit=crop&q=80&w=1600",
-    linkLabel: "Ver Case",
-    url: "#diagnostico",
+    video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1790374496/0263c8292333293669f42df6e2782ea6.mp4",
+  },
+  {
+    video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1790374497/044516c3efd6b312e96495faa8d4f9ef.mp4",
+  },
+  {
+    video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1790374502/043a2a2d03caf1f8adc4e143b2f976c4.mp4",
+  },
+  {
+    video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1790374732/c1a0adede9aafa4edb54d55eff51287b.mp4",
   },
 ];
 
@@ -49,7 +46,7 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
       className="relative bg-[#000000] text-white border-t border-white/10 overflow-clip"
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 min-h-screen">
-        {/* COLUNA 1 (FIXA / STICKY): Conteúdo editorial e contextual da ESCOM Studio */}
+        {/* COLUNA 1 (FIXA / STICKY): Conteúdo editorial da ESCOM Studio */}
         <div className="lg:col-span-5 px-6 sm:px-10 md:px-12 xl:pl-[8vw] xl:pr-12 py-16 lg:py-0 flex flex-col justify-center lg:sticky lg:top-0 lg:h-screen z-20 bg-[#000000]">
           <div>
             <Eyebrow cyan>Portfólio Selecionado // Casos Reais</Eyebrow>
@@ -112,14 +109,14 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
 
               <div className="flex items-center gap-2 text-zinc-500 font-mono text-[10px] uppercase tracking-wider">
                 <Sparkles className="size-3 text-cyan" />
-                <span>Role para navegar pelos projetos</span>
+                <span>Role para navegar pelos vídeos</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* COLUNA 2: Efeito de Scroll Gallery (Transição de Máscara por Fatias no Scroll) */}
-        <div className="lg:col-span-7 relative border-t lg:border-t-0 lg:border-l border-white/10">
+        {/* COLUNA 2: Efeito de Scroll com Vídeos em Looping Contínuo sem controles e sem textos sobrepostos */}
+        <div className="lg:col-span-7 relative border-t lg:border-t-0 lg:border-l border-white/10 bg-black">
           <ScrollGallery
             slides={worksSlides}
             variant="studio"
@@ -127,15 +124,9 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
             scroller={scrollerTarget}
             embeddedScrollPerTransition={110}
             stripsCount={24}
-            prefixLabel="Projeto"
-            linkLabel="Explorar"
-            classNames={{
-              info: "absolute top-1/2 left-0 z-[2] w-full -translate-y-1/2 border-white/20 border-b bg-black/40 backdrop-blur-md",
-              infoInner: "flex items-center justify-between gap-4 px-6 md:px-10 py-3",
-              titleText: "font-serif text-lg sm:text-2xl md:text-3xl text-white font-light tracking-tight",
-              linkText: "font-mono text-xs uppercase tracking-widest text-cyan hover:underline",
-              prefixText: "font-mono text-xs uppercase tracking-widest text-zinc-400",
-            }}
+            showInfoBand={false}
+            showPrefix={false}
+            showLink={false}
           />
         </div>
       </div>

@@ -1,4 +1,4 @@
-// biome-ignore-all lint: GSAP scroll gallery with dynamic img layers (registry primitive)
+// biome-ignore-all lint: GSAP scroll gallery with dynamic img & video layers (registry primitive)
 "use client";
 import { useGSAP } from "@gsap/react";
 import { cn } from "@/lib/utils";
@@ -68,11 +68,30 @@ export const SCROLL_GALLERY_STUDIO_CLASSES = {
 } as const;
 
 export interface ScrollGallerySlide {
-  image: string;
+  image?: string;
+  video?: string;
   /** Per-slide CTA label. Falls back to `linkLabel`. */
   linkLabel?: string;
-  title: string;
+  title?: string;
   url?: string;
+}
+
+export function isVideoSlide(slide?: ScrollGallerySlide): boolean {
+  if (!slide) return false;
+  if (slide.video) return true;
+  if (!slide.image) return false;
+  const lower = slide.image.toLowerCase();
+  return (
+    lower.endsWith(".mp4") ||
+    lower.endsWith(".webm") ||
+    lower.includes("/video/upload/") ||
+    lower.includes(".mp4")
+  );
+}
+
+export function getSlideMediaSrc(slide?: ScrollGallerySlide): string {
+  if (!slide) return "";
+  return slide.video || slide.image || "";
 }
 
 export interface ScrollGalleryTiming {
@@ -97,9 +116,9 @@ export interface ScrollGalleryTiming {
 }
 
 export interface ScrollGalleryClassNames {
-  /** First slide img element. */
+  /** First slide img/video element. */
   image?: string;
-  /** Image frame wrapper. */
+  /** Image/video frame wrapper. */
   imageFrame?: string;
   /** Image stack wrapper. */
   images?: string;
@@ -435,7 +454,7 @@ export function ScrollGallery({
 
   const trackRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
-  const firstImgRef = useRef<HTMLImageElement>(null);
+  const firstMediaRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLParagraphElement>(null);
   const exploreLinkRef = useRef<HTMLAnchorElement>(null);
   const slideImagesRef = useRef<HTMLDivElement>(null);
@@ -478,9 +497,9 @@ export function ScrollGallery({
         const slideImages = slideImagesRef.current;
         const titleElement = titleRef.current;
         const exploreLink = exploreLinkRef.current;
-        const firstSlideImg = firstImgRef.current;
+        const firstSlideMedia = firstMediaRef.current;
 
-        if (!(section && slideImages && firstSlideImg && scrollRoot)) {
+        if (!(section && slideImages && firstSlideMedia && scrollRoot)) {
           return;
         }
         if (showInfoBand && !titleElement) {
@@ -518,10 +537,10 @@ export function ScrollGallery({
 
         const stripBounds = createStripBounds(stripsCount);
         const totalSlides = slides.length;
-        const setFirstImgScale = createScaleSetter(firstSlideImg, scaleFrom);
+        const setFirstMediaScale = createScaleSetter(firstSlideMedia, scaleFrom);
 
         interface SlideLayer {
-          img: HTMLImageElement;
+          media: HTMLElement;
           revealState: "hidden" | "animating" | "revealed";
           setScale: (v: number) => void;
           transitionIndex: number;
@@ -530,24 +549,47 @@ export function ScrollGallery({
         const slideLayers: SlideLayer[] = [];
 
         for (let i = 1; i < totalSlides; i++) {
-          const imgContainer = document.createElement("div");
-          imgContainer.style.cssText = IMAGE_CONTAINER_STYLE;
+          const container = document.createElement("div");
+          container.style.cssText = IMAGE_CONTAINER_STYLE;
 
-          const img = document.createElement("img");
-          img.style.cssText = MASKED_IMAGE_STYLE;
-          img.src = slides[i].image;
-          img.alt = slides[i].title;
-          img.decoding = "async";
-          setMaskImage(img, MASK_HIDDEN);
+          const slide = slides[i];
+          const isVid = isVideoSlide(slide);
+          const media = isVid
+            ? document.createElement("video")
+            : document.createElement("img");
+          media.style.cssText = MASKED_IMAGE_STYLE;
 
-          imgContainer.appendChild(img);
-          slideImages.appendChild(imgContainer);
-          createdContainers.push(imgContainer);
+          if (isVid) {
+            const v = media as HTMLVideoElement;
+            v.src = getSlideMediaSrc(slide);
+            v.autoplay = true;
+            v.loop = true;
+            v.muted = true;
+            v.playsInline = true;
+            v.setAttribute("playsinline", "");
+            v.setAttribute("webkit-playsinline", "");
+            v.setAttribute("muted", "");
+            v.setAttribute("autoplay", "");
+            v.setAttribute("loop", "");
+            v.controls = false;
+            v.play().catch(() => {});
+          } else {
+            const img = media as HTMLImageElement;
+            img.src = getSlideMediaSrc(slide);
+            img.alt = slide.title || "";
+            img.decoding = "async";
+          }
+
+          setMaskImage(media, MASK_HIDDEN);
+
+          container.appendChild(media);
+          slideImages.appendChild(container);
+          createdContainers.push(container);
 
           slideLayers.push({
             transitionIndex: i - 1,
-            img,
-            setScale: createScaleSetter(img, scaleFrom),
+            media,
+            setScale: createScaleSetter(media, scaleFrom),
             revealState: "hidden",
           });
         }
@@ -622,8 +664,8 @@ export function ScrollGallery({
           if (!(displayLink && exploreLinkEl)) {
             return;
           }
-          exploreLinkEl.href = slides[index].url ?? "#";
-          const label = slides[index].linkLabel ?? linkLabel;
+          exploreLinkEl.href = slides[index]?.url ?? "#";
+          const label = slides[index]?.linkLabel ?? linkLabel;
           if (label) {
             exploreLinkEl.textContent = label;
           }
@@ -656,7 +698,7 @@ export function ScrollGallery({
             duration: titleDuration,
             ease: titleEase,
             onComplete: () => {
-              titleEl.textContent = slides[index].title;
+              titleEl.textContent = slides[index]?.title || "";
               gsap.set(titleEl, { y: inY });
               gsap.to(titleEl, {
                 y: "0%",
@@ -691,7 +733,7 @@ export function ScrollGallery({
           if (layer.revealState === "revealed") {
             return;
           }
-          setMaskImage(layer.img, MASK_REVEALED);
+          setMaskImage(layer.media, MASK_REVEALED);
           layer.revealState = "revealed";
         }
 
@@ -699,7 +741,7 @@ export function ScrollGallery({
           if (layer.revealState === "hidden") {
             return;
           }
-          setMaskImage(layer.img, MASK_HIDDEN);
+          setMaskImage(layer.media, MASK_HIDDEN);
           layer.revealState = "hidden";
         }
 
@@ -722,7 +764,7 @@ export function ScrollGallery({
             }
           }
 
-          setFirstImgScale(
+          setFirstMediaScale(
             getScaleForImage(0, currentImageIndex, imageSpecificProgress),
           );
 
@@ -741,7 +783,7 @@ export function ScrollGallery({
             } else if (transitionIndex === currentImageIndex) {
               layer.revealState = "animating";
               setMaskImage(
-                layer.img,
+                layer.media,
                 buildStripMask(stripBounds, (_j, bounds) =>
                   Math.max(
                     0,
@@ -865,13 +907,26 @@ export function ScrollGallery({
       <div className={classes.images} ref={slideImagesRef}>
         <div className={classes.imageFrame}>
           {firstSlide ? (
-            <img
-              alt={firstSlide.title}
-              className={classes.image}
-              ref={firstImgRef}
-              src={firstSlide.image}
-              style={imageScaleStyle(initialImageScale)}
-            />
+            isVideoSlide(firstSlide) ? (
+              <video
+                ref={firstMediaRef as React.RefObject<HTMLVideoElement>}
+                src={getSlideMediaSrc(firstSlide)}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className={classes.image}
+                style={imageScaleStyle(initialImageScale)}
+              />
+            ) : (
+              <img
+                alt={firstSlide.title || ""}
+                className={classes.image}
+                ref={firstMediaRef as React.RefObject<HTMLImageElement>}
+                src={getSlideMediaSrc(firstSlide)}
+                style={imageScaleStyle(initialImageScale)}
+              />
+            )
           ) : null}
         </div>
       </div>
@@ -887,7 +942,7 @@ export function ScrollGallery({
 
             <div className={classes.title}>
               <p className={classes.titleText} ref={titleRef}>
-                {firstSlide.title}
+                {firstSlide.title || ""}
               </p>
             </div>
 

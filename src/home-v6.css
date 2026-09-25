@@ -172,3 +172,23 @@
   transform: translateY(-1px) scale(1.03) !important;
   transition: filter 0.03s ease-out, opacity 0.03s ease-out, transform 0.03s ease-out !important;
 }
+
+@keyframes slowMarqueeScroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-slow-marquee {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: slowMarqueeScroll 55s linear infinite;
+}
+
+.animate-slow-marquee:hover {
+  animation-play-state: paused;
+}
