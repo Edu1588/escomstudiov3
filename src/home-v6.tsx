@@ -145,27 +145,27 @@ export function HomeV6() {
           {t.services.map((service) => (
             <article
               key={service.num}
-              className="group grid gap-4 md:gap-5 border-b border-border/40 py-6 md:py-9 md:grid-cols-12 md:items-start"
+              className="group relative grid gap-4 md:gap-5 border-b border-border/40 py-6 md:py-9 px-4 sm:px-6 md:px-8 -mx-4 sm:-mx-6 md:-mx-8 rounded-lg md:grid-cols-12 md:items-start transition-all duration-300 hover:bg-cyan cursor-pointer"
             >
-              <span className="font-mono text-xs text-cyan md:col-span-1">
+              <span className="font-mono text-xs text-cyan group-hover:text-black font-medium transition-colors md:col-span-1">
                 {service.num}
               </span>
-              <h3 className="font-serif text-xl sm:text-2xl md:text-4xl text-foreground font-light leading-snug md:col-span-3">
+              <h3 className="font-serif text-xl sm:text-2xl md:text-4xl text-foreground group-hover:text-black font-light leading-snug transition-colors md:col-span-3">
                 {service.title}
               </h3>
-              <p className="text-xs sm:text-sm leading-5 md:leading-6 md:col-span-4 text-muted-foreground">
+              <p className="text-xs sm:text-sm leading-5 md:leading-6 md:col-span-4 text-muted-foreground group-hover:text-black/90 transition-colors">
                 {service.desc}
               </p>
               <div className="md:col-span-3">
-                <p className="font-mono text-[9px] uppercase leading-5 tracking-[0.1em] text-muted-foreground/80">
+                <p className="font-mono text-[9px] uppercase leading-5 tracking-[0.1em] text-muted-foreground/80 group-hover:text-black/80 transition-colors">
                   {service.items}
                 </p>
                 <a
                   href="#diagnostico"
-                  className="mt-4 md:mt-5 inline-flex items-center gap-2 border-b border-cyan pb-1 text-xs font-semibold text-cyan hover:opacity-80 transition-opacity"
+                  className="mt-4 md:mt-5 inline-flex items-center gap-2 border-b border-cyan group-hover:border-black pb-1 text-xs font-semibold text-cyan group-hover:text-black transition-colors"
                 >
                   {service.cta}
-                  <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="size-3 transition-transform group-hover:translate-x-1.5" />
                 </a>
               </div>
             </article>
