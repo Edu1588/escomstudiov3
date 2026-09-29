@@ -271,14 +271,14 @@
 }
 
 .portfolio-container.has-active .project-item:not(.active) {
-  opacity: 0.05 !important;
-  filter: blur(0.5px);
+  opacity: 0.28 !important;
+  filter: blur(0.3px);
   pointer-events: auto;
 }
 
 .project-item.active {
   color: #ffffff;
-  background-color: rgba(0, 0, 0, 0.65);
+  background-color: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(8px);
   border-bottom-color: var(--color-cyan, #00d1ff);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);

@@ -92,14 +92,16 @@ const ProjectItem = ({
   index,
   onMouseEnter,
   onMouseLeave,
+  onClick,
   isActive,
   isIdle,
   setRef,
 }: {
   project: PortfolioProject;
   index: number;
-  onMouseEnter: (index: number, mediaUrl: string, isVideo: boolean) => void;
+  onMouseEnter: (index: number, mediaUrl: string, isVideo: boolean, e: React.MouseEvent) => void;
   onMouseLeave: () => void;
+  onClick: (index: number) => void;
   isActive: boolean;
   isIdle: boolean;
   setRef: (el: HTMLLIElement | null) => void;
@@ -158,9 +160,11 @@ const ProjectItem = ({
   return (
     <li
       ref={setRef}
+      data-project-index={index}
       className={`project-item group ${isActive ? "active" : ""} ${isIdle ? "idle" : ""}`}
-      onMouseEnter={() => onMouseEnter(index, mediaUrl, isVideo)}
+      onMouseEnter={(e) => onMouseEnter(index, mediaUrl, isVideo, e)}
       onMouseLeave={onMouseLeave}
+      onClick={() => onClick(index)}
     >
       <span ref={textRefs.artist} className="project-data artist hover-text">
         {project.artist}
@@ -187,34 +191,64 @@ export function MusicPortfolio({
   CONFIG = {},
   SOCIAL_LINKS = {},
   title = "Alguns de nossos trabalhos",
-  subtitle = "Estratégia, engenharia de alta performance e design suíço aplicados a marcas líderes.",
+  subtitle = "Soluções completas onde estratégia de posicionamento, design suíço de alta precisão e engenharia de software transformam empresas em líderes de mercado.",
 }: MusicPortfolioProps) {
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [mobileActiveIndex, setMobileActiveIndex] = useState(0);
   const [isIdle, setIsIdle] = useState(true);
   const [activeMedia, setActiveMedia] = useState<{ url: string; isVideo: boolean }>({
-    url: "",
-    isVideo: false,
+    url: PROJECTS_DATA[0]?.video || "",
+    isVideo: true,
   });
 
-  const backgroundRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  // Posição suave do popup follower
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const popupRef = useRef<HTMLDivElement>(null);
+  const popupVideoRef = useRef<HTMLVideoElement>(null);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
   const idleAnimationRef = useRef<gsap.core.Timeline | null>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const projectItemsRef = useRef<(HTMLLIElement | null)[]>([]);
 
-  // Pré-carregamento suave das mídias
-  useEffect(() => {
-    PROJECTS_DATA.forEach((project) => {
-      if (project.image && !project.image.endsWith(".mp4")) {
-        const img = new Image();
-        img.src = project.image;
-      }
-    });
-  }, [PROJECTS_DATA]);
+  // Rastreamento da posição do cursor para o popup flutuante
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (activeIndex === -1) return;
+    const x = e.clientX;
+    const y = e.clientY;
 
-  // Animação de idle (pulso discreto nos itens quando o usuário não interage)
+    if (popupRef.current) {
+      const cardWidth = 380;
+      const cardHeight = 260;
+      const pad = 24;
+
+      // Se estiver muito à direita da tela, inverte para a esquerda do cursor
+      let posX = x + pad;
+      if (posX + cardWidth > window.innerWidth - pad) {
+        posX = x - cardWidth - pad;
+      }
+
+      // Se estiver muito abaixo, sobe
+      let posY = y - cardHeight / 2;
+      if (posY + cardHeight > window.innerHeight - pad) {
+        posY = window.innerHeight - cardHeight - pad;
+      }
+      if (posY < pad) {
+        posY = pad;
+      }
+
+      gsap.to(popupRef.current, {
+        x: posX,
+        y: posY,
+        duration: 0.18,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+    }
+  }, [activeIndex]);
+
+  // Animação de idle
   const startIdleAnimation = useCallback(() => {
     if (idleAnimationRef.current) return;
 
@@ -287,7 +321,7 @@ export function MusicPortfolio({
   }, []);
 
   const handleProjectMouseEnter = useCallback(
-    (index: number, mediaUrl: string, isVideo: boolean) => {
+    (index: number, mediaUrl: string, isVideo: boolean, e: React.MouseEvent) => {
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);
       }
@@ -296,38 +330,35 @@ export function MusicPortfolio({
       stopIdleTimer();
       setIsIdle(false);
 
-      if (activeIndex === index) return;
-
       setActiveIndex(index);
       setActiveMedia({ url: mediaUrl, isVideo });
 
-      if (mediaUrl) {
-        if (isVideo) {
-          if (videoRef.current) {
-            videoRef.current.src = mediaUrl;
-            videoRef.current.play().catch(() => {});
-          }
-        }
-        if (backgroundRef.current) {
-          const bg = backgroundRef.current;
-          bg.style.transition = "none";
-          bg.style.transform = "translate(-50%, -50%) scale(1.18)";
-          if (!isVideo) {
-            bg.style.backgroundImage = `url(${mediaUrl})`;
-          }
-          bg.style.opacity = "1";
+      if (popupRef.current) {
+        const x = e.clientX;
+        const y = e.clientY;
+        const cardWidth = 380;
+        const cardHeight = 260;
+        const pad = 24;
 
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              bg.style.transition =
-                "opacity 0.6s ease, transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
-              bg.style.transform = "translate(-50%, -50%) scale(1.0)";
-            });
-          });
+        let posX = x + pad;
+        if (posX + cardWidth > window.innerWidth - pad) {
+          posX = x - cardWidth - pad;
         }
+        let posY = y - cardHeight / 2;
+        if (posY + cardHeight > window.innerHeight - pad) {
+          posY = window.innerHeight - cardHeight - pad;
+        }
+        if (posY < pad) posY = pad;
+
+        gsap.set(popupRef.current, { x: posX, y: posY });
+      }
+
+      if (popupVideoRef.current && isVideo && mediaUrl) {
+        popupVideoRef.current.src = mediaUrl;
+        popupVideoRef.current.play().catch(() => {});
       }
     },
-    [activeIndex, stopIdleAnimation, stopIdleTimer],
+    [stopIdleAnimation, stopIdleTimer],
   );
 
   const handleProjectMouseLeave = useCallback(() => {
@@ -343,15 +374,62 @@ export function MusicPortfolio({
 
     setActiveIndex(-1);
 
-    if (backgroundRef.current) {
-      backgroundRef.current.style.opacity = "0";
-    }
-    if (videoRef.current) {
-      videoRef.current.pause();
+    if (popupVideoRef.current) {
+      popupVideoRef.current.pause();
     }
 
     startIdleTimer();
   }, [startIdleTimer]);
+
+  const handleProjectClick = useCallback(
+    (index: number) => {
+      setMobileActiveIndex(index);
+      const proj = PROJECTS_DATA[index];
+      if (proj && proj.video && mobileVideoRef.current) {
+        mobileVideoRef.current.src = proj.video;
+        mobileVideoRef.current.play().catch(() => {});
+      }
+    },
+    [PROJECTS_DATA],
+  );
+
+  // Mobile Sticky: IntersectionObserver para atualizar o vídeo sticky conforme rola os projetos
+  useEffect(() => {
+    if (typeof window === "undefined" || window.innerWidth >= 1024) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const idxAttr = entry.target.getAttribute("data-project-index");
+            if (idxAttr !== null) {
+              const idx = parseInt(idxAttr, 10);
+              if (!isNaN(idx)) {
+                setMobileActiveIndex(idx);
+                const proj = PROJECTS_DATA[idx];
+                if (proj && proj.video && mobileVideoRef.current) {
+                  mobileVideoRef.current.src = proj.video;
+                  mobileVideoRef.current.play().catch(() => {});
+                }
+              }
+            }
+          }
+        });
+      },
+      {
+        rootMargin: "-25% 0px -40% 0px",
+        threshold: 0.4,
+      },
+    );
+
+    projectItemsRef.current.forEach((el) => {
+      if (el) observer.observe(el);
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [PROJECTS_DATA]);
 
   useEffect(() => {
     startIdleTimer();
@@ -361,27 +439,45 @@ export function MusicPortfolio({
     };
   }, [startIdleTimer, stopIdleTimer, stopIdleAnimation]);
 
+  const activeProject = activeIndex !== -1 ? PROJECTS_DATA[activeIndex] : null;
+  const currentMobileProject = PROJECTS_DATA[mobileActiveIndex] || PROJECTS_DATA[0];
+
   return (
-    <div className="portfolio-wrapper relative select-none">
-      {/* Background Media Container (Imagens e Vídeos com scale & blur cinemáticos) */}
+    <div
+      className="portfolio-wrapper relative select-none"
+      onMouseMove={handleMouseMove}
+    >
+      {/* POPUP PREVIEW CARD FLUTUANTE QUE SEGUE O CURSOR (DESKTOP) */}
       <div
-        ref={backgroundRef}
-        className="portfolio-background"
-        id="backgroundImage"
-        role="img"
-        aria-hidden="true"
+        ref={popupRef}
+        className={`pointer-events-none fixed top-0 left-0 z-50 hidden md:block overflow-hidden rounded-xl border border-cyan/40 bg-[#080808]/95 p-2 shadow-[0_25px_60px_rgba(0,0,0,0.85)] backdrop-blur-xl transition-[opacity,transform] duration-200 ${
+          activeIndex !== -1
+            ? "opacity-100 scale-100"
+            : "opacity-0 scale-95 pointer-events-none"
+        }`}
+        style={{ width: "380px" }}
       >
-        {activeMedia.isVideo && (
+        <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-zinc-950 border border-white/10">
           <video
-            ref={videoRef}
+            ref={popupVideoRef}
             src={activeMedia.url}
             autoPlay
             loop
             muted
             playsInline
-            className="absolute inset-0 w-full h-full object-cover"
+            className="h-full w-full object-cover"
           />
-        )}
+          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 rounded-full bg-black/80 px-2.5 py-1 font-mono text-[9px] uppercase tracking-wider text-cyan backdrop-blur-md border border-cyan/30">
+            <span className="size-1.5 rounded-full bg-cyan animate-pulse" />
+            <span>{activeProject?.artist}</span>
+          </div>
+        </div>
+        <div className="mt-2.5 flex items-center justify-between px-1.5 py-0.5 font-mono text-[10px]">
+          <span className="text-white font-medium truncate max-w-[240px]">
+            {activeProject?.album}
+          </span>
+          <span className="text-cyan font-mono">{activeProject?.year}</span>
+        </div>
       </div>
 
       {/* Elementos Técnicos dos Cantos (Corner Elements) */}
@@ -399,7 +495,7 @@ export function MusicPortfolio({
           </a>
           <span className="text-zinc-600">/</span>
           <a
-            href="https://wa.me/5511999999999"
+            href="https://wa.me/5513981062787"
             target="_blank"
             rel="noreferrer"
             className="hover:text-cyan transition-colors"
@@ -427,7 +523,7 @@ export function MusicPortfolio({
 
       {/* Conteúdo Principal do Portfólio */}
       <div className="portfolio-content">
-        <header className="mb-10 md:mb-16">
+        <header className="mb-8 md:mb-14">
           <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.16em] text-cyan">
             <span className="size-1.5 rounded-full bg-cyan animate-pulse" />
             <span>Portfólio Selecionado // Casos Reais</span>
@@ -449,6 +545,33 @@ export function MusicPortfolio({
           </div>
         </header>
 
+        {/* MOBILE STICKY VIDEO PLAYER AO ROLAR */}
+        {currentMobileProject && (
+          <div className="md:hidden sticky top-14 z-30 mb-8 rounded-xl border border-cyan/40 bg-black/95 p-2 shadow-2xl backdrop-blur-xl">
+            <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-zinc-950 border border-white/10">
+              <video
+                ref={mobileVideoRef}
+                src={currentMobileProject.video}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute top-2 left-2 flex items-center gap-1.5 rounded-full bg-black/80 px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-cyan backdrop-blur-md border border-cyan/30">
+                <span className="size-1.5 rounded-full bg-cyan animate-pulse" />
+                <span>{currentMobileProject.artist}</span>
+              </div>
+            </div>
+            <div className="mt-2 flex items-center justify-between px-1 font-mono text-[10px] text-zinc-400">
+              <span className="text-white font-medium truncate max-w-[200px]">
+                {currentMobileProject.album}
+              </span>
+              <span className="text-cyan font-mono">{currentMobileProject.year}</span>
+            </div>
+          </div>
+        )}
+
         <main
           ref={containerRef}
           className={`portfolio-container ${activeIndex !== -1 ? "has-active" : ""}`}
@@ -462,7 +585,8 @@ export function MusicPortfolio({
                 index={index}
                 onMouseEnter={handleProjectMouseEnter}
                 onMouseLeave={handleProjectMouseLeave}
-                isActive={activeIndex === index}
+                onClick={handleProjectClick}
+                isActive={activeIndex === index || mobileActiveIndex === index}
                 isIdle={isIdle}
                 setRef={(el) => {
                   projectItemsRef.current[index] = el;

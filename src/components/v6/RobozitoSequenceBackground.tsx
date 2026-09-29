@@ -22,6 +22,7 @@ export function RobozitoSequenceBackground({
   onLoaded,
 }: RobozitoSequenceBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const imagesRef = useRef<HTMLImageElement[]>([]);
   const loadedCountRef = useRef<number>(0);
   const [initialLoaded, setInitialLoaded] = useState(false);
@@ -168,6 +169,23 @@ export function RobozitoSequenceBackground({
         renderFrame(clamped);
       }
 
+      // Sincroniza vídeo inicial em looping no topo com crossfade para a sequência no scroll
+      const video = videoRef.current;
+      if (video) {
+        // Conforme o scroll avança (frames 0 a 6), a opacidade do vídeo vai suavemente de 1 para 0
+        const videoOpacity = Math.max(0, Math.min(1, 1 - (clamped / 5)));
+        video.style.opacity = String(videoOpacity);
+        if (clamped > 15) {
+          if (!video.paused) {
+            video.pause();
+          }
+        } else {
+          if (video.paused) {
+            video.play().catch(() => {});
+          }
+        }
+      }
+
       animId = requestAnimationFrame(loop);
     };
 
@@ -209,10 +227,25 @@ export function RobozitoSequenceBackground({
 
   return (
     <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
+      {/* Sequência Canvas no Scroll (Frames 001 a 096) */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full object-cover"
       />
+
+      {/* Vídeo do Robô em Looping inicial no topo da página (sem áudio e sem controles) */}
+      <video
+        ref={videoRef}
+        src="https://res.cloudinary.com/ifuatk2z/video/upload/v1790688472/robot_inicio.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+        className="absolute inset-0 w-full h-full object-cover object-[77%_center] md:object-center transition-opacity duration-300 pointer-events-none"
+        style={{ opacity: 1 }}
+      />
+
       {/* Sombra lateral suave no desktop e vinheta balanceada no mobile para garantir leitura sem ofuscar o robô */}
       <div className="absolute inset-0 bg-black/20 md:hidden pointer-events-none" />
       <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-black/40 to-transparent pointer-events-none" />
