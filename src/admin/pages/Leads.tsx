@@ -236,6 +236,43 @@ export default function Leads() {
     }
   };
 
+  const [geracaoStep, setGeracaoStep] = useState<string>("");
+
+  const handleGerarProposta = async (lead: any) => {
+    if (generatingSiteId) return;
+    setGeneratingSiteId(lead.id);
+    try {
+      // Passo 1: Análise estratégica
+      setGeracaoStep("analise");
+      await fetch(`/api/gerar-analise/${lead.id}`);
+
+      // Passo 2: Site + proposta via N8N
+      setGeracaoStep("site");
+      const res = await fetch("/api/gerar-proposta", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ leadId: lead.id })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Erro ao gerar proposta");
+
+      setGeracaoStep("pronto");
+      const siteUrl = data.siteUrl || data.propostaUrl || data.url || "";
+      if (siteUrl) {
+        setGeneratedSiteUrls(prev => ({ ...prev, [lead.id]: siteUrl }));
+        notify("Proposta gerada! Abrindo site...");
+        window.open(siteUrl, "_blank");
+      } else {
+        notify("Proposta disparada no N8N — link aparecerá em breve.");
+      }
+    } catch (err: any) {
+      notify(`Erro: ${err.message}`, "error");
+    } finally {
+      setGeneratingSiteId(null);
+      setGeracaoStep("");
+    }
+  };
+
   const handleSearchLeads = async () => {
     setLoading(true);
     try {
@@ -712,6 +749,30 @@ export default function Leads() {
                             <ArrowUpRight size={10} className="text-white/40" />
                           </a>
                         ) : null}
+
+                        {/* Botão Gerar Proposta */}
+                        {generatingSiteId === lead.id ? (
+                          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-cyan/5 border border-cyan/20 font-mono text-[10px]">
+                            <Loader2 size={10} className="animate-spin text-cyan shrink-0" />
+                            <div className="flex items-center gap-1">
+                              <span className={geracaoStep === "analise" ? "text-cyan" : "text-white/30"}>Análise</span>
+                              <span className="text-white/20">›</span>
+                              <span className={geracaoStep === "site" ? "text-cyan" : geracaoStep === "pronto" ? "text-emerald-400" : "text-white/30"}>Site</span>
+                              <span className="text-white/20">›</span>
+                              <span className={geracaoStep === "pronto" ? "text-emerald-400" : "text-white/30"}>Pronto</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => handleGerarProposta(lead)}
+                            disabled={!!generatingSiteId}
+                            className="px-2.5 py-1 bg-cyan/10 hover:bg-cyan/20 text-cyan border border-cyan/30 flex items-center gap-1 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                            title="Gerar análise + site via N8N"
+                          >
+                            <Sparkles size={11} />
+                            <span>Proposta</span>
+                          </button>
+                        )}
 
                         {/* Botão Maps */}
                         <a

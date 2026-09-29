@@ -25,7 +25,6 @@ const QUANTIDADE = parseInt(arg("quantidade", "10"));
 // ── Credenciais ───────────────────────────────────────────────────────────────
 const SERPER_KEY       = process.env.SERPER_API_KEY       || "";
 const PAGESPEED_KEY    = process.env.PAGESPEED_API_KEY    || "";
-const GEMINI_KEY       = process.env.GEMINI_API_KEY       || "";
 const SUPABASE_URL     = process.env.SUPABASE_URL         || "";
 const SUPABASE_SVC_KEY = process.env.SUPABASE_SERVICE_KEY || "";
 
@@ -98,10 +97,15 @@ async function getPageSpeed(url: string) {
   }
 }
 
-// ── 3. Gemini ─────────────────────────────────────────────────────────────────
-async function analisarComGemini(lead: any, pagespeed: any): Promise<any> {
-  if (!GEMINI_KEY) return null;
+// ── 3. Groq ───────────────────────────────────────────────────────────────────
+import Groq from "groq-sdk";
+
+const GROQ_KEY = process.env.GROQ_API_KEY || "";
+
+async function analisarComGroq(lead: any, pagespeed: any): Promise<any> {
+  if (!GROQ_KEY) return null;
   try {
+    const groq = new Groq({ apiKey: GROQ_KEY });
     const prompt = `Você é um auditor sênior de UX/UI e conversão.
 Avalie o site abaixo com base nas métricas técnicas fornecidas.
 
@@ -116,20 +120,16 @@ Avalie 5 dimensões de 0 a 10:
 (4) Arquitetura da Informação
 (5) Acessibilidade
 
-Responda APENAS JSON:
+Responda APENAS JSON (sem markdown):
 {"identidadeVisualUI":{"nota":0,"comentario":""},"heuristicasNielsen":{"nota":0,"comentario":""},"viesesCognitivosDarkPatterns":{"nota":0,"comentario":"","darkPatternsDetectados":[]},"arquiteturaInformacao":{"nota":0,"comentario":""},"acessibilidade":{"nota":0,"comentario":""},"resumoGeral":"","principaisProblemas":[]}`;
 
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-      }
-    );
-    if (!res.ok) return null;
-    const data: any = await res.json();
-    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const r = await groq.chat.completions.create({
+      model: "openai/gpt-oss-120b",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.1,
+      max_tokens: 2000,
+    });
+    const raw = r.choices?.[0]?.message?.content || "";
     const limpo = raw.replace(/```json/g, "").replace(/```/g, "").trim();
     return JSON.parse(limpo);
   } catch {
@@ -217,7 +217,7 @@ async function main() {
       let gemini = null;
       if (pagespeed) {
         console.log(`   🤖 Gemini...`);
-        gemini = await analisarComGemini(lead, pagespeed);
+        gemini = await analisarComGroq(lead, pagespeed);
         await sleep(1000); // rate limit
       }
 

@@ -8,6 +8,25 @@ import * as cheerio from "cheerio";
 import Groq from "groq-sdk";
 import cron from "node-cron";
 import { Resend } from "resend";
+async function groqGenerate(prompt: string, opts?: { temperature?: number; maxTokens?: number }): Promise<string> {
+  const apiKey = process.env.GROQ_API_KEY || "";
+  if (!apiKey) return "";
+  const groq = new Groq({ apiKey });
+  const models = ["openai/gpt-oss-120b", "qwen/qwen3.8-27b"];
+  for (const model of models) {
+    try {
+      const r = await groq.chat.completions.create({
+        model,
+        messages: [{ role: "user", content: prompt }],
+        temperature: opts?.temperature ?? 0.4,
+        max_tokens: opts?.maxTokens ?? 16000,
+      });
+      const text = r.choices?.[0]?.message?.content || "";
+      if (text.length > 20) return text;
+    } catch {}
+  }
+  return "";
+}
 
 const origStringify = JSON.stringify;
 JSON.stringify = function(value, replacer, space) {
@@ -141,7 +160,7 @@ async function performUxAuditForLead(url, companyName, niche) {
       : `Auditoria UX/UI/CRO para ${url} (sem texto extraído, deduza)`;
     const c = await groq.chat.completions.create({
       messages: [{ role:"system", content:"Return ONLY valid JSON" }, { role:"user", content: prompt + "\nRetorne { summary, brandAnalysis: { companyName, niche, audience, differentiators, tone, colors, primaryHex }, issues: [{ category, tab, title, description, recommendation }] }" }],
-      model: "llama-3.1-8b-instant", temperature: 0.6, response_format: { type: "json_object" }
+      model: "qwen/qwen3.8-27b", temperature: 0.6, response_format: { type: "json_object" }
     });
     return JSON.parse(c.choices[0].message.content || "{}");
   } catch(e) { return null; }
@@ -153,7 +172,7 @@ async function generateProspectSitePlanForLead(companyName, niche) {
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     const c = await groq.chat.completions.create({
       messages: [{ role:"system", content:"Return ONLY valid JSON" }, { role:"user", content:`Plano prospecção landing page para ${companyName} (${niche}). JSON: { summary, colors, tone, differentiators, sections }`}],
-      model: "llama-3.1-8b-instant", temperature: 0.7, response_format: { type: "json_object" }
+      model: "qwen/qwen3.8-27b", temperature: 0.7, response_format: { type: "json_object" }
     });
     return JSON.parse(c.choices[0].message.content || "{}");
   } catch(e) { return null; }
@@ -166,7 +185,7 @@ async function runMineraLeadsCron() {
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     const g = await groq.chat.completions.create({
       messages: [{ role:"system", content:"Gere busca Google Maps para comércio local brasileiro." }, { role:"user", content:"Frase curta de busca para Google Places (ex: Clinica Odontologica em Curitiba). Apenas a frase." }],
-      model: "llama-3.3-70b-versatile", temperature: 0.9
+      model: "openai/gpt-oss-120b", temperature: 0.9
     });
     let query = (g.choices[0]?.message?.content || "Dentista em São Paulo").trim().replace(/^["']|["']$/g,"");
     const resp = await fetch("https://google.serper.dev/places", {
@@ -265,7 +284,7 @@ JSON: {
   niveisDeConsciencia: "nível predominante (inconsciente/consciente do problema/consciente da solução/consciente do produto/totalmente consciente)",
   avatares: [{ nome: "Nome fictício", idade: 35, profissao: "...", dorPrincipal: "...", desejoUrgente: "..." }]
 }`}],
-        model:"llama-3.1-8b-instant", temperature:0.7, response_format:{ type:"json_object" }
+        model:"qwen/qwen3.8-27b", temperature:0.7, response_format:{ type:"json_object" }
       });
       const r2 = await groq.chat.completions.create({
         messages: [{ role:"system", content:"JSON válido. Sem travessões ou meia-riscas." }, { role:"user", content:`Análise estratégica competitiva e auditoria do site existente de ${name} (${niche}).
@@ -283,7 +302,7 @@ JSON: {
     melhoriasAplicadas: ["3 melhorias práticas aplicadas no novo site para corrigir essas falhas"]
   }
 }`}],
-        model:"llama-3.1-8b-instant", temperature:0.7, response_format:{ type:"json_object" }
+        model:"qwen/qwen3.8-27b", temperature:0.7, response_format:{ type:"json_object" }
       });
     } catch(e) { console.error("[AUTO_BUILD_LEAD] Reports error:", e.message); }
  
@@ -314,7 +333,7 @@ JSON obrigatório com TODAS estas seções:
   finalCta: { title: "CTA final forte", subtitle: "Reforço de urgência", buttonText: "Texto do botão" },
   services: [{ title: "Serviço 1", description: "..." }, { title: "Serviço 2", description: "..." }, { title: "Serviço 3", description: "..." }, { title: "Serviço 4", description: "..." }, { title: "Serviço 5", description: "..." }, { title: "Serviço 6", description: "..." }]
 }`}],
-        model:"llama-3.3-70b-versatile", temperature:0.5, response_format:{ type:"json_object" }
+        model:"openai/gpt-oss-120b", temperature:0.5, response_format:{ type:"json_object" }
       });
       siteData = JSON.parse(copyRes.choices[0].message.content||"{}");
     } catch(e) { console.error("[AUTO_BUILD_LEAD] SiteData error:", e.message); }
@@ -471,11 +490,11 @@ async function runAutoBuildPipeline() {
     if (!lead.reports) {
       const r1 = await groq.chat.completions.create({
         messages: [{ role:"system", content:"JSON válido" }, { role:"user", content:`Psicografia para ${lead.title} (${lead.niche}). JSON: { doresETraumas, desejosProfundos, objecoesEBarreiras, niveisDeConsciencia, avatares }`}],
-        model:"llama-3.1-8b-instant", temperature:0.7, response_format:{ type:"json_object" }
+        model:"qwen/qwen3.8-27b", temperature:0.7, response_format:{ type:"json_object" }
       });
       const r2 = await groq.chat.completions.create({
         messages: [{ role:"system", content:"JSON válido" }, { role:"user", content:`Análise Estratégica para ${lead.title} (${lead.niche}). JSON: { benchmarking, gapsDeMercado, vantagensCompetitivas, oceanoAzul, filtroDeComunicacao }`}],
-        model:"llama-3.1-8b-instant", temperature:0.7, response_format:{ type:"json_object" }
+        model:"qwen/qwen3.8-27b", temperature:0.7, response_format:{ type:"json_object" }
       });
       lead.reports = { psicografia: JSON.parse(r1.choices[0].message.content||"{}"), estrategia: JSON.parse(r2.choices[0].message.content||"{}") };
     }
@@ -686,7 +705,7 @@ Retorne APENAS JSON: { pautas: [{ titulo, descricao, ideias_chave, data_contexto
     } else return res.status(400).json({ error: "Invalid mode" });
     const c = await groq.chat.completions.create({
       messages: [{ role:"system", content:"Estrategista sênior Instagram para estúdio design/tech. Tom humanizado. Responda SEMPRE JSON válido." }, { role:"user", content: userPrompt }],
-      model: "llama-3.3-70b-versatile", temperature: 0.8, response_format: { type: "json_object" }
+      model: "openai/gpt-oss-120b", temperature: 0.8, response_format: { type: "json_object" }
     });
     const text = c.choices[0]?.message?.content || "{}";
     res.json({ success: true, ...JSON.parse(text) });
@@ -718,7 +737,7 @@ legenda_titulo = título do post no Instagram (máx 15 palavras, gancho forte)
 legenda_texto = legenda do post no Instagram (texto humanizado, natural, 80-120 palavras, como se fosse um amigo explicando)`;
     const c = await groq.chat.completions.create({
       messages: [{ role:"system", content:"Gera carrosséis profundos. JSON válido." }, { role:"user", content: prompt }],
-      model: "llama-3.3-70b-versatile", temperature: 0.8, response_format: { type: "json_object" }
+      model: "openai/gpt-oss-120b", temperature: 0.8, response_format: { type: "json_object" }
     });
     const result = JSON.parse(c.choices[0]?.message?.content || "{}");
     res.json({ success: true, ...result });
@@ -1882,7 +1901,7 @@ app.post("/api/analyze-ux", async (req, res) => {
         role: "user",
         content: prompt + "\n\nRetorne: { summary: string, data: { brandAnalysis: { companyName, niche, audience, differentiators, tone, colors, primaryHex } }, issues: [{ category, tab, title, description, recommendation }] }"
       }],
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       temperature: 0.6,
       response_format: { type: "json_object" }
     });
@@ -1904,7 +1923,7 @@ app.post("/api/generate-copy", async (req, res) => {
     const userMsg = promptText + (jsonMode ? "\n\nResponda APENAS com o JSON puro, sem markdown, sem explicações." : "");
     const c = await groq.chat.completions.create({
       messages: [{ role: "system", content: systemMsg }, { role: "user", content: userMsg }],
-      model: "llama-3.3-70b-versatile", temperature: 0.7, response_format: { type: "json_object" }
+      model: "openai/gpt-oss-120b", temperature: 0.7, response_format: { type: "json_object" }
     });
     const text = c.choices[0]?.message?.content || "{}";
     res.json({ success: true, text });
@@ -1920,11 +1939,11 @@ app.post("/api/generate-commercial-reports", async (req, res) => {
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     const r1 = await groq.chat.completions.create({
       messages: [{ role:"system", content:"JSON válido" }, { role:"user", content:`Dossiê Comercial completo para ${companyName} (${niche}). Formato JSON: { nomeEmpresa, segmento, porteProvavel, faturamentoEstimado, problemasIdentificados: [{ problema, causaRaiz, impactoNegocio, urgencia }], solucoesPropostas: [{ solucao, descricao, beneficios, investimentoEstimado, retornoEsperado }], concorrentes: [{ nome, forcas, fraquezas }], argumentosDeVenda, objeçõesComuns, contraArgumentos, contatoDecisor: { perfil, canal, abordagem }, proximosPassos }`}],
-      model:"llama-3.3-70b-versatile", temperature:0.7, response_format:{ type:"json_object" }
+      model:"openai/gpt-oss-120b", temperature:0.7, response_format:{ type:"json_object" }
     });
     const r2 = await groq.chat.completions.create({
       messages: [{ role:"system", content:"JSON válido" }, { role:"user", content:`Proposta Comercial para ${companyName} (${niche}). Formato JSON: { numeroProposta, data, cliente: { nome, empresa }, apresentacao, diagnostico, solucoes: [{ titulo, descricao, investimento, prazo }], investimentoTotal, condicoesPagamento, garantias, prazoExecucao, contato }`}],
-      model:"llama-3.3-70b-versatile", temperature:0.7, response_format:{ type:"json_object" }
+      model:"openai/gpt-oss-120b", temperature:0.7, response_format:{ type:"json_object" }
     });
     const dossie = JSON.parse(r1.choices[0]?.message?.content || "{}");
     const proposta = JSON.parse(r2.choices[0]?.message?.content || "{}");
@@ -2050,7 +2069,7 @@ Responda ESTRITAMENTE em formato JSON com o esquema:
         { role: "system", content: "Você é um consultor financeiro CFO sênior. Responda apenas com JSON válido." },
         { role: "user", content: prompt }
       ],
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       temperature: 0.5,
       response_format: { type: "json_object" }
     });
@@ -2111,7 +2130,7 @@ Responda ESTRITAMENTE em formato JSON com o seguinte esquema:
       { role: "system", content: "Você é um consultor financeiro CFO estratégico. Responda apenas em JSON válido com exatamente 5 dicas." },
       { role: "user", content: prompt }
     ],
-    model: "llama-3.3-70b-versatile",
+    model: "openai/gpt-oss-120b",
     temperature: 0.6,
     response_format: { type: "json_object" }
   });
@@ -2525,7 +2544,7 @@ Retorne APENAS um JSON VÁLIDO com a estrutura:
           { role: "system", content: "Você é um profissional de saúde e bio-hacking. Responda SEMPRE em JSON válido em Português do Brasil." },
           { role: "user", content: prompt }
         ],
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-120b",
         temperature: 0.6,
         response_format: { type: "json_object" }
       });
@@ -2923,9 +2942,8 @@ app.post("/api/buscar-leads", async (req, res) => {
 // ── /api/gerar-analise/:leadId — PDF de Análise Estratégica via Gemini ────────
 app.get("/api/gerar-analise/:leadId", async (req, res) => {
   try {
-    const geminiKey = process.env.GEMINI_API_KEY || process.env.CUSTOM_GEMINI_KEY || process.env.STITCH_API_KEY || "";
     const serperKey = process.env.SERPER_API_KEY || "";
-    if (!geminiKey) return res.status(500).send("<h1>GEMINI_API_KEY não configurada</h1>");
+    if (!process.env.GROQ_API_KEY) return res.status(500).send("<h1>GROQ_API_KEY não configurada</h1>");
 
     // 1. Busca lead no Supabase
     const rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(req.params.leadId)}&select=*&limit=1`);
@@ -3038,22 +3056,12 @@ REGRAS DE FORMATO:
 - Toda copy específica ao lead — nunca frases genéricas`;
 
     // 4. Chama Gemini com fallback de modelos
-    const models = ["gemini-2.5-flash", "gemini-3.6-flash", "gemini-2.5-flash-lite"];
     let html = "";
-    for (const model of models) {
-      try {
-        const gr = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
-          { method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.2, maxOutputTokens: 32768 } }) }
-        );
-        if (!gr.ok) continue;
-        const gd: any = await gr.json();
-        let raw = gd?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-        if (raw.includes("```html")) raw = raw.split("```html")[1].split("```")[0].trim();
-        else if (raw.includes("```")) raw = raw.split("```")[1].split("```")[0].trim();
-        if (raw.includes("<html") || raw.startsWith("<!DOCTYPE")) { html = raw; break; }
-      } catch {}
+    {
+      let raw = await groqGenerate(prompt, { temperature: 0.2, maxTokens: 16000 });
+      if (raw.includes("```html")) raw = raw.split("```html")[1].split("```")[0].trim();
+      else if (raw.includes("```")) raw = raw.split("```")[1].split("```")[0].trim();
+      if (raw.includes("<html") || raw.startsWith("<!DOCTYPE")) html = raw;
     }
 
     if (!html) return res.status(503).send("<h1>Gemini indisponível. Tente novamente em instantes.</h1>");
@@ -3069,7 +3077,6 @@ app.post("/api/enviar-email", async (req, res) => {
     if (!leadId || !emailDestinatario) return res.status(400).json({ error: "leadId e emailDestinatario obrigatórios" });
 
     const resendKey = process.env.RESEND_API_KEY || "";
-    const geminiKey = process.env.GEMINI_API_KEY || process.env.CUSTOM_GEMINI_KEY || "";
     if (!resendKey) return res.status(500).json({ error: "RESEND_API_KEY não configurada" });
 
     // Busca lead no Supabase
@@ -3089,7 +3096,7 @@ app.post("/api/enviar-email", async (req, res) => {
     let emailHtml = "";
     let assunto = `RE: Sua página ${lead.nome} para aumentar seus lucros → ${siteUrl}`;
 
-    if (geminiKey) {
+    if (process.env.GROQ_API_KEY) {
       try {
         const prompt = `Você é Eduardo Santos, especialista em estratégias para aumentar a lucratividade de negócios locais.
 Escreva um email de prospecção PERSONALIZADO seguindo EXATAMENTE o formato abaixo. Substitua apenas os campos entre colchetes.
@@ -3136,22 +3143,10 @@ REGRAS:
 - NÃO adicione botões estilizados — apenas os links de texto já estão no template
 - Máximo 180 palavras`;
 
-        const models = ["gemini-2.5-flash", "gemini-3.6-flash", "gemini-2.5-flash-lite"];
-        for (const model of models) {
-          try {
-            const gr = await fetch(
-              `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
-              { method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.6, maxOutputTokens: 4096 } }) }
-            );
-            if (!gr.ok) continue;
-            const gd: any = await gr.json();
-            let raw = gd?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-            if (raw.includes("```html")) raw = raw.split("```html")[1].split("```")[0].trim();
-            else if (raw.includes("```")) raw = raw.split("```")[1].split("```")[0].trim();
-            if (raw.length > 50) { emailHtml = raw; break; }
-          } catch {}
-        }
+        let raw = await groqGenerate(prompt, { temperature: 0.6, maxTokens: 4096 });
+        if (raw.includes("```html")) raw = raw.split("```html")[1].split("```")[0].trim();
+        else if (raw.includes("```")) raw = raw.split("```")[1].split("```")[0].trim();
+        if (raw.length > 50) emailHtml = raw;
       } catch {}
     }
 

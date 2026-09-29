@@ -1,11 +1,11 @@
 /**
- * Gera site-amostra localmente via Gemini e salva no Firebase.
+ * Gera site-amostra localmente via Groq (Llama) e salva no Firebase.
  *
  * Uso:
  *   npm run gerar-site -- --nome "Jhom's Barbearia" --nicho "Barbearia" --cidade "Marilia" --telefone "(14) 99831-5675" --endereco "Av. João Martins Coelho, 2063" --website "https://www.cashbarber.com.br/jhomsbarbearia"
  *
  * Env vars necessárias em .env.local:
- *   GEMINI_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY
+ *   GROQ_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY
  */
 import { config } from "dotenv";
 config({ path: ".env.local" });
@@ -31,13 +31,13 @@ const WEBSITE  = arg("website",  "");
 const ESTADO   = arg("estado",   "SP");
 
 // ── Credenciais ───────────────────────────────────────────────────────────────
-const GEMINI_KEY       = process.env.GEMINI_API_KEY || "";
+const GROQ_KEY         = process.env.GROQ_API_KEY || "";
 const SUPABASE_URL     = process.env.SUPABASE_URL || "";
 const SUPABASE_SVC_KEY = process.env.SUPABASE_SERVICE_KEY || "";
 const MP_ACCESS_TOKEN  = process.env.MERCADOPAGO_ACCESS_TOKEN || "";
 const MP_PRECO         = Number(process.env.MERCADOPAGO_PRECO || "990");
 
-if (!GEMINI_KEY) { console.error("❌ GEMINI_API_KEY não encontrada no .env.local"); process.exit(1); }
+if (!GROQ_KEY) { console.error("❌ GROQ_API_KEY não encontrada no .env.local"); process.exit(1); }
 
 // ── Firebase ──────────────────────────────────────────────────────────────────
 const firebaseConfig = {
@@ -84,6 +84,12 @@ async function buscarLeadSupabase(): Promise<any> {
 // ── Geração de imagens por nicho ──────────────────────────────────────────────
 function imagensPorNicho(niche: string): { hero: string; solution: string; about: string } {
   const n = niche.toLowerCase();
+  if (n.includes("academia") || n.includes("gym") || n.includes("fitness") || n.includes("crossfit") || n.includes("musculação"))
+    return {
+      hero:     "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1200&auto=format&fit=crop",
+      solution: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1200&auto=format&fit=crop",
+      about:    "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1200&auto=format&fit=crop",
+    };
   if (n.includes("barbearia") || n.includes("barber") || n.includes("salão") || n.includes("beleza"))
     return {
       hero:     "https://images.unsplash.com/photo-1621607512022-6aecc4fed814?q=80&w=1200&auto=format&fit=crop",
@@ -130,9 +136,11 @@ function buildPrompt(lead: any, pid: string): string {
     : "não disponível";
   const imgs = imagensPorNicho(NICHO);
 
-  const isBarbearia = NICHO.toLowerCase().includes("barbearia") || NICHO.toLowerCase().includes("barber") || NICHO.toLowerCase().includes("salão");
-  const accentColor = isBarbearia ? "#C9A035" : "#ff5a00";
-  const accentColorDark = isBarbearia ? "#8B6A1A" : "#cc4400";
+  const nichoLower = NICHO.toLowerCase();
+  const isBarbearia = nichoLower.includes("barbearia") || nichoLower.includes("barber") || nichoLower.includes("salão");
+  const isAcademia = nichoLower.includes("academia") || nichoLower.includes("gym") || nichoLower.includes("fitness") || nichoLower.includes("crossfit");
+  const accentColor = isBarbearia ? "#C9A035" : isAcademia ? "#E8FF3A" : "#ff5a00";
+  const accentColorDark = isBarbearia ? "#8B6A1A" : isAcademia ? "#b8cc00" : "#cc4400";
 
   const nichoDesign = isBarbearia ? `
 ESTÉTICA OBRIGATÓRIA — BARBEARIA PREMIUM (nível Behance/Awwwards):
@@ -149,7 +157,23 @@ ESTÉTICA OBRIGATÓRIA — BARBEARIA PREMIUM (nível Behance/Awwwards):
 - Separadores de secao: linha fina 1px #C9A035/20 com margem automatica
 - Servicos com grid assimetrico: 1 card grande (2 cols) + 2 cards pequenos por linha
 - Depoimentos com aspas tipograficas gigantes " em Playfair Display, cor #C9A035/20, font-size 8rem, posicao absolute
-- Stats em numeros grandes: font-size 4rem, Playfair Display, cor #C9A035` : `
+- Stats em numeros grandes: font-size 4rem, Playfair Display, cor #C9A035` : isAcademia ? `
+ESTÉTICA OBRIGATÓRIA — ACADEMIA PREMIUM (nível Behance/Awwwards):
+- Visual DARK + BOLD inspirado em academias premium tipo Gold's Gym, Barry's e Black Box
+- Fundo global #0a0a0a, seções alternadas #111111
+- Fotografias de atletas FULL-BLEED sem bordas — imagem vai de ponta a ponta da tela
+- Overlay sobre fotos: linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 100%)
+- H1 do hero: fonte Plus Jakarta Sans 800, tamanho 7rem desktop / 3.5rem mobile, ALL CAPS, line-height 0.9
+- Headline impactante: linha 1 e 3 em branco #F0EAD6, linha 2 em amarelo elétrico #E8FF3A
+- Linha decorativa horizontal #E8FF3A (3px, width 60px) entre badge e headline
+- Badge acima do H1: "OPEN 24H — TAQUARAL, CAMPINAS" em monospace uppercase letter-spacing 0.3em cor #E8FF3A
+- Números de seção: 01, 02, 03 em monospace #E8FF3A/50, font-size 0.65rem, letter-spacing 0.4em
+- Cards de serviço/planos: fundo #111, borda 1px #E8FF3A/20, hover borda #E8FF3A, sem border-radius (0px — estética brutal)
+- Ícones em SVG inline estilo fitness: haltere, corrida, músculos, cronômetro — nao usar emoji
+- Depoimentos com aspas tipograficas " em font-size 8rem #E8FF3A/10 absolute
+- Stats em numeros GIGANTES: font-size 5rem, Plus Jakarta Sans 800, cor #E8FF3A, texto descritivo abaixo em #8A8070
+- Botões CTA: fundo #E8FF3A, texto #0a0a0a, font-weight 800, ALL CAPS, border-radius 0px (brutal), padding 16px 40px
+- Hover dos botões: background #b8cc00` : `
 ESTÉTICA — NEGÓCIO LOCAL PREMIUM:
 - Layout moderno limpo com glassmorphism cards
 - Cor de acento #ff5a00 em CTAs e destaques`;
@@ -291,65 +315,91 @@ REGRAS ABSOLUTAS
 11. Todo elemento animado deve ter CSS padrão: opacity: 1; visibility: visible; — GSAP sobrescreve no from() e restaura ao terminar.`;
 }
 
-// ── Geração via Gemini ────────────────────────────────────────────────────────
-const MODELS = [
-  "gemini-2.5-flash",
-  "gemini-2.5-flash-lite",
-  "gemini-3.6-flash",
-  "gemini-2.0-flash-lite",
-  "gemini-1.5-flash-002",
-  "gemini-1.5-flash-8b",
+// ── Geração via Groq (Llama) ──────────────────────────────────────────────────
+import Groq from "groq-sdk";
+
+const GROQ_MODELS = [
+  "openai/gpt-oss-120b",
+  "qwen/qwen3.8-27b",
 ];
 
-async function chamarGemini(model: string, prompt: string): Promise<string> {
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.2, maxOutputTokens: 65536 },
-      }),
+async function chamarGroq(prompt: string): Promise<string> {
+  const groq = new Groq({ apiKey: GROQ_KEY });
+  for (const model of GROQ_MODELS) {
+    try {
+      const r = await groq.chat.completions.create({
+        model,
+        messages: [
+          { role: "system", content: "Você é um desenvolvedor web. Retorne APENAS código HTML puro, começando com <!DOCTYPE html>. Sem explicações, sem markdown, sem texto antes ou depois do HTML." },
+          { role: "user", content: prompt }
+        ],
+        temperature: 0.2,
+        max_tokens: 16000,
+      });
+      const text = r.choices?.[0]?.message?.content || "";
+      if (text.length > 100) return text;
+    } catch(e: any) {
+      console.warn(`   ⚠️  ${model}: ${String(e.message || "").slice(0, 80)}`);
     }
-  );
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`HTTP ${res.status}: ${err}`);
   }
-  const data = await res.json();
-  return data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  return "";
 }
 
-async function gerarHtml(prompt: string): Promise<string> {
-  for (const model of MODELS) {
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      console.log(`🤖 Tentando ${model} (tentativa ${attempt}/3)...`);
-      try {
-        let html = await chamarGemini(model, prompt);
-        if (html.includes("```html")) html = html.split("```html")[1].split("```")[0].trim();
-        else if (html.includes("```")) html = html.split("```")[1].split("```")[0].trim();
-        html = html.trim().replace(/—/g, ",").replace(/–/g, ",");
-        if (!html.startsWith("<!DOCTYPE html>") && !html.includes("<html")) {
-          throw new Error("Resposta não é HTML válido");
-        }
-        console.log(`   ✅ Sucesso com ${model}`);
-        return html;
-      } catch (e: any) {
-        const msg = e.message || "";
-        const is503 = msg.includes("503") || msg.includes("UNAVAILABLE");
-        const is429 = msg.includes("429") || msg.includes("RESOURCE_EXHAUSTED");
-        console.warn(`   ⚠️  ${model} tentativa ${attempt}: ${msg.slice(0, 120)}`);
-        if (is429 || msg.includes("404")) break; // sem créditos ou modelo inexistente — próximo
-        if (is503 && attempt < 3) {
-          const wait = attempt * 15000;
-          console.log(`   ⏳ Aguardando ${wait / 1000}s antes de tentar novamente...`);
-          await new Promise(r => setTimeout(r, wait));
-        }
+async function extrairHtml(raw: string): Promise<string> {
+  let html = raw;
+
+  // 1. Extrai de bloco markdown se existir
+  if (html.includes("```html")) {
+    html = html.split("```html")[1].split("```")[0].trim();
+  } else if (html.includes("```")) {
+    const parts = html.split("```");
+    // Pega a primeira parte que contém HTML
+    for (let i = 1; i < parts.length; i += 2) {
+      if (parts[i].toLowerCase().includes("<!doctype") || parts[i].toLowerCase().includes("<html")) {
+        html = parts[i].trim();
+        break;
       }
     }
   }
-  throw new Error("Todos os modelos Gemini falharam");
+
+  // 2. Corta qualquer texto ANTES do DOCTYPE ou <html (Groq às vezes adiciona preamble)
+  const rawLower = html.toLowerCase();
+  const doctypeIdx = rawLower.indexOf("<!doctype");
+  const htmlTagIdx = rawLower.indexOf("<html");
+  const startIdx = doctypeIdx >= 0 ? doctypeIdx : (htmlTagIdx >= 0 ? htmlTagIdx : -1);
+  if (startIdx > 0) {
+    console.warn(`   ℹ️  Removendo ${startIdx} chars de preamble`);
+    html = html.slice(startIdx);
+  }
+
+  // 3. Limpa travessões
+  html = html.trim().replace(/—/g, ",").replace(/–/g, ",");
+  return html;
+}
+
+async function gerarHtml(prompt: string): Promise<string> {
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    console.log(`🤖 Groq Llama (tentativa ${attempt}/3)...`);
+    try {
+      const raw = await chamarGroq(prompt);
+      if (!raw || raw.length < 200) throw new Error(`Resposta muito curta (${raw.length} chars)`);
+
+      const html = await extrairHtml(raw);
+      const htmlLower = html.toLowerCase();
+      if (!htmlLower.includes("<!doctype") && !htmlLower.includes("<html")) {
+        // Debug: mostra os primeiros 300 chars para diagnosticar
+        console.warn(`   🔍 Preview da resposta: ${raw.slice(0, 300)}`);
+        throw new Error("Não foi possível encontrar HTML na resposta");
+      }
+      console.log(`   ✅ HTML gerado com sucesso (${html.length.toLocaleString()} chars)`);
+      return html;
+    } catch (e: any) {
+      const msg = String(e.message || "").slice(0, 200);
+      console.warn(`   ⚠️  tentativa ${attempt}: ${msg}`);
+      if (attempt < 3) await new Promise(r => setTimeout(r, 5000));
+    }
+  }
+  throw new Error("Groq falhou após 3 tentativas");
 }
 
 // ── Mercado Pago ──────────────────────────────────────────────────────────────
