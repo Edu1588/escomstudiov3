@@ -383,7 +383,7 @@ export function HomeV6() {
       <AboutInsightsStage Eyebrow={Eyebrow} />
 
       {/* BLOCO CLARO CONTÍNUO: FAQ (Bege) */}
-      <section className="border-t border-black/15 bg-[#ecece3] px-5 py-16 text-black md:px-12 xl:px-[22vw] md:py-32">
+      <section className="border-t border-black/15 bg-[#ecece3] px-5 pt-14 pb-12 text-black md:px-12 xl:px-[22vw] md:pt-20 md:pb-16">
         <Eyebrow light>{t.faqsSection.eyebrow}</Eyebrow>
         <div className="mt-8 md:mt-12 grid gap-8 md:gap-12 md:grid-cols-12">
           <h2 className="font-serif text-2xl sm:text-3xl md:text-5xl lg:text-6xl leading-snug md:leading-tight font-light md:col-span-4 text-black">

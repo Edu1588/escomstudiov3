@@ -33,20 +33,20 @@ export function ClientsMarqueeSection({ Eyebrow }: ClientsMarqueeSectionProps) {
   return (
     <section
       id="clientes"
-      className="border-t border-black/15 bg-[#ecece3] py-16 md:py-24 text-black overflow-hidden relative"
+      className="border-t border-black/15 bg-[#ecece3] pt-10 md:pt-14 pb-8 md:pb-10 text-black overflow-hidden relative"
     >
       <div className="px-5 md:px-12 xl:px-[22vw]">
         <Eyebrow light>✦ Clientes & Marcas Atendidas</Eyebrow>
         <InteractiveBlurTitle
           as="h3"
-          className="mt-4 md:mt-6 font-serif text-2xl sm:text-3xl md:text-4xl text-black font-light leading-snug"
+          className="mt-3 md:mt-5 font-serif text-2xl sm:text-3xl md:text-4xl text-black font-light leading-snug"
         >
           Empresas que confiam na engenharia e visão da ESCOM Studio
         </InteractiveBlurTitle>
       </div>
 
       {/* Faixa Marquee Contínua com Efeito Lento */}
-      <div className="relative mt-12 md:mt-16 w-full overflow-hidden border-y border-black/15 py-6 sm:py-8 bg-black/[0.015]">
+      <div className="relative mt-8 md:mt-10 w-full overflow-hidden border-y border-black/15 py-5 sm:py-6 bg-black/[0.015]">
         {/* Gradientes de fade nas laterais para suavizar entrada e saída */}
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 sm:w-32 bg-gradient-to-r from-[#ecece3] to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 sm:w-32 bg-gradient-to-l from-[#ecece3] to-transparent" />
