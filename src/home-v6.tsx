@@ -145,24 +145,46 @@ export function HomeV6() {
           {t.services.map((service) => (
             <article
               key={service.num}
-              className="group relative grid gap-4 md:gap-5 border-b border-border/40 py-6 md:py-9 px-4 sm:px-6 md:px-8 -mx-4 sm:-mx-6 md:-mx-8 rounded-lg md:grid-cols-12 md:items-start transition-all duration-300 hover:bg-cyan cursor-pointer"
+              className="group relative grid gap-4 md:gap-6 border-b border-border/40 py-7 md:py-10 px-5 sm:px-7 md:px-8 -mx-4 sm:-mx-6 md:-mx-8 rounded-xl md:grid-cols-12 md:items-start transition-all duration-300 ease-out hover:bg-cyan hover:scale-[1.018] md:hover:scale-[1.024] hover:z-20 hover:shadow-[0_25px_60px_-10px_rgba(0,209,255,0.25)] cursor-pointer"
             >
-              <span className="font-mono text-xs text-cyan group-hover:text-black font-medium transition-colors md:col-span-1">
+              <span className="font-mono text-xs text-cyan group-hover:text-black font-semibold transition-colors md:col-span-1">
                 {service.num}
               </span>
-              <h3 className="font-serif text-xl sm:text-2xl md:text-4xl text-foreground group-hover:text-black font-light leading-snug transition-colors md:col-span-3">
-                {service.title}
-              </h3>
-              <p className="text-xs sm:text-sm leading-5 md:leading-6 md:col-span-4 text-muted-foreground group-hover:text-black/90 transition-colors">
-                {service.desc}
-              </p>
               <div className="md:col-span-3">
+                <h3 className="font-serif text-xl sm:text-2xl md:text-3xl lg:text-[2rem] text-foreground group-hover:text-black font-light leading-snug transition-colors">
+                  {service.title}
+                </h3>
+              </div>
+              <div className="md:col-span-5 space-y-3">
+                <p className="text-xs sm:text-sm leading-5 md:leading-6 text-muted-foreground group-hover:text-black font-normal transition-colors">
+                  {service.desc}
+                </p>
+
+                {/* Bloco Didático com Foco em Prospecção e Valor para a Empresa */}
+                {service.whyNeed && (
+                  <div className="pt-2.5 border-t border-white/10 group-hover:border-black/20 space-y-1.5 transition-colors">
+                    <div className="flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-wider text-cyan group-hover:text-black font-bold">
+                      <span className="size-1 rounded-full bg-current" />
+                      <span>Por que sua empresa precisa:</span>
+                    </div>
+                    <p className="text-[11px] sm:text-xs leading-relaxed text-zinc-300 group-hover:text-black/95 font-medium transition-colors">
+                      {service.whyNeed}
+                    </p>
+                    {service.prospectFocus && (
+                      <p className="text-[10px] sm:text-[11px] leading-relaxed text-cyan/90 group-hover:text-black/90 font-mono font-semibold pt-0.5">
+                        → <strong>Impacto comercial:</strong> {service.prospectFocus}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+              <div className="md:col-span-3 flex flex-col justify-between h-full">
                 <p className="font-mono text-[9px] uppercase leading-5 tracking-[0.1em] text-muted-foreground/80 group-hover:text-black/80 transition-colors">
                   {service.items}
                 </p>
                 <a
                   href="#diagnostico"
-                  className="mt-4 md:mt-5 inline-flex items-center gap-2 border-b border-cyan group-hover:border-black pb-1 text-xs font-semibold text-cyan group-hover:text-black transition-colors"
+                  className="mt-4 md:mt-6 inline-flex items-center gap-2 border-b border-cyan group-hover:border-black pb-1 text-xs font-semibold text-cyan group-hover:text-black transition-colors self-start"
                 >
                   {service.cta}
                   <ArrowRight className="size-3 transition-transform group-hover:translate-x-1.5" />

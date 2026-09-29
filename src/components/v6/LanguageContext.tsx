@@ -38,6 +38,8 @@ export interface Translations {
     num: string;
     title: string;
     desc: string;
+    whyNeed?: string;
+    prospectFocus?: string;
     items: string;
     cta: string;
   }>;
@@ -176,6 +178,8 @@ const translations: Record<Language, Translations> = {
         num: "01",
         title: "Sites e experiências digitais",
         desc: "Sites, landing pages e plataformas construídos para comunicar valor, facilitar decisões e transformar atenção em oportunidade.",
+        whyNeed: "Um site genérico, lento ou com visual amador faz sua empresa perder contratos antes mesmo do primeiro contato. Desenvolvemos ecossistemas em Next.js com design suíço e 120fps que transmitem autoridade imediata, guiam o visitante direto para a decisão de compra e multiplicam a taxa de conversão do seu tráfego e indicações.",
+        prospectFocus: "Transforme visitas em clientes pagantes com arquitetura projetada para fechar negócios, não apenas visitas.",
         items: "Arquitetura · UX/UI · Copy · Desenvolvimento · Analytics · SEO",
         cta: "Construir minha presença digital",
       },
@@ -183,6 +187,8 @@ const translations: Record<Language, Translations> = {
         num: "02",
         title: "Branding e identidade de marca",
         desc: "Marcas com clareza estratégica, presença consistente e uma linguagem capaz de ocupar espaço na mente do público certo.",
+        whyNeed: "Sem diferenciação clara, seu negócio é forçado a disputar por preço. Estruturamos um posicionamento de alto valor percebido e linguagem visual sofisticada para sua empresa cobrar mais caro, atrair clientes de ticket superior e se consolidar como líder indiscutível no seu mercado.",
+        prospectFocus: "Elimine a guerra de preços. Faça seu cliente entender imediatamente por que o seu serviço vale mais.",
         items: "Posicionamento · Estratégia verbal · Identidade · Direção de arte",
         cta: "Estruturar minha marca",
       },
@@ -190,6 +196,8 @@ const translations: Record<Language, Translations> = {
         num: "03",
         title: "Automação e sistemas inteligentes",
         desc: "Processos mais rápidos, atendimento organizado e menos trabalho manual por meio de automações conectadas à operação real.",
+        whyNeed: "Vendedores sobrecarregados ou demora de minutos no primeiro atendimento custam dezenas de vendas todos os meses. Criamos integrações diretas entre CRM, WhatsApp e ERP que respondem leads em segundos, qualificam oportunidades e agendam reuniões 24 horas por dia.",
+        prospectFocus: "Atendimento comercial instantâneo: zero perda de oportunidades e aceleração comprovada do ciclo de fechamento.",
         items: "CRM · Integrações · Webhooks · Dashboards · Agentes de IA",
         cta: "Automatizar minha operação",
       },
@@ -197,6 +205,8 @@ const translations: Record<Language, Translations> = {
         num: "04",
         title: "Criações com inteligência artificial",
         desc: "Aplicações práticas de IA para acelerar comunicação, atendimento, produção, análise e tomada de decisão.",
+        whyNeed: "Enquanto concorrentes usam IA apenas para gerar textos básicos, construímos agentes autônomos treinados na inteligência e nas regras do seu negócio para realizar triagem avançada de orçamentos, prospecção e rotinas complexas que antes demandavam dias.",
+        prospectFocus: "Multiplique a capacidade produtiva da sua equipe comercial e responda demandas de clientes em tempo real.",
         items: "Agentes · Assistentes · Conteúdo · Protótipos · Soluções sob medida",
         cta: "Explorar IA para meu negócio",
       },
@@ -204,6 +214,8 @@ const translations: Record<Language, Translations> = {
         num: "05",
         title: "Tráfego pago e aquisição",
         desc: "Campanhas orientadas por objetivo, dados e aprendizado contínuo para atrair demanda qualificada.",
+        whyNeed: "Investir em anúncios sem uma estratégia de funil e criativos de alto impacto é queimar orçamento. Criamos campanhas cirúrgicas em Meta Ads e Google Ads orientadas por CAC e LTV, atraindo tomadores de decisão com demanda reprimida e poder real de compra.",
+        prospectFocus: "Fluxo constante, previsível e escalável de novos contatos qualificados na mesa dos seus consultores.",
         items: "Mídia · Criativos · Públicos · Funil · Remarketing · Otimização",
         cta: "Acelerar minha aquisição",
       },
@@ -211,6 +223,8 @@ const translations: Record<Language, Translations> = {
         num: "06",
         title: "Estratégia digital e crescimento",
         desc: "Um mapa claro para decidir o que construir e conectar marketing, tecnologia e vendas em uma operação sustentável.",
+        whyNeed: "Ações isoladas e sem direção consomem tempo, verba e não geram escala. Mapeamos gargalos operacionais e traçamos o plano de ação exato integrando marca, canais, produto e funil para sua empresa expandir com previsibilidade e margem de lucro saudável.",
+        prospectFocus: "Visão executiva clara de onde investir cada centavo para maximizar receita e dominar seu segmento.",
         items: "Diagnóstico · Pesquisa · Oferta · Jornada · Plano de ação",
         cta: "Organizar meu próximo ciclo",
       },
