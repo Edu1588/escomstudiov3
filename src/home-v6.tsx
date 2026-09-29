@@ -16,7 +16,6 @@ import { FeaturedWorksSection } from "@/components/v6/FeaturedWorksSection";
 import { ClientsMarqueeSection } from "@/components/v6/ClientsMarqueeSection";
 import { InteractiveBlurTitle } from "@/components/v6/InteractiveBlurTitle";
 import RobotBust3D from "@/components/RobotBust3D";
-import { FlameWrap } from "@/components/ui/flame-wrap";
 
 import {
   Accordion,
@@ -78,7 +77,6 @@ function AnchorButton({
 
 export function HomeV6() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [hoveredService, setHoveredService] = useState<string | null>(null);
   const { t } = useLanguage();
 
   const navLinks = [
@@ -144,56 +142,34 @@ export function HomeV6() {
         className="relative bg-[#000000] px-5 pb-28 md:px-12 xl:px-[22vw] md:pb-36 dark text-foreground"
       >
         <div className="border-t border-border/50">
-          {t.services.map((service) => {
-            const isHovered = hoveredService === service.num;
-            return (
-              <FlameWrap
-                key={service.num}
-                enabled={isHovered}
-                color={[0, 0.82, 1]}
-                intensity={1.15}
-                height={85}
-                spread={14}
-                radius={8}
-                speed={0.35}
-                sparks={1.8}
-                sparkSize={0.4}
-                sparkDensity={1.3}
-                rim={2.4}
-                smoke={0.4}
-                ember={1.8}
-                className="w-full my-0.5"
-              >
-                <article
-                  onMouseEnter={() => setHoveredService(service.num)}
-                  onMouseLeave={() => setHoveredService(null)}
-                  className="group relative grid gap-4 md:gap-5 border-b border-border/40 py-6 md:py-9 px-4 sm:px-6 md:px-8 -mx-4 sm:-mx-6 md:-mx-8 rounded-lg md:grid-cols-12 md:items-start transition-all duration-300 hover:bg-cyan cursor-pointer"
+          {t.services.map((service) => (
+            <article
+              key={service.num}
+              className="group relative grid gap-4 md:gap-5 border-b border-border/40 py-6 md:py-9 px-4 sm:px-6 md:px-8 -mx-4 sm:-mx-6 md:-mx-8 rounded-lg md:grid-cols-12 md:items-start transition-all duration-300 hover:bg-cyan cursor-pointer"
+            >
+              <span className="font-mono text-xs text-cyan group-hover:text-black font-medium transition-colors md:col-span-1">
+                {service.num}
+              </span>
+              <h3 className="font-serif text-xl sm:text-2xl md:text-4xl text-foreground group-hover:text-black font-light leading-snug transition-colors md:col-span-3">
+                {service.title}
+              </h3>
+              <p className="text-xs sm:text-sm leading-5 md:leading-6 md:col-span-4 text-muted-foreground group-hover:text-black/90 transition-colors">
+                {service.desc}
+              </p>
+              <div className="md:col-span-3">
+                <p className="font-mono text-[9px] uppercase leading-5 tracking-[0.1em] text-muted-foreground/80 group-hover:text-black/80 transition-colors">
+                  {service.items}
+                </p>
+                <a
+                  href="#diagnostico"
+                  className="mt-4 md:mt-5 inline-flex items-center gap-2 border-b border-cyan group-hover:border-black pb-1 text-xs font-semibold text-cyan group-hover:text-black transition-colors"
                 >
-                  <span className="font-mono text-xs text-cyan group-hover:text-black font-medium transition-colors md:col-span-1">
-                    {service.num}
-                  </span>
-                  <h3 className="font-serif text-xl sm:text-2xl md:text-4xl text-foreground group-hover:text-black font-light leading-snug transition-colors md:col-span-3">
-                    {service.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm leading-5 md:leading-6 md:col-span-4 text-muted-foreground group-hover:text-black/90 transition-colors">
-                    {service.desc}
-                  </p>
-                  <div className="md:col-span-3">
-                    <p className="font-mono text-[9px] uppercase leading-5 tracking-[0.1em] text-muted-foreground/80 group-hover:text-black/80 transition-colors">
-                      {service.items}
-                    </p>
-                    <a
-                      href="#diagnostico"
-                      className="mt-4 md:mt-5 inline-flex items-center gap-2 border-b border-cyan group-hover:border-black pb-1 text-xs font-semibold text-cyan group-hover:text-black transition-colors"
-                    >
-                      {service.cta}
-                      <ArrowRight className="size-3 transition-transform group-hover:translate-x-1.5" />
-                    </a>
-                  </div>
-                </article>
-              </FlameWrap>
-            );
-          })}
+                  {service.cta}
+                  <ArrowRight className="size-3 transition-transform group-hover:translate-x-1.5" />
+                </a>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
 

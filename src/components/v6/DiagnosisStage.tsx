@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/components/v6/LanguageContext";
+import { FlameWrap } from "@/components/ui/flame-wrap";
 
 export function DiagnosisStage({
   Eyebrow,
@@ -176,76 +177,91 @@ export function DiagnosisStage({
                 </a>
               </div>
               <div className="md:col-span-6 md:col-start-7">
-                {sent ? (
-                  <div className="flex min-h-60 md:min-h-72 flex-col justify-center border-y border-border p-5 md:p-6">
-                    <Check className="mb-4 size-6 md:size-8 text-cyan" />
-                    <h3 className="font-serif text-2xl md:text-3xl">
-                      {t.diagnosis.successTitle}
-                    </h3>
-                    <p className="mt-3 max-w-md text-xs sm:text-sm leading-5 md:leading-6 text-muted-foreground">
-                      {t.diagnosis.successDesc}
-                    </p>
-                  </div>
-                ) : (
-                  <form onSubmit={submit} className="space-y-3 md:space-y-4">
-                    <h3 className="font-serif text-lg sm:text-xl md:text-3xl">
-                      {t.diagnosis.formTitle}
-                    </h3>
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <Input
-                        required
-                        placeholder={t.diagnosis.namePlaceholder}
-                        value={formData.nome}
-                        onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                        className="border-border bg-transparent text-foreground placeholder:text-muted-foreground"
-                      />
-                      <Input
-                        required
-                        placeholder={t.diagnosis.companyPlaceholder}
-                        value={formData.empresa}
-                        onChange={(e) => setFormData({ ...formData, empresa: e.target.value })}
-                        className="border-border bg-transparent text-foreground placeholder:text-muted-foreground"
-                      />
+                <FlameWrap
+                  enabled={true}
+                  color={[0, 0.82, 1]}
+                  intensity={1.25}
+                  height={80}
+                  spread={16}
+                  radius={16}
+                  sparks={1.8}
+                  sparkSize={1.2}
+                  sparkDensity={1.2}
+                  sparkSpeed={1.1}
+                  smoke={0.35}
+                  className="rounded-2xl border border-cyan/30 bg-[#080808]/90 p-6 sm:p-8 backdrop-blur-md shadow-[0_0_35px_rgba(0,209,255,0.12)]"
+                >
+                  {sent ? (
+                    <div className="flex min-h-60 md:min-h-72 flex-col justify-center p-2">
+                      <Check className="mb-4 size-6 md:size-8 text-cyan" />
+                      <h3 className="font-serif text-2xl md:text-3xl">
+                        {t.diagnosis.successTitle}
+                      </h3>
+                      <p className="mt-3 max-w-md text-xs sm:text-sm leading-5 md:leading-6 text-muted-foreground">
+                        {t.diagnosis.successDesc}
+                      </p>
                     </div>
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <Input
+                  ) : (
+                    <form onSubmit={submit} className="space-y-3 md:space-y-4">
+                      <h3 className="font-serif text-lg sm:text-xl md:text-3xl">
+                        {t.diagnosis.formTitle}
+                      </h3>
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <Input
+                          required
+                          placeholder={t.diagnosis.namePlaceholder}
+                          value={formData.nome}
+                          onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                          className="border-border bg-black/40 text-foreground placeholder:text-muted-foreground focus-visible:border-cyan"
+                        />
+                        <Input
+                          required
+                          placeholder={t.diagnosis.companyPlaceholder}
+                          value={formData.empresa}
+                          onChange={(e) => setFormData({ ...formData, empresa: e.target.value })}
+                          className="border-border bg-black/40 text-foreground placeholder:text-muted-foreground focus-visible:border-cyan"
+                        />
+                      </div>
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <Input
+                          required
+                          type="email"
+                          placeholder={t.diagnosis.emailPlaceholder}
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          className="border-border bg-black/40 text-foreground placeholder:text-muted-foreground focus-visible:border-cyan"
+                        />
+                        <Input
+                          placeholder={t.diagnosis.phonePlaceholder}
+                          value={formData.whatsapp}
+                          onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+                          className="border-border bg-black/40 text-foreground placeholder:text-muted-foreground focus-visible:border-cyan"
+                        />
+                      </div>
+                      <Textarea
                         required
-                        type="email"
-                        placeholder={t.diagnosis.emailPlaceholder}
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="border-border bg-transparent text-foreground placeholder:text-muted-foreground"
+                        rows={3}
+                        placeholder={t.diagnosis.msgPlaceholder}
+                        value={formData.mensagem}
+                        onChange={(e) => setFormData({ ...formData, mensagem: e.target.value })}
+                        className="border-border bg-black/40 text-foreground placeholder:text-muted-foreground focus-visible:border-cyan"
                       />
-                      <Input
-                        placeholder={t.diagnosis.phonePlaceholder}
-                        value={formData.whatsapp}
-                        onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
-                        className="border-border bg-transparent text-foreground placeholder:text-muted-foreground"
-                      />
-                    </div>
-                    <Textarea
-                      required
-                      rows={3}
-                      placeholder={t.diagnosis.msgPlaceholder}
-                      value={formData.mensagem}
-                      onChange={(e) => setFormData({ ...formData, mensagem: e.target.value })}
-                      className="border-border bg-transparent text-foreground placeholder:text-muted-foreground"
-                    />
-                    <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
-                      <Button
-                        type="submit"
-                        size="xl"
-                        variant="editorial"
-                      >
-                        {t.diagnosis.submitBtn}
-                        <ArrowRight />
-                      </Button>
-                      <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
-                        {t.diagnosis.sla}
-                      </span>
-                    </div>
-                  </form>
-                )}
+                      <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
+                        <Button
+                          type="submit"
+                          size="xl"
+                          variant="editorial"
+                        >
+                          {t.diagnosis.submitBtn}
+                          <ArrowRight />
+                        </Button>
+                        <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
+                          {t.diagnosis.sla}
+                        </span>
+                      </div>
+                    </form>
+                  )}
+                </FlameWrap>
               </div>
             </div>
           </div>
