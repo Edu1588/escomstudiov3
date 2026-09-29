@@ -145,7 +145,7 @@ export function HomeV6() {
           {t.services.map((service) => (
             <article
               key={service.num}
-              className="group relative grid gap-4 md:gap-6 border-b border-border/40 py-7 md:py-10 px-5 sm:px-7 md:px-8 -mx-4 sm:-mx-6 md:-mx-8 rounded-xl md:grid-cols-12 md:items-start transition-all duration-300 ease-out hover:bg-cyan hover:scale-[1.018] md:hover:scale-[1.024] hover:z-20 hover:shadow-[0_25px_60px_-10px_rgba(0,209,255,0.25)] cursor-pointer"
+              className="group relative grid gap-4 md:gap-6 border-b border-border/40 py-6 md:py-8 px-5 sm:px-7 md:px-8 -mx-4 sm:-mx-6 md:-mx-8 rounded-2xl md:grid-cols-12 md:items-start transition-all duration-300 ease-out hover:bg-cyan hover:scale-[1.045] md:hover:scale-[1.06] hover:z-30 hover:shadow-[0_30px_90px_rgba(0,0,0,0.85),0_0_40px_rgba(0,209,255,0.35)] cursor-pointer"
             >
               <span className="font-mono text-xs text-cyan group-hover:text-black font-semibold transition-colors md:col-span-1">
                 {service.num}
@@ -160,18 +160,18 @@ export function HomeV6() {
                   {service.desc}
                 </p>
 
-                {/* Bloco Didático com Foco em Prospecção e Valor para a Empresa */}
+                {/* Bloco Didático com Foco em Prospecção: Resumido/Oculto sem hover, desdobra completamente no hover estilo popup */}
                 {service.whyNeed && (
-                  <div className="pt-2.5 border-t border-white/10 group-hover:border-black/20 space-y-1.5 transition-colors">
-                    <div className="flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-wider text-cyan group-hover:text-black font-bold">
+                  <div className="max-h-0 opacity-0 overflow-hidden group-hover:max-h-96 group-hover:opacity-100 group-hover:pt-3 border-t-0 group-hover:border-t group-hover:border-black/20 space-y-1.5 transition-all duration-300 ease-out">
+                    <div className="flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-wider text-black font-bold">
                       <span className="size-1 rounded-full bg-current" />
                       <span>Por que sua empresa precisa:</span>
                     </div>
-                    <p className="text-[11px] sm:text-xs leading-relaxed text-zinc-300 group-hover:text-black/95 font-medium transition-colors">
+                    <p className="text-[11px] sm:text-xs leading-relaxed text-black/95 font-medium">
                       {service.whyNeed}
                     </p>
                     {service.prospectFocus && (
-                      <p className="text-[10px] sm:text-[11px] leading-relaxed text-cyan/90 group-hover:text-black/90 font-mono font-semibold pt-0.5">
+                      <p className="text-[10px] sm:text-[11px] leading-relaxed text-black/90 font-mono font-semibold pt-0.5">
                         → <strong>Impacto comercial:</strong> {service.prospectFocus}
                       </p>
                     )}
