@@ -40,6 +40,7 @@ export interface Translations {
     desc: string;
     whyNeed?: string;
     prospectFocus?: string;
+    thumb?: string;
     items: string;
     cta: string;
   }>;
@@ -180,6 +181,7 @@ const translations: Record<Language, Translations> = {
         desc: "Sites, landing pages e plataformas construídos para comunicar valor, facilitar decisões e transformar atenção em oportunidade.",
         whyNeed: "Um site genérico, lento ou com visual amador faz sua empresa perder contratos antes mesmo do primeiro contato. Desenvolvemos ecossistemas em Next.js com design suíço e 120fps que transmitem autoridade imediata, guiam o visitante direto para a decisão de compra e multiplicam a taxa de conversão do seu tráfego e indicações.",
         prospectFocus: "Transforme visitas em clientes pagantes com arquitetura projetada para fechar negócios, não apenas visitas.",
+        thumb: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/hero%20sections/animated%20(8).webp",
         items: "Arquitetura · UX/UI · Copy · Desenvolvimento · Analytics · SEO",
         cta: "Construir minha presença digital",
       },
@@ -189,6 +191,7 @@ const translations: Record<Language, Translations> = {
         desc: "Marcas com clareza estratégica, presença consistente e uma linguagem capaz de ocupar espaço na mente do público certo.",
         whyNeed: "Sem diferenciação clara, seu negócio é forçado a disputar por preço. Estruturamos um posicionamento de alto valor percebido e linguagem visual sofisticada para sua empresa cobrar mais caro, atrair clientes de ticket superior e se consolidar como líder indiscutível no seu mercado.",
         prospectFocus: "Elimine a guerra de preços. Faça seu cliente entender imediatamente por que o seu serviço vale mais.",
+        thumb: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/hero%20sections/animated%20(38).webp",
         items: "Posicionamento · Estratégia verbal · Identidade · Direção de arte",
         cta: "Estruturar minha marca",
       },
@@ -198,6 +201,7 @@ const translations: Record<Language, Translations> = {
         desc: "Processos mais rápidos, atendimento organizado e menos trabalho manual por meio de automações conectadas à operação real.",
         whyNeed: "Vendedores sobrecarregados ou demora de minutos no primeiro atendimento custam dezenas de vendas todos os meses. Criamos integrações diretas entre CRM, WhatsApp e ERP que respondem leads em segundos, qualificam oportunidades e agendam reuniões 24 horas por dia.",
         prospectFocus: "Atendimento comercial instantâneo: zero perda de oportunidades e aceleração comprovada do ciclo de fechamento.",
+        thumb: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/animated%20(63).webp",
         items: "CRM · Integrações · Webhooks · Dashboards · Agentes de IA",
         cta: "Automatizar minha operação",
       },
@@ -489,6 +493,7 @@ const translations: Record<Language, Translations> = {
         num: "01",
         title: "Websites & Digital Experiences",
         desc: "Websites, landing pages, and web apps engineered to communicate authority, streamline decisions, and convert traffic into revenue.",
+        thumb: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/hero%20sections/animated%20(8).webp",
         items: "Architecture · UI/UX · Copywriting · Development · Analytics · SEO",
         cta: "Build my digital presence",
       },
@@ -496,6 +501,7 @@ const translations: Record<Language, Translations> = {
         num: "02",
         title: "Brand Identity & Strategy",
         desc: "Brands built with sharp strategic positioning, cohesive visual systems, and a verbal voice that dominates the target market.",
+        thumb: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/hero%20sections/animated%20(38).webp",
         items: "Positioning · Verbal strategy · Visual identity · Art direction",
         cta: "Structure my brand",
       },
@@ -503,6 +509,7 @@ const translations: Record<Language, Translations> = {
         num: "03",
         title: "Intelligent Systems & Automation",
         desc: "Faster workflows, structured customer service, and zero manual toil through bespoke integrations tied to your actual business operations.",
+        thumb: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/animated%20(63).webp",
         items: "CRM · API Integrations · Webhooks · Live Dashboards · AI Agents",
         cta: "Automate my operations",
       },
@@ -788,6 +795,7 @@ const translations: Record<Language, Translations> = {
         num: "01",
         title: "Sitios web y experiencias digitales",
         desc: "Sitios web, landing pages y plataformas diseñadas para comunicar autoridad, facilitar decisiones y convertir atención en clientes.",
+        thumb: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/hero%20sections/animated%20(8).webp",
         items: "Arquitectura · UI/UX · Copywriting · Desarrollo · Analytics · SEO",
         cta: "Construir mi presencia digital",
       },
@@ -796,6 +804,7 @@ const translations: Record<Language, Translations> = {
         title: "Branding e identidad de marca",
         desc: "Marcas con posicionamiento estratégico, presencia coherente y un lenguaje diseñado para destacar en la mente de la audiencia correcta.",
         items: "Posicionamiento · Estrategia verbal · Identidad · Dirección de arte",
+        thumb: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/hero%20sections/animated%20(38).webp",
         cta: "Estructurar mi marca",
       },
       {
@@ -803,6 +812,7 @@ const translations: Record<Language, Translations> = {
         title: "Automatización y sistemas inteligentes",
         desc: "Procesos más ágiles, atención organizada y cero fricción manual mediante integraciones conectadas a la operativa real.",
         items: "CRM · Webhooks · Integraciones API · Dashboards · Agentes IA",
+        thumb: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/animated%20(63).webp",
         cta: "Automatizar mi operación",
       },
       {

@@ -195,11 +195,20 @@ export function MusicPortfolio({
 }: MusicPortfolioProps) {
   const [activeIndex, setActiveIndex] = useState(-1);
   const [mobileActiveIndex, setMobileActiveIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const [isIdle, setIsIdle] = useState(true);
   const [activeMedia, setActiveMedia] = useState<{ url: string; isVideo: boolean }>({
     url: PROJECTS_DATA[0]?.video || "",
     isVideo: true,
   });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // Posição suave do popup follower
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -219,8 +228,8 @@ export function MusicPortfolio({
     const y = e.clientY;
 
     if (popupRef.current) {
-      const cardWidth = 380;
-      const cardHeight = 260;
+      const cardWidth = 540;
+      const cardHeight = 350;
       const pad = 24;
 
       // Se estiver muito à direita da tela, inverte para a esquerda do cursor
@@ -336,8 +345,8 @@ export function MusicPortfolio({
       if (popupRef.current) {
         const x = e.clientX;
         const y = e.clientY;
-        const cardWidth = 380;
-        const cardHeight = 260;
+        const cardWidth = 540;
+        const cardHeight = 350;
         const pad = 24;
 
         let posX = x + pad;
@@ -450,14 +459,14 @@ export function MusicPortfolio({
       {/* POPUP PREVIEW CARD FLUTUANTE QUE SEGUE O CURSOR (DESKTOP) */}
       <div
         ref={popupRef}
-        className={`pointer-events-none fixed top-0 left-0 z-50 hidden md:block overflow-hidden rounded-xl border border-cyan/40 bg-[#080808]/95 p-2 shadow-[0_25px_60px_rgba(0,0,0,0.85)] backdrop-blur-xl transition-[opacity,transform] duration-200 ${
+        className={`pointer-events-none fixed top-0 left-0 z-50 hidden md:block overflow-hidden rounded-2xl border border-cyan/50 bg-[#080808]/95 p-3 shadow-[0_30px_90px_rgba(0,0,0,0.95),0_0_40px_rgba(0,209,255,0.35)] backdrop-blur-xl transition-[opacity,transform] duration-200 ${
           activeIndex !== -1
             ? "opacity-100 scale-100"
             : "opacity-0 scale-95 pointer-events-none"
         }`}
-        style={{ width: "380px" }}
+        style={{ width: "540px" }}
       >
-        <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-zinc-950 border border-white/10">
+        <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-zinc-950 border border-white/10 shadow-inner">
           <video
             ref={popupVideoRef}
             src={activeMedia.url}
@@ -467,16 +476,16 @@ export function MusicPortfolio({
             playsInline
             className="h-full w-full object-cover"
           />
-          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 rounded-full bg-black/80 px-2.5 py-1 font-mono text-[9px] uppercase tracking-wider text-cyan backdrop-blur-md border border-cyan/30">
-            <span className="size-1.5 rounded-full bg-cyan animate-pulse" />
-            <span>{activeProject?.artist}</span>
+          <div className="absolute top-3 left-3 flex items-center gap-2 rounded-full bg-black/85 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-cyan backdrop-blur-md border border-cyan/40 shadow-sm">
+            <span className="size-2 rounded-full bg-cyan animate-pulse" />
+            <span className="font-semibold">{activeProject?.artist}</span>
           </div>
         </div>
-        <div className="mt-2.5 flex items-center justify-between px-1.5 py-0.5 font-mono text-[10px]">
-          <span className="text-white font-medium truncate max-w-[240px]">
+        <div className="mt-3 flex items-center justify-between px-2 py-0.5 font-mono text-xs">
+          <span className="text-white font-medium truncate max-w-[340px]">
             {activeProject?.album}
           </span>
-          <span className="text-cyan font-mono">{activeProject?.year}</span>
+          <span className="text-cyan font-mono font-semibold">{activeProject?.year}</span>
         </div>
       </div>
 
@@ -586,7 +595,7 @@ export function MusicPortfolio({
                 onMouseEnter={handleProjectMouseEnter}
                 onMouseLeave={handleProjectMouseLeave}
                 onClick={handleProjectClick}
-                isActive={activeIndex === index || mobileActiveIndex === index}
+                isActive={activeIndex !== -1 ? activeIndex === index : (isMobile && mobileActiveIndex === index)}
                 isIdle={isIdle}
                 setRef={(el) => {
                   projectItemsRef.current[index] = el;

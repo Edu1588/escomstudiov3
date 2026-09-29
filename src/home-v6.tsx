@@ -150,10 +150,25 @@ export function HomeV6() {
               <span className="font-mono text-xs group-hover:text-sm md:group-hover:text-base text-cyan group-hover:text-black font-semibold group-hover:font-bold transition-all md:col-span-1">
                 {service.num}
               </span>
-              <div className="md:col-span-3">
+              <div className="md:col-span-3 flex flex-col justify-between h-full">
                 <h3 className="font-serif text-xl sm:text-2xl md:text-3xl lg:text-[2rem] group-hover:text-2xl sm:group-hover:text-3xl md:group-hover:text-4xl lg:group-hover:text-[2.45rem] text-foreground group-hover:text-black font-light group-hover:font-normal leading-snug group-hover:leading-tight transition-all">
                   {service.title}
                 </h3>
+
+                {/* Pequena thumb animada abaixo do título revelada exclusivamente no hover */}
+                {service.thumb && (
+                  <div className="max-h-0 opacity-0 overflow-hidden group-hover:max-h-48 group-hover:opacity-100 group-hover:mt-4 transition-all duration-300 ease-out">
+                    <div className="relative w-full max-w-[220px] aspect-[16/10] rounded-xl overflow-hidden border border-black/20 shadow-md bg-black/10">
+                      <img
+                        src={service.thumb}
+                        alt={service.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-xl pointer-events-none" />
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="md:col-span-5 space-y-3.5">
                 <p className="text-xs sm:text-sm group-hover:text-sm sm:group-hover:text-base md:group-hover:text-[1.05rem] leading-5 md:leading-6 group-hover:leading-relaxed text-muted-foreground group-hover:text-black font-normal group-hover:font-medium transition-all">
