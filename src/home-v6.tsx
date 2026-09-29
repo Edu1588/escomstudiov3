@@ -145,49 +145,49 @@ export function HomeV6() {
           {t.services.map((service) => (
             <article
               key={service.num}
-              className="group relative grid gap-4 md:gap-6 border-b border-border/40 py-6 md:py-8 px-5 sm:px-7 md:px-8 -mx-4 sm:-mx-6 md:-mx-8 rounded-2xl md:grid-cols-12 md:items-start transition-all duration-300 ease-out hover:bg-cyan hover:scale-[1.045] md:hover:scale-[1.06] hover:z-30 hover:shadow-[0_30px_90px_rgba(0,0,0,0.85),0_0_40px_rgba(0,209,255,0.35)] cursor-pointer"
+              className="group relative grid gap-5 md:gap-8 border-b border-border/40 py-6 md:py-8 group-hover:py-9 md:group-hover:py-12 px-5 sm:px-7 md:px-8 group-hover:px-7 md:group-hover:px-10 -mx-4 sm:-mx-6 md:-mx-8 rounded-2xl group-hover:rounded-3xl md:grid-cols-12 md:items-start transition-all duration-300 ease-out hover:bg-cyan hover:scale-[1.05] sm:hover:scale-[1.07] lg:hover:scale-[1.09] hover:z-40 hover:shadow-[0_35px_100px_rgba(0,0,0,0.95),0_0_60px_rgba(0,209,255,0.45)] cursor-pointer"
             >
-              <span className="font-mono text-xs text-cyan group-hover:text-black font-semibold transition-colors md:col-span-1">
+              <span className="font-mono text-xs group-hover:text-sm md:group-hover:text-base text-cyan group-hover:text-black font-semibold group-hover:font-bold transition-all md:col-span-1">
                 {service.num}
               </span>
               <div className="md:col-span-3">
-                <h3 className="font-serif text-xl sm:text-2xl md:text-3xl lg:text-[2rem] text-foreground group-hover:text-black font-light leading-snug transition-colors">
+                <h3 className="font-serif text-xl sm:text-2xl md:text-3xl lg:text-[2rem] group-hover:text-2xl sm:group-hover:text-3xl md:group-hover:text-4xl lg:group-hover:text-[2.45rem] text-foreground group-hover:text-black font-light group-hover:font-normal leading-snug group-hover:leading-tight transition-all">
                   {service.title}
                 </h3>
               </div>
-              <div className="md:col-span-5 space-y-3">
-                <p className="text-xs sm:text-sm leading-5 md:leading-6 text-muted-foreground group-hover:text-black font-normal transition-colors">
+              <div className="md:col-span-5 space-y-3.5">
+                <p className="text-xs sm:text-sm group-hover:text-sm sm:group-hover:text-base md:group-hover:text-[1.05rem] leading-5 md:leading-6 group-hover:leading-relaxed text-muted-foreground group-hover:text-black font-normal group-hover:font-medium transition-all">
                   {service.desc}
                 </p>
 
-                {/* Bloco Didático com Foco em Prospecção: Resumido/Oculto sem hover, desdobra completamente no hover estilo popup */}
+                {/* Bloco Didático com Foco em Prospecção: Resumido/Oculto sem hover, desdobra completamente no hover com letras aumentadas */}
                 {service.whyNeed && (
-                  <div className="max-h-0 opacity-0 overflow-hidden group-hover:max-h-96 group-hover:opacity-100 group-hover:pt-3 border-t-0 group-hover:border-t group-hover:border-black/20 space-y-1.5 transition-all duration-300 ease-out">
-                    <div className="flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-wider text-black font-bold">
-                      <span className="size-1 rounded-full bg-current" />
+                  <div className="max-h-0 opacity-0 overflow-hidden group-hover:max-h-[500px] group-hover:opacity-100 group-hover:pt-4 border-t-0 group-hover:border-t group-hover:border-black/25 space-y-2 transition-all duration-300 ease-out">
+                    <div className="flex items-center gap-2 font-mono text-[9px] group-hover:text-xs uppercase tracking-wider text-black font-black">
+                      <span className="size-1.5 rounded-full bg-black" />
                       <span>Por que sua empresa precisa:</span>
                     </div>
-                    <p className="text-[11px] sm:text-xs leading-relaxed text-black/95 font-medium">
+                    <p className="text-[11px] sm:text-xs group-hover:text-sm sm:group-hover:text-[0.95rem] leading-relaxed text-black/95 font-semibold transition-all">
                       {service.whyNeed}
                     </p>
                     {service.prospectFocus && (
-                      <p className="text-[10px] sm:text-[11px] leading-relaxed text-black/90 font-mono font-semibold pt-0.5">
+                      <p className="text-[10px] sm:text-[11px] group-hover:text-xs sm:group-hover:text-sm leading-relaxed text-black font-mono font-bold pt-1 transition-all">
                         → <strong>Impacto comercial:</strong> {service.prospectFocus}
                       </p>
                     )}
                   </div>
                 )}
               </div>
-              <div className="md:col-span-3 flex flex-col justify-between h-full">
-                <p className="font-mono text-[9px] uppercase leading-5 tracking-[0.1em] text-muted-foreground/80 group-hover:text-black/80 transition-colors">
+              <div className="md:col-span-3 flex flex-col justify-between h-full space-y-4">
+                <p className="font-mono text-[9px] group-hover:text-[11px] sm:group-hover:text-xs uppercase leading-5 group-hover:leading-6 tracking-[0.1em] text-muted-foreground/80 group-hover:text-black/90 font-medium transition-all">
                   {service.items}
                 </p>
                 <a
                   href="#diagnostico"
-                  className="mt-4 md:mt-6 inline-flex items-center gap-2 border-b border-cyan group-hover:border-black pb-1 text-xs font-semibold text-cyan group-hover:text-black transition-colors self-start"
+                  className="mt-4 md:mt-6 inline-flex items-center gap-2 border-b border-cyan group-hover:border-black pb-1 text-xs group-hover:text-sm sm:group-hover:text-base font-semibold group-hover:font-bold text-cyan group-hover:text-black transition-all self-start"
                 >
                   {service.cta}
-                  <ArrowRight className="size-3 transition-transform group-hover:translate-x-1.5" />
+                  <ArrowRight className="size-3 group-hover:size-4 transition-transform group-hover:translate-x-2" />
                 </a>
               </div>
             </article>
