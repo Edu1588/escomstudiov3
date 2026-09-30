@@ -169,18 +169,18 @@ const translations: Record<Language, Translations> = {
       tag: "SYSTEM ARCHITECTURE",
     },
     servicesHeading: {
-      eyebrow: "Sistemas desenhados para gerar tração real",
+      eyebrow: "Sistemas desenhados para gerar tração comercial",
       title: "Arquitetura completa para empresas em expansão.",
       description:
-        "Cada solução funciona de forma autônoma ou integrada em um ecossistema digital contínuo.",
+        "Cada solução funciona de forma autônoma ou conectada à operação da sua empresa.",
     },
     services: [
       {
         num: "01",
         title: "Sites e experiências digitais",
         desc: "Sites, landing pages e plataformas construídos para comunicar valor, facilitar decisões e transformar atenção em oportunidade.",
-        whyNeed: "Um site genérico, lento ou com visual amador faz sua empresa perder contratos antes mesmo do primeiro contato. Desenvolvemos ecossistemas em Next.js com design suíço e 120fps que transmitem autoridade imediata, guiam o visitante direto para a decisão de compra e multiplicam a taxa de conversão do seu tráfego e indicações.",
-        prospectFocus: "Transforme visitas em clientes pagantes com arquitetura projetada para fechar negócios, não apenas visitas.",
+        whyNeed: "Um site lento ou confuso afasta clientes qualificados antes do primeiro contato. Desenvolvemos páginas em Next.js com carregamento instantâneo e navegação objetiva para conduzir o visitante direto à decisão de compra.",
+        prospectFocus: "Estruture páginas que facilitam a decisão do comprador e reduzem o ciclo de fechamento.",
         thumb: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/hero%20sections/animated%20(8).webp",
         items: "Arquitetura · UX/UI · Copy · Desenvolvimento · Analytics · SEO",
         cta: "Construir minha presença digital",
@@ -189,8 +189,8 @@ const translations: Record<Language, Translations> = {
         num: "02",
         title: "Branding e identidade de marca",
         desc: "Marcas com clareza estratégica, presença consistente e uma linguagem capaz de ocupar espaço na mente do público certo.",
-        whyNeed: "Sem diferenciação clara, seu negócio é forçado a disputar por preço. Estruturamos um posicionamento de alto valor percebido e linguagem visual sofisticada para sua empresa cobrar mais caro, atrair clientes de ticket superior e se consolidar como líder indiscutível no seu mercado.",
-        prospectFocus: "Elimine a guerra de preços. Faça seu cliente entender imediatamente por que o seu serviço vale mais.",
+        whyNeed: "Sem diferenciação clara, sua empresa disputa contratos por preço. Estruturamos um posicionamento com identidade visual precisa para justificar valores mais altos e atrair clientes corporativos mais qualificados.",
+        prospectFocus: "Diferenciação clara perante a concorrência e maior poder de precificação.",
         thumb: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/hero%20sections/animated%20(38).webp",
         items: "Posicionamento · Estratégia verbal · Identidade · Direção de arte",
         cta: "Estruturar minha marca",
@@ -234,17 +234,17 @@ const translations: Record<Language, Translations> = {
       },
     ],
     method: {
-      eyebrow: "Não somos uma fábrica de entregáveis",
-      title: "Cada projeto começa pelo problema. E termina em uma estrutura que pode evoluir.",
+      eyebrow: "Engenharia orientada a negócio",
+      title: "Projetamos a estrutura técnica e visual a partir dos objetivos comerciais da empresa.",
       desc:
-        "A ESCOM não começa perguntando qual peça você quer produzir. Começa entendendo o que precisa mudar no negócio. Combinamos pensamento estratégico, design, código, dados e automação para construir somente o que tem função no seu crescimento.",
+        "Em vez de produzir entregáveis avulsos de design ou código sem contexto, alinhamos marca, plataforma e automação para sustentar as metas da sua operação.",
       tag: "OPERATIONAL METHOD",
       steps: [
         "Estratégia antes da execução.",
-        "Tecnologia com função.",
+        "Tecnologia com função clara.",
         "Design que orienta decisões.",
-        "Operação conectada.",
-        "Evolução contínua.",
+        "Operação conectada aos canais de venda.",
+        "Aprimoramento contínuo baseado em métricas.",
       ],
     },
     journey: {
@@ -282,7 +282,7 @@ const translations: Record<Language, Translations> = {
           related: "Analytics, retenção e estratégia de crescimento.",
         },
       ],
-      footer: "A jornada não termina no clique. É ali que a operação começa a provar seu valor.",
+      footer: "A navegação inicial desperta o interesse; a infraestrutura de vendas e atendimento garante o fechamento.",
     },
     processSection: {
       eyebrow: "Como a ESCOM trabalha",
@@ -297,7 +297,7 @@ const translations: Record<Language, Translations> = {
         {
           num: "02",
           title: "Arquitetura e proposta",
-          desc: "Desenhamos a solução ideal — seja um ecossistema completo ou uma peça cirúrgica de alta conversão.",
+          desc: "Desenhamos a arquitetura adequada para o seu momento, desde plataformas completas até páginas focadas em vendas.",
           output: "Escopo, prazos e métricas",
         },
         {
@@ -322,10 +322,10 @@ const translations: Record<Language, Translations> = {
     },
     aiSection: {
       eyebrow: "Inteligência artificial aplicada",
-      title: "Menos promessa abstrata. Mais inteligência integrada ao trabalho real.",
+      title: "Automações e modelos de IA conectados aos fluxos diários da sua equipe.",
       desc:
-        "A IA pode responder clientes, organizar informações, acelerar produção e apoiar equipes. Investigamos onde ela gera impacto real antes de escolher a tecnologia.",
-      cta: "Descobrir onde a IA pode gerar valor",
+        "Aplicamos inteligência artificial para automatizar triagens de suporte, organizar dados operacionais e acelerar tarefas repetitivas do time.",
+      cta: "Identificar oportunidades com IA",
     },
     systemsSection: {
       eyebrow: "Sistemas em movimento",
@@ -398,7 +398,7 @@ const translations: Record<Language, Translations> = {
     insights: {
       eyebrow: "Para quem é",
       title: "Para empresas que já entenderam que o próximo estágio exige mais do que presença.",
-      desc: "Empresas lançando, reposicionando ou acelerando uma operação — e prontas para transformar intenção em estrutura.",
+      desc: "Empresas em fase de lançamento, reposicionamento ou expansão comercial, preparadas para estruturar processos digitais.",
       items: [
         "Lançar ou reconstruir um site",
         "Reposicionar uma marca",
@@ -408,7 +408,7 @@ const translations: Record<Language, Translations> = {
         "Conectar marketing, tecnologia e vendas",
       ],
       footerQuote:
-        "Se você procura apenas uma peça pelo menor preço, talvez não sejamos a melhor escolha. Se procura uma solução pensada para o contexto, podemos conversar.",
+        "Trabalhamos com empresas focadas em infraestrutura e retorno comercial, priorizando qualidade técnica sobre produção em massa.",
     },
     faqsSection: {
       eyebrow: "Perguntas frequentes",
