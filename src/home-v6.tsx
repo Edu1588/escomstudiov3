@@ -180,14 +180,14 @@ export function HomeV6() {
                   <div className="max-h-0 opacity-0 overflow-hidden group-hover:max-h-[500px] group-hover:opacity-100 group-hover:pt-4 border-t-0 group-hover:border-t group-hover:border-black/25 space-y-2 transition-all duration-300 ease-out">
                     <div className="flex items-center gap-2 font-mono text-[9px] group-hover:text-xs uppercase tracking-wider text-black font-black">
                       <span className="size-1.5 rounded-full bg-black" />
-                      <span>Por que sua empresa precisa:</span>
+                      <span>{t.servicesLabels.whyNeed}</span>
                     </div>
                     <p className="text-[11px] sm:text-xs group-hover:text-sm sm:group-hover:text-[0.95rem] leading-relaxed text-black/95 font-semibold transition-all">
                       {service.whyNeed}
                     </p>
                     {service.prospectFocus && (
                       <p className="text-[10px] sm:text-[11px] group-hover:text-xs sm:group-hover:text-sm leading-relaxed text-black font-mono font-bold pt-1 transition-all">
-                        → <strong>Impacto comercial:</strong> {service.prospectFocus}
+                        → <strong>{t.servicesLabels.commercialImpact}</strong> {service.prospectFocus}
                       </p>
                     )}
                   </div>

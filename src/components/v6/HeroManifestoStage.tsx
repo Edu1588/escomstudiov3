@@ -338,18 +338,16 @@ export function HeroManifestoStage({
           className="absolute inset-0 z-10 flex flex-col justify-center px-5 py-8 md:py-12 dark bg-transparent text-foreground md:px-12 xl:px-[22vw] opacity-0 pointer-events-none"
         >
           <div className="relative z-30 pointer-events-auto">
-            <Eyebrow cyan>Um sistema digital, várias frentes de crescimento</Eyebrow>
+            <Eyebrow cyan>{t.servicesHeading.eyebrow}</Eyebrow>
             <div className="mt-6 md:mt-14 grid gap-6 md:gap-8 md:grid-cols-12">
             <InteractiveBlurTitle
               as="h2"
               className="font-serif text-2xl sm:text-3xl md:text-7xl leading-snug md:leading-none md:col-span-8 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)] font-light"
             >
-              Tudo o que sua empresa precisa para ser percebida, encontrada e escolhida.
+              {t.servicesHeading.title}
             </InteractiveBlurTitle>
             <p className="self-end text-xs sm:text-sm leading-5 md:leading-6 md:col-span-4 text-zinc-300 drop-shadow-[0_1px_6px_rgba(0,0,0,0.85)]">
-              Unimos marca, experiência digital, aquisição e automação. Cada
-              solução pode existir sozinha ou fazer parte de um sistema mais
-              amplo.
+              {t.servicesHeading.description}
             </p>
           </div>
           </div>

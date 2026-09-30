@@ -17,6 +17,8 @@ const CLIENTS = [
   "VCR mobiliário",
 ];
 
+import { useLanguage } from "@/components/v6/LanguageContext";
+
 interface ClientsMarqueeSectionProps {
   Eyebrow: React.ComponentType<{
     children: React.ReactNode;
@@ -27,6 +29,7 @@ interface ClientsMarqueeSectionProps {
 }
 
 export function ClientsMarqueeSection({ Eyebrow }: ClientsMarqueeSectionProps) {
+  const { t } = useLanguage();
   // Duplica a lista de clientes para garantir um loop contínuo infinito e sem emendas
   const marqueeItems = [...CLIENTS, ...CLIENTS];
 
@@ -36,12 +39,12 @@ export function ClientsMarqueeSection({ Eyebrow }: ClientsMarqueeSectionProps) {
       className="border-t border-black/15 bg-[#ecece3] pt-10 md:pt-14 pb-8 md:pb-10 text-black overflow-hidden relative"
     >
       <div className="px-5 md:px-12 xl:px-[22vw]">
-        <Eyebrow light>✦ Clientes & Marcas Atendidas</Eyebrow>
+        <Eyebrow light>{t.clientsMarquee.eyebrow}</Eyebrow>
         <InteractiveBlurTitle
           as="h3"
           className="mt-3 md:mt-5 font-serif text-2xl sm:text-3xl md:text-4xl text-black font-light leading-snug"
         >
-          Empresas que confiam na engenharia e visão da ESCOM Studio
+          {t.clientsMarquee.title}
         </InteractiveBlurTitle>
       </div>
 

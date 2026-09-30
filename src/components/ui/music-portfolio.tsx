@@ -46,6 +46,15 @@ interface MusicPortfolioProps {
   SOCIAL_LINKS?: PortfolioSocialLinks;
   title?: string;
   subtitle?: string;
+  tag?: string;
+  archiveLabel?: string;
+  tableHeaders?: {
+    client: string;
+    project: string;
+    category: string;
+    deliverables: string;
+    year: string;
+  };
 }
 
 // Relógio em tempo real dos cantos
@@ -192,6 +201,15 @@ export function MusicPortfolio({
   SOCIAL_LINKS = {},
   title = "Alguns de nossos trabalhos",
   subtitle = "Soluções completas onde estratégia de posicionamento, design suíço de alta precisão e engenharia de software transformam empresas em líderes de mercado.",
+  tag = "Portfólio Selecionado // Casos Reais",
+  archiveLabel = "ESCOM // PORTFOLIO ARCHIVE",
+  tableHeaders = {
+    client: "01 // Cliente",
+    project: "02 // Projeto",
+    category: "03 // Categoria",
+    deliverables: "04 // Entrega",
+    year: "Ano",
+  },
 }: MusicPortfolioProps) {
   const [activeIndex, setActiveIndex] = useState(-1);
   const [mobileActiveIndex, setMobileActiveIndex] = useState(0);
@@ -494,7 +512,7 @@ export function MusicPortfolio({
         <div className="corner-item top-left flex items-center gap-2">
           <div className="corner-square" aria-hidden="true" />
           <span className="text-zinc-400 font-mono text-[10px]">
-            ESCOM // PORTFOLIO ARCHIVE
+            {archiveLabel}
           </span>
         </div>
 
@@ -535,7 +553,7 @@ export function MusicPortfolio({
         <header className="mb-8 md:mb-14">
           <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.16em] text-cyan">
             <span className="size-1.5 rounded-full bg-cyan animate-pulse" />
-            <span>Portfólio Selecionado // Casos Reais</span>
+            <span>{tag}</span>
           </div>
           <h2 className="mt-4 font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-white tracking-tight">
             {title}
@@ -546,11 +564,11 @@ export function MusicPortfolio({
 
           {/* Cabeçalho da Tabela Técnica (Desktop) */}
           <div className="hidden md:grid grid-cols-12 gap-6 mt-12 pb-3 border-b border-white/20 font-mono text-[10px] uppercase tracking-widest text-zinc-500">
-            <span className="col-span-3">01 // Cliente</span>
-            <span className="col-span-3">02 // Projeto</span>
-            <span className="col-span-3">03 // Categoria</span>
-            <span className="col-span-2">04 // Entrega</span>
-            <span className="col-span-1 text-right">Ano</span>
+            <span className="col-span-3">{tableHeaders.client}</span>
+            <span className="col-span-3">{tableHeaders.project}</span>
+            <span className="col-span-3">{tableHeaders.category}</span>
+            <span className="col-span-2">{tableHeaders.deliverables}</span>
+            <span className="col-span-1 text-right">{tableHeaders.year}</span>
           </div>
         </header>
 

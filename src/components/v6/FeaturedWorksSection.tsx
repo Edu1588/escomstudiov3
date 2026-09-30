@@ -79,11 +79,7 @@ const location = {
   city: "SÃO PAULO",
 };
 
-const socialLinks = {
-  label1: "INICIAR PROJETO",
-  label2: "WHATSAPP",
-  label3: "INSTAGRAM",
-};
+import { useLanguage } from "@/components/v6/LanguageContext";
 
 interface FeaturedWorksSectionProps {
   Eyebrow?: React.ComponentType<{
@@ -95,6 +91,15 @@ interface FeaturedWorksSectionProps {
 }
 
 export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
+  const { t } = useLanguage();
+  const fw = t.featuredWorks;
+
+  const socialLinks = {
+    label1: fw.socialLinks.startProject,
+    label2: fw.socialLinks.whatsapp,
+    label3: fw.socialLinks.instagram,
+  };
+
   return (
     <section id="trabalhos" className="relative bg-[#000000] border-t border-white/10">
       <MusicPortfolio
@@ -102,8 +107,11 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
         CONFIG={config}
         LOCATION={location}
         SOCIAL_LINKS={socialLinks}
-        title="Alguns de nossos trabalhos"
-        subtitle="Soluções completas onde estratégia de posicionamento, design suíço de alta precisão e engenharia de software transformam empresas em líderes de mercado."
+        title={fw.title}
+        subtitle={fw.subtitle}
+        tag={fw.tag}
+        archiveLabel={fw.archiveLabel}
+        tableHeaders={fw.tableHeaders}
       />
     </section>
   );

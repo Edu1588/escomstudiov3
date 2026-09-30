@@ -129,6 +129,32 @@ export interface Translations {
     successTitle: string;
     successDesc: string;
   };
+  servicesLabels: {
+    whyNeed: string;
+    commercialImpact: string;
+  };
+  featuredWorks: {
+    tag: string;
+    title: string;
+    subtitle: string;
+    tableHeaders: {
+      client: string;
+      project: string;
+      category: string;
+      deliverables: string;
+      year: string;
+    };
+    archiveLabel: string;
+    socialLinks: {
+      startProject: string;
+      whatsapp: string;
+      instagram: string;
+    };
+  };
+  clientsMarquee: {
+    eyebrow: string;
+    title: string;
+  };
   footer: {
     region: string;
     location: string;
@@ -169,10 +195,10 @@ const translations: Record<Language, Translations> = {
       tag: "SYSTEM ARCHITECTURE",
     },
     servicesHeading: {
-      eyebrow: "Sistemas desenhados para gerar tração comercial",
-      title: "Arquitetura completa para empresas em expansão.",
+      eyebrow: "Um sistema digital, várias frentes de crescimento",
+      title: "Tudo o que sua empresa precisa para ser percebida, encontrada e escolhida.",
       description:
-        "Cada solução funciona de forma autônoma ou conectada à operação da sua empresa.",
+        "Unimos marca, experiência digital, aquisição e automação. Cada solução pode existir sozinha ou fazer parte de um sistema mais amplo.",
     },
     services: [
       {
@@ -445,6 +471,33 @@ const translations: Record<Language, Translations> = {
       successTitle: "Recebemos suas informações.",
       successDesc: "Abrimos o WhatsApp com o resumo do seu projeto e entraremos em contato rapidamente.",
     },
+    servicesLabels: {
+      whyNeed: "Por que sua empresa precisa:",
+      commercialImpact: "Impacto comercial:",
+    },
+    featuredWorks: {
+      tag: "Portfólio Selecionado // Casos Reais",
+      title: "Alguns de nossos trabalhos",
+      subtitle:
+        "Soluções completas onde estratégia de posicionamento, design suíço de alta precisão e engenharia de software transformam empresas em líderes de mercado.",
+      tableHeaders: {
+        client: "01 // Cliente",
+        project: "02 // Projeto",
+        category: "03 // Categoria",
+        deliverables: "04 // Entrega",
+        year: "Ano",
+      },
+      archiveLabel: "ESCOM // PORTFOLIO ARCHIVE",
+      socialLinks: {
+        startProject: "INICIAR PROJETO",
+        whatsapp: "WHATSAPP",
+        instagram: "INSTAGRAM",
+      },
+    },
+    clientsMarquee: {
+      eyebrow: "✦ Clientes & Marcas Atendidas",
+      title: "Empresas que confiam na engenharia e visão da ESCOM Studio",
+    },
     footer: {
       region: "REGIÃO:",
       location: "São Paulo · Atendimento global",
@@ -483,16 +536,20 @@ const translations: Record<Language, Translations> = {
       tag: "SYSTEM ARCHITECTURE",
     },
     servicesHeading: {
-      eyebrow: "Engineered systems for sustainable traction",
-      title: "End-to-end digital architecture for expanding businesses.",
+      eyebrow: "One digital system, multiple growth fronts",
+      title: "Everything your company needs to be noticed, found, and chosen.",
       description:
-        "Every solution operates independently or seamlessly connected within a unified digital ecosystem.",
+        "We unite brand, digital experience, acquisition, and automation. Each solution can exist alone or as part of a broader system.",
     },
     services: [
       {
         num: "01",
         title: "Websites & Digital Experiences",
         desc: "Websites, landing pages, and web apps engineered to communicate authority, streamline decisions, and convert traffic into revenue.",
+        whyNeed:
+          "A slow or confusing website repels high-value clients before the first touchpoint. We engineer Next.js digital platforms with instantaneous load speeds and frictionless UX that direct enterprise buyers straight to a purchasing decision.",
+        prospectFocus:
+          "Streamlined buying journey that shortens sales cycles and scales qualified pipeline.",
         thumb: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/hero%20sections/animated%20(8).webp",
         items: "Architecture · UI/UX · Copywriting · Development · Analytics · SEO",
         cta: "Build my digital presence",
@@ -501,6 +558,10 @@ const translations: Record<Language, Translations> = {
         num: "02",
         title: "Brand Identity & Strategy",
         desc: "Brands built with sharp strategic positioning, cohesive visual systems, and a verbal voice that dominates the target market.",
+        whyNeed:
+          "Without distinct positioning, your company is forced to compete on price. We craft a razor-sharp visual and verbal identity that commands premium pricing and attracts tier-one enterprise accounts.",
+        prospectFocus:
+          "Defensible competitive advantage and elevated pricing authority in your market.",
         thumb: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/hero%20sections/animated%20(38).webp",
         items: "Positioning · Verbal strategy · Visual identity · Art direction",
         cta: "Structure my brand",
@@ -509,6 +570,10 @@ const translations: Record<Language, Translations> = {
         num: "03",
         title: "Intelligent Systems & Automation",
         desc: "Faster workflows, structured customer service, and zero manual toil through bespoke integrations tied to your actual business operations.",
+        whyNeed:
+          "Overworked sales teams or multi-minute response times forfeit deals every day. We build bespoke CRM, WhatsApp, and ERP integrations that triage leads in seconds, qualify opportunities, and book meetings 24/7.",
+        prospectFocus:
+          "Instant inbound response: eliminate lead decay and dramatically accelerate deal velocity.",
         thumb: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/animated%20(63).webp",
         items: "CRM · API Integrations · Webhooks · Live Dashboards · AI Agents",
         cta: "Automate my operations",
@@ -517,6 +582,10 @@ const translations: Record<Language, Translations> = {
         num: "04",
         title: "Artificial Intelligence Integrations",
         desc: "Practical generative AI systems to accelerate customer acquisition, response times, content production, and executive decision-making.",
+        whyNeed:
+          "While competitors use AI for superficial copy generation, we deploy autonomous agents trained on your business domain and operational playbook to handle complex triage, proposal estimation, and outbound workflows.",
+        prospectFocus:
+          "Multiply sales team capacity tenfold and satisfy customer demand in real time.",
         items: "Autonomous Agents · AI Assistants · Custom Pipelines · Prototypes",
         cta: "Deploy AI in my business",
       },
@@ -524,6 +593,10 @@ const translations: Record<Language, Translations> = {
         num: "05",
         title: "Paid Media & Growth Acquisition",
         desc: "Performance-driven ad campaigns governed by hard data and continuous algorithmic learning to capture qualified pipeline.",
+        whyNeed:
+          "Running ad spend without clear funnel architecture and high-converting creative burns capital. We engineer targeted Meta & Google Ads campaigns driven by strict CAC and LTV metrics to capture in-market decision makers.",
+        prospectFocus:
+          "Predictable, scalable stream of sales-ready opportunities directly into your pipeline.",
         items: "Meta Ads · Google Ads · Creatives · Funnels · Retargeting · CRO",
         cta: "Scale my acquisition",
       },
@@ -531,6 +604,10 @@ const translations: Record<Language, Translations> = {
         num: "06",
         title: "Digital Strategy & Growth Architecture",
         desc: "A concrete roadmap to prioritize technology investments and connect marketing, tech, and sales into a self-sustaining engine.",
+        whyNeed:
+          "Fragmented tactics waste budget and fail to generate scale. We diagnose operational friction and construct an actionable roadmap aligning brand, acquisition, product, and sales for sustainable high-margin expansion.",
+        prospectFocus:
+          "Executive roadmap detailing exact capital allocation to maximize enterprise valuation and revenue.",
         items: "Diagnosis · Market Research · Offer Architecture · Action Roadmap",
         cta: "Plan my next growth cycle",
       },
@@ -747,6 +824,33 @@ const translations: Record<Language, Translations> = {
       successTitle: "Information received.",
       successDesc: "We have opened WhatsApp with your project brief and will get in touch shortly.",
     },
+    servicesLabels: {
+      whyNeed: "Why your business needs this:",
+      commercialImpact: "Commercial impact:",
+    },
+    featuredWorks: {
+      tag: "Selected Portfolio // Case Studies",
+      title: "Selected Client Engagements",
+      subtitle:
+        "Complete solutions where strategic positioning, high-precision Swiss design, and software engineering transform companies into industry leaders.",
+      tableHeaders: {
+        client: "01 // Client",
+        project: "02 // Project",
+        category: "03 // Category",
+        deliverables: "04 // Deliverable",
+        year: "Year",
+      },
+      archiveLabel: "ESCOM // PORTFOLIO ARCHIVE",
+      socialLinks: {
+        startProject: "START PROJECT",
+        whatsapp: "WHATSAPP",
+        instagram: "INSTAGRAM",
+      },
+    },
+    clientsMarquee: {
+      eyebrow: "✦ Trusted Clients & Brands",
+      title: "Companies powered by ESCOM Studio's engineering and vision",
+    },
     footer: {
       region: "REGION:",
       location: "São Paulo · Global clients",
@@ -785,16 +889,20 @@ const translations: Record<Language, Translations> = {
       tag: "SYSTEM ARCHITECTURE",
     },
     servicesHeading: {
-      eyebrow: "Sistemas diseñados para generar tracción tangible",
-      title: "Arquitectura integral para empresas en fase de expansión.",
+      eyebrow: "Un sistema digital, varios frentes de crecimiento",
+      title: "Todo lo que su empresa necesita para ser percibida, encontrada y elegida.",
       description:
-        "Cada solución funciona de forma autónoma o interconectada en un ecosistema digital continuo.",
+        "Unimos marca, experiencia digital, adquisición y automatización. Cada solución puede existir por sí sola o formar parte de un sistema más amplio.",
     },
     services: [
       {
         num: "01",
         title: "Sitios web y experiencias digitales",
         desc: "Sitios web, landing pages y plataformas diseñadas para comunicar autoridad, facilitar decisiones y convertir atención en clientes.",
+        whyNeed:
+          "Un sitio lento o confuso ahuyenta a los clientes calificados antes del primer contacto. Desarrollamos páginas en Next.js con carga instantánea y navegación objetiva para guiar al visitante directo a la decisión de compra.",
+        prospectFocus:
+          "Estructure páginas que faciliten la decisión del comprador y reduzcan el ciclo de cierre.",
         thumb: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/hero%20sections/animated%20(8).webp",
         items: "Arquitectura · UI/UX · Copywriting · Desarrollo · Analytics · SEO",
         cta: "Construir mi presencia digital",
@@ -803,6 +911,10 @@ const translations: Record<Language, Translations> = {
         num: "02",
         title: "Branding e identidad de marca",
         desc: "Marcas con posicionamiento estratégico, presencia coherente y un lenguaje diseñado para destacar en la mente de la audiencia correcta.",
+        whyNeed:
+          "Sin una diferenciación clara, su empresa compite por precio. Estructuramos un posicionamiento con identidad visual precisa para justificar tarifas más altas y atraer clientes corporativos más calificados.",
+        prospectFocus:
+          "Diferenciación clara ante la competencia y mayor poder de fijación de precios.",
         items: "Posicionamiento · Estrategia verbal · Identidad · Dirección de arte",
         thumb: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/hero%20sections/animated%20(38).webp",
         cta: "Estructurar mi marca",
@@ -811,6 +923,10 @@ const translations: Record<Language, Translations> = {
         num: "03",
         title: "Automatización y sistemas inteligentes",
         desc: "Procesos más ágiles, atención organizada y cero fricción manual mediante integraciones conectadas a la operativa real.",
+        whyNeed:
+          "Vendedores sobrecargados o demoras de minutos en la atención inicial cuestan decenas de ventas cada mes. Creamos integraciones directas entre CRM, WhatsApp y ERP que responden leads en segundos, califican oportunidades y agendan reuniones las 24 horas del día.",
+        prospectFocus:
+          "Atención comercial instantánea: cero pérdida de oportunidades y aceleración comprobada del ciclo de ventas.",
         items: "CRM · Webhooks · Integraciones API · Dashboards · Agentes IA",
         thumb: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/animated%20(63).webp",
         cta: "Automatizar mi operación",
@@ -819,6 +935,10 @@ const translations: Record<Language, Translations> = {
         num: "04",
         title: "Integraciones de Inteligencia Artificial",
         desc: "Aplicaciones prácticas de IA generativa para acelerar la comunicación, atención al cliente, producción y toma de decisiones.",
+        whyNeed:
+          "Mientras los competidores usan IA solo para generar textos básicos, construimos agentes autónomos entrenados en la lógica y reglas de su negocio para triaje avanzado de cotizaciones, prospección y rutinas complejas que antes demandaban días.",
+        prospectFocus:
+          "Multiplique la capacidad productiva de su equipo comercial y atienda las demandas de sus clientes en tiempo real.",
         items: "Agentes a medida · Asistentes IA · Análisis de datos · Prototipos",
         cta: "Explorar IA para mi empresa",
       },
@@ -826,6 +946,10 @@ const translations: Record<Language, Translations> = {
         num: "05",
         title: "Tráfico pago y adquisición",
         desc: "Campañas publicitarias orientadas por datos y aprendizaje algorítmico continuo para atraer demanda altamente calificada.",
+        whyNeed:
+          "Invertir en anuncios sin una estrategia de embudo y creativos de alto impacto es quemar presupuesto. Creamos campañas quirúrgicas en Meta Ads y Google Ads orientadas por CAC y LTV, atrayendo a tomadores de decisión con poder real de compra.",
+        prospectFocus:
+          "Flujo constante, predecible y escalable de nuevos contactos calificados en la mesa de sus consultores.",
         items: "Meta Ads · Google Ads · Creativos · Embudos · Remarketing",
         cta: "Acelerar mi adquisición",
       },
@@ -833,6 +957,10 @@ const translations: Record<Language, Translations> = {
         num: "06",
         title: "Estrategia digital y crecimiento",
         desc: "Un mapa claro para priorizar inversiones tecnológicas y articular marketing, producto y ventas en un motor sostenible.",
+        whyNeed:
+          "Las acciones aisladas y sin dirección consumen tiempo, presupuesto y no generan escala. Mapeamos cuellos de botella y trazamos el plan de acción exacto integrando marca, canales, producto y embudo para que su empresa se expanda con previsibilidad.",
+        prospectFocus:
+          "Visión ejecutiva clara de dónde invertir cada recurso para maximizar ingresos y dominar su sector.",
         items: "Diagnóstico · Investigación de mercado · Arquitectura de oferta · Plan de acción",
         cta: "Planificar mi próximo ciclo",
       },
@@ -1048,6 +1176,33 @@ const translations: Record<Language, Translations> = {
       sla: "Respuesta en menos de 24h hábiles",
       successTitle: "Información recibida.",
       successDesc: "Hemos abierto WhatsApp con el resumen de tu proyecto y nos pondremos en contacto rápidamente.",
+    },
+    servicesLabels: {
+      whyNeed: "Por qué su empresa lo necesita:",
+      commercialImpact: "Impacto comercial:",
+    },
+    featuredWorks: {
+      tag: "Portafolio Seleccionado // Casos Reales",
+      title: "Algunos de nuestros trabajos",
+      subtitle:
+        "Soluciones completas donde la estrategia de posicionamiento, el diseño suizo de alta precisión y la ingeniería de software transforman empresas en líderes de mercado.",
+      tableHeaders: {
+        client: "01 // Cliente",
+        project: "02 // Proyecto",
+        category: "03 // Categoría",
+        deliverables: "04 // Entrega",
+        year: "Año",
+      },
+      archiveLabel: "ESCOM // ARCHIVO DE PORTAFOLIO",
+      socialLinks: {
+        startProject: "INICIAR PROYECTO",
+        whatsapp: "WHATSAPP",
+        instagram: "INSTAGRAM",
+      },
+    },
+    clientsMarquee: {
+      eyebrow: "✦ Clientes y Marcas Atendidas",
+      title: "Empresas que confían en la ingeniería y visión de ESCOM Studio",
     },
     footer: {
       region: "REGIÓN:",
