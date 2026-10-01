@@ -83,7 +83,7 @@ function AdminProjectCard({
             muted
             loop
             playsInline
-            preload="none"
+            preload="metadata"
             className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${
               isPlaying ? "opacity-100" : "opacity-0 pointer-events-none"
             }`}

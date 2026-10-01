@@ -817,10 +817,10 @@ export default function Leads() {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-violet-500/10 border border-violet-500/30 text-violet-300 text-[10px] font-mono hover:bg-violet-500/20 transition-colors"
-                                  title="Ver análise estratégica"
+                                  title="Baixar análise analítica em PDF"
                                 >
                                   <Download size={9} />
-                                  <span>Ver Análise</span>
+                                  <span>Baixar PDF</span>
                                 </a>
                               )}
                             </div>

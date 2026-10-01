@@ -86,7 +86,7 @@ function FeaturedProjectCard({
             muted
             loop
             playsInline
-            preload="none"
+            preload="metadata"
             onError={() => setVideoError(true)}
             className={`absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-all duration-500 ease-out ${
               isPlaying ? "opacity-100" : "opacity-0 pointer-events-none"

@@ -3164,38 +3164,124 @@ REGRAS ABSOLUTAS
 
     if (!html) return res.status(503).send("<h1>Gemini indisponível. Tente novamente em instantes.</h1>");
 
-    // 5. Se ?pdf=1, converte via Browserless e devolve PDF binário
-    if (req.query.pdf === "1") {
-      const blToken = process.env.BROWSERLESS_TOKEN;
-      if (!blToken) return res.status(500).send("<h1>BROWSERLESS_TOKEN não configurado</h1>");
-      const blRes = await fetch(`https://chrome.browserless.io/pdf?token=${blToken}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          html,
-          options: { printBackground: true, format: "A4", margin: { top: "0", right: "0", bottom: "0", left: "0" } },
-          gotoOptions: { waitUntil: "networkidle0", timeout: 30000 },
-          waitFor: 1200,
-        }),
-      });
-      if (!blRes.ok) {
-        const msg = await blRes.text();
-        return res.status(502).send(`<h1>Browserless erro ${blRes.status}: ${msg}</h1>`);
+    // 5. Geração de PDF (Prioridade total para entrega direta em .pdf)
+    const wantsHtml = req.query.html === "1";
+    const leadSlug = (lead.nome || "lead").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    const filename = `analise-${leadSlug}.pdf`;
+
+    if (!wantsHtml) {
+      // 5.1 Tenta Puppeteer local/servidor
+      try {
+        const puppeteer = await import("puppeteer");
+        const browser = await puppeteer.default.launch({
+          headless: true,
+          args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
+        });
+        const page = await browser.newPage();
+        await page.setContent(html, { waitUntil: "networkidle0", timeout: 25000 });
+        const pdfBuf = await page.pdf({
+          format: "A4",
+          printBackground: true,
+          margin: { top: "0", right: "0", bottom: "0", left: "0" },
+        });
+        await browser.close();
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", `inline; filename="${filename}"`);
+        return res.send(Buffer.from(pdfBuf));
+      } catch (pupErr: any) {
+        console.warn("[PDF] Puppeteer direto indisponível, tentando Browserless:", pupErr?.message);
       }
-      const pdfBuf = Buffer.from(await blRes.arrayBuffer());
-      const filename = `analise-${req.params.leadId}.pdf`;
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", `inline; filename="${filename}"`);
-      return res.send(pdfBuf);
+
+      // 5.2 Se Puppeteer local falhar (ex: Vercel serverless), tenta Browserless se houver token
+      const blToken = process.env.BROWSERLESS_TOKEN;
+      if (blToken) {
+        try {
+          const blRes = await fetch(`https://chrome.browserless.io/pdf?token=${blToken}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              html,
+              options: { printBackground: true, format: "A4", margin: { top: "0", right: "0", bottom: "0", left: "0" } },
+              gotoOptions: { waitUntil: "networkidle0", timeout: 30000 },
+              waitFor: 1200,
+            }),
+          });
+          if (blRes.ok) {
+            const pdfBuf = Buffer.from(await blRes.arrayBuffer());
+            res.setHeader("Content-Type", "application/pdf");
+            res.setHeader("Content-Disposition", `inline; filename="${filename}"`);
+            return res.send(pdfBuf);
+          }
+        } catch (blErr: any) {
+          console.warn("[PDF] Browserless indisponível:", blErr?.message);
+        }
+      }
     }
 
-    // Injeta botão fixo de PDF que sempre abre em nova aba (independente do que o Groq gerar)
-    const pdfScript = `
-<style>.escom-pdf-btn{position:fixed;top:16px;right:16px;z-index:9999;background:#00d1ff;color:#000;font-weight:700;font-size:14px;padding:10px 20px;border:none;border-radius:4px;cursor:pointer;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.4)}.escom-pdf-btn:hover{background:#00b8e0}.no-print{display:none!important}</style>
-<button class="escom-pdf-btn no-print" onclick="window.open(window.location.pathname+'?pdf=1','_blank')">⬇ Baixar PDF</button>`;
+    // 5.3 Fallback resiliente: Entrega o documento com auto-execução de download em PDF
+    const autoPdfScript = `
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+.escom-pdf-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 99999;
+  background: #0a0a14;
+  border-bottom: 1px solid #00d1ff;
+  color: #fff;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: sans-serif;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+}
+.escom-pdf-btn {
+  background: #00d1ff;
+  color: #000;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.escom-pdf-btn:hover { background: #33dcff; }
+@media print { .no-print { display: none !important; } }
+</style>
+<div class="escom-pdf-banner no-print">
+  <div>
+    <span style="color:#00d1ff;font-weight:bold;margin-right:8px;">ESCOM BUSINESS INTELLIGENCE</span>
+    <span>Gerando PDF Analítico de <strong>${lead.nome}</strong>...</span>
+  </div>
+  <div style="display:flex;gap:10px;">
+    <button class="escom-pdf-btn" onclick="baixarPdfDireto()">⬇ Baixar PDF</button>
+    <button class="escom-pdf-btn" style="background:#fff;" onclick="window.print()">🖨 Imprimir</button>
+  </div>
+</div>
+<script>
+function baixarPdfDireto() {
+  const el = document.body;
+  const opt = {
+    margin: 0,
+    filename: '${filename}',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 1.5, useCORS: true, logging: false },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(el).save();
+}
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    baixarPdfDireto();
+  }, 800);
+});
+</script>`;
     const htmlComBotao = html.includes("</body>")
-      ? html.replace("</body>", pdfScript + "</body>")
-      : html + pdfScript;
+      ? html.replace("</body>", autoPdfScript + "</body>")
+      : html + autoPdfScript;
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.send(htmlComBotao);
