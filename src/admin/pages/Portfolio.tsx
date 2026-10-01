@@ -18,6 +18,10 @@ const OBSOLETE_NAMES = [
   "moa pro",
   "full english",
   "ugb",
+  "autosim",
+  "autosim franquias",
+  "rilucci",
+  "rilucci iluminação",
 ];
 
 function AdminProjectCard({

@@ -219,6 +219,10 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
       "moa pro",
       "full english",
       "ugb",
+      "autosim",
+      "autosim franquias",
+      "rilucci",
+      "rilucci iluminação",
     ];
 
     const fetchFirebaseProjects = async () => {
