@@ -1,15 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { Header } from "../components/Header";
-import { Plus, Edit2, Trash2, X, Star, ExternalLink, Video, Sparkles, RefreshCw } from "lucide-react";
+import { Plus, Edit2, Trash2, X, Star, ExternalLink, RefreshCw, CheckCircle2 } from "lucide-react";
 import { getPortfolioProjects, savePortfolioProject, deletePortfolioProject, PortfolioProject } from "../../firebase";
-import { INITIAL_PORTFOLIO_PROJECTS, PortfolioItem } from "../../data/initialPortfolio";
+import { INITIAL_PORTFOLIO_PROJECTS } from "../../data/initialPortfolio";
+
+// Lista de nomes de projetos antigos obsoletos que devem ser expurgados do banco
+const OBSOLETE_NAMES = [
+  "posts diversos",
+  "nutritech",
+  "gf engenharia",
+  "maria malta",
+  "leandro lamezi",
+  "sem foto",
+];
 
 export default function Portfolio() {
   const [projetos, setProjetos] = useState<PortfolioProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<PortfolioProject | null>(null);
-  const [isSeeding, setIsSeeding] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     client: "",
@@ -26,15 +37,94 @@ export default function Portfolio() {
     desc: "",
   });
 
+  // Função para limpar itens obsoletos e garantir os projetos oficiais da HOME anterior no Firestore
+  const cleanAndSeedOfficialProjects = async (currentData: PortfolioProject[]) => {
+    try {
+      // 1. Identifica e deleta projetos antigos que não têm vídeo ou têm nomes da lista obsoleta
+      const obsoleteProjects = currentData.filter((p) => {
+        const titleLower = (p.title || p.name || "").toLowerCase();
+        const clientLower = (p.client || "").toLowerCase();
+        const hasNoMedia = !p.video && (!p.image || p.image.includes("fakeimg"));
+        const matchesObsolete = OBSOLETE_NAMES.some((obs) => titleLower.includes(obs) || clientLower.includes(obs));
+        return hasNoMedia || matchesObsolete;
+      });
+
+      if (obsoleteProjects.length > 0) {
+        for (const obs of obsoleteProjects) {
+          if (obs.id) {
+            await deletePortfolioProject(obs.id);
+          }
+        }
+      }
+
+      // 2. Busca lista atualizada pós-limpeza
+      const updatedData = await getPortfolioProjects();
+
+      // 3. Garante que todos os projetos oficiais da HOME anterior estejam presentes no Firestore
+      const existingNames = new Set(
+        updatedData.map((p) => (p.client || p.name || "").toLowerCase().trim())
+      );
+
+      for (const official of INITIAL_PORTFOLIO_PROJECTS) {
+        const alreadyExists = existingNames.has(official.client.toLowerCase().trim());
+        if (!alreadyExists) {
+          await savePortfolioProject({
+            client: official.client,
+            name: official.client,
+            title: official.title,
+            category: official.category,
+            tagType: official.tagType,
+            deliverables: official.deliverables,
+            desc: official.desc,
+            year: official.year,
+            badges: official.badges,
+            video: official.video,
+            image: official.image,
+            link: official.link,
+            url: official.link,
+            destaque: official.destaque,
+            score: official.score || "98%",
+          });
+        }
+      }
+
+      // 4. Retorna a lista final atualizada
+      const finalData = await getPortfolioProjects();
+      return finalData;
+    } catch (err) {
+      console.error("Erro na limpeza e sincronização:", err);
+      return currentData;
+    }
+  };
+
   const loadProjects = async () => {
     setLoading(true);
     try {
       const data = await getPortfolioProjects();
-      if (data && data.length > 0) {
-        setProjetos(data);
+
+      // Verifica se existem projetos obsoletos ou se faltam os projetos oficiais
+      const hasObsolete = data.some((p) => {
+        const titleLower = (p.title || p.name || "").toLowerCase();
+        const clientLower = (p.client || "").toLowerCase();
+        const hasNoMedia = !p.video && (!p.image || p.image.includes("fakeimg"));
+        return hasNoMedia || OBSOLETE_NAMES.some((obs) => titleLower.includes(obs) || clientLower.includes(obs));
+      });
+
+      const missingOfficial = INITIAL_PORTFOLIO_PROJECTS.some(
+        (official) => !data.some((p) => (p.client || p.name || "").toLowerCase().trim() === official.client.toLowerCase().trim())
+      );
+
+      if (hasObsolete || missingOfficial || data.length === 0) {
+        const synced = await cleanAndSeedOfficialProjects(data);
+        setProjetos(synced);
       } else {
-        // Se ainda não houver itens no banco, exibe os 9 projetos padrão como base inicial
-        const fallback: PortfolioProject[] = INITIAL_PORTFOLIO_PROJECTS.map((item) => ({
+        setProjetos(data);
+      }
+    } catch (err) {
+      console.error("Erro ao carregar projetos:", err);
+      // Fallback garantido usando os projetos oficiais
+      setProjetos(
+        INITIAL_PORTFOLIO_PROJECTS.map((item) => ({
           id: item.id,
           name: item.client,
           client: item.client,
@@ -50,11 +140,8 @@ export default function Portfolio() {
           url: item.link,
           destaque: item.destaque,
           desc: item.desc,
-        }));
-        setProjetos(fallback);
-      }
-    } catch (err) {
-      console.error("Erro ao carregar projetos:", err);
+        }))
+      );
     } finally {
       setLoading(false);
     }
@@ -64,36 +151,22 @@ export default function Portfolio() {
     loadProjects();
   }, []);
 
-  // Sincroniza os 9 projetos padrão com o Firebase se ainda não foram salvos
-  const handleSeedProjects = async () => {
-    if (!window.confirm("Deseja salvar os 9 projetos padrão da HOME no banco de dados agora?")) return;
-    setIsSeeding(true);
+  // Botão manual para forçar restauração e limpeza
+  const handleForceSync = async () => {
+    if (!window.confirm("Isso removerá os registros antigos obsoletos e garantirá todos os projetos oficiais da Home com vídeos e links. Deseja continuar?")) return;
+    setIsSyncing(true);
+    setFeedbackMsg("Limpando projetos antigos e restaurando os cases da Home...");
     try {
-      for (const item of INITIAL_PORTFOLIO_PROJECTS) {
-        await savePortfolioProject({
-          client: item.client,
-          title: item.title,
-          name: item.client,
-          category: item.category,
-          tagType: item.tagType,
-          deliverables: item.deliverables,
-          year: item.year,
-          badges: item.badges,
-          video: item.video,
-          image: item.image,
-          link: item.link,
-          url: item.link,
-          destaque: item.destaque,
-          desc: item.desc,
-        });
-      }
-      alert("Projetos base sincronizados com sucesso no banco de dados!");
-      await loadProjects();
+      const current = await getPortfolioProjects();
+      const updated = await cleanAndSeedOfficialProjects(current);
+      setProjetos(updated);
+      setFeedbackMsg("Projetos oficiais da Home sincronizados e antigos removidos com sucesso!");
+      setTimeout(() => setFeedbackMsg(null), 4000);
     } catch (err) {
-      console.error("Erro ao sincronizar projetos:", err);
-      alert("Ocorreu um erro ao sincronizar os projetos.");
+      console.error(err);
+      alert("Erro ao sincronizar projetos.");
     } finally {
-      setIsSeeding(false);
+      setIsSyncing(false);
     }
   };
 
@@ -171,6 +244,8 @@ export default function Portfolio() {
       });
 
       setIsModalOpen(false);
+      setFeedbackMsg("Projeto salvo com sucesso! Já disponível no Admin e na Home.");
+      setTimeout(() => setFeedbackMsg(null), 4000);
       await loadProjects();
     } catch (err) {
       console.error("Erro ao salvar projeto:", err);
@@ -205,6 +280,14 @@ export default function Portfolio() {
     <div className="flex-1 overflow-y-auto w-full bg-[#050505] min-h-screen text-white">
       <Header title="Gestão de Portfólio" />
       <div className="p-6 sm:p-8 max-w-[1400px] mx-auto mt-2">
+        {/* FEEDBACK MSG */}
+        {feedbackMsg && (
+          <div className="mb-6 p-4 rounded-xl bg-cyan-950/60 border border-cyan/40 text-cyan flex items-center gap-3 text-sm animate-in fade-in">
+            <CheckCircle2 size={18} className="shrink-0" />
+            <span>{feedbackMsg}</span>
+          </div>
+        )}
+
         {/* CABEÇALHO */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-white/10">
           <div>
@@ -213,19 +296,19 @@ export default function Portfolio() {
               <h2 className="text-2xl font-bold tracking-tight">Portfólio de Projetos da HOME</h2>
             </div>
             <p className="text-gray-400 text-sm mt-1">
-              Todos os projetos cadastrados aqui aparecem no grid de portfólio oficial da página inicial.
+              Todos os cases abaixo estão conectados diretamente ao Grid de Portfólio da página inicial. Qualquer novo projeto cadastrado passa a aparecer imediatamente na HOME.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <button
-              onClick={handleSeedProjects}
-              disabled={isSeeding}
-              className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/15 text-gray-300 hover:text-white px-3.5 py-2.5 rounded-lg text-xs font-mono tracking-wider transition-colors disabled:opacity-50"
-              title="Sincronizar os 9 projetos padrão com o banco de dados"
+              onClick={handleForceSync}
+              disabled={isSyncing}
+              className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/15 text-gray-300 hover:text-white px-3.5 py-2.5 rounded-lg text-xs font-mono tracking-wider transition-colors disabled:opacity-50 cursor-pointer"
+              title="Remover projetos obsoletos e restaurar os 9 cases oficiais da Home"
             >
-              <RefreshCw size={14} className={isSeeding ? "animate-spin" : ""} />
-              <span>{isSeeding ? "Sincronizando..." : "Sincronizar Base"}</span>
+              <RefreshCw size={14} className={isSyncing ? "animate-spin" : ""} />
+              <span>{isSyncing ? "Sincronizando..." : "Restaurar Projetos da Home"}</span>
             </button>
 
             <button
@@ -242,7 +325,7 @@ export default function Portfolio() {
         {loading ? (
           <div className="flex items-center justify-center py-20 text-gray-400 font-mono text-sm">
             <span className="size-2 rounded-full bg-cyan animate-pulse mr-3" />
-            Carregando projetos do portfólio...
+            Carregando e sincronizando projetos oficiais...
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -79,7 +79,7 @@ export const CATEGORIAS_LIST = [
 export default function Leads() {
   const navigate = useNavigate();
   const [selectedEstado, setSelectedEstado] = useState("SP — São Paulo");
-  const [selectedCidade, setSelectedCidade] = useState("São Paulo");
+  const [selectedCidade, setSelectedCidade] = useState("");
   const [selectedCategoria, setSelectedCategoria] = useState("Hamburgueria");
   const [leadLimit, setLeadLimit] = useState(25);
 
@@ -121,6 +121,19 @@ export default function Leads() {
         const data = await res.json();
         if (data.leads && data.leads.length > 0) {
           setLeads(data.leads);
+          // Para leads que têm analise_gerada mas não têm site_gerado, verifica Firebase silenciosamente
+          const semSite = data.leads.filter((l: any) => l.analise_gerada && !l.siteGerado && !l.site_gerado);
+          semSite.forEach(async (l: any) => {
+            try {
+              const chk = await fetch(`/api/check-site/${l.id}`);
+              if (!chk.ok) return;
+              const result = await chk.json();
+              if (result.found && result.url) {
+                setGeneratedSiteUrls(prev => ({ ...prev, [l.id]: result.url }));
+                setLeads(prev => prev.map(x => x.id === l.id ? { ...x, siteGerado: result.url } : x));
+              }
+            } catch {}
+          });
           return;
         }
       }
@@ -237,16 +250,121 @@ export default function Leads() {
   };
 
   const [geracaoStep, setGeracaoStep] = useState<string>("");
+  const [pendingLeads, setPendingLeads] = useState<Record<string, boolean>>({});
+  const [pendingMsg, setPendingMsg] = useState<Record<string, string>>({});
+  const [pendingPct, setPendingPct] = useState<Record<string, number>>({});
+  const [analiseUrls, setAnaliseUrls] = useState<Record<string, string>>({});
+
+  const GERACAO_MSGS = [
+    "Buscando referências no Pinterest...",
+    "Analisando concorrentes...",
+    "Mapeando oportunidades de nicho...",
+    "Gerando análise estratégica...",
+    "Criando identidade visual...",
+    "Construindo estrutura do site...",
+    "Aplicando referências de design...",
+    "Refinando textos e CTAs...",
+    "Otimizando para mobile...",
+    "Finalizando e salvando...",
+  ];
+
+  const startProgressMessages = (leadId: string) => {
+    let idx = 0;
+    setPendingMsg(p => ({ ...p, [leadId]: GERACAO_MSGS[0] }));
+    const msgInterval = setInterval(() => {
+      idx = (idx + 1) % GERACAO_MSGS.length;
+      setPendingMsg(p => {
+        if (p[leadId] === undefined) { clearInterval(msgInterval); return p; }
+        return { ...p, [leadId]: GERACAO_MSGS[idx] };
+      });
+    }, 6000);
+  };
+
+  // Polling: verifica a cada 8s se o site foi gerado (Supabase ou Firebase via site-preview)
+  const pollSiteGerado = (leadId: string) => {
+    let attempts = 0;
+    const MAX = 30; // ~4 min
+    const previewUrl = `/api/site-preview/${leadId}`;
+    setPendingPct(p => ({ ...p, [leadId]: 2 }));
+    const done = (url: string) => {
+      clearInterval(interval);
+      setPendingPct(p => ({ ...p, [leadId]: 100 }));
+      setTimeout(() => {
+        setPendingLeads(p => { const n = {...p}; delete n[leadId]; return n; });
+        setPendingMsg(p => { const n = {...p}; delete n[leadId]; return n; });
+        setPendingPct(p => { const n = {...p}; delete n[leadId]; return n; });
+      }, 800);
+      setGeneratedSiteUrls(prev => ({ ...prev, [leadId]: url }));
+      setLeads(prev => prev.map(l => l.id === leadId ? { ...l, siteGerado: url } : l));
+      notify("✅ Site gerado! Clique em 'Ver Site' no lead.");
+    };
+    const interval = setInterval(async () => {
+      attempts++;
+      const raw = attempts / MAX;
+      const pct = Math.round(Math.min(95, raw < 0.7 ? raw * 110 : 77 + (raw - 0.7) * 60));
+      setPendingPct(p => ({ ...p, [leadId]: pct }));
+      try {
+        // 1. Verifica Firebase via endpoint dedicado (testa múltiplos IDs/campos)
+        const chk = await fetch(`/api/check-site/${leadId}`);
+        if (chk.ok) {
+          const data = await chk.json();
+          if (data.found && data.url) { done(data.url); return; }
+        }
+        // 2. Verifica Supabase via /api/leads (fallback)
+        const r = await fetch(`/api/leads`);
+        if (r.ok) {
+          const body = await r.json();
+          const rows: any[] = body.leads ?? body ?? [];
+          const found = rows.find((l: any) => l.id === leadId);
+          const sbUrl = found?.siteGerado || found?.site_gerado || "";
+          if (sbUrl) { done(sbUrl); return; }
+        }
+      } catch {}
+      if (attempts >= MAX) {
+        clearInterval(interval);
+        setPendingLeads(p => { const n = {...p}; delete n[leadId]; return n; });
+        setPendingMsg(p => { const n = {...p}; delete n[leadId]; return n; });
+        setPendingPct(p => { const n = {...p}; delete n[leadId]; return n; });
+      }
+    }, 8000);
+  };
+
+  const handleEnviarEmail = async () => {
+    if (!emailModal || !emailInput.trim()) return;
+    setSendingEmail(true);
+    try {
+      const res = await fetch("/api/enviar-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          leadId: emailModal.lead.id,
+          emailDestinatario: emailInput.trim(),
+          nomeDestinatario: emailModal.lead.nome,
+        }),
+      });
+      if (res.ok) {
+        notify("✅ Proposta enviada com sucesso!");
+        setEmailModal(null);
+      } else {
+        const err = await res.json().catch(() => ({}));
+        notify("Erro ao enviar: " + (err.error || res.status), "error");
+      }
+    } catch (e: any) {
+      notify("Erro: " + e.message, "error");
+    } finally {
+      setSendingEmail(false);
+    }
+  };
 
   const handleGerarProposta = async (lead: any) => {
     if (generatingSiteId) return;
     setGeneratingSiteId(lead.id);
     try {
-      // Passo 1: Análise estratégica
       setGeracaoStep("analise");
       await fetch(`/api/gerar-analise/${lead.id}`);
+      // Analise URL é sempre conhecida após o step 1
+      setAnaliseUrls(prev => ({ ...prev, [lead.id]: `/api/gerar-analise/${lead.id}` }));
 
-      // Passo 2: Site + proposta via N8N
       setGeracaoStep("site");
       const res = await fetch("/api/gerar-proposta", {
         method: "POST",
@@ -260,10 +378,15 @@ export default function Leads() {
       const siteUrl = data.siteUrl || data.propostaUrl || data.url || "";
       if (siteUrl) {
         setGeneratedSiteUrls(prev => ({ ...prev, [lead.id]: siteUrl }));
-        notify("Proposta gerada! Abrindo site...");
+        setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, siteGerado: siteUrl } : l));
+        notify("✅ Proposta gerada! Clique em 'Site' para abrir.");
         window.open(siteUrl, "_blank");
       } else {
-        notify("Proposta disparada no N8N — link aparecerá em breve.");
+        // N8N processa em segundo plano — inicia polling + mensagens
+        setPendingLeads(prev => ({ ...prev, [lead.id]: true }));
+        startProgressMessages(lead.id);
+        notify("⏳ Gerando site em segundo plano... Você será avisado quando pronto.");
+        pollSiteGerado(lead.id);
       }
     } catch (err: any) {
       notify(`Erro: ${err.message}`, "error");
@@ -646,30 +769,58 @@ export default function Leads() {
                             {lead.cidade}
                           </div>
                           {/* Indicadores de assets gerados */}
-                          {(lead.siteGerado || generatedSiteUrls[lead.id] || lead.diagnostico) && (
+                          {pendingLeads[lead.id] && (
+                            <div className="mt-1.5 px-2 py-1.5 bg-amber-500/10 border border-amber-500/30 w-fit max-w-[240px] space-y-1">
+                              <div className="flex items-center gap-1.5">
+                                <Loader2 size={9} className="animate-spin shrink-0 text-amber-400" />
+                                <span className="text-amber-400 font-mono text-[9px] truncate flex-1">
+                                  {pendingMsg[lead.id] || "Gerando site..."}
+                                </span>
+                                <span className="text-amber-300 font-mono text-[9px] font-bold shrink-0">
+                                  {pendingPct[lead.id] ?? 2}%
+                                </span>
+                              </div>
+                              <div className="h-0.5 bg-amber-500/20 rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-amber-400 rounded-full transition-all duration-[1500ms] ease-out"
+                                  style={{ width: `${pendingPct[lead.id] ?? 2}%` }}
+                                />
+                              </div>
+                            </div>
+                          )}
+                          {(lead.siteGerado || generatedSiteUrls[lead.id] || lead.diagnostico || analiseUrls[lead.id]) && (
                             <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
                               {(lead.siteGerado || generatedSiteUrls[lead.id]) && (
-                                <a
-                                  href={lead.siteGerado || generatedSiteUrls[lead.id]}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-cyan/10 border border-cyan/30 text-cyan text-[10px] font-mono hover:bg-cyan/20 transition-colors"
-                                  title="Ver site gerado"
-                                >
-                                  <Globe size={9} />
-                                  <span>Site gerado</span>
-                                </a>
+                                <>
+                                  <a
+                                    href={lead.siteGerado || generatedSiteUrls[lead.id]}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-cyan/10 border border-cyan/30 text-cyan text-[10px] font-mono hover:bg-cyan/20 transition-colors"
+                                    title="Ver site gerado"
+                                  >
+                                    <Globe size={9} />
+                                    <span>Ver Site</span>
+                                  </a>
+                                  <button
+                                    onClick={() => { setEmailModal({ lead }); setEmailInput(""); }}
+                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-emerald-500/10 border border-emerald-500/40 text-emerald-400 text-[10px] font-mono hover:bg-emerald-500/20 transition-colors"
+                                    title="Enviar proposta por email"
+                                  >
+                                    <span>✉ Enviar Proposta</span>
+                                  </button>
+                                </>
                               )}
-                              {lead.diagnostico && (
+                              {(lead.diagnostico || analiseUrls[lead.id]) && (
                                 <a
-                                  href={`/api/gerar-analise/${lead.id}`}
+                                  href={analiseUrls[lead.id] || `/api/gerar-analise/${lead.id}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-violet-500/10 border border-violet-500/30 text-violet-300 text-[10px] font-mono hover:bg-violet-500/20 transition-colors"
-                                  title="Ver análise"
+                                  title="Ver análise estratégica"
                                 >
                                   <Download size={9} />
-                                  <span>Análise</span>
+                                  <span>Ver Análise</span>
                                 </a>
                               )}
                             </div>
@@ -752,14 +903,42 @@ export default function Leads() {
 
                         {/* Botão Gerar Proposta */}
                         {generatingSiteId === lead.id ? (
-                          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-cyan/5 border border-cyan/20 font-mono text-[10px]">
-                            <Loader2 size={10} className="animate-spin text-cyan shrink-0" />
-                            <div className="flex items-center gap-1">
-                              <span className={geracaoStep === "analise" ? "text-cyan" : "text-white/30"}>Análise</span>
-                              <span className="text-white/20">›</span>
-                              <span className={geracaoStep === "site" ? "text-cyan" : geracaoStep === "pronto" ? "text-emerald-400" : "text-white/30"}>Site</span>
-                              <span className="text-white/20">›</span>
-                              <span className={geracaoStep === "pronto" ? "text-emerald-400" : "text-white/30"}>Pronto</span>
+                          <div className="flex flex-col gap-1 px-2.5 py-1.5 bg-cyan/5 border border-cyan/20 min-w-[140px]">
+                            {/* Barra de progresso */}
+                            <div className="relative h-0.5 bg-white/10 rounded-full overflow-hidden">
+                              <div
+                                className="absolute inset-y-0 left-0 bg-cyan transition-all duration-700 ease-in-out rounded-full"
+                                style={{
+                                  width: geracaoStep === "analise" ? "33%" : geracaoStep === "site" ? "66%" : geracaoStep === "pronto" ? "100%" : "5%",
+                                  backgroundColor: geracaoStep === "pronto" ? "#34d399" : undefined,
+                                }}
+                              />
+                            </div>
+                            {/* Steps */}
+                            <div className="flex items-center justify-between gap-1">
+                              {(["analise", "site", "pronto"] as const).map((step, i) => {
+                                const labels = ["Análise", "Site", "Pronto"];
+                                const isActive = geracaoStep === step;
+                                const isPast = (geracaoStep === "site" && i === 0) || (geracaoStep === "pronto" && i < 2);
+                                const isDone = geracaoStep === "pronto";
+                                return (
+                                  <div key={step} className="flex items-center gap-0.5">
+                                    <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                                      isDone && i < 3 ? "bg-emerald-400" :
+                                      isPast ? "bg-cyan/70" :
+                                      isActive ? "bg-cyan animate-pulse" :
+                                      "bg-white/20"
+                                    }`} />
+                                    <span className={`font-mono text-[9px] transition-colors duration-300 ${
+                                      isDone ? "text-emerald-400" :
+                                      isActive ? "text-cyan" :
+                                      isPast ? "text-cyan/50" :
+                                      "text-white/25"
+                                    }`}>{labels[i]}</span>
+                                  </div>
+                                );
+                              })}
+                              <Loader2 size={8} className={`animate-spin ml-0.5 ${geracaoStep === "pronto" ? "text-emerald-400" : "text-cyan"}`} />
                             </div>
                           </div>
                         ) : (
@@ -805,6 +984,48 @@ export default function Leads() {
         </table>
       </div>
 
+      {/* MODAL ENVIAR PROPOSTA POR EMAIL */}
+      {emailModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={() => setEmailModal(null)}>
+          <div className="w-full max-w-md bg-[#09090b] border border-white/20 p-6 space-y-4" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div>
+                <h2 className="font-serif text-xl font-light text-white">Enviar Proposta</h2>
+                <p className="font-mono text-xs text-white/40 mt-0.5">{emailModal.lead.nome}</p>
+              </div>
+              <button onClick={() => setEmailModal(null)} className="text-white/40 hover:text-white text-xl leading-none">×</button>
+            </div>
+            <div className="space-y-2">
+              <label className="font-mono text-xs text-white/50 uppercase tracking-widest">Email do destinatário</label>
+              <input
+                type="email"
+                value={emailInput}
+                onChange={e => setEmailInput(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && handleEnviarEmail()}
+                placeholder="email@empresa.com.br"
+                className="w-full bg-white/5 border border-white/10 px-3 py-2 text-sm text-white placeholder-white/20 outline-none focus:border-emerald-500/50"
+                autoFocus
+              />
+            </div>
+            <div className="text-xs text-white/30 space-y-1">
+              <p>O email incluirá:</p>
+              <ul className="list-disc list-inside space-y-0.5 text-white/25">
+                <li>Link do site de demonstração</li>
+                <li>Link da análise estratégica (PDF)</li>
+                <li>Texto personalizado gerado por IA</li>
+              </ul>
+            </div>
+            <button
+              onClick={handleEnviarEmail}
+              disabled={sendingEmail || !emailInput.trim()}
+              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-mono text-sm font-bold transition-colors"
+            >
+              {sendingEmail ? "Enviando..." : "✉ Enviar Proposta"}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* MODAL DE RASPAGEM / MINERADOR DE LEADS */}
       {showMineradorModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
@@ -840,15 +1061,13 @@ export default function Leads() {
 
               <div>
                 <label className="block uppercase tracking-[0.1em] text-white/60 mb-2">Cidade</label>
-                <select
+                <input
+                  type="text"
                   value={selectedCidade}
                   onChange={(e) => setSelectedCidade(e.target.value)}
-                  className="w-full bg-[#000000] border border-white/15 px-3 py-2.5 text-white focus:border-cyan/50 focus:outline-none"
-                >
-                  {CIDADES_LIST.map((cid) => (
-                    <option key={cid} value={cid}>{cid}</option>
-                  ))}
-                </select>
+                  placeholder="Ex: São Paulo, Belo Horizonte, Recife..."
+                  className="w-full bg-[#000000] border border-white/15 px-3 py-2.5 text-white placeholder-white/25 focus:border-cyan/50 focus:outline-none"
+                />
               </div>
 
               <div>

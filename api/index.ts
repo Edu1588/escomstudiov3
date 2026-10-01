@@ -42,28 +42,14 @@ if (process.env.Groq && !process.env.GROQ_API_KEY) process.env.GROQ_API_KEY = pr
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, collection, addDoc, serverTimestamp, Timestamp, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, orderBy, where, writeBatch, limit } from 'firebase/firestore';
 import fs from 'fs';
-import firebaseConfig from "./firebase-applet-config.js";
-
-const firebaseApp = initializeApp(firebaseConfig);
-const auth = getAuth(firebaseApp);
-const db = getFirestore(firebaseApp, firebaseConfig.firestoreDatabaseId || '(default)');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
-export async function ensureAuth() {
-  if (!auth.currentUser) {
-    try { await signInWithEmailAndPassword(auth, "admin@escom.com", "Edu@1508001"); console.log("[SERVER_AUTH] Autenticado"); }
-    catch(e) { console.error('[SERVER_AUTH] Falha:', e.message); }
-  }
-}
-ensureAuth().catch(err => console.error("Initial auth failed:", err));
+export async function ensureAuth() { /* Firebase removido — usando somente Supabase */ }
 
 app.get(["/home-v3", "/home-v3.html", "/home-v3/index.html"], (req, res) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0");
@@ -194,8 +180,8 @@ async function runMineraLeadsCron() {
     });
     const data = JSON.parse(await resp.text());
     const places = data.places || [];
-    await ensureAuth();
-    const existing = new Set((await getDocs(collection(db,"generated_sites"))).docs.map(d=>d.id));
+    const existingRows = await sbFetch("/generated_sites?select=id&limit=500").catch(() => []);
+    const existing = new Set((existingRows || []).map((d: any) => d.id));
     let added = 0;
     for (const r of places) {
       if (added >= 5) break;
@@ -401,8 +387,8 @@ JSON obrigatório com TODAS estas seções:
     placeId, htmlContent:html, phone, email:"", address,
     reports, visualReferences, createdAt:Date.now(), updatedAt:Date.now()
   };
-  await setDoc(doc(db, "generated_sites", projectId), siteRecord, { merge: true });
-  console.log(`[AUTO_BUILD] Protótipo criado na coleção generated_sites com ID: ${projectId}`);
+  await sbFetch("/generated_sites", { method: "POST", headers: { "Content-Type": "application/json", Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify({ id: projectId, company_name: siteRecord.companyName, niche: siteRecord.niche, html_content: siteRecord.htmlContent, deployed_url: siteRecord.deployedUrl, status: siteRecord.status, score: siteRecord.score, created_at: siteRecord.createdAt, updated_at: siteRecord.updatedAt }) }).catch(e => console.warn("[AUTO_BUILD] generated_sites save:", e.message));
+  console.log(`[AUTO_BUILD] Protótipo criado no Supabase com ID: ${projectId}`);
 
   // Criar documento de proposta correspondente para a visualização do PDF funcionar no BaseProposta.tsx
   const proposalId = "proposta-escom-" + projectId;
@@ -419,8 +405,8 @@ JSON obrigatório com TODAS estas seções:
     ],
     status: "pending"
   };
-  await setDoc(doc(db, "proposals", proposalId), proposalDoc, { merge: true });
-  console.log(`[AUTO_BUILD] Proposta criada na coleção proposals com ID: ${proposalId}`);
+  await sbFetch("/proposals", { method: "POST", headers: { "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify({ id: proposalId, ...proposalDoc }) }).catch(() => {});
+  console.log(`[AUTO_BUILD] Proposta criada no Supabase com ID: ${proposalId}`);
 
   return siteRecord;
 }
@@ -429,11 +415,10 @@ JSON obrigatório com TODAS estas seções:
 async function runAutoBuildPipeline() {
   console.log("[AUTO_BUILD] Pipeline iniciado...");
   if (!process.env.SERPER_API_KEY || !process.env.GROQ_API_KEY) return { error: "missing_keys" };
-  await ensureAuth();
   const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-  const batchSnap = await getDocs(collection(db, "auto_build_queue"));
-  const batches = batchSnap.docs.map(d => ({ id: d.id, ...d.data() } as any)).filter(b => b.status !== "completed" && b.status !== "failed").sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  const batchRows = await sbFetch("/auto_build_queue?status=neq.completed&status=neq.failed&order=created_at.desc&limit=5").catch(() => []);
+  const batches = (batchRows || []) as any[];
   let batch, batchId;
 
   if (batches.length === 0) {
@@ -443,7 +428,8 @@ async function runAutoBuildPipeline() {
     const niches = ["Clínica Odontológica em São Paulo","Arquiteto em Curitiba","Contabilidade em Belo Horizonte","Academia em Porto Alegre","dentist in New York"];
     const gls = ["br","br","br","br","us"];
     const hls = ["pt-br","pt-br","pt-br","pt-br","en"];
-    const existingNames = new Set((await getDocs(collection(db,"generated_sites"))).docs.map(d => d.data().companyName?.toLowerCase().trim()));
+    const existingNamesRows = await sbFetch("/generated_sites?select=company_name&limit=500").catch(() => []);
+    const existingNames = new Set((existingNamesRows || []).map((d: any) => d.company_name?.toLowerCase().trim()));
     for (let i = 0; i < niches.length; i++) {
       await new Promise(r => setTimeout(r, 2000));
       try {
@@ -469,17 +455,17 @@ async function runAutoBuildPipeline() {
       } catch(e) { console.error("[AUTO_BUILD] Erro lead:", e.message); }
     }
     if (leads.length === 0) return { error: "no_leads" };
-    batch = { status:"in_progress", createdAt:Date.now(), totalLeads:leads.length, processedLeads:0, leads };
-    await setDoc(doc(db,"auto_build_queue",batchId), batch);
+    batch = { id: batchId, status:"in_progress", created_at: new Date().toISOString(), total_leads:leads.length, processed_leads:0, leads_json: JSON.stringify(leads) };
+    await sbFetch("/auto_build_queue", { method: "POST", headers: { "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify(batch) }).catch(() => {});
   } else {
     batch = batches[0];
     batchId = batch.id;
   }
 
-  const leadsArr = batch.leads || [];
+  const leadsArr: any[] = JSON.parse(batch.leads_json || batch.leads || "[]");
   const idx = leadsArr.findIndex(l => l.status === "pending");
   if (idx === -1) {
-    await updateDoc(doc(db,"auto_build_queue",batchId), { status:"completed" });
+    await sbFetch(`/auto_build_queue?id=eq.${encodeURIComponent(batchId)}`, { method: "PATCH", headers: { "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify({ status: "completed" }) }).catch(() => {});
     return { status:"completed", batchId };
   }
 
@@ -539,18 +525,18 @@ async function runAutoBuildPipeline() {
         reports: lead.reports, createdAt: Date.now(), updatedAt: Date.now()
       };
       const sitePid = "site_auto_" + Date.now() + "_" + idx;
-      await setDoc(doc(db, "generated_sites", sitePid), siteRecord, { merge: true });
+      await sbFetch("/generated_sites", { method: "POST", headers: { "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify({ id: sitePid, ...siteRecord, html_content: siteRecord.htmlContent, company_name: siteRecord.companyName, deployed_url: siteRecord.deployedUrl }) }).catch(() => {});
     }
 
     leadsArr[idx] = lead;
     const processed = leadsArr.filter(l => l.status !== "pending").length;
-    await updateDoc(doc(db,"auto_build_queue",batchId), { leads: leadsArr, processedLeads: processed, lastProcessedAt: Date.now() });
+    await sbFetch(`/auto_build_queue?id=eq.${encodeURIComponent(batchId)}`, { method: "PATCH", headers: { "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify({ leads_json: JSON.stringify(leadsArr), processed_leads: processed, last_processed_at: Date.now() }) }).catch(() => {});
     return { status: lead.status, batchId, lead: lead.title };
   } catch(e) {
     lead.status = "failed";
     lead.error = e.message;
     leadsArr[idx] = lead;
-    await updateDoc(doc(db,"auto_build_queue",batchId), { leads: leadsArr });
+    await sbFetch(`/auto_build_queue?id=eq.${encodeURIComponent(batchId)}`, { method: "PATCH", headers: { "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify({ leads_json: JSON.stringify(leadsArr) }) }).catch(() => {});
     return { status:"failed", error: e.message };
   }
 }
@@ -601,19 +587,18 @@ app.get("/api/trigger-minera", async (req, res) => {
 app.get("/api/send-test-email", async (req, res) => {
   const destination = (req.query.email as string) || "es.comunicacao@outlook.com";
   try {
-    const snap = await getDocs(collection(db, "jobs"));
-    const jobs = snap.docs.map(d => {
-      const data = d.data();
+    const jobRows = await sbFetch("/jobs?order=created_at.desc&limit=50").catch(() => []);
+    const jobs = (jobRows || []).map((d: any) => {
       return {
         id: d.id,
-        title: data.title || "Vaga de Marketing",
-        company: data.company || "Não informada",
-        snippet: data.snippet || "",
-        link: data.link || "",
-        role: data.role || "Não informada",
-        status: data.status || "Pendente",
-        emailContato: data.emailContato || null,
-        createdAt: data.createdAt || 0
+        title: d.title || "Vaga de Marketing",
+        company: d.company || "Não informada",
+        snippet: d.snippet || "",
+        link: d.link || "",
+        role: d.role || "Não informada",
+        status: d.status || "Pendente",
+        emailContato: d.email_contato || null,
+        createdAt: d.created_at || 0
       };
     });
 
@@ -777,14 +762,19 @@ async function sbFetch(path: string, options: any = {}) {
 app.get("/api/leads", async (req, res) => {
   try {
     const rows = await sbFetch("/leads?select=*&order=criado_em.desc");
-    const leads = (rows || []).map((r: any) => ({
-      ...r,
-      score:        r.score_oportunidade ?? r.score ?? 0,
-      reviewsCount: r.reviews_count      ?? r.reviewsCount ?? 0,
-      temSite:      r.tem_site           ?? r.temSite ?? false,
-      siteUrl:      r.website            ?? r.siteUrl ?? "",
-      siteGerado:   r.site_gerado        ?? "",
-    }));
+    const SOCIAL = /instagram\.com|facebook\.com|fb\.com|linkedin\.com|twitter\.com|tiktok\.com|youtube\.com|wa\.me|whatsapp/i;
+    const leads = (rows || []).map((r: any) => {
+      const rawWebsite = r.website ?? r.siteUrl ?? "";
+      const siteUrl = rawWebsite && !SOCIAL.test(rawWebsite) ? rawWebsite : "";
+      return {
+        ...r,
+        score:        r.score_oportunidade ?? r.score ?? 0,
+        reviewsCount: r.reviews_count      ?? r.reviewsCount ?? 0,
+        temSite:      !!(siteUrl),
+        siteUrl,
+        siteGerado:   r.site_gerado        ?? "",
+      };
+    });
     res.json({ success: true, leads });
   } catch(e: any) { res.status(500).json({ error: e.message }); }
 });
@@ -844,9 +834,9 @@ app.post("/api/maps-leads", async (req, res) => {
     const data = JSON.parse(await resp.text());
     const places = (data.places || []).slice(0, 5);
 
-    await ensureAuth();
     const groq = process.env.GROQ_API_KEY ? new Groq({ apiKey: process.env.GROQ_API_KEY }) : null;
-    const existing = new Set((await getDocs(collection(db,"generated_sites"))).docs.map(d=>d.id));
+    const existingRows2 = await sbFetch("/generated_sites?select=id&limit=500").catch(() => []);
+    const existing = new Set((existingRows2 || []).map((d: any) => d.id));
     const builtSites = [];
 
     for (const p of places) {
@@ -866,40 +856,41 @@ app.post("/api/maps-leads", async (req, res) => {
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
-// --- Generated Sites ---
+// --- Generated Sites (Supabase) ---
 app.get("/api/generated-sites", async (req, res) => {
   try {
-    await ensureAuth();
-    const sitesSnap = await getDocs(collection(db, "generated_sites"));
-    const sites = sitesSnap.docs.map(d => ({ projectId: d.id, ...d.data() }));
-    res.json({ success: true, data: sites });
+    const sites = await sbFetch("/generated_sites?order=created_at.desc&limit=100").catch(() => []);
+    res.json({ success: true, data: (sites || []).map((s: any) => ({ projectId: s.id, ...s })) });
   } catch(e) { res.json({ success: true, data: [] }); }
 });
 
 app.put("/api/generated-sites/:projectId/status", async (req, res) => {
   try {
-    await ensureAuth();
     const { projectId } = req.params;
     const { status } = req.body;
-    await updateDoc(doc(db, "generated_sites", projectId), { status, updatedAt: Date.now() });
+    await sbFetch(`/generated_sites?id=eq.${encodeURIComponent(projectId)}`, {
+      method: "PATCH", headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify({ status, updated_at: Date.now() })
+    });
     res.json({ success: true });
   } catch(e) { res.status(500).json({ success: false, error: e.message }); }
 });
 
 app.post("/api/generated-sites/:projectId/mark-viewed", async (req, res) => {
   try {
-    await ensureAuth();
     const { projectId } = req.params;
-    await updateDoc(doc(db, "generated_sites", projectId), { viewed: true, viewedAt: Date.now() });
+    await sbFetch(`/generated_sites?id=eq.${encodeURIComponent(projectId)}`, {
+      method: "PATCH", headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify({ viewed: true, viewed_at: Date.now() })
+    });
     res.json({ success: true });
   } catch(e) { res.status(500).json({ success: false, error: e.message }); }
 });
 
 app.delete("/api/generated-sites/:projectId", async (req, res) => {
   try {
-    await ensureAuth();
     const { projectId } = req.params;
-    await deleteDoc(doc(db, "generated_sites", projectId));
+    await sbFetch(`/generated_sites?id=eq.${encodeURIComponent(projectId)}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
     res.json({ success: true });
   } catch(e) { res.status(500).json({ success: false, error: e.message }); }
 });
@@ -1024,10 +1015,9 @@ app.post("/api/gerar-proposta", async (req, res) => {
   try {
     const { leadId } = req.body;
     if (!leadId) return res.status(400).json({ error: "leadId obrigatorio" });
-    await ensureAuth();
-    const leadSnap = await getDoc(doc(db, "leads", leadId));
-    if (!leadSnap.exists()) return res.status(404).json({ error: "Lead nao encontrado" });
-    const lead: any = { id: leadId, ...leadSnap.data() };
+    const rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(leadId)}&select=*&limit=1`);
+    if (!rows || rows.length === 0) return res.status(404).json({ error: "Lead nao encontrado" });
+    const lead: any = rows[0];
     const n8nHost = process.env.N8N_HOST || "https://n8n-iliw.srv1887358.hstgr.cloud";
     const resp = await fetch(`${n8nHost}/webhook/gerar-proposta`, {
       method: "POST",
@@ -1041,12 +1031,25 @@ app.post("/api/gerar-proposta", async (req, res) => {
         telefone: lead.telefone,
         endereco: lead.endereco,
         rating: lead.rating,
-        reviewsCount: lead.reviewsCount,
+        reviewsCount: lead.reviews_count ?? lead.reviewsCount,
         diagnostico: lead.diagnostico || null
       })
     });
     const data = await resp.json().catch(() => ({}));
-    res.status(resp.status).json(data);
+
+    // Se N8N retornou siteUrl, persiste no Supabase para o link aparecer ao recarregar
+    const siteUrl = data.siteUrl || data.propostaUrl || data.url || "";
+    if (siteUrl && resp.ok) {
+      try {
+        await sbFetch(`/leads?id=eq.${encodeURIComponent(leadId)}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
+          body: JSON.stringify({ site_gerado: siteUrl }),
+        });
+      } catch {}
+    }
+
+    res.status(resp.ok ? 200 : resp.status).json({ ...data, siteUrl });
   } catch(e: any) { res.status(500).json({ error: e.message }); }
 });
 
@@ -1071,56 +1074,32 @@ app.post("/api/reativar-proposta", async (req, res) => {
 
 app.get("/api/view-prototype/:projectId", async (req, res) => {
   try {
-    await ensureAuth();
-    const { projectId } = req.params;
-    const snap = await getDoc(doc(db, "generated_sites", projectId));
-    if (snap.exists()) {
-      const site = snap.data();
-      if (site.deployedUrl) return res.redirect(site.deployedUrl);
-      if (site.htmlUrl) return res.redirect(site.htmlUrl);
-      const html = site.htmlContent || "<html><body><p>Protótipo não disponível</p></body></html>";
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      res.send(html);
-    } else {
-      res.status(404).json({ error: "Projeto não encontrado" });
-    }
+    const rows = await sbFetch(`/generated_sites?id=eq.${encodeURIComponent(req.params.projectId)}&select=*&limit=1`).catch(() => []);
+    if (!rows || rows.length === 0) return res.status(404).json({ error: "Projeto não encontrado" });
+    const site = rows[0];
+    if (site.deployed_url) return res.redirect(site.deployed_url);
+    const html = site.html_content || "<html><body><p>Protótipo não disponível</p></body></html>";
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.send(html);
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
-// Serve o site-amostra gerado pelo n8n em /proposta-{slug} (roteado via vercel.json,
-// destino "/api" -> esta mesma funcao). O HTML fica salvo como TEXTO na colecao
-// "propostas" do Firestore (campo indexHtml) - sem Firebase Storage. O preco vem
-// como token {{PRECO_CHEIO}}/{{PRECO_OFERTA}} e e substituido pelo valor ATUAL da
-// proposta aqui (pode ter mudado numa reativacao).
 const PAGINA_PROPOSTA_EXPIRADA = `<!DOCTYPE html><html lang="pt-br"><head><meta charset="utf-8" /><title>Amostra expirada - Escom Studio</title><meta name="robots" content="noindex" /><style>body{font-family:Arial,Helvetica,sans-serif;background:#0b0f1a;color:#f2f2f2;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;}a{color:#4dabf7;}</style></head><body><div><h1>Esta amostra nao esta mais disponivel</h1><p>O prazo de 3 dias para avaliacao expirou. Fale com a gente para gerar uma nova proposta.</p><p><a href="https://escomstudio.com.br">Voltar para o site da Escom Studio</a></p></div></body></html>`;
 const PAGINA_PROPOSTA_NAO_ENCONTRADA = `<!DOCTYPE html><html lang="pt-br"><head><meta charset="utf-8" /><title>Proposta nao encontrada</title><meta name="robots" content="noindex" /></head><body><h1>Proposta nao encontrada</h1><p><a href="https://escomstudio.com.br">Voltar para o site da Escom Studio</a></p></body></html>`;
 
+// Serve o site gerado pelo N8N — slug armazenado em leads.site_slug (Supabase)
 app.get("/proposta-:slug", async (req, res) => {
   try {
-    await ensureAuth();
-    const { slug } = req.params; // Express ja tira o prefixo "proposta-" (literal na rota); o slug no Firestore tambem nao tem esse prefixo.
-    const propostaSnap = await getDoc(doc(db, "propostas", slug));
-    if (!propostaSnap.exists()) {
+    const { slug } = req.params;
+    const rows = await sbFetch(`/leads?site_slug=eq.${encodeURIComponent(slug)}&select=site_html,site_gerado&limit=1`).catch(() => []);
+    if (!rows || rows.length === 0 || !rows[0].site_html) {
+      // Fallback: redirecionar para ver-proposta se tiver site_gerado
+      if (rows?.[0]?.site_gerado) return res.redirect(rows[0].site_gerado);
       res.setHeader("Content-Type", "text/html; charset=utf-8");
       res.setHeader("X-Robots-Tag", "noindex, nofollow");
       return res.status(404).send(PAGINA_PROPOSTA_NAO_ENCONTRADA);
     }
-    const proposta: any = propostaSnap.data();
-    const expirou = proposta.status === "expirado" || (proposta.expiraEm ? new Date(proposta.expiraEm).getTime() < Date.now() : false);
-    if (expirou && proposta.status !== "pago") {
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      res.setHeader("X-Robots-Tag", "noindex, nofollow");
-      return res.status(410).send(PAGINA_PROPOSTA_EXPIRADA);
-    }
-    let html = proposta.indexHtml;
-    if (!html) {
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      res.setHeader("X-Robots-Tag", "noindex, nofollow");
-      return res.status(404).send(PAGINA_PROPOSTA_NAO_ENCONTRADA);
-    }
-    const formatarReal = (n: number) => "R$ " + Number(n).toLocaleString("pt-BR", { minimumFractionDigits: 2 });
-    if (proposta.valorCheio != null) html = html.split("{{PRECO_CHEIO}}").join(formatarReal(proposta.valorCheio));
-    if (proposta.valor != null) html = html.split("{{PRECO_OFERTA}}").join(formatarReal(proposta.valor));
+    const html = rows[0].site_html;
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.setHeader("X-Robots-Tag", "noindex, nofollow");
     res.status(200).send(html);
@@ -1129,16 +1108,48 @@ app.get("/proposta-:slug", async (req, res) => {
   }
 });
 
+// Serve site gerado por leadId (novo padrão — sem slug)
+app.get("/api/ver-proposta/:leadId", async (req, res) => {
+  try {
+    const rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(req.params.leadId)}&select=site_html,nome&limit=1`).catch(() => []);
+    if (!rows || rows.length === 0 || !rows[0].site_html) {
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      return res.status(404).send(PAGINA_PROPOSTA_NAO_ENCONTRADA);
+    }
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.setHeader("X-Robots-Tag", "noindex, nofollow");
+    res.status(200).send(rows[0].site_html);
+  } catch (e) {
+    res.status(500).send("Erro ao carregar a proposta");
+  }
+});
+
+// Recebe HTML do N8N e salva em Supabase (substitui o salvamento no Firebase propostas)
+app.post("/api/salvar-proposta", async (req, res) => {
+  try {
+    const { leadId, slug, siteHtml, indexHtml, relatorioHtml } = req.body;
+    if (!leadId) return res.status(400).json({ error: "leadId obrigatorio" });
+    const html = siteHtml || indexHtml || "";
+    const baseUrl = "https://www.escomstudio.com.br";
+    const siteUrl = `${baseUrl}/api/ver-proposta/${leadId}`;
+    const patch: any = { site_gerado: siteUrl };
+    if (html) patch.site_html = html;
+    if (slug) patch.site_slug = slug;
+    if (relatorioHtml) patch.analise_html = relatorioHtml;
+    await sbFetch(`/leads?id=eq.${encodeURIComponent(leadId)}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify(patch),
+    });
+    res.json({ ok: true, siteUrl });
+  } catch(e: any) { res.status(500).json({ error: e.message }); }
+});
+
 app.get("/api/proposals/:id", async (req, res) => {
   try {
-    await ensureAuth();
-    const { id } = req.params;
-    const docSnap = await getDoc(doc(db, "proposals", id));
-    if (docSnap.exists()) {
-      res.json({ success: true, proposal: docSnap.data() });
-    } else {
-      res.status(404).json({ success: false, error: "Proposal not found" });
-    }
+    const rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(req.params.id)}&select=*&limit=1`).catch(() => []);
+    if (rows && rows.length > 0) res.json({ success: true, proposal: rows[0] });
+    else res.status(404).json({ success: false, error: "Proposal not found" });
   } catch (e) {
     res.status(500).json({ success: false, error: e.message });
   }
@@ -1810,8 +1821,14 @@ app.post("/api/build-and-deploy-site", async (req, res) => {
       updatedAt: Date.now()
     };
 
-    await ensureAuth();
-    await setDoc(doc(db, "generated_sites", pid), siteRecord, { merge: true });
+    // Salva em Supabase generated_sites
+    try {
+      await sbFetch("/generated_sites", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
+        body: JSON.stringify({ id: pid, lead_id: leadDataSupabase?.id || null, company_name: siteRecord.companyName, niche: siteRecord.niche, html_content: html, deployed_url: deployedUrl || null, status: siteRecord.status, score: siteRecord.score, created_at: siteRecord.createdAt, updated_at: siteRecord.updatedAt }),
+      });
+    } catch(e) { console.warn("[BUILD] generated_sites upsert:", e.message); }
 
     // Persiste o link no lead do Supabase para aparecer no card
     const previewUrl = `https://www.escomstudio.com.br/api/site-preview/${pid}`;
@@ -1829,12 +1846,35 @@ app.post("/api/build-and-deploy-site", async (req, res) => {
   } catch(e) { res.status(500).json({ success: false, error: e.message }); }
 });
 
+// Verifica se um site/proposta foi gerado para um leadId (somente Supabase)
+app.get("/api/check-site/:leadId", async (req, res) => {
+  try {
+    const leadId = req.params.leadId;
+    const rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(leadId)}&select=site_gerado,site_html&limit=1`).catch(() => []);
+    const row = rows?.[0];
+    if (row?.site_gerado) return res.json({ found: true, url: row.site_gerado });
+    // Se tem site_html mas não tem site_gerado, gera o link e salva
+    if (row?.site_html) {
+      const siteUrl = `https://www.escomstudio.com.br/api/ver-proposta/${leadId}`;
+      try { await sbFetch(`/leads?id=eq.${encodeURIComponent(leadId)}`, { method: "PATCH", headers: { "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify({ site_gerado: siteUrl }) }); } catch {}
+      return res.json({ found: true, url: siteUrl });
+    }
+    // Fallback: verificar generated_sites por lead_id
+    const gs = await sbFetch(`/generated_sites?lead_id=eq.${encodeURIComponent(leadId)}&select=id,deployed_url&limit=1`).catch(() => []);
+    if (gs && gs.length > 0) {
+      const baseUrl = "https://www.escomstudio.com.br";
+      const url = gs[0].deployed_url || `${baseUrl}/api/site-preview/${gs[0].id}`;
+      return res.json({ found: true, url });
+    }
+    res.json({ found: false });
+  } catch(e: any) { res.status(500).json({ found: false, error: e.message }); }
+});
+
 app.get("/api/site-preview/:projectId", async (req, res) => {
   try {
-    await ensureAuth();
-    const snap = await getDoc(doc(db, "generated_sites", req.params.projectId));
-    if (!snap.exists()) return res.status(404).send("<h1>Site não encontrado</h1>");
-    const html = snap.data().htmlContent || "<h1>Sem conteúdo</h1>";
+    const rows = await sbFetch(`/generated_sites?id=eq.${encodeURIComponent(req.params.projectId)}&select=html_content&limit=1`).catch(() => []);
+    if (!rows || rows.length === 0) return res.status(404).send("<h1>Site não encontrado</h1>");
+    const html = rows[0].html_content || "<h1>Sem conteúdo</h1>";
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.send(html);
   } catch(e: any) { res.status(500).send("<h1>Erro: " + e.message + "</h1>"); }
@@ -1844,16 +1884,15 @@ app.post("/api/approve-site", async (req, res) => {
   try {
     const { projectId, slug } = req.body;
     if (!projectId) return res.status(400).json({ error: "projectId required" });
-    await ensureAuth();
-    const snap = await getDoc(doc(db, "generated_sites", projectId));
-    if (!snap.exists()) return res.status(404).json({ error: "Site not found" });
-    const site = snap.data();
-    let deployedUrl = site.deployedUrl;
-    if (!deployedUrl && site.htmlContent) {
+    const rows = await sbFetch(`/generated_sites?id=eq.${encodeURIComponent(projectId)}&select=*&limit=1`).catch(() => []);
+    if (!rows || rows.length === 0) return res.status(404).json({ error: "Site not found" });
+    const site = rows[0];
+    let deployedUrl = site.deployed_url;
+    if (!deployedUrl && site.html_content) {
       const siteSlug = slug || projectId;
       const dir = path.join(os.tmpdir(), "dist-deployed", siteSlug);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      fs.writeFileSync(path.join(dir, "index.html"), site.htmlContent, "utf-8");
+      fs.writeFileSync(path.join(dir, "index.html"), site.html_content, "utf-8");
       try {
         const { exec } = await import("child_process");
         await new Promise<void>((resolve, reject) => {
@@ -1866,7 +1905,10 @@ app.post("/api/approve-site", async (req, res) => {
         });
       } catch(e) { console.error("[APPROVE] Deploy error:", e); }
     }
-    await updateDoc(doc(db, "generated_sites", projectId), { status: deployedUrl ? "approved" : "failed_deploy", deployedUrl, updatedAt: Date.now() });
+    await sbFetch(`/generated_sites?id=eq.${encodeURIComponent(projectId)}`, {
+      method: "PATCH", headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify({ status: deployedUrl ? "approved" : "failed_deploy", deployed_url: deployedUrl, updated_at: Date.now() })
+    });
     res.json({ success: true, deployedUrl });
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
@@ -2085,10 +2127,7 @@ Responda ESTRITAMENTE em formato JSON com o esquema:
 
 // --- Função Auxiliar para Gerar as 5 Dicas do Dia com IA Groq ---
 async function generateDailyFinanceTips() {
-  await ensureAuth();
-  const snap = await getDocs(collection(db, "financas"));
-  const transactions: any[] = [];
-  snap.forEach(d => transactions.push(d.data()));
+  const transactions: any[] = await sbFetch("/financas?order=created_at.desc&limit=200").catch(() => []);
 
   const incomes = transactions.filter(t => t.flow === "income");
   const expenses = transactions.filter(t => t.flow === "expense");
@@ -2143,9 +2182,10 @@ Responda ESTRITAMENTE em formato JSON com o seguinte esquema:
     dicas: parsed.dicas || []
   };
 
-  // Salvar no Firestore
-  await setDoc(doc(db, "financas_dicas_diarias", "latest"), dicasData);
-  await setDoc(doc(db, "financas_dicas_diarias", `dica_${todayStr}`), dicasData);
+  // Salvar em Supabase (tabela financas_dicas_diarias se existir — ignora erro se não existir)
+  try {
+    await sbFetch("/financas_dicas_diarias", { method: "POST", headers: { "Content-Type": "application/json", Prefer: "resolution=merge-duplicates" }, body: JSON.stringify({ id: "latest", ...dicasData }) });
+  } catch {}
 
   return dicasData;
 }
@@ -2165,15 +2205,11 @@ app.all("/api/financas-cron", async (req, res) => {
 // --- Rota de Busca / Geração Manual das 5 Dicas do Dia ---
 app.get("/api/financas-dicas", async (req, res) => {
   try {
-    await ensureAuth();
     const todayStr = new Date().toISOString().split("T")[0];
-    const docSnap = await getDoc(doc(db, "financas_dicas_diarias", "latest"));
-
-    if (docSnap.exists() && docSnap.data().date === todayStr) {
-      return res.json({ success: true, data: docSnap.data() });
+    const rows = await sbFetch("/financas_dicas_diarias?id=eq.latest&limit=1").catch(() => []);
+    if (rows && rows.length > 0 && rows[0].date === todayStr) {
+      return res.json({ success: true, data: rows[0] });
     }
-
-    // Se não existir dica para hoje, gera uma nova na hora
     const newDicas = await generateDailyFinanceTips();
     res.json({ success: true, data: newDicas });
   } catch (e: any) {
@@ -2254,7 +2290,7 @@ app.get("/api/google-health-callback", async (req, res) => {
       docData.refresh_token = tokenData.refresh_token;
     }
 
-    await setDoc(doc(db, "google_health_tokens", "admin"), docData, { merge: true });
+    await sbFetch("/google_health_tokens", { method: "POST", headers: { "Content-Type": "application/json", Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify({ id: "admin", ...docData }) }).catch(() => {});
 
     res.redirect("https://www.escomstudio.com.br/admin/saude");
   } catch (error) {
@@ -2265,12 +2301,12 @@ app.get("/api/google-health-callback", async (req, res) => {
 
 app.get("/api/google-health-sync", async (req, res) => {
   try {
-    const tokenDoc = await getDoc(doc(db, "google_health_tokens", "admin"));
-    if (!tokenDoc.exists()) {
+    const tokenRows = await sbFetch("/google_health_tokens?id=eq.admin&limit=1").catch(() => []);
+    if (!tokenRows || tokenRows.length === 0) {
       return res.status(400).json({ error: "Token não encontrado. Autorize primeiro." });
     }
-    
-    let { access_token, refresh_token, expires_at } = tokenDoc.data() as any;
+
+    let { access_token, refresh_token, expires_at } = tokenRows[0] as any;
     const clientId = process.env.GOOGLE_HEALTH_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_HEALTH_CLIENT_SECRET;
 
@@ -2304,7 +2340,7 @@ app.get("/api/google-health-sync", async (req, res) => {
         updateData.refresh_token = refresh_token;
       }
       
-      await setDoc(doc(db, "google_health_tokens", "admin"), updateData, { merge: true });
+      await sbFetch("/google_health_tokens?id=eq.admin", { method: "PATCH", headers: { "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify(updateData) }).catch(() => {});
     }
 
     const end = new Date();
@@ -2432,21 +2468,15 @@ app.get("/api/google-health-sync", async (req, res) => {
       });
     }
 
-    // Salvar no Firestore
-    const batch = writeBatch(db);
+    // Salvar no Supabase
     const syncedAt = new Date().toISOString();
     let savedCount = 0;
 
     for (const [date, metrics] of Object.entries(dailyMetrics)) {
       delete (metrics as any)._rawSonoHours;
-      (metrics as any).syncedAt = syncedAt;
-      const docRef = doc(db, "health_metrics", date);
-      batch.set(docRef, metrics, { merge: true });
+      (metrics as any).synced_at = syncedAt;
+      await sbFetch("/health_metrics", { method: "POST", headers: { "Content-Type": "application/json", Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify({ id: date, ...(metrics as any) }) }).catch(() => {});
       savedCount++;
-    }
-
-    if (savedCount > 0) {
-      await batch.commit();
     }
 
     res.json({ 
@@ -2463,10 +2493,9 @@ app.get("/api/google-health-sync", async (req, res) => {
 
 app.get("/api/google-health-status", async (req, res) => {
   try {
-    const tokenSnap = await getDoc(doc(db, "google_health_tokens", "admin"));
-    if (tokenSnap.exists()) {
-      const data = tokenSnap.data() as any;
-      res.json({ connected: true, lastSync: data.updatedAt || null, expiresAt: data.expires_at || null });
+    const rows = await sbFetch("/google_health_tokens?id=eq.admin&limit=1").catch(() => []);
+    if (rows && rows.length > 0) {
+      res.json({ connected: true, lastSync: rows[0].updated_at || null, expiresAt: rows[0].expires_at || null });
     } else {
       res.json({ connected: false, lastSync: null });
     }
@@ -2477,10 +2506,8 @@ app.get("/api/google-health-status", async (req, res) => {
 
 app.get("/api/health-metrics", async (req, res) => {
   try {
-    const q = query(collection(db, "health_metrics"), orderBy("data", "desc"), limit(30));
-    const snapshot = await getDocs(q);
-    const metrics = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-    res.json({ success: true, metrics });
+    const metrics = await sbFetch("/health_metrics?order=data.desc&limit=30").catch(() => []);
+    res.json({ success: true, metrics: metrics || [] });
   } catch (error) {
     console.error("Erro ao buscar health metrics:", error);
     res.status(500).json({ success: false, error: "Erro interno" });
@@ -2491,17 +2518,7 @@ app.post("/api/health-metrics", async (req, res) => {
   try {
     const { peso, gorduraCorporal, massaMagra, notas } = req.body;
     const docDate = new Date().toISOString().split('T')[0];
-    
-    await setDoc(doc(db, "health_metrics", docDate), {
-      data: docDate,
-      peso: peso || null,
-      gorduraCorporal: gorduraCorporal || null,
-      massaMagra: massaMagra || null,
-      notas: notas || "",
-      origem: "Manual",
-      updatedAt: new Date().toISOString()
-    }, { merge: true });
-    
+    await sbFetch("/health_metrics", { method: "POST", headers: { "Content-Type": "application/json", Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify({ id: docDate, data: docDate, peso: peso || null, gordura_corporal: gorduraCorporal || null, massa_magra: massaMagra || null, notas: notas || "", origem: "Manual", updated_at: new Date().toISOString() }) }).catch(() => {});
     res.json({ success: true, message: "Métricas salvas com sucesso" });
   } catch (error) {
     console.error("Erro ao salvar health metrics:", error);
@@ -2629,14 +2646,7 @@ app.get("/api/strava-callback", async (req, res) => {
       return res.status(400).send("Erro na autenticação com o Strava: " + JSON.stringify(data));
     }
 
-    await setDoc(doc(db, "strava_tokens", "admin"), {
-      access_token: data.access_token,
-      refresh_token: data.refresh_token,
-      expires_at: data.expires_at,
-      used_secret: data._usedSecret,
-      athlete: data.athlete ? { id: data.athlete.id, name: `${data.athlete.firstname} ${data.athlete.lastname}`, profile: data.athlete.profile } : null,
-      updatedAt: new Date().toISOString()
-    }, { merge: true });
+    await sbFetch("/strava_tokens", { method: "POST", headers: { "Content-Type": "application/json", Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify({ id: "admin", access_token: data.access_token, refresh_token: data.refresh_token, expires_at: data.expires_at, used_secret: data._usedSecret, athlete: data.athlete ? JSON.stringify({ id: data.athlete.id, name: `${data.athlete.firstname} ${data.athlete.lastname}`, profile: data.athlete.profile }) : null, updated_at: new Date().toISOString() }) }).catch(() => {});
 
     res.redirect("https://www.escomstudio.com.br/admin/saude");
   } catch (error) {
@@ -2647,10 +2657,11 @@ app.get("/api/strava-callback", async (req, res) => {
 
 app.get("/api/strava-status", async (req, res) => {
   try {
-    const docSnap = await getDoc(doc(db, "strava_tokens", "admin"));
-    if (docSnap.exists()) {
-      const data = docSnap.data() as any;
-      res.json({ connected: true, athlete: data.athlete, lastSync: data.updatedAt || null });
+    const rows = await sbFetch("/strava_tokens?id=eq.admin&limit=1").catch(() => []);
+    if (rows && rows.length > 0) {
+      const data = rows[0] as any;
+      const athlete = typeof data.athlete === "string" ? JSON.parse(data.athlete || "null") : data.athlete;
+      res.json({ connected: true, athlete, lastSync: data.updated_at || null });
     } else {
       res.json({ connected: false, athlete: null });
     }
@@ -2661,12 +2672,12 @@ app.get("/api/strava-status", async (req, res) => {
 
 app.get("/api/strava-sync", async (req, res) => {
   try {
-    const tokenDoc = await getDoc(doc(db, "strava_tokens", "admin"));
-    if (!tokenDoc.exists()) {
+    const tokenRows = await sbFetch("/strava_tokens?id=eq.admin&limit=1").catch(() => []);
+    if (!tokenRows || tokenRows.length === 0) {
       return res.status(400).json({ error: "Token Strava não encontrado. Autorize primeiro." });
     }
 
-    let { access_token, refresh_token, expires_at, used_secret } = tokenDoc.data() as any;
+    let { access_token, refresh_token, expires_at, used_secret } = tokenRows[0] as any;
     const { clientId, secrets } = getStravaCredentials();
     const activeSecret = used_secret || secrets[0];
 
@@ -2686,12 +2697,7 @@ app.get("/api/strava-sync", async (req, res) => {
         if (refreshData.access_token) {
           access_token = refreshData.access_token;
           expires_at = refreshData.expires_at;
-          await setDoc(doc(db, "strava_tokens", "admin"), {
-            access_token,
-            refresh_token: refreshData.refresh_token || refresh_token,
-            expires_at,
-            updatedAt: new Date().toISOString()
-          }, { merge: true });
+          await sbFetch("/strava_tokens?id=eq.admin", { method: "PATCH", headers: { "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify({ access_token, refresh_token: refreshData.refresh_token || refresh_token, expires_at, updated_at: new Date().toISOString() }) }).catch(() => {});
         }
       }
     }
@@ -2705,40 +2711,18 @@ app.get("/api/strava-sync", async (req, res) => {
       return res.status(400).json({ error: "Erro ao buscar atividades do Strava", details: activitiesData });
     }
 
-    const batch = writeBatch(db);
     let savedCount = 0;
-
-    activitiesData.forEach((act: any) => {
+    for (const act of activitiesData) {
       const actId = `strava_${act.id}`;
       const distanceKm = Number((act.distance / 1000).toFixed(2));
       const movingTimeMinutes = Math.round(act.moving_time / 60);
       const startDate = act.start_date_local ? act.start_date_local.split("T")[0] : new Date().toISOString().split("T")[0];
 
-      const activityRecord = {
-        id: actId,
-        stravaId: act.id,
-        nome: act.name,
-        tipo: act.type,
-        distanciaKm: distanceKm,
-        tempoMinutos: movingTimeMinutes,
-        elevacaoM: Math.round(act.total_elevation_gain || 0),
-        bpmMedio: Math.round(act.average_heartrate || 0),
-        bpmMax: Math.round(act.max_heartrate || 0),
-        calorias: Math.round(act.calories || 0),
-        data: startDate,
-        syncedAt: new Date().toISOString()
-      };
-
-      const docRef = doc(db, "strava_activities", actId);
-      batch.set(docRef, activityRecord, { merge: true });
+      await sbFetch("/strava_activities", { method: "POST", headers: { "Content-Type": "application/json", Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify({ id: actId, strava_id: act.id, nome: act.name, tipo: act.type, distancia_km: distanceKm, tempo_minutos: movingTimeMinutes, elevacao_m: Math.round(act.total_elevation_gain || 0), bpm_medio: Math.round(act.average_heartrate || 0), bpm_max: Math.round(act.max_heartrate || 0), calorias: Math.round(act.calories || 0), data: startDate, synced_at: new Date().toISOString() }) }).catch(() => {});
       savedCount++;
-    });
-
-    if (savedCount > 0) {
-      await batch.commit();
     }
 
-    await setDoc(doc(db, "strava_tokens", "admin"), { updatedAt: new Date().toISOString() }, { merge: true });
+    await sbFetch("/strava_tokens?id=eq.admin", { method: "PATCH", headers: { "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify({ updated_at: new Date().toISOString() }) }).catch(() => {});
 
     res.json({ success: true, count: savedCount, message: `${savedCount} atividades sincronizadas do Strava!` });
   } catch (error: any) {
@@ -2747,12 +2731,10 @@ app.get("/api/strava-sync", async (req, res) => {
   }
 });
 
-// --- CONTRACTS API ---
+// --- CONTRACTS API (Supabase) ---
 app.get("/api/contracts", async (req, res) => {
   try {
-    await ensureAuth();
-    const snap = await getDocs(collection(db, "contracts"));
-    let contracts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    let contracts: any[] = await sbFetch("/contracts?order=created_at.desc").catch(() => []);
     
     // Se não houver contratos no Firestore, inicializa com o contrato base
     if (contracts.length === 0) {
@@ -2791,10 +2773,12 @@ app.get("/api/contracts", async (req, res) => {
         status: "ATIVO",
         createdAt: new Date().toISOString()
       };
-      const docRef = await addDoc(collection(db, "contracts"), defaultContract);
-      contracts = [{ id: docRef.id, ...defaultContract }];
+      // Salva contrato padrão no Supabase
+      const newId = "contract_" + Date.now();
+      await sbFetch("/contracts", { method: "POST", headers: { "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify({ id: newId, ...defaultContract }) }).catch(() => {});
+      contracts = [{ id: newId, ...defaultContract }];
     }
-    
+
     res.json({ success: true, contracts });
   } catch (error: any) {
     console.error("Erro ao buscar contratos:", error);
@@ -2804,14 +2788,10 @@ app.get("/api/contracts", async (req, res) => {
 
 app.post("/api/contracts", async (req, res) => {
   try {
-    await ensureAuth();
-    const contractData = {
-      ...req.body,
-      status: req.body.status || "ATIVO",
-      createdAt: new Date().toISOString()
-    };
-    const docRef = await addDoc(collection(db, "contracts"), contractData);
-    res.json({ success: true, id: docRef.id, contract: { id: docRef.id, ...contractData } });
+    const newId = "contract_" + Date.now();
+    const contractData = { id: newId, ...req.body, status: req.body.status || "ATIVO", created_at: new Date().toISOString() };
+    await sbFetch("/contracts", { method: "POST", headers: { "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify(contractData) });
+    res.json({ success: true, id: newId, contract: contractData });
   } catch (error: any) {
     console.error("Erro ao criar contrato:", error);
     res.status(500).json({ success: false, error: error.message });
@@ -2820,12 +2800,8 @@ app.post("/api/contracts", async (req, res) => {
 
 app.put("/api/contracts/:id", async (req, res) => {
   try {
-    await ensureAuth();
     const { id } = req.params;
-    await updateDoc(doc(db, "contracts", id), {
-      ...req.body,
-      updatedAt: new Date().toISOString()
-    });
+    await sbFetch(`/contracts?id=eq.${encodeURIComponent(id)}`, { method: "PATCH", headers: { "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify({ ...req.body, updated_at: new Date().toISOString() }) });
     res.json({ success: true });
   } catch (error: any) {
     console.error("Erro ao atualizar contrato:", error);
@@ -2835,13 +2811,9 @@ app.put("/api/contracts/:id", async (req, res) => {
 
 app.put("/api/contracts/:id/status", async (req, res) => {
   try {
-    await ensureAuth();
     const { id } = req.params;
     const { status } = req.body;
-    await updateDoc(doc(db, "contracts", id), {
-      status,
-      updatedAt: new Date().toISOString()
-    });
+    await sbFetch(`/contracts?id=eq.${encodeURIComponent(id)}`, { method: "PATCH", headers: { "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify({ status, updated_at: new Date().toISOString() }) });
     res.json({ success: true });
   } catch (error: any) {
     console.error("Erro ao atualizar status do contrato:", error);
@@ -2851,9 +2823,8 @@ app.put("/api/contracts/:id/status", async (req, res) => {
 
 app.delete("/api/contracts/:id", async (req, res) => {
   try {
-    await ensureAuth();
     const { id } = req.params;
-    await deleteDoc(doc(db, "contracts", id));
+    await sbFetch(`/contracts?id=eq.${encodeURIComponent(id)}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
     res.json({ success: true });
   } catch (error: any) {
     console.error("Erro ao deletar contrato:", error);
@@ -3004,58 +2975,185 @@ app.get("/api/gerar-analise/:leadId", async (req, res) => {
    - Endereço: ${c.endereco || "não disponível"}`).join("\n\n")
       : "Dados de concorrentes não disponíveis (Serper não configurado).";
 
-    const prompt = `Você é um estrategista sênior da ESCOM Studio. Gere um Relatório de Análise Estratégica completo em HTML para o lead abaixo.
+    const prompt = `Você é um estrategista sênior da ESCOM Studio gerando um DOSSIÊ DE INTELIGÊNCIA COMERCIAL em HTML.
 
-DADOS DO LEAD:
+═══════════════════════════════════════════
+DADOS DO LEAD
+═══════════════════════════════════════════
 Nome: ${lead.nome}
 Nicho: ${lead.categoria}
 Cidade: ${lead.cidade}
-Rating Google: ${lead.rating || "não disponível"} estrelas (${lead.reviews_count || 0} avaliações)
-Site atual: ${lead.website || "não possui site próprio"}
+Rating Google: ${lead.rating || "N/D"} estrelas (${lead.reviews_count || 0} avaliações)
+Site atual: ${lead.website || "NÃO POSSUI SITE PRÓPRIO"}
 Score de oportunidade: ${lead.score_oportunidade || 0}/100
-PageSpeed mobile: Performance ${ps.performance ?? "não disponível"}%, SEO ${ps.seo ?? "não disponível"}%, Acessibilidade ${ps.acessibilidade ?? "não disponível"}%
-Diagnóstico UX: ${diag.identidadeVisualUI ? JSON.stringify({ identidadeVisual: diag.identidadeVisualUI, heuristicas: diag.heuristicasNielsen, arquitetura: diag.arquiteturaInformacao, acessibilidade: diag.acessibilidade }) : "não disponível"}
+PageSpeed mobile — Performance: ${ps.performance ?? "N/D"}% | SEO: ${ps.seo ?? "N/D"}% | Acessibilidade: ${ps.acessibilidade ?? "N/D"}%
+UX: ${diag.identidadeVisualUI ? JSON.stringify({ visual: diag.identidadeVisualUI, heuristicas: diag.heuristicasNielsen }) : "não analisado"}
 
-CONCORRENTES REAIS (dados coletados via Google Maps):
+CONCORRENTES (Google Maps):
 ${concorrentesStr}
 
-REGRA CRÍTICA — DADOS:
-- Use APENAS os dados acima. PROIBIDO inventar nomes, ratings, sites ou qualquer informação não listada.
-- Se um dado não está disponível, escreva "dado não disponível" — nunca substitua por estimativa ou suposição.
-- Para o campo de batalha: use APENAS os concorrentes listados acima. Se a lista estiver vazia, informe que a análise competitiva não pôde ser realizada por ausência de dados.
-- ROI estimado: baseie no ticket médio do nicho ${lead.categoria} e no número de avaliações como proxy de volume — não invente percentuais sem base.
+═══════════════════════════════════════════
+ESTRUTURA OBRIGATÓRIA — 11 PÁGINAS A4
+═══════════════════════════════════════════
+Siga EXATAMENTE esta estrutura (cada <section class="page"> = 1 página A4):
 
-Gere um relatório HTML COMPLETO, profissional, imprimível (A4), com as seguintes seções:
+PÁGINA 1 — CAPA
+- Fundo: #0a0a14 (escuro total)
+- Topo: "E S C O M  S T U D I O  •  B U S I N E S S  I N T E L L I G E N C E" (letra espaçada, cinza claro, tamanho pequeno)
+- Centro: "Análise Estratégica" (grande, branco, serif); abaixo em ciano: "${lead.nome}"
+- Rodapé esquerdo: "DOCUMENTO PREPARADO PARA" + nome do responsável (use o nome da empresa); "STATUS / CONFIDENCIAL"
+- Elementos decorativos SVG geométricos (linhas, polígonos) em ciano/azul transparente
 
-1. CAPA: Logo "ESCOM Studio" em #00d1ff, título "Análise Estratégica", nome "${lead.nome}", data atual, elementos geométricos decorativos
-2. CONTEXTO DO NICHO: panorama do mercado de ${lead.categoria} em ${lead.cidade} — tendências de consumo, comportamento digital do público local
-3. CAMPO DE BATALHA: tabela comparativa dos concorrentes reais listados acima — colunas: Nome, Rating, Nº Avaliações, Tem Site, Performance, SEO. Destaque onde ${lead.nome} está à frente e onde está atrás.
-4. DIAGNÓSTICO DIGITAL: tabela de ${lead.nome} com notas de Performance, SEO, UX, Acessibilidade — badges FORTE/MÉDIO/FRACO baseados nos dados reais do PageSpeed e diagnóstico UX
-5. CONTRASTE REPUTAÇÃO × PRESENÇA DIGITAL: caixa de destaque comparando a nota ${lead.rating || "do lead"} no Google com a qualidade (ou ausência) do site — argumento central da proposta
-6. ESPAÇO VAZIO (OCEANO AZUL): oportunidades não exploradas identificadas a partir dos dados reais dos concorrentes — o que nenhum deles faz bem
-7. JANELA DE OPORTUNIDADE: por que agir agora — baseado na posição atual vs concorrentes, não em dados inventados
-8. DIFERENCIAIS DISPONÍVEIS: 5 ações concretas e específicas para ${lead.nome} se destacar, baseadas nos gaps reais identificados
-9. SÍNTESE ESTRATÉGICA: 3 prioridades imediatas em ordem de impacto + estimativa de retorno baseada no volume de avaliações como proxy
-10. PROPOSTA ESCOM STUDIO: CTA final — o que a ESCOM entrega, prazo, valor R$990, botão "Contratar Agora"
+PÁGINA 2 — ÍNDICE (fundo #0a0a14)
+- Topo: "CONFIDENCIAL" badge
+- Título: "Conteúdo / Índice Executivo"
+- Grade 2 colunas com os números de página e seções (03 a 11)
+- Parágrafo introdutório (2-3 frases) descrevendo o que este dossiê apresenta para ${lead.nome} no nicho ${lead.categoria}
+- Rodapé: "Dossiê ${lead.nome} - Inteligência Comercial"
 
-DESIGN OBRIGATÓRIO (cores ESCOM Studio):
-- Fundo das páginas: #ffffff
-- Cor primária ESCOM: #00d1ff (ciano)
-- Cor secundária: #0a0a14 (azul escuro)
-- Tabelas: header #0a0a14 texto #ffffff, linhas alternadas #f0f9ff
-- Badges FORTE: bg #dcfce7 texto #166534 borda #16a34a
-- Badges MÉDIO: bg #fef3c7 texto #92400e borda #f59e0b
-- Badges FRACO: bg #fee2e2 texto #991b1b borda #ef4444
-- Fontes: Playfair Display (títulos) + Plus Jakarta Sans (corpo) via Google Fonts
-- Cada "página" A4: width 210mm, min-height 297mm, padding 20mm, page-break-after: always
-- CSS @media print: remover box-shadow, garantir cores, font-size 11pt
+PÁGINA 3 — DIAGNÓSTICO DO NEGÓCIO (fundo branco)
+- Badge "CONFIDENCIAL" no topo direito
+- Título: "Diagnóstico do Negócio: ${lead.nome} Frente ao Posicionamento de Mercado"
+- 3 blocos com ícone:
+  1. "A Força Atual" — pontos positivos baseados em dados reais (${lead.rating} estrelas, ${lead.reviews_count} avaliações, etc.)
+  2. "O Gargalo Digital" — problemas identificados (site, pagespeed ${ps.performance ?? "N/D"}%, ausência digital, etc.)
+  3. "A Solução Proposta" — o que a ESCOM propõe resolver
+- Tabela de métricas: Performance ${ps.performance ?? "N/D"}% | SEO ${ps.seo ?? "N/D"}% | Acessibilidade ${ps.acessibilidade ?? "N/D"}% com badges FORTE/MÉDIO/FRACO
 
-REGRAS DE FORMATO:
-- Retorne APENAS o HTML completo (<!DOCTYPE html>...)
-- Sem markdown, sem explicações fora do HTML
-- Toda copy específica ao lead — nunca frases genéricas`;
+${lead.website ? `PÁGINA 3-B — ANÁLISE DO SITE ATUAL (fundo branco, página extra obrigatória quando o lead TEM site)
+- Badge "ANÁLISE DE SITE" no topo
+- Título: "Raio-X Digital: ${lead.website}"
+- SEÇÃO 1 — PERFORMANCE TÉCNICA (dados reais do PageSpeed):
+  Tabela com 3 métricas: Performance ${ps.performance ?? "N/D"}% | SEO ${ps.seo ?? "N/D"}% | Acessibilidade ${ps.acessibilidade ?? "N/D"}%
+  Cada métrica com badge FORTE/MÉDIO/FRACO e breve explicação do impacto
+- SEÇÃO 2 — HEURÍSTICAS DE NIELSEN (10 heurísticas, avaliação visual em cards):
+  ${diag.heuristicasNielsen ? `Use os dados: ${JSON.stringify(diag.heuristicasNielsen)}` : `Avalie para o nicho ${lead.categoria}: Visibilidade do sistema, Correspondência com o mundo real, Controle do usuário, Consistência, Prevenção de erros, Reconhecimento, Flexibilidade, Design minimalista, Ajuda ao usuário, Documentação`}
+  Cada heurística: título + nota (Atende / Parcial / Falha) + 1 frase de diagnóstico específica
+- SEÇÃO 3 — IDENTIDADE VISUAL & UI:
+  ${diag.identidadeVisualUI ? `Use os dados: ${JSON.stringify(diag.identidadeVisualUI)}` : `Avalie os pontos típicos do nicho ${lead.categoria}: hierarquia tipográfica, paleta de cores, uso de espaço em branco, qualidade das imagens, consistência visual`}
+  Cards: Hierarquia Visual | Paleta & Marca | Tipografia | Imagens/Ícones | Mobile First
+  Cada card com avaliação Forte/Médio/Fraco + recomendação de melhoria específica
+- SEÇÃO 4 — ARQUITETURA DA INFORMAÇÃO:
+  ${diag.arquiteturaInformacao ? `Use os dados: ${JSON.stringify(diag.arquiteturaInformacao)}` : `Avalie: clareza do menu, hierarquia de CTAs, fluxo do usuário, facilidade de encontrar contato/WhatsApp`}
+  Diagrama simplificado (HTML/CSS) do fluxo atual vs fluxo ideal
+- SEÇÃO 5 — SÍNTESE DA AUDITORIA + COMO O NOVO SITE RESOLVE:
+  Tom: cada problema apontado deve ser seguido de "O novo site da ESCOM corrige isso com..." — a análise é um espelho das dores que o novo site vai sanar.
+  Tabela: Dor Identificada | Impacto no Negócio | Como o Novo Site Resolve
+  Mínimo 5 linhas. Seja específico — nunca genérico.
+  Caixa de destaque final: "Cada ponto desta auditoria já está no briefing do novo site que estamos desenvolvendo para ${lead.nome}."` : `(Lead sem site — não inclua esta página. Mencione na Página 3 que a AUSÊNCIA de site é a maior dor: clientes que pesquisam online não encontram ${lead.nome}, e o novo site da ESCOM resolve isso do zero.)`}
 
-    // 4. Chama Gemini com fallback de modelos
+DIRETRIZ GERAL DE TOM PARA TODA A ANÁLISE DO SITE:
+- A análise NÃO é um relatório neutro — é um espelho estratégico de dores
+- Cada falha identificada deve ser apresentada como: "isso custa clientes / vendas / credibilidade"
+- O leitor (dono do negócio) deve terminar de ler sentindo que PRECISA do novo site
+- Exemplos de framing: "Sem CTA visível na dobra, o visitante abandona antes de entrar em contato" → "O novo site coloca o botão de WhatsApp em evidência já nos primeiros 3 segundos"
+- Use linguagem direta de negócio, não jargão técnico
+
+PÁGINA 4 — PSICOGRAFIA & AVATARES (fundo #0a0a14)
+- Título branco: "Psicografia & Avatares de Compra"
+- Subtítulo: "Decodificação das dores do cliente de ${lead.categoria} em ${lead.cidade}"
+- 2 avatares de cliente (cards lado a lado) com: nome do perfil, dores principais, foco/argumento de venda
+- Tabela "Matriz de Neutralização de Objeções": coluna Objeção × coluna Resposta (3-4 linhas)
+- Baseie nos padrões do nicho ${lead.categoria}
+
+PÁGINA 5 — O CAMPO DE BATALHA (fundo branco)
+- Título: "O Campo de Batalha"
+- Subtítulo: "Mapeamento das forças e fraquezas dos concorrentes locais"
+- Para cada concorrente listado, um bloco com: número, nome em negrito, "Força:" e "Fraqueza:" em linhas
+- Se não houver dados de concorrentes reais, escreva 4 perfis genéricos do nicho ${lead.categoria}
+- Tabela comparativa ao final: Nome | Rating | Site | PageSpeed (use os dados reais disponíveis)
+
+PÁGINA 6 — LACUNAS & FILTRO DE COPY (fundo #0a0a14)
+- Título: "Lacunas & Filtro de Copy"
+- Bloco 1: "O Espaço Vazio de Mercado" — parágrafo sobre oportunidade identificada
+- Bloco 2: Tabela 2 colunas — "EVITAR TERMOS GASTOS" (esquerda, vermelho) × "SUBSTITUIR POR FATOS REAIS" (direita, verde)
+  Exemplos específicos para ${lead.categoria} em ${lead.cidade}
+
+PÁGINA 7 — OS 6 PILARES DE VANTAGEM (fundo branco)
+- Título: "Os 6 Pilares de Vantagem da ${lead.nome}"
+- Subtítulo: "Como traduzir os diferenciais em argumentos simples e atraentes"
+- 6 cards em grade 2×3: número + título do pilar + descrição de 2-3 linhas
+- Baseie nos dados reais disponíveis e no que o nicho ${lead.categoria} valoriza
+
+PÁGINA 8 — ANATOMIA DA LP DE ALTO TICKET (fundo #0a0a14)
+- Título: "Anatomia da LP de Alto Ticket"
+- Subtítulo: "Estrutura de blocos para converter leads e desarmar objeções"
+- 4 blocos numerados descrevendo as seções da landing page ideal para ${lead.nome}:
+  1. Dobra Principal (Hero) — mensagem e proposta de valor
+  2. Bloco de Prova Social — avaliações, depoimentos
+  3. Provas Concretas — diferenciais técnicos/visuais
+  4. CTA Direto — WhatsApp, fricção zero
+- Caixa de destaque: "AÇÃO DIRETA SEM BARREIRAS"
+
+PÁGINA 9 — ROI & VIABILIDADE FINANCEIRA (fundo branco)
+- Título: "ROI & Viabilidade Financeira"
+- 2 métricas em destaque: CAC estimado + LTV estimado para o nicho ${lead.categoria}
+- Tabela "SIMULAÇÃO PRÁTICA MENSAL ESTIMADA":
+  | INVESTIMENTO ADS | CONTATOS QUALIFICADOS | RECEITA ESTIMADA |
+  (valores baseados no ticket médio realista do nicho)
+- Nota de rodapé metodológica
+
+PÁGINA 10 — OCEANO AZUL & EXPANSÃO (fundo #0a0a14)
+- Título: "Oceano Azul & Expansão"
+- Subtítulo: "Como posicionar ${lead.nome} em categorias únicas onde a comparação de preço não existe"
+- 2 oportunidades estratégicas detalhadas (parágrafos de 4-6 linhas cada)
+- Específicas ao nicho ${lead.categoria} e à cidade ${lead.cidade}
+
+PÁGINA 11 — SÍNTESE FINAL (fundo #0a0a14, centralizada)
+- Citação central em destaque: frase de impacto sobre o que está em jogo para ${lead.nome}
+- Parágrafo de CTA: "Agora que você conhece o diagnóstico completo, vamos conversar sobre como executar?"
+- Dados de contato ESCOM: es.comunicacao@outlook.com | WhatsApp: (13) 98106-2787
+- Rodapé: "ESCOM STUDIO • BUSINESS INTELLIGENCE / Dossiê ${lead.nome} - Confidencial"
+
+═══════════════════════════════════════════
+DESIGN SYSTEM
+═══════════════════════════════════════════
+Cores:
+  --dark: #0a0a14 (fundo páginas escuras)
+  --light: #ffffff (fundo páginas claras)
+  --cyan: #00d1ff (destaque ESCOM, bordas, badges)
+  --cyan-dim: rgba(0,209,255,0.15)
+  --text-dark: #0a0a14
+  --text-light: #e8eaf0
+  --text-muted: #8892a4
+
+Fontes (Google Fonts):
+  - Playfair Display: títulos principais
+  - Plus Jakarta Sans: corpo, labels, tabelas
+
+Páginas A4:
+  .page { width: 210mm; min-height: 297mm; padding: 18mm 20mm; page-break-after: always; position: relative; overflow: hidden; }
+  .page-dark { background: #0a0a14; color: #e8eaf0; }
+  .page-light { background: #ffffff; color: #0a0a14; }
+
+Badge CONFIDENCIAL: pequeno, letras espaçadas, borda ciano, texto ciano, canto superior direito
+
+Badges de performance:
+  FORTE: bg #dcfce7 texto #166534 borda #16a34a
+  MÉDIO: bg #fef3c7 texto #92400e borda #f59e0b
+  FRACO: bg #fee2e2 texto #991b1b borda #ef4444
+
+@media print:
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { page-break-after: always; box-shadow: none; }
+  .no-print { display: none !important; }
+
+Botão de impressão (class="no-print"):
+  Fixo no canto superior direito da tela, fora das páginas
+  "⬇ Baixar PDF" → onclick="window.print()"
+  Estilo: bg #00d1ff, texto preto, padding 10px 20px, border-radius 4px
+
+═══════════════════════════════════════════
+REGRAS ABSOLUTAS
+═══════════════════════════════════════════
+1. Retorne APENAS o HTML completo começando com <!DOCTYPE html>
+2. Sem markdown, sem explicações fora do HTML
+3. Use APENAS dados fornecidos acima — PROIBIDO inventar nomes de concorrentes, ratings ou URLs
+4. Toda copy deve nomear "${lead.nome}" e "${lead.categoria}" especificamente
+5. Elementos decorativos SVG inline nas capas/páginas escuras
+6. O HTML final deve ter NO MÍNIMO 11 <section class="page"> elementos — se os dados permitirem mais profundidade, expanda com páginas adicionais (sub-seções por concorrente, breakdown de ROI, cronograma de execução, mais avatares, análise de sazonalidade, etc.). Mais conteúdo relevante é sempre melhor.`;
+
+    // 4. Chama Groq para gerar o HTML
     let html = "";
     {
       let raw = await groqGenerate(prompt, { temperature: 0.2, maxTokens: 16000 });
@@ -3065,8 +3163,42 @@ REGRAS DE FORMATO:
     }
 
     if (!html) return res.status(503).send("<h1>Gemini indisponível. Tente novamente em instantes.</h1>");
+
+    // 5. Se ?pdf=1, converte via Browserless e devolve PDF binário
+    if (req.query.pdf === "1") {
+      const blToken = process.env.BROWSERLESS_TOKEN;
+      if (!blToken) return res.status(500).send("<h1>BROWSERLESS_TOKEN não configurado</h1>");
+      const blRes = await fetch(`https://chrome.browserless.io/pdf?token=${blToken}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          html,
+          options: { printBackground: true, format: "A4", margin: { top: "0", right: "0", bottom: "0", left: "0" } },
+          gotoOptions: { waitUntil: "networkidle0", timeout: 30000 },
+          waitFor: 1200,
+        }),
+      });
+      if (!blRes.ok) {
+        const msg = await blRes.text();
+        return res.status(502).send(`<h1>Browserless erro ${blRes.status}: ${msg}</h1>`);
+      }
+      const pdfBuf = Buffer.from(await blRes.arrayBuffer());
+      const filename = `analise-${req.params.leadId}.pdf`;
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `inline; filename="${filename}"`);
+      return res.send(pdfBuf);
+    }
+
+    // Injeta botão fixo de PDF que sempre abre em nova aba (independente do que o Groq gerar)
+    const pdfScript = `
+<style>.escom-pdf-btn{position:fixed;top:16px;right:16px;z-index:9999;background:#00d1ff;color:#000;font-weight:700;font-size:14px;padding:10px 20px;border:none;border-radius:4px;cursor:pointer;font-family:sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.4)}.escom-pdf-btn:hover{background:#00b8e0}.no-print{display:none!important}</style>
+<button class="escom-pdf-btn no-print" onclick="window.open(window.location.pathname+'?pdf=1','_blank')">⬇ Baixar PDF</button>`;
+    const htmlComBotao = html.includes("</body>")
+      ? html.replace("</body>", pdfScript + "</body>")
+      : html + pdfScript;
+
     res.setHeader("Content-Type", "text/html; charset=utf-8");
-    res.send(html);
+    res.send(htmlComBotao);
   } catch(e: any) { res.status(500).send("<h1>Erro: " + e.message + "</h1>"); }
 });
 
@@ -3250,18 +3382,10 @@ app.post("/api/mp-webhook", async (req, res) => {
     console.log(`[MP-WEBHOOK] payment ${paymentId} status=${status} pid=${pid}`);
 
     if (status === "approved" && pid) {
-      // 1. Atualiza Firebase
+      // 1. Atualiza generated_sites no Supabase
       try {
-        const { getFirestore, doc, updateDoc } = await import("firebase/firestore");
-        const fsDb = getFirestore();
-        await updateDoc(doc(fsDb, "generated_sites", pid), {
-          status: "pago",
-          mpPaymentId: paymentId,
-          pagoEm: Date.now(),
-          pagoValor: valor,
-          pagadorEmail: email,
-        });
-      } catch(e: any) { console.warn("[MP-WEBHOOK] Firebase update error:", e.message); }
+        await sbFetch(`/generated_sites?id=eq.${encodeURIComponent(pid)}`, { method: "PATCH", headers: { "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify({ status: "pago", mp_payment_id: paymentId, pago_em: Date.now(), pago_valor: valor, pagador_email: email }) });
+      } catch(e: any) { console.warn("[MP-WEBHOOK] Supabase generated_sites update error:", e.message); }
 
       // 2. Atualiza Supabase — marca lead como convertido
       try {

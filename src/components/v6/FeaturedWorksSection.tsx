@@ -53,35 +53,64 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
   const [selectedProject, setSelectedProject] = useState<DisplayProject | null>(null);
   const [savedProjects, setSavedProjects] = useState<Record<string | number, boolean>>({});
 
-  // Carrega projetos cadastrados dinamicamente no Firebase
+  // Carrega projetos cadastrados dinamicamente no Firebase garantindo apenas projetos com mídia válida
   useEffect(() => {
     let isMounted = true;
+
+    const OBSOLETE_NAMES = [
+      "posts diversos",
+      "nutritech",
+      "gf engenharia",
+      "maria malta",
+      "leandro lamezi",
+      "sem foto",
+    ];
 
     const fetchFirebaseProjects = async () => {
       try {
         const firebaseData = await getPortfolioProjects();
         if (!isMounted || !firebaseData || firebaseData.length === 0) return;
 
-        // Filtra apenas os que estão marcados para destaque na Home (ou por padrão true)
-        const activeFromDb = firebaseData.filter((p) => p.destaque !== false);
+        // Filtra apenas projetos válidos que NÃO sejam os obsoletos e que tenham vídeo ou imagem válida
+        const validFromDb = firebaseData.filter((p) => {
+          if (p.destaque === false) return false;
+          const titleLower = (p.title || p.name || "").toLowerCase();
+          const clientLower = (p.client || "").toLowerCase();
+          const isObsolete = OBSOLETE_NAMES.some(
+            (obs) => titleLower.includes(obs) || clientLower.includes(obs)
+          );
+          if (isObsolete) return false;
 
-        if (activeFromDb.length > 0) {
+          const hasValidMedia =
+            Boolean(p.video && p.video.trim().length > 5) ||
+            Boolean(p.image && !p.image.includes("fakeimg"));
+          return hasValidMedia;
+        });
+
+        if (validFromDb.length > 0) {
           // Mapeia os dados do Firebase para o formato do Grid
-          const mappedFromDb: DisplayProject[] = activeFromDb.map((p, idx) => ({
-            id: p.id || `db-${idx}`,
-            client: p.client || p.name || "ESCOM Project",
-            title: p.title || p.name || "High-Impact System",
-            category: p.category || "WEBSITE",
-            deliverables: p.deliverables || p.desc || "UI/UX · SOFTWARE",
-            year: p.year ? String(p.year) : "2025",
-            badges: Array.isArray(p.badges) && p.badges.length > 0 ? p.badges : ["DEV", "SOTD"],
-            video: p.video || "",
-            image: p.image || "",
-            link: p.link || p.url || "",
-            tagType: p.tagType || p.tag || "WEBSITE",
-          }));
+          const mappedFromDb: DisplayProject[] = validFromDb.map((p, idx) => {
+            // Se for um dos projetos base conhecidos, garante o vídeo se estiver ausente
+            const matchingDefault = INITIAL_PORTFOLIO_PROJECTS.find(
+              (def) => def.client.toLowerCase().trim() === (p.client || p.name || "").toLowerCase().trim()
+            );
 
-          // Junta projetos do Firebase com os projetos padrão sem duplicação de nomes
+            return {
+              id: p.id || `db-${idx}`,
+              client: p.client || p.name || matchingDefault?.client || "ESCOM Project",
+              title: p.title || p.name || matchingDefault?.title || "High-Impact System",
+              category: p.category || matchingDefault?.category || "WEBSITE",
+              deliverables: p.deliverables || p.desc || matchingDefault?.deliverables || "UI/UX · SOFTWARE",
+              year: p.year ? String(p.year) : matchingDefault?.year || "2025",
+              badges: Array.isArray(p.badges) && p.badges.length > 0 ? p.badges : matchingDefault?.badges || ["DEV", "SOTD"],
+              video: p.video || matchingDefault?.video || "",
+              image: p.image || matchingDefault?.image || "",
+              link: p.link || p.url || matchingDefault?.link || "",
+              tagType: p.tagType || p.tag || matchingDefault?.tagType || "WEBSITE",
+            };
+          });
+
+          // Junta projetos do Firebase com os projetos oficiais da Home anterior que ainda não estejam no DB
           const dbClientNames = new Set(mappedFromDb.map((p) => p.client.toLowerCase().trim()));
           const remainingDefaults = INITIAL_PORTFOLIO_PROJECTS.filter(
             (p) => !dbClientNames.has(p.client.toLowerCase().trim())
@@ -99,7 +128,6 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
             tagType: item.tagType,
           }));
 
-          // Projetos do Firebase cadastrados recentemente aparecem primeiro no grid
           setProjects([...mappedFromDb, ...remainingDefaults]);
         }
       } catch (err) {
