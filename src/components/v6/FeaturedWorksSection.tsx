@@ -337,7 +337,7 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
   return (
     <section
       id="trabalhos"
-      className="relative bg-[#000000] border-t border-white/10 text-white px-5 py-12 md:px-12 xl:px-[8vw] 2xl:px-[10vw] md:py-16 overflow-hidden"
+      className="relative bg-[#000000] border-t border-white/10 text-white px-5 pt-12 pb-6 md:px-12 xl:px-[8vw] 2xl:px-[10vw] md:pt-16 md:pb-8 overflow-hidden"
     >
       {/* Luz ambiente de fundo sutil */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 size-[42rem] rounded-full bg-cyan-500/[0.035] blur-[140px] pointer-events-none" />
@@ -408,7 +408,7 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
       </div>
 
       {/* CTA INFERIOR PARA AGENDAR DIAGNÓSTICO (ESPAÇAMENTO OTIMIZADO) */}
-      <div className="relative z-10 mt-10 md:mt-12 pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-6">
+      <div className="relative z-10 mt-8 md:mt-10 pt-5 border-t border-white/10 flex flex-wrap items-center justify-between gap-6">
         <div>
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-cyan">
             ✦ HIGH-IMPACT ARCHITECTURE
