@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
-import { ArrowUpRight, X, ArrowRight, Bookmark, Sparkles } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ArrowUpRight, X, ArrowRight, Bookmark } from "lucide-react";
 import { useLanguage } from "@/components/v6/LanguageContext";
 import { InteractiveBlurTitle } from "@/components/v6/InteractiveBlurTitle";
+import { getPortfolioProjects, PortfolioProject } from "@/firebase";
+import { INITIAL_PORTFOLIO_PROJECTS, PortfolioItem } from "@/data/initialPortfolio";
 
-export interface GridProject {
-  id: number;
+export interface DisplayProject {
+  id: string | number;
   client: string;
   title: string;
   category: string;
@@ -12,110 +14,10 @@ export interface GridProject {
   year: string;
   badges: string[];
   video: string;
+  image?: string;
+  link?: string;
   tagType: string;
 }
-
-const portfolioProjects: GridProject[] = [
-  {
-    id: 1,
-    client: "Academia Gaviões",
-    title: "Plataforma & Web App de Alta Conversão",
-    category: "FRANQUIAS & ECOSSISTEMA",
-    deliverables: "UI/UX · WEB APP · CRO",
-    year: "2025",
-    badges: ["DEV", "SOTD"],
-    video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1790374497/b3ecccbe43103abe5da4f3b610af3a37.mp4",
-    tagType: "WEB APP",
-  },
-  {
-    id: 2,
-    client: "Ubah Design",
-    title: "Experiência 3D Brand & Mobiliário High-End",
-    category: "HIGH-END DESIGN & MÓVEIS",
-    deliverables: "CATÁLOGO DIGITAL · BRANDING",
-    year: "2025",
-    badges: ["SOTD", "PRO"],
-    video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1790374497/044516c3efd6b312e96495faa8d4f9ef.mp4",
-    tagType: "3D BRAND",
-  },
-  {
-    id: 3,
-    client: "Autosim Franquias",
-    title: "Expansão de Rede & Dashboard B2B",
-    category: "EXPANSÃO DE REDE",
-    deliverables: "SISTEMA FRANQUIA · PORTAL B2B",
-    year: "2024",
-    badges: ["DEV", "HM"],
-    video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1790374496/0263c8292333293669f42df6e2782ea6.mp4",
-    tagType: "DASHBOARD",
-  },
-  {
-    id: 4,
-    client: "Escola Cera",
-    title: "Portal de Matrículas & Captação Escolar",
-    category: "EDUCAÇÃO INFANTIL",
-    deliverables: "PORTAL MATRÍCULAS · CAPTAÇÃO",
-    year: "2024",
-    badges: ["DEV", "SOTD"],
-    video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1790374502/043a2a2d03caf1f8adc4e143b2f976c4.mp4",
-    tagType: "PORTAL",
-  },
-  {
-    id: 5,
-    client: "Fábrica Publicidade",
-    title: "Hub Institucional 2026 & Engenharia Web",
-    category: "POSICIONAMENTO DIGITAL",
-    deliverables: "ENGENHARIA WEB · IDENTIDADE",
-    year: "2024",
-    badges: ["HM", "DEV"],
-    video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1790374501/dk5kshrywj6gti0f816w.mp4",
-    tagType: "WEBSITE",
-  },
-  {
-    id: 6,
-    client: "Rilucci Iluminação",
-    title: "Catálogo Digital & Produtos LED de Precisão",
-    category: "ILUMINAÇÃO TÉCNICA & LED",
-    deliverables: "ARQUITETURA DE CATÁLOGO · B2B",
-    year: "2024",
-    badges: ["DEV", "SOTD"],
-    video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1790374732/c1a0adede9aafa4edb54d55eff51287b.mp4",
-    tagType: "CATÁLOGO B2B",
-  },
-  {
-    id: 7,
-    client: "Proge Fitness",
-    title: "Sistema de Compra de Usados & E-Commerce",
-    category: "EQUIPAMENTOS DE ACADEMIA",
-    deliverables: "PORTAL USADOS · E-COMMERCE",
-    year: "2024",
-    badges: ["HM", "PRO"],
-    video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1790374497/450e2001cc633e92a38d435f6f4c232b.mp4",
-    tagType: "E-COMMERCE",
-  },
-  {
-    id: 8,
-    client: "Goloni Mobiliário",
-    title: "Catálogo de Interiores & Design Sob Medida",
-    category: "MOBILIÁRIO & INTERIORES",
-    deliverables: "CATÁLOGO DIGITAL · UI/UX",
-    year: "2024",
-    badges: ["DEV", "SOTD"],
-    video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1779824400/biayyjpzidhjetnytavb.mp4",
-    tagType: "WEBSITE",
-  },
-  {
-    id: 9,
-    client: "Studio One Arquitetura",
-    title: "Portfólio Imersivo & Experiência de Projetos",
-    category: "ARQUITETURA & DESIGN",
-    deliverables: "PORTAL IMERSIVO · BRANDING",
-    year: "2024",
-    badges: ["HM", "DEV"],
-    video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1779824400/fubvmghpobclz2wvnnlp.mp4",
-    tagType: "EXPERIÊNCIA",
-  },
-];
 
 interface FeaturedWorksSectionProps {
   Eyebrow?: React.ComponentType<{
@@ -130,11 +32,89 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
   const { t, language } = useLanguage();
   const fw = t.featuredWorks;
 
-  const [activeCategory, setActiveCategory] = useState<string>("ALL");
-  const [selectedProject, setSelectedProject] = useState<GridProject | null>(null);
-  const [savedProjects, setSavedProjects] = useState<Record<number, boolean>>({});
+  // Inicia com os 9 cases padrão de alta qualidade para renderização instantânea
+  const [projects, setProjects] = useState<DisplayProject[]>(() =>
+    INITIAL_PORTFOLIO_PROJECTS.map((item) => ({
+      id: item.id,
+      client: item.client,
+      title: item.title,
+      category: item.category,
+      deliverables: item.deliverables,
+      year: item.year,
+      badges: item.badges,
+      video: item.video,
+      image: item.image,
+      link: item.link,
+      tagType: item.tagType,
+    }))
+  );
 
-  // Categorias para filtros suaves
+  const [activeCategory, setActiveCategory] = useState<string>("ALL");
+  const [selectedProject, setSelectedProject] = useState<DisplayProject | null>(null);
+  const [savedProjects, setSavedProjects] = useState<Record<string | number, boolean>>({});
+
+  // Carrega projetos cadastrados dinamicamente no Firebase
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchFirebaseProjects = async () => {
+      try {
+        const firebaseData = await getPortfolioProjects();
+        if (!isMounted || !firebaseData || firebaseData.length === 0) return;
+
+        // Filtra apenas os que estão marcados para destaque na Home (ou por padrão true)
+        const activeFromDb = firebaseData.filter((p) => p.destaque !== false);
+
+        if (activeFromDb.length > 0) {
+          // Mapeia os dados do Firebase para o formato do Grid
+          const mappedFromDb: DisplayProject[] = activeFromDb.map((p, idx) => ({
+            id: p.id || `db-${idx}`,
+            client: p.client || p.name || "ESCOM Project",
+            title: p.title || p.name || "High-Impact System",
+            category: p.category || "WEBSITE",
+            deliverables: p.deliverables || p.desc || "UI/UX · SOFTWARE",
+            year: p.year ? String(p.year) : "2025",
+            badges: Array.isArray(p.badges) && p.badges.length > 0 ? p.badges : ["DEV", "SOTD"],
+            video: p.video || "",
+            image: p.image || "",
+            link: p.link || p.url || "",
+            tagType: p.tagType || p.tag || "WEBSITE",
+          }));
+
+          // Junta projetos do Firebase com os projetos padrão sem duplicação de nomes
+          const dbClientNames = new Set(mappedFromDb.map((p) => p.client.toLowerCase().trim()));
+          const remainingDefaults = INITIAL_PORTFOLIO_PROJECTS.filter(
+            (p) => !dbClientNames.has(p.client.toLowerCase().trim())
+          ).map((item) => ({
+            id: item.id,
+            client: item.client,
+            title: item.title,
+            category: item.category,
+            deliverables: item.deliverables,
+            year: item.year,
+            badges: item.badges,
+            video: item.video,
+            image: item.image,
+            link: item.link,
+            tagType: item.tagType,
+          }));
+
+          // Projetos do Firebase cadastrados recentemente aparecem primeiro no grid
+          setProjects([...mappedFromDb, ...remainingDefaults]);
+        }
+      } catch (err) {
+        console.error("Erro ao sincronizar portfólio dinâmico com Firebase:", err);
+      }
+    };
+
+    fetchFirebaseProjects();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Categorias para filtros
   const categories = [
     { id: "ALL", label: language === "PT" ? "Todos os Projetos" : language === "EN" ? "All Projects" : "Todos los Proyectos" },
     { id: "WEB", label: "Websites & Apps" },
@@ -142,7 +122,7 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
     { id: "B2B", label: "Sistemas & B2B" },
   ];
 
-  const filteredProjects = portfolioProjects.filter((p) => {
+  const filteredProjects = projects.filter((p) => {
     if (activeCategory === "ALL") return true;
     if (activeCategory === "WEB") return p.tagType === "WEB APP" || p.tagType === "WEBSITE" || p.tagType === "PORTAL";
     if (activeCategory === "BRAND") return p.tagType === "3D BRAND" || p.tagType === "EXPERIÊNCIA";
@@ -159,7 +139,7 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const toggleBookmark = (id: number, e: React.MouseEvent) => {
+  const toggleBookmark = (id: string | number, e: React.MouseEvent) => {
     e.stopPropagation();
     setSavedProjects((prev) => ({ ...prev, [id]: !prev[id] }));
   };
@@ -214,9 +194,13 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
         </div>
 
         <div className="flex items-center gap-3 font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
-          <span className="text-cyan font-semibold">0{filteredProjects.length}</span>
+          <span className="text-cyan font-semibold">
+            {filteredProjects.length < 10 ? `0${filteredProjects.length}` : filteredProjects.length}
+          </span>
           <span>/</span>
-          <span>09 CASES</span>
+          <span>
+            {projects.length < 10 ? `0${projects.length}` : projects.length} CASES
+          </span>
         </div>
       </div>
 
@@ -233,18 +217,29 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
             >
               {/* CARD DE MÍDIA COM VÍDEO & CANTOS ARREDONDADOS (16:10) */}
               <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-[#0a0a0a] border border-white/10 group-hover:border-cyan/50 transition-all duration-500 shadow-[0_12px_35px_rgba(0,0,0,0.65)] group-hover:shadow-[0_20px_50px_rgba(0,209,255,0.18)]">
-                {/* Vídeo em Autoplay suave e mudo */}
-                <video
-                  src={project.video}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="metadata"
-                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
+                {project.video ? (
+                  <video
+                    src={project.video}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload="metadata"
+                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                ) : project.image ? (
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-zinc-950 font-mono text-xs text-zinc-600">
+                    Sem preview de vídeo
+                  </div>
+                )}
 
-                {/* Overlay de gradiente inferior para legibilidade editorial impecável */}
+                {/* Overlay de gradiente inferior para legibilidade editorial */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
 
                 {/* Textos no canto inferior esquerdo sobre a imagem (idêntico à referência) */}
@@ -359,15 +354,27 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
               <X className="size-5" />
             </button>
 
-            {/* Vídeo em Destaque */}
+            {/* Vídeo ou Imagem em Destaque */}
             <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-inner">
-              <video
-                src={selectedProject.video}
-                autoPlay
-                controls
-                playsInline
-                className="w-full h-full object-cover"
-              />
+              {selectedProject.video ? (
+                <video
+                  src={selectedProject.video}
+                  autoPlay
+                  controls
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
+              ) : selectedProject.image ? (
+                <img
+                  src={selectedProject.image}
+                  alt={selectedProject.title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-zinc-600 font-mono text-sm">
+                  Sem mídia disponível
+                </div>
+              )}
             </div>
 
             {/* Informações Completas do Case */}
@@ -386,14 +393,28 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
                 </p>
               </div>
 
-              <a
-                href="#diagnostico"
-                onClick={() => setSelectedProject(null)}
-                className="inline-flex items-center gap-2.5 bg-cyan text-black hover:bg-white px-5 py-2.5 font-mono text-xs font-bold uppercase tracking-wider transition-all self-start md:self-auto shrink-0 rounded-none shadow-[0_0_25px_rgba(0,209,255,0.3)]"
-              >
-                <span>Quero um projeto semelhante</span>
-                <ArrowRight className="size-3.5" />
-              </a>
+              <div className="flex items-center gap-3 self-start md:self-auto shrink-0">
+                {selectedProject.link && (
+                  <a
+                    href={selectedProject.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-4 py-2.5 font-mono text-xs uppercase tracking-wider transition-all"
+                  >
+                    <span>Ver site ao vivo</span>
+                    <ArrowUpRight className="size-3.5" />
+                  </a>
+                )}
+
+                <a
+                  href="#diagnostico"
+                  onClick={() => setSelectedProject(null)}
+                  className="inline-flex items-center gap-2 bg-cyan text-black hover:bg-white px-5 py-2.5 font-mono text-xs font-bold uppercase tracking-wider transition-all rounded-none shadow-[0_0_25px_rgba(0,209,255,0.3)]"
+                >
+                  <span>Quero um projeto semelhante</span>
+                  <ArrowRight className="size-3.5" />
+                </a>
+              </div>
             </div>
           </div>
         </div>

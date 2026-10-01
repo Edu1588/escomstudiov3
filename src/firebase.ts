@@ -22,31 +22,60 @@ export const saveLead = async (data: { name: string; email: string; phone?: stri
 export interface PortfolioProject {
   id?: string;
   name: string;
+  client?: string;
+  title?: string;
   category: string;
   tag?: string;
-  desc: string;
-  image: string;
-  score: string;
-  destaque: boolean;
+  tagType?: string;
+  desc?: string;
+  deliverables?: string;
+  image?: string;
+  video?: string;
+  link?: string;
+  url?: string;
+  year?: string;
+  score?: string;
+  badges?: string[];
+  destaque?: boolean;
+  featured?: boolean;
   createdAt?: any;
 }
 
-export const getPortfolioProjects = async () => {
+export const getPortfolioProjects = async (): Promise<PortfolioProject[]> => {
   try {
     const { getDocs, query, collection } = await import('firebase/firestore');
     const q = query(collection(db, 'portfolio_projects'));
     const snapshot = await getDocs(q);
     const docs = snapshot.docs.map(doc => {
       const data = doc.data();
+      const clientName = data.client || data.name || data.title || '';
+      const projTitle = data.title || data.name || '';
+      const rawBadges = data.badges;
+      const parsedBadges = Array.isArray(rawBadges)
+        ? rawBadges
+        : typeof rawBadges === 'string' && rawBadges.trim()
+        ? rawBadges.split(',').map((s: string) => s.trim())
+        : ['DEV', 'SOTD'];
+
       return {
         id: doc.id,
-        name: data.title || data.name || '',
-        category: data.category || '',
-        tag: data.tag || '',
-        desc: data.description || data.desc || '',
-        image: data.image || data.imageUrl || data.thumbnailUrl || '',
-        score: data.score || '90%',
-        destaque: data.featured || data.destaque || false,
+        name: clientName,
+        client: clientName,
+        title: projTitle,
+        category: data.category || 'WEBSITE',
+        tag: data.tag || data.tagType || 'WEBSITE',
+        tagType: data.tagType || data.tag || 'WEBSITE',
+        desc: data.description || data.desc || data.deliverables || '',
+        deliverables: data.deliverables || data.desc || '',
+        image: data.image || data.imageUrl || data.thumbnailUrl || data.thumb || '',
+        video: data.video || data.videoUrl || '',
+        link: data.link || data.url || '',
+        url: data.url || data.link || '',
+        year: data.year ? String(data.year) : '2025',
+        score: data.score || '95%',
+        badges: parsedBadges,
+        destaque: data.destaque ?? data.featured ?? true,
+        featured: data.destaque ?? data.featured ?? true,
         createdAt: data.createdAt,
       } as PortfolioProject;
     });
@@ -61,39 +90,47 @@ export const getPortfolioProjects = async () => {
   }
 };
 
-export const savePortfolioProject = async (project: PortfolioProject) => {
+export const savePortfolioProject = async (project: Partial<PortfolioProject>) => {
   try {
     const { doc, setDoc, updateDoc } = await import('firebase/firestore');
+    const clientName = project.client || project.name || '';
+    const projTitle = project.title || project.name || '';
+    const badgesArray = Array.isArray(project.badges)
+      ? project.badges
+      : typeof project.badges === 'string'
+      ? (project.badges as string).split(',').map((s: string) => s.trim()).filter(Boolean)
+      : ['DEV', 'SOTD'];
+
+    const payload = {
+      name: clientName,
+      client: clientName,
+      title: projTitle,
+      category: project.category || 'WEBSITE',
+      tag: project.tag || project.tagType || 'WEBSITE',
+      tagType: project.tagType || project.tag || 'WEBSITE',
+      desc: project.desc || project.deliverables || '',
+      description: project.desc || project.deliverables || '',
+      deliverables: project.deliverables || project.desc || '',
+      image: project.image || '',
+      imageUrl: project.image || '',
+      video: project.video || '',
+      videoUrl: project.video || '',
+      link: project.link || project.url || '',
+      url: project.url || project.link || '',
+      year: project.year || '2025',
+      score: project.score || '95%',
+      badges: badgesArray,
+      featured: project.destaque ?? project.featured ?? true,
+      destaque: project.destaque ?? project.featured ?? true,
+    };
+
     if (project.id) {
       const docRef = doc(db, 'portfolio_projects', project.id);
-      const { id, ...data } = project;
-      await updateDoc(docRef, {
-        name: data.name,
-        title: data.name,
-        category: data.category,
-        tag: data.tag || '',
-        description: data.desc,
-        desc: data.desc,
-        image: data.image,
-        imageUrl: data.image,
-        score: data.score,
-        featured: data.destaque,
-        destaque: data.destaque
-      });
+      await updateDoc(docRef, payload);
       return { success: true, id: project.id };
     } else {
       const docRef = await addDoc(collection(db, 'portfolio_projects'), {
-        name: project.name,
-        title: project.name,
-        category: project.category,
-        tag: project.tag || '',
-        description: project.desc,
-        desc: project.desc,
-        image: project.image,
-        imageUrl: project.image,
-        score: project.score,
-        featured: project.destaque,
-        destaque: project.destaque,
+        ...payload,
         createdAt: serverTimestamp()
       });
       return { success: true, id: docRef.id };
