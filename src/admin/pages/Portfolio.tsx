@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Header } from "../components/Header";
-import { Plus, Edit2, Trash2, X, Star, ExternalLink, RefreshCw, CheckCircle2 } from "lucide-react";
+import { Plus, Edit2, Trash2, X, Star, ExternalLink, RefreshCw, CheckCircle2, Upload, Image as ImageIcon } from "lucide-react";
 import { getPortfolioProjects, savePortfolioProject, deletePortfolioProject, PortfolioProject } from "../../firebase";
 import { INITIAL_PORTFOLIO_PROJECTS } from "../../data/initialPortfolio";
 
@@ -19,6 +19,167 @@ const OBSOLETE_NAMES = [
   "full english",
   "ugb",
 ];
+
+function AdminProjectCard({
+  projeto,
+  onToggleDestaque,
+  onEdit,
+  onDelete,
+}: {
+  projeto: PortfolioProject;
+  onToggleDestaque: (projeto: PortfolioProject, e: React.MouseEvent) => void;
+  onEdit: (projeto: PortfolioProject) => void;
+  onDelete: (id?: string) => void;
+}) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handleMouseEnter = () => {
+    if (videoRef.current && projeto.video) {
+      const p = videoRef.current.play();
+      if (p !== undefined) {
+        p.then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+      }
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+  };
+
+  return (
+    <div
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className="bg-[#0c0c0c] border border-white/10 rounded-2xl overflow-hidden group hover:border-[#00d1ff]/50 transition-all duration-300 flex flex-col shadow-lg"
+    >
+      {/* MÍDIA: THUMBNAIL PADRÃO & VÍDEO NO HOVER */}
+      <div className="relative aspect-[16/10] bg-[#141414] overflow-hidden">
+        {projeto.image ? (
+          <img
+            src={projeto.image}
+            alt={projeto.title || projeto.client}
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : (
+          <div className="absolute inset-0 w-full h-full flex items-center justify-center text-gray-600 font-mono text-xs">
+            Sem thumbnail
+          </div>
+        )}
+
+        {/* VÍDEO EXCLUSIVAMENTE NO HOVER */}
+        {projeto.video && (
+          <video
+            ref={videoRef}
+            src={projeto.video}
+            muted
+            loop
+            playsInline
+            preload="none"
+            className={`absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${
+              isPlaying ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
+          />
+        )}
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none" />
+
+        {/* Badges superiores na mídia */}
+        <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+          <span className="bg-black/70 backdrop-blur border border-white/15 text-[#00d1ff] font-mono text-[9px] uppercase px-2 py-0.5 rounded font-bold">
+            {projeto.tagType || projeto.category || "CASE"}
+          </span>
+
+          <button
+            type="button"
+            onClick={(e) => onToggleDestaque(projeto, e)}
+            className={`pointer-events-auto size-7 rounded-full flex items-center justify-center transition-all ${
+              projeto.destaque
+                ? "bg-[#00d1ff] text-black shadow-[0_0_12px_rgba(0,209,255,0.6)]"
+                : "bg-black/60 text-white/50 hover:text-white border border-white/20"
+            }`}
+            title={projeto.destaque ? "Em destaque na Home" : "Ativar destaque na Home"}
+          >
+            <Star size={13} fill={projeto.destaque ? "black" : "none"} />
+          </button>
+        </div>
+
+        {/* Informações sobre a mídia */}
+        <div className="absolute bottom-3 left-3 right-3 pointer-events-none">
+          <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">
+            {projeto.category}
+          </span>
+          <h4 className="text-white font-medium text-sm line-clamp-1">
+            {projeto.client} — {projeto.title}
+          </h4>
+        </div>
+      </div>
+
+      {/* DETALHES DO PROJETO */}
+      <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+        <div>
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-bold text-white font-mono truncate">
+              {projeto.client}
+            </span>
+            <span className="text-[10px] font-mono text-gray-500">{projeto.year}</span>
+          </div>
+          <p className="text-xs text-gray-400 mt-1 line-clamp-1 font-mono">
+            {projeto.deliverables || projeto.desc || "Sem entregáveis especificados"}
+          </p>
+        </div>
+
+        {/* Badges e Links */}
+        <div className="pt-2 border-t border-white/10 flex items-center justify-between">
+          <div className="flex items-center gap-1.5 font-mono text-[9px]">
+            {(projeto.badges || ["DEV", "SOTD"]).map((b, i) => (
+              <span
+                key={i}
+                className="px-1.5 py-0.5 rounded border border-white/20 text-zinc-300 bg-white/5 font-semibold"
+              >
+                {b}
+              </span>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            {projeto.link && (
+              <a
+                href={projeto.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="size-7 rounded bg-white/5 hover:bg-[#00d1ff] text-gray-300 hover:text-black flex items-center justify-center transition-colors"
+                title="Abrir link do projeto"
+              >
+                <ExternalLink size={13} />
+              </a>
+            )}
+
+            <button
+              onClick={() => onEdit(projeto)}
+              className="size-7 rounded bg-white/5 hover:bg-[#00d1ff] text-gray-300 hover:text-black flex items-center justify-center transition-colors"
+              title="Editar projeto"
+            >
+              <Edit2 size={13} />
+            </button>
+
+            <button
+              onClick={() => onDelete(projeto.id)}
+              className="size-7 rounded bg-white/5 hover:bg-red-500 text-gray-300 hover:text-white flex items-center justify-center transition-colors"
+              title="Excluir projeto"
+            >
+              <Trash2 size={13} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Portfolio() {
   const [projetos, setProjetos] = useState<PortfolioProject[]>([]);
@@ -222,6 +383,31 @@ export default function Portfolio() {
     });
   };
 
+  const handleThumbnailUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const maxW = 1200;
+        const scale = Math.min(1, maxW / img.width);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          const webpData = canvas.toDataURL("image/webp", 0.85);
+          setFormData((prev) => ({ ...prev, image: webpData }));
+        }
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSave = async () => {
     if (!formData.client || !formData.title) {
       alert("Por favor, preencha o Nome do Cliente e o Título do Projeto.");
@@ -336,126 +522,13 @@ export default function Portfolio() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projetos.map((projeto) => (
-              <div
+              <AdminProjectCard
                 key={projeto.id || projeto.client}
-                className="bg-[#0c0c0c] border border-white/10 rounded-2xl overflow-hidden group hover:border-[#00d1ff]/50 transition-all duration-300 flex flex-col shadow-lg"
-              >
-                {/* MÍDIA / THUMB OU VÍDEO PREVIEW */}
-                <div className="relative aspect-[16/10] bg-[#141414] overflow-hidden">
-                  {projeto.video ? (
-                    <video
-                      src={projeto.video}
-                      poster={projeto.image}
-                      muted
-                      loop
-                      playsInline
-                      autoPlay
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  ) : projeto.image ? (
-                    <img
-                      src={projeto.image}
-                      alt={projeto.title || projeto.client}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-600 font-mono text-xs">
-                      Sem mídia
-                    </div>
-                  )}
-
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none" />
-
-                  {/* Badges superiores na mídia */}
-                  <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-                    <span className="bg-black/70 backdrop-blur border border-white/15 text-[#00d1ff] font-mono text-[9px] uppercase px-2 py-0.5 rounded font-bold">
-                      {projeto.tagType || projeto.category || "CASE"}
-                    </span>
-
-                    <button
-                      type="button"
-                      onClick={(e) => handleToggleDestaque(projeto, e)}
-                      className={`pointer-events-auto size-7 rounded-full flex items-center justify-center transition-all ${
-                        projeto.destaque
-                          ? "bg-[#00d1ff] text-black shadow-[0_0_12px_rgba(0,209,255,0.6)]"
-                          : "bg-black/60 text-white/50 hover:text-white border border-white/20"
-                      }`}
-                      title={projeto.destaque ? "Em destaque na Home" : "Ativar destaque na Home"}
-                    >
-                      <Star size={13} fill={projeto.destaque ? "black" : "none"} />
-                    </button>
-                  </div>
-
-                  {/* Informações sobre a mídia */}
-                  <div className="absolute bottom-3 left-3 right-3 pointer-events-none">
-                    <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">
-                      {projeto.category}
-                    </span>
-                    <h4 className="text-white font-medium text-sm line-clamp-1">
-                      {projeto.client} — {projeto.title}
-                    </h4>
-                  </div>
-                </div>
-
-                {/* DETALHES DO PROJETO */}
-                <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
-                  <div>
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs font-bold text-white font-mono truncate">
-                        {projeto.client}
-                      </span>
-                      <span className="text-[10px] font-mono text-gray-500">{projeto.year}</span>
-                    </div>
-                    <p className="text-xs text-gray-400 mt-1 line-clamp-1 font-mono">
-                      {projeto.deliverables || projeto.desc || "Sem entregáveis especificados"}
-                    </p>
-                  </div>
-
-                  {/* Badges e Links */}
-                  <div className="pt-2 border-t border-white/10 flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 font-mono text-[9px]">
-                      {(projeto.badges || ["DEV", "SOTD"]).map((b, i) => (
-                        <span
-                          key={i}
-                          className="px-1.5 py-0.5 rounded border border-white/20 text-zinc-300 bg-white/5 font-semibold"
-                        >
-                          {b}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="flex items-center gap-1.5">
-                      {projeto.link && (
-                        <a
-                          href={projeto.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="size-7 rounded bg-white/5 hover:bg-[#00d1ff] text-gray-300 hover:text-black flex items-center justify-center transition-colors"
-                          title="Abrir link do projeto"
-                        >
-                          <ExternalLink size={13} />
-                        </a>
-                      )}
-
-                      <button
-                        onClick={() => handleOpenEdit(projeto)}
-                        className="size-7 rounded bg-white/5 hover:bg-[#00d1ff] text-gray-300 hover:text-black flex items-center justify-center transition-colors"
-                        title="Editar projeto"
-                      >
-                        <Edit2 size={13} />
-                      </button>
-
-                      <button
-                        onClick={() => handleDelete(projeto.id)}
-                        className="size-7 rounded bg-white/5 hover:bg-red-500 text-gray-300 hover:text-white flex items-center justify-center transition-colors"
-                        title="Excluir projeto"
-                      >
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                projeto={projeto}
+                onToggleDestaque={handleToggleDestaque}
+                onEdit={handleOpenEdit}
+                onDelete={handleDelete}
+              />
             ))}
           </div>
         )}
@@ -572,9 +645,78 @@ export default function Portfolio() {
                 />
               </div>
 
-              <div>
-                <label className="block text-[11px] font-mono text-gray-400 tracking-wider mb-1.5 uppercase">
-                  URL DO VÍDEO (MP4 / CLOUDINARY)
+              {/* CAMPO DE THUMBNAIL / CAPA PRINCIPAL (IMAGEM FIXA) */}
+              <div className="bg-[#121212] p-4 rounded-xl border border-white/10 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-mono text-[#00d1ff] tracking-wider uppercase font-bold flex items-center gap-1.5">
+                    <ImageIcon size={14} />
+                    IMAGEM DA THUMBNAIL (CAPA DO CARD) *
+                  </label>
+                  {formData.image && (
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, image: "" })}
+                      className="text-xs text-red-400 hover:text-red-300 font-mono transition-colors"
+                    >
+                      Remover foto
+                    </button>
+                  )}
+                </div>
+
+                <p className="text-[11px] text-gray-400 font-sans leading-relaxed">
+                  Esta imagem é a thumbnail fixa exibida permanentemente no card do portfólio. O vídeo MP4 só é reproduzido quando o visitante passa o mouse por cima (hover).
+                </p>
+
+                {/* Preview visual da Thumbnail */}
+                {formData.image ? (
+                  <div className="relative aspect-[16/10] w-full rounded-lg overflow-hidden border border-white/20 bg-black">
+                    <img
+                      src={formData.image}
+                      alt="Thumbnail Preview"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 backdrop-blur text-[10px] font-mono text-cyan border border-white/10">
+                      Thumbnail Ativa (16:10)
+                    </div>
+                  </div>
+                ) : (
+                  <div className="aspect-[16/10] w-full rounded-lg border border-dashed border-white/20 bg-black/40 flex flex-col items-center justify-center text-center p-4">
+                    <ImageIcon size={28} className="text-gray-500 mb-2" />
+                    <span className="text-xs text-gray-400 font-mono">Nenhuma imagem selecionada</span>
+                    <span className="text-[10px] text-gray-600 font-mono mt-0.5">Faça upload ou cole a URL abaixo</span>
+                  </div>
+                )}
+
+                <div className="flex flex-col sm:flex-row gap-2 pt-1">
+                  {/* Botão de Upload Local */}
+                  <label className="flex-1 flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 border border-white/15 text-white px-3.5 py-2.5 rounded-lg text-xs font-mono font-medium cursor-pointer transition-colors">
+                    <Upload size={14} className="text-[#00d1ff]" />
+                    <span>Escolher imagem do PC</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleThumbnailUpload}
+                      className="hidden"
+                    />
+                  </label>
+
+                  {/* Input de URL externa */}
+                  <div className="flex-[2]">
+                    <input
+                      type="text"
+                      placeholder="Ou cole a URL: https://.../capa.webp"
+                      value={formData.image}
+                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                      className="w-full bg-[#161616] border border-white/15 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-[#00d1ff] font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* CAMPO DE VÍDEO MP4 (REPRODUZ APENAS NO HOVER) */}
+              <div className="bg-[#121212] p-4 rounded-xl border border-white/10 space-y-2">
+                <label className="block text-[11px] font-mono text-gray-300 tracking-wider uppercase font-semibold">
+                  URL DO VÍDEO (MP4 / CLOUDINARY) — REPRODUZ NO HOVER
                 </label>
                 <input
                   type="text"
@@ -583,19 +725,9 @@ export default function Portfolio() {
                   onChange={(e) => setFormData({ ...formData, video: e.target.value })}
                   className="w-full bg-[#161616] border border-white/15 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#00d1ff]"
                 />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-mono text-gray-400 tracking-wider mb-1.5 uppercase">
-                  URL DA THUMBNAIL / IMAGEM DE CAPA
-                </label>
-                <input
-                  type="text"
-                  placeholder="https://.../capa.webp"
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  className="w-full bg-[#161616] border border-white/15 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#00d1ff]"
-                />
+                <p className="text-[10px] text-gray-500 font-mono">
+                  Opcional. Se informado, o vídeo tocará em loop exclusivamente quando o visitante passar o mouse sobre o card.
+                </p>
               </div>
 
               <div>

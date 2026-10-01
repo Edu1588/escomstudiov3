@@ -19,6 +19,153 @@ export interface DisplayProject {
   tagType: string;
 }
 
+interface FeaturedProjectCardProps {
+  project: DisplayProject;
+  isSaved: boolean;
+  onToggleBookmark: (id: string | number, e: React.MouseEvent) => void;
+  onSelect: (project: DisplayProject) => void;
+}
+
+function FeaturedProjectCard({
+  project,
+  isSaved,
+  onToggleBookmark,
+  onSelect,
+}: FeaturedProjectCardProps) {
+  const videoRef = React.useRef<HTMLVideoElement | null>(null);
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [videoError, setVideoError] = React.useState(false);
+
+  const handleMouseEnter = () => {
+    if (videoRef.current && project.video && !videoError) {
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => setIsPlaying(true))
+          .catch(() => setIsPlaying(false));
+      }
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+  };
+
+  return (
+    <article
+      onClick={() => onSelect(project)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className="group cursor-pointer select-none flex flex-col"
+    >
+      {/* CARD DE MÍDIA COM THUMB PADRÃO E VÍDEO NO HOVER (16:10) */}
+      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-[#0a0a0a] border border-white/10 group-hover:border-cyan/50 transition-all duration-500 shadow-[0_12px_35px_rgba(0,0,0,0.65)] group-hover:shadow-[0_20px_50px_rgba(0,209,255,0.18)]">
+        {/* IMAGEM THUMBNAIL SEMPRE VISÍVEL COMO BASE */}
+        {project.image ? (
+          <img
+            src={project.image}
+            alt={project.title}
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
+          />
+        ) : (
+          <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-900 to-black font-mono text-xs text-zinc-600">
+            ESCOM Studio
+          </div>
+        )}
+
+        {/* VÍDEO REPRODUZIDO EXCLUSIVAMENTE NO HOVER */}
+        {project.video && !videoError && (
+          <video
+            ref={videoRef}
+            src={project.video}
+            muted
+            loop
+            playsInline
+            preload="none"
+            onError={() => setVideoError(true)}
+            className={`absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-all duration-500 ease-out ${
+              isPlaying ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
+          />
+        )}
+
+        {/* Overlay de gradiente inferior para legibilidade editorial */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
+
+        {/* Textos no canto inferior esquerdo sobre a imagem */}
+        <div className="absolute bottom-3.5 left-4 right-14 pointer-events-none">
+          <span className="block text-[9px] sm:text-[10px] tracking-[0.16em] uppercase font-mono text-zinc-300 font-semibold mb-0.5 opacity-90 drop-shadow">
+            {project.tagType}
+          </span>
+          <h3 className="text-white text-sm sm:text-base font-medium tracking-tight leading-snug line-clamp-1 drop-shadow-md">
+            {project.client} — {project.title}
+          </h3>
+        </div>
+
+        {/* Botões no canto inferior direito sobre a imagem (Seta ↗ e Bookmark) */}
+        <div className="absolute bottom-3.5 right-3.5 flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={(e) => onToggleBookmark(project.id, e)}
+            className="size-7 sm:size-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-white/70 hover:text-cyan hover:border-cyan/60 hover:scale-105 transition-all"
+            title="Salvar projeto"
+          >
+            <Bookmark
+              className={`size-3.5 ${isSaved ? "fill-cyan text-cyan" : ""}`}
+            />
+          </button>
+
+          <div className="size-7 sm:size-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-white/80 group-hover:text-cyan group-hover:border-cyan/60 group-hover:scale-110 transition-all duration-300 shadow-sm">
+            <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </div>
+        </div>
+      </div>
+
+      {/* BARRA DE AUTOR / CRÉDITOS & BADGES ABAIXO DA IMAGEM */}
+      <div className="mt-3 flex items-center justify-between px-1">
+        <div className="flex items-center gap-2">
+          <div className="size-5 sm:size-5.5 rounded-full bg-zinc-900 border border-white/20 flex items-center justify-center font-mono text-[9px] font-bold text-cyan">
+            ES
+          </div>
+          <span className="text-xs font-sans font-medium text-white/90">
+            ESCOM Studio
+          </span>
+          <span className="text-[8px] font-mono font-bold tracking-wider px-1.5 py-0.5 rounded bg-cyan/15 border border-cyan/40 text-cyan">
+            PRO
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1.5 font-mono text-[9px]">
+          {project.badges.map((badge, bIdx) => {
+            const isSotd = badge === "SOTD";
+            const isDev = badge === "DEV";
+
+            return (
+              <span
+                key={bIdx}
+                className={`px-1.5 py-0.5 rounded tracking-wider border font-bold uppercase ${
+                  isSotd
+                    ? "border-amber-400/50 text-amber-300 bg-amber-400/10"
+                    : isDev
+                    ? "border-cyan/40 text-cyan bg-cyan/10"
+                    : "border-white/20 text-zinc-300 bg-white/5"
+                }`}
+              >
+                {badge}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+    </article>
+  );
+}
+
 interface FeaturedWorksSectionProps {
   Eyebrow?: React.ComponentType<{
     children: React.ReactNode;
@@ -186,7 +333,7 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
   return (
     <section
       id="trabalhos"
-      className="relative bg-[#000000] border-t border-white/10 text-white px-5 py-20 md:px-12 xl:px-[8vw] 2xl:px-[10vw] md:py-32 overflow-hidden"
+      className="relative bg-[#000000] border-t border-white/10 text-white px-5 py-12 md:px-12 xl:px-[8vw] 2xl:px-[10vw] md:py-16 overflow-hidden"
     >
       {/* Luz ambiente de fundo sutil */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 size-[42rem] rounded-full bg-cyan-500/[0.035] blur-[140px] pointer-events-none" />
@@ -244,119 +391,20 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
       </div>
 
       {/* GRID DE CARDS ESTILO AWWWARDS (3 COLUNAS) */}
-      <div className="relative z-10 mt-8 md:mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 lg:gap-8">
-        {filteredProjects.map((project) => {
-          const isSaved = Boolean(savedProjects[project.id]);
-
-          return (
-            <article
-              key={project.id}
-              onClick={() => setSelectedProject(project)}
-              className="group cursor-pointer select-none flex flex-col"
-            >
-              {/* CARD DE MÍDIA COM VÍDEO & CANTOS ARREDONDADOS (16:10) */}
-              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-[#0a0a0a] border border-white/10 group-hover:border-cyan/50 transition-all duration-500 shadow-[0_12px_35px_rgba(0,0,0,0.65)] group-hover:shadow-[0_20px_50px_rgba(0,209,255,0.18)]">
-                {project.video && !videoErrors[project.id] ? (
-                  <video
-                    src={project.video}
-                    poster={project.image}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="metadata"
-                    onError={() => setVideoErrors((prev) => ({ ...prev, [project.id]: true }))}
-                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
-                ) : project.image ? (
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-900 to-black font-mono text-xs text-zinc-600">
-                    ESCOM Studio
-                  </div>
-                )}
-
-                {/* Overlay de gradiente inferior para legibilidade editorial */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
-
-                {/* Textos no canto inferior esquerdo sobre a imagem (idêntico à referência) */}
-                <div className="absolute bottom-3.5 left-4 right-14 pointer-events-none">
-                  <span className="block text-[9px] sm:text-[10px] tracking-[0.16em] uppercase font-mono text-zinc-300 font-semibold mb-0.5 opacity-90 drop-shadow">
-                    {project.tagType}
-                  </span>
-                  <h3 className="text-white text-sm sm:text-base font-medium tracking-tight leading-snug line-clamp-1 drop-shadow-md">
-                    {project.client} — {project.title}
-                  </h3>
-                </div>
-
-                {/* Botões no canto inferior direito sobre a imagem (Seta ↗ e Bookmark) */}
-                <div className="absolute bottom-3.5 right-3.5 flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={(e) => toggleBookmark(project.id, e)}
-                    className="size-7 sm:size-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-white/70 hover:text-cyan hover:border-cyan/60 hover:scale-105 transition-all"
-                    title="Salvar projeto"
-                  >
-                    <Bookmark
-                      className={`size-3.5 ${isSaved ? "fill-cyan text-cyan" : ""}`}
-                    />
-                  </button>
-
-                  <div className="size-7 sm:size-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-white/80 group-hover:text-cyan group-hover:border-cyan/60 group-hover:scale-110 transition-all duration-300 shadow-sm">
-                    <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                  </div>
-                </div>
-              </div>
-
-              {/* BARRA DE AUTOR / CRÉDITOS & BADGES ABAIXO DA IMAGEM (Idêntica ao Print Awwwards) */}
-              <div className="mt-3 flex items-center justify-between px-1">
-                {/* Lado esquerdo: Avatar Monograma + Nome Estúdio + Badge PRO */}
-                <div className="flex items-center gap-2">
-                  <div className="size-5 sm:size-5.5 rounded-full bg-zinc-900 border border-white/20 flex items-center justify-center font-mono text-[9px] font-bold text-cyan">
-                    ES
-                  </div>
-                  <span className="text-xs font-sans font-medium text-white/90">
-                    ESCOM Studio
-                  </span>
-                  <span className="text-[8px] font-mono font-bold tracking-wider px-1.5 py-0.5 rounded bg-cyan/15 border border-cyan/40 text-cyan">
-                    PRO
-                  </span>
-                </div>
-
-                {/* Lado direito: Badges em pílula (DEV, SOTD, HM, Ano) */}
-                <div className="flex items-center gap-1.5 font-mono text-[9px]">
-                  {project.badges.map((badge, bIdx) => {
-                    const isSotd = badge === "SOTD";
-                    const isDev = badge === "DEV";
-
-                    return (
-                      <span
-                        key={bIdx}
-                        className={`px-1.5 py-0.5 rounded tracking-wider border font-bold uppercase ${
-                          isSotd
-                            ? "border-amber-400/50 text-amber-300 bg-amber-400/10"
-                            : isDev
-                            ? "border-cyan/40 text-cyan bg-cyan/10"
-                            : "border-white/20 text-zinc-300 bg-white/5"
-                        }`}
-                      >
-                        {badge}
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-            </article>
-          );
-        })}
+      <div className="relative z-10 mt-6 md:mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 lg:gap-8">
+        {filteredProjects.map((project) => (
+          <FeaturedProjectCard
+            key={project.id}
+            project={project}
+            isSaved={Boolean(savedProjects[project.id])}
+            onToggleBookmark={toggleBookmark}
+            onSelect={setSelectedProject}
+          />
+        ))}
       </div>
 
-      {/* CTA INFERIOR PARA AGENDAR DIAGNÓSTICO */}
-      <div className="relative z-10 mt-16 md:mt-24 pt-10 border-t border-white/10 flex flex-wrap items-center justify-between gap-6">
+      {/* CTA INFERIOR PARA AGENDAR DIAGNÓSTICO (ESPAÇAMENTO OTIMIZADO) */}
+      <div className="relative z-10 mt-10 md:mt-12 pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-6">
         <div>
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-cyan">
             ✦ HIGH-IMPACT ARCHITECTURE
