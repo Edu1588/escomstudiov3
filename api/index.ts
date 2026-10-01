@@ -3178,7 +3178,7 @@ REGRAS ABSOLUTAS
           args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
         });
         const page = await browser.newPage();
-        await page.setContent(html, { waitUntil: "networkidle0", timeout: 25000 });
+        await page.setContent(html, { waitUntil: "load", timeout: 25000 });
         const pdfBuf = await page.pdf({
           format: "A4",
           printBackground: true,
