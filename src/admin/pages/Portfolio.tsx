@@ -12,6 +12,12 @@ const OBSOLETE_NAMES = [
   "maria malta",
   "leandro lamezi",
   "sem foto",
+  "studio one",
+  "goloni",
+  "estante do escritor",
+  "moa pro",
+  "full english",
+  "ugb",
 ];
 
 export default function Portfolio() {
@@ -40,13 +46,13 @@ export default function Portfolio() {
   // Função para limpar itens obsoletos e garantir os projetos oficiais da HOME anterior no Firestore
   const cleanAndSeedOfficialProjects = async (currentData: PortfolioProject[]) => {
     try {
-      // 1. Identifica e deleta projetos antigos que não têm vídeo ou têm nomes da lista obsoleta
+      // 1. Identifica e deleta projetos antigos que não têm vídeo válido ou têm nomes da lista obsoleta
       const obsoleteProjects = currentData.filter((p) => {
         const titleLower = (p.title || p.name || "").toLowerCase();
         const clientLower = (p.client || "").toLowerCase();
-        const hasNoMedia = !p.video && (!p.image || p.image.includes("fakeimg"));
+        const hasNoValidVideo = !p.video || p.video.trim().length < 10 || !p.video.startsWith("http");
         const matchesObsolete = OBSOLETE_NAMES.some((obs) => titleLower.includes(obs) || clientLower.includes(obs));
-        return hasNoMedia || matchesObsolete;
+        return hasNoValidVideo || matchesObsolete;
       });
 
       if (obsoleteProjects.length > 0) {
@@ -106,8 +112,8 @@ export default function Portfolio() {
       const hasObsolete = data.some((p) => {
         const titleLower = (p.title || p.name || "").toLowerCase();
         const clientLower = (p.client || "").toLowerCase();
-        const hasNoMedia = !p.video && (!p.image || p.image.includes("fakeimg"));
-        return hasNoMedia || OBSOLETE_NAMES.some((obs) => titleLower.includes(obs) || clientLower.includes(obs));
+        const hasNoValidVideo = !p.video || p.video.trim().length < 10 || !p.video.startsWith("http");
+        return hasNoValidVideo || OBSOLETE_NAMES.some((obs) => titleLower.includes(obs) || clientLower.includes(obs));
       });
 
       const missingOfficial = INITIAL_PORTFOLIO_PROJECTS.some(
@@ -339,6 +345,7 @@ export default function Portfolio() {
                   {projeto.video ? (
                     <video
                       src={projeto.video}
+                      poster={projeto.image}
                       muted
                       loop
                       playsInline

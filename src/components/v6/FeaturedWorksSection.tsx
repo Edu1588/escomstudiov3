@@ -52,6 +52,8 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
   const [activeCategory, setActiveCategory] = useState<string>("ALL");
   const [selectedProject, setSelectedProject] = useState<DisplayProject | null>(null);
   const [savedProjects, setSavedProjects] = useState<Record<string | number, boolean>>({});
+  const [videoErrors, setVideoErrors] = useState<Record<string | number, boolean>>({});
+  const [lightboxVideoError, setLightboxVideoError] = useState<boolean>(false);
 
   // Carrega projetos cadastrados dinamicamente no Firebase garantindo apenas projetos com mídia válida
   useEffect(() => {
@@ -64,6 +66,12 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
       "maria malta",
       "leandro lamezi",
       "sem foto",
+      "studio one",
+      "goloni",
+      "estante do escritor",
+      "moa pro",
+      "full english",
+      "ugb",
     ];
 
     const fetchFirebaseProjects = async () => {
@@ -71,7 +79,7 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
         const firebaseData = await getPortfolioProjects();
         if (!isMounted || !firebaseData || firebaseData.length === 0) return;
 
-        // Filtra apenas projetos válidos que NÃO sejam os obsoletos e que tenham vídeo ou imagem válida
+        // Filtra apenas projetos válidos que NÃO sejam os obsoletos e que tenham vídeo REAL funcionando
         const validFromDb = firebaseData.filter((p) => {
           if (p.destaque === false) return false;
           const titleLower = (p.title || p.name || "").toLowerCase();
@@ -81,16 +89,19 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
           );
           if (isObsolete) return false;
 
-          const hasValidMedia =
-            Boolean(p.video && p.video.trim().length > 5) ||
-            Boolean(p.image && !p.image.includes("fakeimg"));
-          return hasValidMedia;
+          // Deve ter URL válida de vídeo com protocolo http e tamanho real
+          const hasValidVideo = Boolean(
+            p.video &&
+            p.video.trim().length > 10 &&
+            (p.video.startsWith("http://") || p.video.startsWith("https://"))
+          );
+          return hasValidVideo;
         });
 
         if (validFromDb.length > 0) {
           // Mapeia os dados do Firebase para o formato do Grid
           const mappedFromDb: DisplayProject[] = validFromDb.map((p, idx) => {
-            // Se for um dos projetos base conhecidos, garante o vídeo se estiver ausente
+            // Se for um dos projetos base conhecidos, garante os dados corretos
             const matchingDefault = INITIAL_PORTFOLIO_PROJECTS.find(
               (def) => def.client.toLowerCase().trim() === (p.client || p.name || "").toLowerCase().trim()
             );
@@ -110,7 +121,7 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
             };
           });
 
-          // Junta projetos do Firebase com os projetos oficiais da Home anterior que ainda não estejam no DB
+          // Junta projetos válidos do Firebase com os projetos oficiais que ainda não estejam no DB
           const dbClientNames = new Set(mappedFromDb.map((p) => p.client.toLowerCase().trim()));
           const remainingDefaults = INITIAL_PORTFOLIO_PROJECTS.filter(
             (p) => !dbClientNames.has(p.client.toLowerCase().trim())
@@ -245,14 +256,16 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
             >
               {/* CARD DE MÍDIA COM VÍDEO & CANTOS ARREDONDADOS (16:10) */}
               <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-[#0a0a0a] border border-white/10 group-hover:border-cyan/50 transition-all duration-500 shadow-[0_12px_35px_rgba(0,0,0,0.65)] group-hover:shadow-[0_20px_50px_rgba(0,209,255,0.18)]">
-                {project.video ? (
+                {project.video && !videoErrors[project.id] ? (
                   <video
                     src={project.video}
+                    poster={project.image}
                     autoPlay
                     loop
                     muted
                     playsInline
                     preload="metadata"
+                    onError={() => setVideoErrors((prev) => ({ ...prev, [project.id]: true }))}
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
                 ) : project.image ? (
@@ -262,8 +275,8 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-zinc-950 font-mono text-xs text-zinc-600">
-                    Sem preview de vídeo
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-900 to-black font-mono text-xs text-zinc-600">
+                    ESCOM Studio
                   </div>
                 )}
 
@@ -367,7 +380,10 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
           role="dialog"
           aria-modal="true"
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-2xl p-4 sm:p-6 md:p-10 animate-in fade-in duration-200"
-          onClick={() => setSelectedProject(null)}
+          onClick={() => {
+            setSelectedProject(null);
+            setLightboxVideoError(false);
+          }}
         >
           <div
             className="relative w-full max-w-5xl rounded-3xl border border-cyan/40 bg-[#080808] p-4 sm:p-6 shadow-[0_30px_100px_rgba(0,0,0,0.95),0_0_50px_rgba(0,209,255,0.2)]"
@@ -375,7 +391,10 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
           >
             {/* Botão de Fechar */}
             <button
-              onClick={() => setSelectedProject(null)}
+              onClick={() => {
+                setSelectedProject(null);
+                setLightboxVideoError(false);
+              }}
               className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20 size-10 rounded-full bg-black/80 border border-white/20 flex items-center justify-center text-white/80 hover:text-cyan hover:border-cyan transition-all cursor-pointer"
               title="Fechar (Esc)"
             >
@@ -384,12 +403,14 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
 
             {/* Vídeo ou Imagem em Destaque */}
             <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-inner">
-              {selectedProject.video ? (
+              {selectedProject.video && !lightboxVideoError ? (
                 <video
                   src={selectedProject.video}
+                  poster={selectedProject.image}
                   autoPlay
                   controls
                   playsInline
+                  onError={() => setLightboxVideoError(true)}
                   className="w-full h-full object-cover"
                 />
               ) : selectedProject.image ? (

@@ -170,54 +170,6 @@ const REAL_HOME_PROJECTS = [
     score: "94%",
     order: 7,
   },
-  {
-    id: "goloni",
-    client: "Goloni Mobiliário",
-    name: "Goloni Mobiliário",
-    title: "Catálogo de Interiores & Design Sob Medida",
-    category: "MOBILIÁRIO & INTERIORES",
-    tagType: "WEBSITE",
-    tag: "WEBSITE",
-    deliverables: "CATÁLOGO DIGITAL · UI/UX",
-    desc: "CATÁLOGO DIGITAL · UI/UX",
-    description: "Catálogo de móveis sob medida com design limpo e navegação por ambientes.",
-    year: "2024",
-    badges: ["DEV", "SOTD"],
-    video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1779824400/biayyjpzidhjetnytavb.mp4",
-    videoUrl: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1779824400/biayyjpzidhjetnytavb.mp4",
-    image: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/hero%20sections/animated%20(38).webp",
-    imageUrl: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/hero%20sections/animated%20(38).webp",
-    link: "https://escomstudio.com.br",
-    url: "https://escomstudio.com.br",
-    destaque: true,
-    featured: true,
-    score: "96%",
-    order: 8,
-  },
-  {
-    id: "studio-one",
-    client: "Studio One Arquitetura",
-    name: "Studio One Arquitetura",
-    title: "Portfólio Imersivo & Experiência de Projetos",
-    category: "ARQUITETURA & DESIGN",
-    tagType: "EXPERIÊNCIA",
-    tag: "EXPERIÊNCIA",
-    deliverables: "PORTAL IMERSIVO · BRANDING",
-    desc: "PORTAL IMERSIVO · BRANDING",
-    description: "Portfólio interativo para escritório de arquitetura com projetos em alta resolução.",
-    year: "2024",
-    badges: ["HM", "DEV"],
-    video: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1779824400/fubvmghpobclz2wvnnlp.mp4",
-    videoUrl: "https://res.cloudinary.com/djw0tqmiw/video/upload/v1779824400/fubvmghpobclz2wvnnlp.mp4",
-    image: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/animated%20(63).webp",
-    imageUrl: "https://pub-86dc5b5484314368ac5436a674b0d919.r2.dev/animated%20(63).webp",
-    link: "https://escomstudio.com.br",
-    url: "https://escomstudio.com.br",
-    destaque: true,
-    featured: true,
-    score: "97%",
-    order: 9,
-  },
 ];
 
 async function sync() {
@@ -230,7 +182,7 @@ async function sync() {
     await deleteDoc(doc(db, "portfolio_projects", d.id));
   }
 
-  console.log("\n2. Inserindo os 9 projetos reais da Home anterior com vídeos, links e thumbs...");
+  console.log("\n2. Inserindo os 7 projetos reais da Home anterior com vídeos, links e thumbs...");
   for (const proj of REAL_HOME_PROJECTS) {
     const { id, ...data } = proj;
     console.log(`Inserindo projeto: ${proj.client} - ${proj.title}`);
