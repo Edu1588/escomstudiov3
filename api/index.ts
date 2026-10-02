@@ -8,7 +8,7 @@ import * as cheerio from "cheerio";
 import Groq from "groq-sdk";
 import cron from "node-cron";
 import { Resend } from "resend";
-import { generateLogoConcepts } from "./logoGenerator";
+import { generateLogoConcepts } from "../src/services/logoGenerator";
 async function groqGenerate(prompt: string, opts?: { temperature?: number; maxTokens?: number }): Promise<string> {
   const apiKey = process.env.GROQ_API_KEY || "";
   if (!apiKey) return "";
