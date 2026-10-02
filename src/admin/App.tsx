@@ -25,7 +25,8 @@ import {
   Plug,
   Crown,
   Box,
-  Globe
+  Globe,
+  Sparkles
 } from "lucide-react";
 
 import Dashboard from "./pages/Dashboard";
@@ -35,6 +36,7 @@ import Propostas from "./pages/Propostas";
 import Leads from "./pages/Leads";
 import Contratos from "./pages/Contratos";
 import Portfolio from "./pages/Portfolio";
+import LogoCreator from "./pages/LogoCreator";
 import InstagramGEM from "./pages/InstagramGEM";
 import ProjetosNoAr from "./pages/ProjetosNoAr";
 import Configuracoes from "./pages/Configuracoes";
@@ -86,6 +88,7 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
     { name: "Finanças", path: "/financas", icon: <DollarSign size={18} />, hoverColor: "group-hover:text-emerald-400 text-emerald-400" },
     { name: "Saúde", path: "/saude", icon: <HeartPulse size={18} />, hoverColor: "group-hover:text-rose-500 text-rose-500" },
     { name: "Portfólio", path: "/portfolio", icon: <Briefcase size={18} />, hoverColor: "group-hover:text-fuchsia-400 text-fuchsia-400" },
+    { name: "Logo Studio", path: "/logos", icon: <Sparkles size={18} />, hoverColor: "group-hover:text-amber-400 text-amber-400" },
     { name: "Instagram GEM", path: "/instagram", icon: <Instagram size={18} />, hoverColor: "group-hover:text-pink-500 text-pink-500" },
     { name: "Tarefas", path: "/agendamentos", icon: <CheckSquare size={18} />, hoverColor: "group-hover:text-teal-400 text-teal-400" },
     { name: "Relatórios", path: "/projetos-no-ar", icon: <BarChart2 size={18} />, hoverColor: "group-hover:text-cyan-400 text-cyan-400" },
@@ -232,6 +235,7 @@ export default function App() {
           <Route path="/leads" element={<Leads />} />
           <Route path="/contratos" element={<Contratos />} />
           <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/logos" element={<LogoCreator />} />
           <Route path="/trajetoria" element={<Trajetoria />} />
           <Route path="/instagram" element={<InstagramGEM />} />
           <Route path="/projetos-no-ar" element={<ProjetosNoAr />} />

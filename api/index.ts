@@ -8,6 +8,7 @@ import * as cheerio from "cheerio";
 import Groq from "groq-sdk";
 import cron from "node-cron";
 import { Resend } from "resend";
+import { generateLogoConcepts } from "./logoGenerator";
 async function groqGenerate(prompt: string, opts?: { temperature?: number; maxTokens?: number }): Promise<string> {
   const apiKey = process.env.GROQ_API_KEY || "";
   if (!apiKey) return "";
@@ -1111,7 +1112,13 @@ app.get("/proposta-:slug", async (req, res) => {
 // Serve site gerado por leadId — rota limpa sem /api/
 app.get("/proposta/:leadId", async (req, res) => {
   try {
-    const rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(req.params.leadId)}&select=site_html,nome&limit=1`).catch(() => []);
+    const slug = req.params.leadId;
+    // Tenta por id exato primeiro, depois por site_gerado contendo o slug
+    let rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(slug)}&select=site_html,nome&limit=1`).catch(() => []);
+    if ((!rows || rows.length === 0 || !rows[0].site_html)) {
+      const baseUrl = process.env.BASE_URL || "https://www.escomstudio.com.br";
+      rows = await sbFetch(`/leads?site_gerado=eq.${encodeURIComponent(`${baseUrl}/proposta/${slug}`)}&select=site_html,nome&limit=1`).catch(() => []);
+    }
     if (!rows || rows.length === 0 || !rows[0].site_html) {
       res.setHeader("Content-Type", "text/html; charset=utf-8");
       return res.status(404).send(PAGINA_PROPOSTA_NAO_ENCONTRADA);
@@ -2932,8 +2939,13 @@ app.get("/api/gerar-analise/:leadId", async (req, res) => {
     const serperKey = process.env.SERPER_API_KEY || "";
     if (!process.env.GROQ_API_KEY) return res.status(500).send("<h1>GROQ_API_KEY não configurada</h1>");
 
-    // 1. Busca lead no Supabase
-    const rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(req.params.leadId)}&select=*&limit=1`);
+    // 1. Busca lead no Supabase — tenta por id, depois por site_gerado
+    const slug = req.params.leadId;
+    let rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(slug)}&select=*&limit=1`);
+    if (!rows || rows.length === 0) {
+      const baseUrl = process.env.BASE_URL || "https://www.escomstudio.com.br";
+      rows = await sbFetch(`/leads?site_gerado=eq.${encodeURIComponent(`${baseUrl}/proposta/${slug}`)}&select=*&limit=1`);
+    }
     if (!rows || rows.length === 0) return res.status(404).send("<h1>Lead não encontrado</h1>");
     const lead = rows[0];
 
@@ -2998,7 +3010,7 @@ app.get("/api/gerar-analise/:leadId", async (req, res) => {
    - Endereço: ${c.endereco || "não disponível"}`).join("\n\n")
       : "Dados de concorrentes não disponíveis (Serper não configurado).";
 
-    const prompt = `Você é um estrategista sênior da ESCOM Studio gerando um DOSSIÊ DE INTELIGÊNCIA COMERCIAL em HTML.
+    const prompt = `Você é um estrategista sênior da ESCOM Studio gerando um DOSSIÊ DE INTELIGÊNCIA COMERCIAL em HTML puro (sem markdown).
 
 ═══════════════════════════════════════════
 DADOS DO LEAD
@@ -3008,7 +3020,6 @@ Nicho: ${lead.categoria}
 Cidade: ${lead.cidade}
 Rating Google: ${lead.rating || "N/D"} estrelas (${lead.reviews_count || 0} avaliações)
 Site atual: ${lead.website || "NÃO POSSUI SITE PRÓPRIO"}
-Score de oportunidade: ${lead.score_oportunidade || 0}/100
 PageSpeed mobile — Performance: ${ps.performance ?? "N/D"}% | SEO: ${ps.seo ?? "N/D"}% | Acessibilidade: ${ps.acessibilidade ?? "N/D"}%
 UX: ${diag.identidadeVisualUI ? JSON.stringify({ visual: diag.identidadeVisualUI, heuristicas: diag.heuristicasNielsen }) : "não analisado"}
 
@@ -3016,165 +3027,194 @@ CONCORRENTES (Google Maps):
 ${concorrentesStr}
 
 ═══════════════════════════════════════════
+DESIGN SYSTEM OBRIGATÓRIO
+═══════════════════════════════════════════
+PASSO 1 — DEFINA AS CORES DO CLIENTE (faça isso ANTES de gerar o HTML):
+Analise o nicho "${lead.categoria}", a cidade "${lead.cidade}" e os dados de identidade visual abaixo.
+Escolha 2 cores que representem o branding deste cliente:
+- COR_PRIMARIA: cor principal da marca (use dados reais se disponíveis; se não, escolha uma cor adequada ao nicho)
+- COR_ACENTO: cor de destaque/complementar
+
+Dados de identidade visual do site atual: ${diag.identidadeVisualUI ? JSON.stringify(diag.identidadeVisualUI) : "não disponível"}
+
+Exemplos de escolha por nicho (use como referência, não como regra fixa):
+- Academia / Fitness: laranja #f97316 + preto #18181b
+- Odontologia / Saúde: azul #2563eb + verde-água #06b6d4
+- Gastronomia / Bar: vermelho #dc2626 + dourado #ca8a04
+- Advocacia / Contabilidade: azul-escuro #1e3a5f + dourado #b8860b
+- Beleza / Estética: rosa #db2777 + dourado #a16207
+- Automotivo: vermelho #dc2626 + cinza-escuro #374151
+- Moda / Varejo: preto #18181b + bege #d4a76a
+
+Depois de definir COR_PRIMARIA e COR_ACENTO, use-as em TODO o documento.
+
+Inclua EXATAMENTE este bloco <head>, substituindo [COR_PRIMARIA] e [COR_ACENTO] pelos hex escolhidos:
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dossiê Estratégico | ${lead.nome}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { primary: '[COR_PRIMARIA]', accent: '[COR_ACENTO]' }
+          },
+          fontFamily: { sans: ['Inter','sans-serif'], display: ['Playfair Display','serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    @page { size: A4; margin: 0; }
+    body { background-color: #f4f4f5; color: #3f3f46; font-family: 'Inter', sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .pdf-page { width: 210mm; height: 297mm; padding: 18mm; margin: 30px auto; background: #ffffff; box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: relative; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; page-break-after: always; page-break-inside: avoid; border: 1px solid #e4e4e7; }
+    .decor-line { position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: linear-gradient(90deg, [COR_PRIMARIA] 0%, [COR_ACENTO] 100%); z-index: 20; }
+    .content-layer { position: relative; z-index: 10; display: flex; flex-direction: column; height: 100%; }
+    .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) rotate(-45deg); font-size: 8rem; color: rgba(0,0,0,0.012); font-weight: 800; white-space: nowrap; pointer-events: none; z-index: 0; }
+    .brand-primary { color: [COR_PRIMARIA]; }
+    .brand-accent { color: [COR_ACENTO]; }
+    .brand-bg { background-color: [COR_PRIMARIA]; }
+    .brand-border { border-color: [COR_PRIMARIA]; }
+    .badge-forte { background:#dcfce7; color:#166534; border:1px solid #16a34a; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; }
+    .badge-medio { background:#fef3c7; color:#92400e; border:1px solid #f59e0b; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; }
+    .badge-fraco { background:#fee2e2; color:#991b1b; border:1px solid #ef4444; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; }
+    .no-print { display:block; }
+    @media print {
+      html, body { background-color:#ffffff !important; margin:0 !important; padding:0 !important; width:210mm !important; }
+      .pdf-page { margin:0 !important; box-shadow:none !important; border:none !important; }
+      .no-print { display:none !important; }
+    }
+  </style>
+</head>
+
+Botão de impressão (fora das páginas, no topo do body, class="no-print"):
+  Position fixed, canto superior direito, "⬇ Baixar PDF" → onclick="window.print()"
+  Estilo: background [COR_PRIMARIA], texto branco, padding 10px 20px, border-radius 6px, font Inter
+
+Estrutura de cada página A4:
+<div class="pdf-page">
+  <div class="decor-line"></div>
+  <div class="watermark">CONFIDENCIAL</div>
+  <div class="content-layer">
+    <!-- conteúdo da página -->
+    <div class="mt-auto flex justify-between items-center text-xs text-zinc-400 font-mono border-t border-zinc-100 pt-4">
+      <span>Dossiê ${lead.nome} - Inteligência Comercial</span>
+      <span>Página N</span>
+    </div>
+  </div>
+</div>
+
+Paleta de cores (use inline style= para cores da marca, Tailwind para o resto):
+- Títulos principais: text-zinc-900 font-display (Playfair Display)
+- Destaque primário: class="brand-primary" (usa COR_PRIMARIA)
+- Destaque secundário: class="brand-accent" (usa COR_ACENTO)
+- Linha decorativa do título (igual ao template): <div style="width:64px;height:6px;background:[COR_ACENTO];margin-top:16px"></div>
+- Corpo: text-zinc-700 text-sm leading-relaxed
+- Cards: bg-zinc-50 border border-zinc-200 rounded-xl
+- Cards positivos: fundo levemente colorido com COR_ACENTO em opacidade baixa (style="background: [COR_ACENTO]15")
+- Cards de atenção: bg-red-50 border-red-100
+- Cards neutros: bg-zinc-50 border-zinc-200
+
+═══════════════════════════════════════════
 ESTRUTURA OBRIGATÓRIA — 11 PÁGINAS A4
 ═══════════════════════════════════════════
-Siga EXATAMENTE esta estrutura (cada <section class="page"> = 1 página A4):
 
 PÁGINA 1 — CAPA
-- Fundo: #0a0a14 (escuro total)
-- Topo: "E S C O M  S T U D I O  •  B U S I N E S S  I N T E L L I G E N C E" (letra espaçada, cinza claro, tamanho pequeno)
-- Centro: "Análise Estratégica" (grande, branco, serif); abaixo em ciano: "${lead.nome}"
-- Rodapé esquerdo: "DOCUMENTO PREPARADO PARA" + nome do responsável (use o nome da empresa); "STATUS / CONFIDENCIAL"
-- Elementos decorativos SVG geométricos (linhas, polígonos) em ciano/azul transparente
+- Topo: "ESCOM Studio • Business Intelligence" em font-mono text-zinc-400 tracking-[0.2em] uppercase text-sm
+- Título h1: "Análise Estratégica" em text-zinc-900 font-display font-black text-5xl
+- Linha 2 do h1: "${lead.nome}" em text-brand-primary
+- Linha decorativa verde: <div class="w-16 h-1.5 bg-brand-accent mt-4"></div>
+- Foto centralizada: div com height ~115mm, bg-zinc-100, rounded-2xl, border, sombra (usar imagem Unsplash genérica do nicho ${lead.categoria} via URL, ex: https://images.unsplash.com/photo-XXXXX?w=900&auto=format&fit=crop)
+- Rodapé: "Documento Preparado para" + "${lead.nome}" (bold) | "Status / Confidencial" (text-emerald-600)
+- SEM número de página na capa
 
-PÁGINA 2 — ÍNDICE (fundo #0a0a14)
-- Topo: "CONFIDENCIAL" badge
-- Título: "Conteúdo / Índice Executivo"
-- Grade 2 colunas com os números de página e seções (03 a 11)
-- Parágrafo introdutório (2-3 frases) descrevendo o que este dossiê apresenta para ${lead.nome} no nicho ${lead.categoria}
-- Rodapé: "Dossiê ${lead.nome} - Inteligência Comercial"
+PÁGINA 2 — SOBRE NÓS
+- h2: "Sobre Nós" + "<span class='text-brand-primary text-sm font-mono font-normal'>/ ESCOM Studio</span>"
+- Parágrafo: quem é a ESCOM Studio, especialização em web design premium e conversão
+- Card cinza: descrição do dossiê, o que o cliente vai encontrar nas páginas seguintes
+- Adaptado ao nicho ${lead.categoria}
 
-PÁGINA 3 — DIAGNÓSTICO DO NEGÓCIO (fundo branco)
-- Badge "CONFIDENCIAL" no topo direito
-- Título: "Diagnóstico do Negócio: ${lead.nome} Frente ao Posicionamento de Mercado"
-- 3 blocos com ícone:
-  1. "A Força Atual" — pontos positivos baseados em dados reais (${lead.rating} estrelas, ${lead.reviews_count} avaliações, etc.)
-  2. "O Gargalo Digital" — problemas identificados (site, pagespeed ${ps.performance ?? "N/D"}%, ausência digital, etc.)
-  3. "A Solução Proposta" — o que a ESCOM propõe resolver
-- Tabela de métricas: Performance ${ps.performance ?? "N/D"}% | SEO ${ps.seo ?? "N/D"}% | Acessibilidade ${ps.acessibilidade ?? "N/D"}% com badges FORTE/MÉDIO/FRACO
+PÁGINA 3 — ÍNDICE EXECUTIVO
+- h2: "Conteúdo / Índice Executivo"
+- Grade 2 colunas com números de página (04 a 11) e títulos das seções
+- Card inferior com parágrafo contextual sobre ${lead.nome} e ${lead.categoria}
 
-${lead.website ? `PÁGINA 3-B — ANÁLISE DO SITE ATUAL (fundo branco, página extra obrigatória quando o lead TEM site)
-- Badge "ANÁLISE DE SITE" no topo
-- Título: "Raio-X Digital: ${lead.website}"
-- SEÇÃO 1 — PERFORMANCE TÉCNICA (dados reais do PageSpeed):
-  Tabela com 3 métricas: Performance ${ps.performance ?? "N/D"}% | SEO ${ps.seo ?? "N/D"}% | Acessibilidade ${ps.acessibilidade ?? "N/D"}%
-  Cada métrica com badge FORTE/MÉDIO/FRACO e breve explicação do impacto
-- SEÇÃO 2 — HEURÍSTICAS DE NIELSEN (10 heurísticas, avaliação visual em cards):
-  ${diag.heuristicasNielsen ? `Use os dados: ${JSON.stringify(diag.heuristicasNielsen)}` : `Avalie para o nicho ${lead.categoria}: Visibilidade do sistema, Correspondência com o mundo real, Controle do usuário, Consistência, Prevenção de erros, Reconhecimento, Flexibilidade, Design minimalista, Ajuda ao usuário, Documentação`}
-  Cada heurística: título + nota (Atende / Parcial / Falha) + 1 frase de diagnóstico específica
-- SEÇÃO 3 — IDENTIDADE VISUAL & UI:
-  ${diag.identidadeVisualUI ? `Use os dados: ${JSON.stringify(diag.identidadeVisualUI)}` : `Avalie os pontos típicos do nicho ${lead.categoria}: hierarquia tipográfica, paleta de cores, uso de espaço em branco, qualidade das imagens, consistência visual`}
-  Cards: Hierarquia Visual | Paleta & Marca | Tipografia | Imagens/Ícones | Mobile First
-  Cada card com avaliação Forte/Médio/Fraco + recomendação de melhoria específica
-- SEÇÃO 4 — ARQUITETURA DA INFORMAÇÃO:
-  ${diag.arquiteturaInformacao ? `Use os dados: ${JSON.stringify(diag.arquiteturaInformacao)}` : `Avalie: clareza do menu, hierarquia de CTAs, fluxo do usuário, facilidade de encontrar contato/WhatsApp`}
-  Diagrama simplificado (HTML/CSS) do fluxo atual vs fluxo ideal
-- SEÇÃO 5 — SÍNTESE DA AUDITORIA + COMO O NOVO SITE RESOLVE:
-  Tom: cada problema apontado deve ser seguido de "O novo site da ESCOM corrige isso com..." — a análise é um espelho das dores que o novo site vai sanar.
-  Tabela: Dor Identificada | Impacto no Negócio | Como o Novo Site Resolve
-  Mínimo 5 linhas. Seja específico — nunca genérico.
-  Caixa de destaque final: "Cada ponto desta auditoria já está no briefing do novo site que estamos desenvolvendo para ${lead.nome}."` : `(Lead sem site — não inclua esta página. Mencione na Página 3 que a AUSÊNCIA de site é a maior dor: clientes que pesquisam online não encontram ${lead.nome}, e o novo site da ESCOM resolve isso do zero.)`}
+PÁGINA 4 — DIAGNÓSTICO DO NEGÓCIO
+- h2: "Diagnóstico do Negócio: ${lead.nome} Frente ao Posicionamento de Mercado"
+- Parágrafo intro com dados reais (${lead.rating} estrelas, ${lead.reviews_count} avaliações, ${lead.cidade})
+- 3 cards:
+  1. "A Força Técnica" (ícone fa-medal, text-brand-primary) — pontos positivos reais
+  2. "O Gargalo do Canal Digital" (ícone fa-triangle-exclamation, text-red-600) — problemas identificados com PageSpeed ${ps.performance ?? "N/D"}%
+  3. "A Solução Proposta" (bg-emerald-50/40) — o que a ESCOM vai resolver
 
-DIRETRIZ GERAL DE TOM PARA TODA A ANÁLISE DO SITE:
-- A análise NÃO é um relatório neutro — é um espelho estratégico de dores
-- Cada falha identificada deve ser apresentada como: "isso custa clientes / vendas / credibilidade"
-- O leitor (dono do negócio) deve terminar de ler sentindo que PRECISA do novo site
-- Exemplos de framing: "Sem CTA visível na dobra, o visitante abandona antes de entrar em contato" → "O novo site coloca o botão de WhatsApp em evidência já nos primeiros 3 segundos"
-- Use linguagem direta de negócio, não jargão técnico
+${lead.website ? `PÁGINA 4-B — RAIO-X DO SITE ATUAL (página extra)
+- h2: "Raio-X Digital: ${lead.website}"
+- Tabela de métricas PageSpeed: Performance ${ps.performance ?? "N/D"}% | SEO ${ps.seo ?? "N/D"}% | Acessibilidade ${ps.acessibilidade ?? "N/D"}%
+  Cada métrica com badge FORTE/MÉDIO/FRACO baseado no valor (≥80 FORTE, 50-79 MÉDIO, <50 FRACO)
+- Cards de heurísticas UX para o nicho ${lead.categoria} (Atende / Parcial / Falha)
+- Tabela: "Dor Identificada | Impacto | Como o Novo Site Resolve" — mínimo 4 linhas específicas
+- Tom: cada problema = custo em clientes/vendas; solução ESCOM nomeada explicitamente` : `(Lead sem site: na Página 4, mencione que a AUSÊNCIA de site é o maior gargalo — clientes que pesquisam online não encontram ${lead.nome}.)`}
 
-PÁGINA 4 — PSICOGRAFIA & AVATARES (fundo #0a0a14)
-- Título branco: "Psicografia & Avatares de Compra"
+PÁGINA 5 — PSICOGRAFIA & AVATARES
+- h2: "Psicografia & Avatares de Compra"
 - Subtítulo: "Decodificação das dores do cliente de ${lead.categoria} em ${lead.cidade}"
-- 2 avatares de cliente (cards lado a lado) com: nome do perfil, dores principais, foco/argumento de venda
-- Tabela "Matriz de Neutralização de Objeções": coluna Objeção × coluna Resposta (3-4 linhas)
-- Baseie nos padrões do nicho ${lead.categoria}
+- Grid 2 colunas: Avatar A (bg-blue-50/40) + Avatar B (bg-purple-50/40), cada um com: ícone, nome do perfil, dores principais, foco/argumento
+- Matriz de Neutralização de Objeções: grid 3 colunas, 3 objeções típicas do nicho com respostas
 
-PÁGINA 5 — O CAMPO DE BATALHA (fundo branco)
-- Título: "O Campo de Batalha"
+PÁGINA 6 — O CAMPO DE BATALHA
+- h2: "O Campo de Batalha"
 - Subtítulo: "Mapeamento das forças e fraquezas dos concorrentes locais"
-- Para cada concorrente listado, um bloco com: número, nome em negrito, "Força:" e "Fraqueza:" em linhas
-- Se não houver dados de concorrentes reais, escreva 4 perfis genéricos do nicho ${lead.categoria}
-- Tabela comparativa ao final: Nome | Rating | Site | PageSpeed (use os dados reais disponíveis)
+- Grid 2×2 para 4 concorrentes (bg-zinc-50/50, border-zinc-200): nome em bold, Força em text-emerald-700, Fraqueza em text-red-600
+- 5º concorrente em largura total
+- Use os dados reais se disponíveis; se não, crie 5 perfis genéricos e realistas do nicho ${lead.categoria}
 
-PÁGINA 6 — LACUNAS & FILTRO DE COPY (fundo #0a0a14)
-- Título: "Lacunas & Filtro de Copy"
-- Bloco 1: "O Espaço Vazio de Mercado" — parágrafo sobre oportunidade identificada
-- Bloco 2: Tabela 2 colunas — "EVITAR TERMOS GASTOS" (esquerda, vermelho) × "SUBSTITUIR POR FATOS REAIS" (direita, verde)
-  Exemplos específicos para ${lead.categoria} em ${lead.cidade}
+PÁGINA 7 — LACUNAS & FILTRO DE COPY
+- h2: "Lacunas & Filtro de Copy"
+- Bloco "O Espaço Vazio de Mercado": parágrafo sobre oportunidade única para ${lead.nome}
+- Tabela 2 colunas: "EVITAR TERMOS GASTOS" (bg-red-50, text-red-700) × "SUBSTITUIR POR FATOS REAIS" (bg-emerald-50, text-emerald-700)
+  5-6 linhas específicas para ${lead.categoria} em ${lead.cidade}
 
-PÁGINA 7 — OS 6 PILARES DE VANTAGEM (fundo branco)
-- Título: "Os 6 Pilares de Vantagem da ${lead.nome}"
-- Subtítulo: "Como traduzir os diferenciais em argumentos simples e atraentes"
-- 6 cards em grade 2×3: número + título do pilar + descrição de 2-3 linhas
-- Baseie nos dados reais disponíveis e no que o nicho ${lead.categoria} valoriza
+PÁGINA 8 — OS 6 PILARES DE VANTAGEM
+- h2: "Os 6 Pilares de Vantagem da ${lead.nome}"
+- Grid 2×3 de cards (bg-zinc-50/40): número grande text-brand-primary + título bold + descrição 2 linhas
+- Específicos e baseados nos dados reais do nicho ${lead.categoria}
 
-PÁGINA 8 — ANATOMIA DA LP DE ALTO TICKET (fundo #0a0a14)
-- Título: "Anatomia da LP de Alto Ticket"
-- Subtítulo: "Estrutura de blocos para converter leads e desarmar objeções"
-- 4 blocos numerados descrevendo as seções da landing page ideal para ${lead.nome}:
-  1. Dobra Principal (Hero) — mensagem e proposta de valor
-  2. Bloco de Prova Social — avaliações, depoimentos
-  3. Provas Concretas — diferenciais técnicos/visuais
-  4. CTA Direto — WhatsApp, fricção zero
-- Caixa de destaque: "AÇÃO DIRETA SEM BARREIRAS"
+PÁGINA 9 — ANATOMIA DA LP DE ALTO TICKET
+- h2: "Anatomia da LP de Alto Ticket"
+- 4 blocos numerados (bg-zinc-50/40): seções da landing page ideal para ${lead.nome}
+  1. Dobra Principal (Hero) | 2. Prova Social | 3. Provas Concretas | 4. CTA Direto WhatsApp
+- Caixa de destaque final (bg-brand-primary/10 border-brand-primary): "AÇÃO DIRETA SEM BARREIRAS"
 
-PÁGINA 9 — ROI & VIABILIDADE FINANCEIRA (fundo branco)
-- Título: "ROI & Viabilidade Financeira"
-- 2 métricas em destaque: CAC estimado + LTV estimado para o nicho ${lead.categoria}
-- Tabela "SIMULAÇÃO PRÁTICA MENSAL ESTIMADA":
-  | INVESTIMENTO ADS | CONTATOS QUALIFICADOS | RECEITA ESTIMADA |
-  (valores baseados no ticket médio realista do nicho)
-- Nota de rodapé metodológica
+PÁGINA 10 — ROI & VIABILIDADE FINANCEIRA
+- h2: "ROI & Viabilidade Financeira"
+- 2 métricas em destaque (grid 2 colunas, bg-zinc-50): CAC estimado + LTV estimado para ${lead.categoria}
+- Tabela "SIMULAÇÃO PRÁTICA MENSAL ESTIMADA": Investimento Ads | Contatos Qualificados | Receita Estimada
+  Valores realistas para o ticket médio do nicho
 
-PÁGINA 10 — OCEANO AZUL & EXPANSÃO (fundo #0a0a14)
-- Título: "Oceano Azul & Expansão"
-- Subtítulo: "Como posicionar ${lead.nome} em categorias únicas onde a comparação de preço não existe"
-- 2 oportunidades estratégicas detalhadas (parágrafos de 4-6 linhas cada)
-- Específicas ao nicho ${lead.categoria} e à cidade ${lead.cidade}
-
-PÁGINA 11 — SÍNTESE FINAL (fundo #0a0a14, centralizada)
-- Citação central em destaque: frase de impacto sobre o que está em jogo para ${lead.nome}
+PÁGINA 11 — SÍNTESE FINAL
+- h2 centralizado: "Síntese Final"
+- Citação em destaque (text-2xl font-display italic text-brand-primary, centralizada, borda esquerda)
 - Parágrafo de CTA: "Agora que você conhece o diagnóstico completo, vamos conversar sobre como executar?"
-- Dados de contato ESCOM: es.comunicacao@outlook.com | WhatsApp: (13) 98106-2787
+- Dados ESCOM: es.comunicacao@outlook.com | WhatsApp (13) 98106-2787
 - Rodapé: "ESCOM STUDIO • BUSINESS INTELLIGENCE / Dossiê ${lead.nome} - Confidencial"
-
-═══════════════════════════════════════════
-DESIGN SYSTEM
-═══════════════════════════════════════════
-Cores:
-  --dark: #0a0a14 (fundo páginas escuras)
-  --light: #ffffff (fundo páginas claras)
-  --cyan: #00d1ff (destaque ESCOM, bordas, badges)
-  --cyan-dim: rgba(0,209,255,0.15)
-  --text-dark: #0a0a14
-  --text-light: #e8eaf0
-  --text-muted: #8892a4
-
-Fontes (Google Fonts):
-  - Playfair Display: títulos principais
-  - Plus Jakarta Sans: corpo, labels, tabelas
-
-Páginas A4:
-  .page { width: 210mm; min-height: 297mm; padding: 18mm 20mm; page-break-after: always; position: relative; overflow: hidden; }
-  .page-dark { background: #0a0a14; color: #e8eaf0; }
-  .page-light { background: #ffffff; color: #0a0a14; }
-
-Badge CONFIDENCIAL: pequeno, letras espaçadas, borda ciano, texto ciano, canto superior direito
-
-Badges de performance:
-  FORTE: bg #dcfce7 texto #166534 borda #16a34a
-  MÉDIO: bg #fef3c7 texto #92400e borda #f59e0b
-  FRACO: bg #fee2e2 texto #991b1b borda #ef4444
-
-@media print:
-  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .page { page-break-after: always; box-shadow: none; }
-  .no-print { display: none !important; }
-
-Botão de impressão (class="no-print"):
-  Fixo no canto superior direito da tela, fora das páginas
-  "⬇ Baixar PDF" → onclick="window.print()"
-  Estilo: bg #00d1ff, texto preto, padding 10px 20px, border-radius 4px
 
 ═══════════════════════════════════════════
 REGRAS ABSOLUTAS
 ═══════════════════════════════════════════
 1. Retorne APENAS o HTML completo começando com <!DOCTYPE html>
 2. Sem markdown, sem explicações fora do HTML
-3. Use APENAS dados fornecidos acima — PROIBIDO inventar nomes de concorrentes, ratings ou URLs
+3. Use APENAS dados fornecidos — PROIBIDO inventar nomes/ratings/URLs de concorrentes reais
 4. Toda copy deve nomear "${lead.nome}" e "${lead.categoria}" especificamente
-5. Elementos decorativos SVG inline nas capas/páginas escuras
-6. O HTML final deve ter NO MÍNIMO 11 <section class="page"> elementos — se os dados permitirem mais profundidade, expanda com páginas adicionais (sub-seções por concorrente, breakdown de ROI, cronograma de execução, mais avatares, análise de sazonalidade, etc.). Mais conteúdo relevante é sempre melhor.`;
+5. Use classes Tailwind para todo estilo — nunca style= inline (exceto background-image para fotos)
+6. O HTML final deve ter NO MÍNIMO 11 div.pdf-page
+7. A análise é um espelho de dores — cada problema = custo em clientes/vendas; a ESCOM é a solução`;
 
     // 4. Chama Groq para gerar o HTML
     let html = "";
@@ -3185,37 +3225,13 @@ REGRAS ABSOLUTAS
       if (raw.includes("<html") || raw.startsWith("<!DOCTYPE")) html = raw;
     }
 
-    if (!html) return res.status(503).send("<h1>Gemini indisponível. Tente novamente em instantes.</h1>");
+    if (!html) return res.status(503).send("<h1>Análise indisponível. Tente novamente em instantes.</h1>");
 
-    // 5. Geração de PDF (Prioridade total para entrega direta em .pdf)
-    const wantsHtml = req.query.html === "1";
     const leadSlug = (lead.nome || "lead").toLowerCase().replace(/[^a-z0-9]+/g, "-");
-    const filename = `analise-${leadSlug}.pdf`;
+    const filename = `dossie-${leadSlug}.pdf`;
 
-    if (!wantsHtml) {
-      // 5.1 Tenta Puppeteer local/servidor
-      try {
-        const puppeteer = await import("puppeteer");
-        const browser = await puppeteer.default.launch({
-          headless: true,
-          args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
-        });
-        const page = await browser.newPage();
-        await page.setContent(html, { waitUntil: "load", timeout: 25000 });
-        const pdfBuf = await page.pdf({
-          format: "A4",
-          printBackground: true,
-          margin: { top: "0", right: "0", bottom: "0", left: "0" },
-        });
-        await browser.close();
-        res.setHeader("Content-Type", "application/pdf");
-        res.setHeader("Content-Disposition", `inline; filename="${filename}"`);
-        return res.send(Buffer.from(pdfBuf));
-      } catch (pupErr: any) {
-        console.warn("[PDF] Puppeteer direto indisponível, tentando Browserless:", pupErr?.message);
-      }
-
-      // 5.2 Se Puppeteer local falhar (ex: Vercel serverless), tenta Browserless se houver token
+    // 5. Se ?pdf=1, gera via Browserless e serve como PDF inline
+    if (req.query.pdf === "1") {
       const blToken = process.env.BROWSERLESS_TOKEN;
       if (blToken) {
         try {
@@ -3226,7 +3242,7 @@ REGRAS ABSOLUTAS
               html,
               options: { printBackground: true, format: "A4", margin: { top: "0", right: "0", bottom: "0", left: "0" } },
               gotoOptions: { waitUntil: "networkidle0", timeout: 30000 },
-              waitFor: 1200,
+              waitFor: 1500,
             }),
           });
           if (blRes.ok) {
@@ -3241,82 +3257,18 @@ REGRAS ABSOLUTAS
       }
     }
 
-    // 5.3 Fallback resiliente: Entrega o documento com auto-execução de download em PDF
-    const autoPdfScript = `
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<style>
-.escom-pdf-banner {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 99999;
-  background: #0a0a14;
-  border-bottom: 1px solid #00d1ff;
-  color: #fff;
-  padding: 12px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-family: sans-serif;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.8);
-}
-.escom-pdf-btn {
-  background: #00d1ff;
-  color: #000;
-  font-weight: 700;
-  font-size: 13px;
-  padding: 8px 18px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.escom-pdf-btn:hover { background: #33dcff; }
-@media print { .no-print { display: none !important; } }
-</style>
-<div class="escom-pdf-banner no-print">
-  <div>
-    <span style="color:#00d1ff;font-weight:bold;margin-right:8px;">ESCOM BUSINESS INTELLIGENCE</span>
-    <span>Gerando PDF Analítico de <strong>${lead.nome}</strong>...</span>
-  </div>
-  <div style="display:flex;gap:10px;">
-    <button class="escom-pdf-btn" onclick="baixarPdfDireto()">⬇ Baixar PDF</button>
-    <button class="escom-pdf-btn" style="background:#fff;" onclick="window.print()">🖨 Imprimir</button>
-  </div>
-</div>
-<script>
-function baixarPdfDireto() {
-  const el = document.body;
-  const opt = {
-    margin: 0,
-    filename: '${filename}',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 1.5, useCORS: true, logging: false },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
-  html2pdf().set(opt).from(el).save();
-}
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    baixarPdfDireto();
-  }, 800);
-});
-</script>`;
-    const htmlComBotao = html.includes("</body>")
-      ? html.replace("</body>", autoPdfScript + "</body>")
-      : html + autoPdfScript;
-
-    // Salva no Supabase para servir do cache nas próximas requisições
+    // 6. Salva no Supabase (cache) e serve HTML com botão de impressão
     try {
       await sbFetch(`/leads?id=eq.${encodeURIComponent(req.params.leadId)}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
-        body: JSON.stringify({ analise_html: htmlComBotao }),
+        body: JSON.stringify({ analise_html: html }),
       });
     } catch {}
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
-    res.send(htmlComBotao);
+    res.setHeader("X-Robots-Tag", "noindex, nofollow");
+    res.send(html);
   } catch(e: any) { res.status(500).send("<h1>Erro: " + e.message + "</h1>"); }
 });
 
@@ -3547,6 +3499,30 @@ app.post("/api/mp-webhook", async (req, res) => {
     }
   } catch(e: any) {
     console.error("[MP-WEBHOOK] Erro:", e.message);
+  }
+});
+
+// ENDPOINT: Geração de Logos Profissionais (logo-design-skill)
+app.post("/api/gerar-logo", async (req, res) => {
+  try {
+    const { brandName, segment, vibe, colorPreferences, markTypes, customNotes } = req.body || {};
+    if (!brandName || typeof brandName !== "string" || !brandName.trim()) {
+      return res.status(400).json({ error: "O nome da marca é obrigatório." });
+    }
+
+    const concepts = await generateLogoConcepts({
+      brandName: brandName.trim(),
+      segment: typeof segment === "string" ? segment : undefined,
+      vibe: typeof vibe === "string" ? vibe : undefined,
+      colorPreferences: typeof colorPreferences === "string" ? colorPreferences : undefined,
+      markTypes: Array.isArray(markTypes) ? markTypes : undefined,
+      customNotes: typeof customNotes === "string" ? customNotes : undefined,
+    });
+
+    return res.json({ success: true, concepts });
+  } catch (err: any) {
+    console.error("[API /api/gerar-logo] Erro:", err);
+    return res.status(500).json({ error: "Falha ao gerar conceitos de logo", details: err?.message });
   }
 });
 
