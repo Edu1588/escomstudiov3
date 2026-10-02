@@ -70,6 +70,26 @@ const COLOR_PALETTES = [
   { name: "Deep Cobalt", val: "Azul Cobalto Real (#2563EB) e Platina (#F8FAFC)" }
 ];
 
+function cleanSvgForDisplay(rawSvg: string, mode: "dark" | "light" | "monoBlack" | "monoWhite" = "dark"): string {
+  if (!rawSvg) return "";
+  let s = rawSvg.trim();
+  s = s.replace(/\\"/g, '"').replace(/\\n/g, ' ').replace(/\\t/g, ' ');
+  const match = s.match(/<svg[\s\S]*<\/svg>/i);
+  if (match) s = match[0];
+  
+  s = s.replace(/\s+viewBox="[^"]*"/gi, '');
+  s = s.replace(/\s+width="[^"]*"/gi, '');
+  s = s.replace(/\s+height="[^"]*"/gi, '');
+  s = s.replace(/<svg\b([^>]*)>/i, '<svg$1 viewBox="0 0 512 512" width="100%" height="100%" style="width:100%;height:100%;display:block;">');
+
+  if (mode === "dark" || mode === "monoWhite") {
+    // Garante que o desenho seja luminoso sobre o fundo preto/escuro
+    s = s.replace(/(fill|stroke|stop-color)="(#0[0-9a-fA-F]{5}|#000|#1[0-9a-fA-F]{5}|black)"/gi, '$1="#f59e0b"');
+  }
+
+  return s;
+}
+
 export default function LogoCreator() {
   const [brandName, setBrandName] = useState("");
   const [segment, setSegment] = useState("Tecnologia & SaaS");
@@ -536,11 +556,15 @@ export default function LogoCreator() {
                           </span>
                         </div>
 
-                        {/* Visualizador do SVG */}
-                        <div className="p-8 flex items-center justify-center min-h-[260px] relative overflow-hidden">
+                        {/* Visualizador do SVG com prancheta de alto contraste */}
+                        <div className={`p-6 flex items-center justify-center min-h-[260px] relative overflow-hidden transition-colors ${
+                          bgMode === "light" || bgMode === "monoBlack" 
+                            ? "bg-zinc-100" 
+                            : "bg-[#0b0b10] bg-[radial-gradient(#ffffff15_1px,transparent_1px)] [background-size:16px_16px]"
+                        }`}>
                           <div 
-                            className="w-48 h-48 transition-transform group-hover:scale-105 duration-300 drop-shadow-md"
-                            dangerouslySetInnerHTML={{ __html: renderedSvg }} 
+                            className="w-44 h-44 sm:w-48 sm:h-48 flex items-center justify-center transition-transform group-hover:scale-105 duration-300 drop-shadow-xl [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-full [&>svg]:max-h-full"
+                            dangerouslySetInnerHTML={{ __html: cleanSvgForDisplay(renderedSvg, bgMode) }} 
                           />
                         </div>
 
@@ -667,14 +691,21 @@ export default function LogoCreator() {
 
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Visualização Central */}
-                    <div className="lg:col-span-1 border border-white/10 p-6 flex flex-col items-center justify-center min-h-[320px] bg-black/50">
+                    <div className={`lg:col-span-1 border border-white/10 p-6 flex flex-col items-center justify-center min-h-[320px] rounded-xl transition-colors ${
+                      bgMode === "light" || bgMode === "monoBlack" 
+                        ? "bg-white text-black" 
+                        : "bg-[#0b0b10] bg-[radial-gradient(#ffffff15_1px,transparent_1px)] [background-size:20px_20px]"
+                    }`}>
                       <div 
-                        className="w-56 h-56 drop-shadow-2xl"
+                        className="w-56 h-56 flex items-center justify-center drop-shadow-2xl [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-full [&>svg]:max-h-full"
                         dangerouslySetInnerHTML={{ 
-                          __html: bgMode === "monoBlack" ? activeConcept.monoBlackSvg : bgMode === "monoWhite" ? activeConcept.monoWhiteSvg : activeConcept.svg 
+                          __html: cleanSvgForDisplay(
+                            bgMode === "monoBlack" ? activeConcept.monoBlackSvg : bgMode === "monoWhite" ? activeConcept.monoWhiteSvg : activeConcept.svg,
+                            bgMode
+                          )
                         }} 
                       />
-                      <span className="font-mono text-[10px] uppercase text-white/30 mt-4 tracking-widest">
+                      <span className="font-mono text-[10px] uppercase text-white/40 mt-4 tracking-widest">
                         {bgMode === "dark" ? "Visualização Padrão (Dark)" : bgMode}
                       </span>
                     </div>
@@ -762,8 +793,8 @@ export default function LogoCreator() {
                     <div className="border border-white/10 bg-[#121217] p-4 flex flex-col items-center justify-between min-h-[220px]">
                       <span className="font-mono text-[11px] text-white/50 uppercase">128 × 128 px (App Icon)</span>
                       <div 
-                        className="w-32 h-32"
-                        dangerouslySetInnerHTML={{ __html: bgMode === "monoBlack" ? activeConcept.monoBlackSvg : bgMode === "monoWhite" ? activeConcept.monoWhiteSvg : activeConcept.svg }}
+                        className="w-32 h-32 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full drop-shadow-md"
+                        dangerouslySetInnerHTML={{ __html: cleanSvgForDisplay(bgMode === "monoBlack" ? activeConcept.monoBlackSvg : bgMode === "monoWhite" ? activeConcept.monoWhiteSvg : activeConcept.svg, bgMode) }}
                       />
                       <button
                         type="button"
@@ -778,8 +809,8 @@ export default function LogoCreator() {
                     <div className="border border-white/10 bg-[#121217] p-4 flex flex-col items-center justify-between min-h-[220px]">
                       <span className="font-mono text-[11px] text-white/50 uppercase">64 × 64 px (Touch Icon)</span>
                       <div 
-                        className="w-16 h-16"
-                        dangerouslySetInnerHTML={{ __html: bgMode === "monoBlack" ? activeConcept.monoBlackSvg : bgMode === "monoWhite" ? activeConcept.monoWhiteSvg : activeConcept.svg }}
+                        className="w-16 h-16 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full drop-shadow-md"
+                        dangerouslySetInnerHTML={{ __html: cleanSvgForDisplay(bgMode === "monoBlack" ? activeConcept.monoBlackSvg : bgMode === "monoWhite" ? activeConcept.monoWhiteSvg : activeConcept.svg, bgMode) }}
                       />
                       <button
                         type="button"
@@ -794,8 +825,8 @@ export default function LogoCreator() {
                     <div className="border border-white/10 bg-[#121217] p-4 flex flex-col items-center justify-between min-h-[220px]">
                       <span className="font-mono text-[11px] text-white/50 uppercase">32 × 32 px (Favicon Retina)</span>
                       <div 
-                        className="w-8 h-8"
-                        dangerouslySetInnerHTML={{ __html: bgMode === "monoBlack" ? activeConcept.monoBlackSvg : bgMode === "monoWhite" ? activeConcept.monoWhiteSvg : activeConcept.svg }}
+                        className="w-8 h-8 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full drop-shadow-md"
+                        dangerouslySetInnerHTML={{ __html: cleanSvgForDisplay(bgMode === "monoBlack" ? activeConcept.monoBlackSvg : bgMode === "monoWhite" ? activeConcept.monoWhiteSvg : activeConcept.svg, bgMode) }}
                       />
                       <button
                         type="button"
@@ -811,8 +842,8 @@ export default function LogoCreator() {
                       <span className="font-mono text-[11px] text-amber-400 uppercase">16 × 16 px (Browser Tab)</span>
                       <div className="p-3 bg-black/60 border border-white/10 flex items-center justify-center">
                         <div 
-                          className="w-4 h-4"
-                          dangerouslySetInnerHTML={{ __html: bgMode === "monoBlack" ? activeConcept.monoBlackSvg : bgMode === "monoWhite" ? activeConcept.monoWhiteSvg : activeConcept.svg }}
+                          className="w-4 h-4 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full"
+                          dangerouslySetInnerHTML={{ __html: cleanSvgForDisplay(bgMode === "monoBlack" ? activeConcept.monoBlackSvg : bgMode === "monoWhite" ? activeConcept.monoWhiteSvg : activeConcept.svg, bgMode) }}
                         />
                       </div>
                       <button
@@ -832,8 +863,8 @@ export default function LogoCreator() {
                     </span>
                     <div className="flex items-center gap-2 max-w-sm bg-[#09090b] px-3 py-2 border-t-2 border-cyan rounded-t">
                       <div 
-                        className="w-4 h-4 shrink-0"
-                        dangerouslySetInnerHTML={{ __html: activeConcept.svg }}
+                        className="w-4 h-4 shrink-0 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full"
+                        dangerouslySetInnerHTML={{ __html: cleanSvgForDisplay(activeConcept.svg, "dark") }}
                       />
                       <span className="font-sans text-xs text-white truncate font-medium">
                         {brandName} — Plataforma Oficial
@@ -860,8 +891,8 @@ export default function LogoCreator() {
                       <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
                       <div className="flex items-center justify-between">
                         <div 
-                          className="w-12 h-12"
-                          dangerouslySetInnerHTML={{ __html: activeConcept.svg }}
+                          className="w-12 h-12 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full"
+                          dangerouslySetInnerHTML={{ __html: cleanSvgForDisplay(activeConcept.svg, "dark") }}
                         />
                         <span className="font-mono text-[9px] uppercase tracking-widest text-white/30">Executive Pass</span>
                       </div>
@@ -883,8 +914,8 @@ export default function LogoCreator() {
                       <div className="w-24 h-24 rounded-[22px] bg-gradient-to-b from-[#181822] to-[#0a0a0f] border border-white/20 shadow-2xl p-4 flex items-center justify-center relative overflow-hidden group">
                         <div className="absolute inset-0 bg-gradient-to-tr from-cyan/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         <div 
-                          className="w-16 h-16 drop-shadow-lg"
-                          dangerouslySetInnerHTML={{ __html: activeConcept.svg }}
+                          className="w-16 h-16 drop-shadow-lg flex items-center justify-center [&>svg]:w-full [&>svg]:h-full"
+                          dangerouslySetInnerHTML={{ __html: cleanSvgForDisplay(activeConcept.svg, "dark") }}
                         />
                       </div>
                       <span className="font-sans text-xs text-white/80 mt-3 font-medium">{brandName}</span>
@@ -902,8 +933,8 @@ export default function LogoCreator() {
                       <div className="w-full bg-[#09090b] border border-white/10 px-4 py-3 flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
                           <div 
-                            className="w-7 h-7"
-                            dangerouslySetInnerHTML={{ __html: activeConcept.svg }}
+                            className="w-7 h-7 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full"
+                            dangerouslySetInnerHTML={{ __html: cleanSvgForDisplay(activeConcept.svg, "dark") }}
                           />
                           <span className="font-serif text-sm font-semibold text-white tracking-tight">{brandName}</span>
                         </div>
@@ -920,6 +951,7 @@ export default function LogoCreator() {
                       </div>
                     </div>
                   </div>
+
 
                 </div>
               </div>

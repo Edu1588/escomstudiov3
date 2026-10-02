@@ -48,6 +48,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 export async function ensureAuth() { /* Firebase removido — usando somente Supabase */ }
 
@@ -1036,16 +1037,23 @@ app.post("/api/gerar-proposta", async (req, res) => {
       })
     });
     const data = await resp.json().catch(() => ({}));
+    console.log("[gerar-proposta] resposta N8N keys:", Object.keys(data).join(", "));
 
-    // Se N8N retornou siteUrl, persiste no Supabase para o link aparecer ao recarregar
+    // Se N8N retornou siteUrl E/OU siteHtml, persiste no Supabase
     const siteUrl = data.siteUrl || data.propostaUrl || data.url || "";
-    if (siteUrl && resp.ok) {
+    const siteHtml = data.siteHtml || data.htmlContent || data.html || data.indexHtml || "";
+    if (resp.ok) {
       try {
-        await sbFetch(`/leads?id=eq.${encodeURIComponent(leadId)}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
-          body: JSON.stringify({ site_gerado: siteUrl }),
-        });
+        const patch: any = {};
+        if (siteUrl) patch.site_gerado = siteUrl;
+        if (siteHtml) patch.site_html = siteHtml;
+        if (Object.keys(patch).length > 0) {
+          await sbFetch(`/leads?id=eq.${encodeURIComponent(leadId)}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
+            body: JSON.stringify(patch),
+          });
+        }
       } catch {}
     }
 
@@ -1149,9 +1157,15 @@ app.get("/api/ver-proposta/:leadId", async (req, res) => {
 // Recebe HTML do N8N e salva em Supabase (substitui o salvamento no Firebase propostas)
 app.post("/api/salvar-proposta", async (req, res) => {
   try {
-    const { leadId, slug, siteHtml, indexHtml, relatorioHtml } = req.body;
+    const body = req.body;
+    console.log("[salvar-proposta] campos recebidos:", Object.keys(body).join(", "));
+    const leadId = body.leadId || body.lead_id;
     if (!leadId) return res.status(400).json({ error: "leadId obrigatorio" });
-    const html = siteHtml || indexHtml || "";
+    // Aceita qualquer variante de nome de campo que o N8N possa enviar
+    const html = body.siteHtml || body.indexHtml || body.html || body.htmlContent || body.site_html || body.siteHTML || "";
+    const slug = body.slug || body.site_slug || body.siteSlug || "";
+    const relatorioHtml = body.relatorioHtml || body.analiseHtml || body.analise_html || "";
+    console.log(`[salvar-proposta] leadId=${leadId} slug=${slug} html=${html ? html.length + " chars" : "vazio"}`);
     const baseUrl = "https://www.escomstudio.com.br";
     const siteUrl = `${baseUrl}/proposta/${leadId}`;
     const patch: any = { site_gerado: siteUrl };
@@ -1163,7 +1177,7 @@ app.post("/api/salvar-proposta", async (req, res) => {
       headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
       body: JSON.stringify(patch),
     });
-    res.json({ ok: true, siteUrl });
+    res.json({ ok: true, siteUrl, savedHtml: !!html });
   } catch(e: any) { res.status(500).json({ error: e.message }); }
 });
 
@@ -3697,11 +3711,43 @@ function generateDeterministicConcepts(brandName: string, segment: string, vibe:
   ];
 }
 
+function normalizeSvgOutput(rawSvg: string, targetVariant: "color" | "monoBlack" | "monoWhite" = "color"): string {
+  let s = (rawSvg || "").trim();
+  // Limpa caracteres escapados
+  s = s.replace(/\\"/g, '"').replace(/\\n/g, ' ').replace(/\\t/g, ' ');
+  const match = s.match(/<svg[\s\S]*<\/svg>/i);
+  if (match) s = match[0];
+
+  // Remove qualquer viewBox, width ou height duplicados ou quebrados
+  s = s.replace(/\s+viewBox="[^"]*"/gi, '');
+  s = s.replace(/\s+width="[^"]*"/gi, '');
+  s = s.replace(/\s+height="[^"]*"/gi, '');
+
+  // Injeta atributos SVG padronizados e responsivos
+  s = s.replace(/<svg\b([^>]*)>/i, '<svg$1 viewBox="0 0 512 512" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">');
+
+  if (targetVariant === "monoBlack") {
+    s = s.replace(/fill="(?!none)[^"]*"/gi, 'fill="#000000"')
+         .replace(/stroke="(?!none)[^"]*"/gi, 'stroke="#000000"');
+    s = s.replace(/<defs[\s\S]*?<\/defs>/gi, '');
+  } else if (targetVariant === "monoWhite") {
+    s = s.replace(/fill="(?!none)[^"]*"/gi, 'fill="#ffffff"')
+         .replace(/stroke="(?!none)[^"]*"/gi, 'stroke="#ffffff"');
+    s = s.replace(/<defs[\s\S]*?<\/defs>/gi, '');
+  } else {
+    // Modo colorido: se o modelo usou preto ou quase preto (#000, #0a0a0a, #111) nos elementos de desenho,
+    // substitui por cor visível contrastante (#f59e0b ou #ffffff) para garantir visibilidade no fundo dark
+    s = s.replace(/(fill|stroke|stop-color)="(#0[0-9a-fA-F]{5}|#000|#1[0-9a-fA-F]{5}|black)"/gi, '$1="#f59e0b"');
+  }
+
+  return s;
+}
+
 async function generateLogoConceptsInternal(params: GenerateLogoParams): Promise<LogoConcept[]> {
   const brandName = params.brandName.trim();
   const segment = params.segment?.trim() || "Geral / Corporativo";
   const vibe = params.vibe?.trim() || "Minimalista, Moderno, Sofisticado e Tecnológico";
-  const colorPref = params.colorPreferences?.trim() || "Cores modernas de alto contraste (ex: Preto Profundo, Dourado Nobre ou Azul Elétrico)";
+  const colorPref = params.colorPreferences?.trim() || "Cores luminosas e modernas (ex: Âmbar Dourado #F59E0B, Ciano #00D1FF ou Branco #FFFFFF)";
   const customNotes = params.customNotes?.trim() || "";
   const banRules = getIndustryBanRules(segment);
 
@@ -3720,13 +3766,16 @@ DIRETRIZES FUNDAMENTAIS DO LOGO-DESIGN-SKILL:
 1. "A logo is an identifier, not an explanation."
 2. FILTRO ANTI-CLICHÊ DA CATEGORIA:
    ${banRules}
-3. REGRAS DE CONSTRUÇÃO DE SVG:
+3. REGRAS CRÍTICAS DE CONSTRUÇÃO DE SVG E VISIBILIDADE:
+   - A prancheta onde o logotipo será apresentado é ESCURA / PRETO PROFUNDO (#000000 / #09090b).
+   - PORTANTO, TODAS AS CORES DO SVG PRINCIPAL DEVEM SER LUMINOSAS, CLARAS E DE ALTO CONTRASTE (por exemplo: Dourado #F59E0B, Ciano Neon #00D1FF, Branco Puro #FFFFFF, Esmeralda #10B981, Azul Cobalto #38BDF8).
+   - PROIBIDO usar preto (#000000, #0a0a0a, #111111) como cor de preenchimento ou traço principal no 'svg' padrão, pois ele ficará totalmente invisível sobre o fundo escuro!
    - viewBox estrito: "0 0 512 512"
    - SVG puro e autocontido (com tags <path>, <circle>, <rect>, <polygon>, etc.).
    - NÃO use tags de texto cru <text> no símbolo principal (desenhe as formas e monogramas com geometria vetorial de paths).
    - Use preenchimentos sólidos elegantes, gradientes sutis modernos ou negative-space inteligente (fill-rule="evenodd").
    - Padding e respiro: a geometria deve estar centralizada e ocupar cerca de 60% a 75% da área útil (aproximadamente entre x: 64 e x: 448, y: 64 e y: 448) para não sangrar nas bordas.
-   - Forneça também as versões monocromáticas puras 'monoBlackSvg' (apenas preenchimento preto #000000 em fundo transparente) e 'monoWhiteSvg' (apenas preenchimento branco #ffffff em fundo transparente) do MESMO desenho exato para teste de contraste em 16px e aplicações de impressão.
+   - Forneça também as versões monocromáticas puras 'monoBlackSvg' (apenas preenchimento preto #000000 em fundo transparente para impressão em papel branco) e 'monoWhiteSvg' (apenas preenchimento branco puro #ffffff em fundo transparente para aplicação em fundos pretos) do MESMO desenho exato.
 
 OS 3 CONCEITOS DEVEM SER DISTINTOS:
 - CONCEITO 1: "Monograma Geométrico" (Lettermark) — Focado na inicial ou monograma de "${brandName}", com cortes ópticos, geometria precisa, proporção áurea e elegância minimalista.
@@ -3826,23 +3875,9 @@ RETORNE EXCLUSIVAMENTE UM OBJETO JSON VÁLIDO no seguinte formato (sem markdown 
 
       if (rawConcepts.length >= 1) {
         const concepts: LogoConcept[] = rawConcepts.map((c: any, idx: number) => {
-          let svg = (c.svg || "").trim();
-          if (!svg.startsWith("<svg")) {
-            const match = svg.match(/<svg[\s\S]*<\/svg>/i);
-            if (match) svg = match[0];
-          }
-          if (!svg.includes('viewBox="0 0 512 512"')) {
-            svg = svg.replace(/<svg\b([^>]*)>/i, '<svg$1 viewBox="0 0 512 512">');
-          }
-
-          let monoBlack = (c.monoBlackSvg || "").trim();
-          let monoWhite = (c.monoWhiteSvg || "").trim();
-          if (!monoBlack || !monoBlack.includes("<svg")) {
-            monoBlack = svg.replace(/fill="[^"]*"/gi, 'fill="#000000"').replace(/stroke="[^"]*"/gi, 'stroke="#000000"');
-          }
-          if (!monoWhite || !monoWhite.includes("<svg")) {
-            monoWhite = svg.replace(/fill="[^"]*"/gi, 'fill="#ffffff"').replace(/stroke="[^"]*"/gi, 'stroke="#ffffff"');
-          }
+          const svg = normalizeSvgOutput(c.svg || "", "color");
+          const monoBlack = normalizeSvgOutput(c.monoBlackSvg || c.svg || "", "monoBlack");
+          const monoWhite = normalizeSvgOutput(c.monoWhiteSvg || c.svg || "", "monoWhite");
 
           return {
             id: c.id || `concept-${idx + 1}`,
@@ -3854,9 +3889,9 @@ RETORNE EXCLUSIVAMENTE UM OBJETO JSON VÁLIDO no seguinte formato (sem markdown 
             monoBlackSvg: monoBlack,
             monoWhiteSvg: monoWhite,
             colors: Array.isArray(c.colors) && c.colors.length > 0 ? c.colors : [
-              { name: "Obsidian Black", hex: "#0a0a0f", role: "Base de Contraste" },
-              { name: "Cyan Lumina", hex: "#06b6d4", role: "Acento Primário" },
-              { name: "Platinum White", hex: "#f8fafc", role: "Equilíbrio Neutro" }
+              { name: "Cyan Lumina", hex: "#06b6d4", role: "Vetor Primário" },
+              { name: "Cyber Amber", hex: "#f59e0b", role: "Acento Secundário" },
+              { name: "Pure White", hex: "#ffffff", role: "Contraste Central" }
             ],
             typographyRecommendation: c.typographyRecommendation || "Syne Bold / Space Grotesk",
             auditScore: typeof c.auditScore === "number" ? c.auditScore : 95,
@@ -3872,6 +3907,7 @@ RETORNE EXCLUSIVAMENTE UM OBJETO JSON VÁLIDO no seguinte formato (sem markdown 
       console.warn("[LogoGenerator] Erro no parse JSON do LLM:", e.message);
     }
   }
+
 
   return generateDeterministicConcepts(brandName, segment, vibe);
 }
