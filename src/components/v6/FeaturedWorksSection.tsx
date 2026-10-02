@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowUpRight, X, ArrowRight, Bookmark } from "lucide-react";
+import { X, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/components/v6/LanguageContext";
 import { InteractiveBlurTitle } from "@/components/v6/InteractiveBlurTitle";
 import { getPortfolioProjects, PortfolioProject } from "@/firebase";
@@ -21,8 +21,6 @@ export interface DisplayProject {
 
 interface FeaturedProjectCardProps {
   project: DisplayProject;
-  isSaved: boolean;
-  onToggleBookmark: (id: string | number, e: React.MouseEvent) => void;
   onSelect: (project: DisplayProject) => void;
 }
 
@@ -35,8 +33,6 @@ function getInitials(name: string): string {
 
 function FeaturedProjectCard({
   project,
-  isSaved,
-  onToggleBookmark,
   onSelect,
 }: FeaturedProjectCardProps) {
   const videoRef = React.useRef<HTMLVideoElement | null>(null);
@@ -105,31 +101,13 @@ function FeaturedProjectCard({
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
 
         {/* Textos no canto inferior esquerdo sobre a imagem */}
-        <div className="absolute bottom-3.5 left-4 right-14 pointer-events-none">
+        <div className="absolute bottom-3.5 left-4 right-4 pointer-events-none">
           <span className="block text-[9px] sm:text-[10px] tracking-[0.16em] uppercase font-mono text-cyan font-bold mb-0.5 opacity-90 drop-shadow">
             {project.tagType}
           </span>
           <h3 className="text-white text-sm sm:text-base font-medium tracking-tight leading-snug line-clamp-1 drop-shadow-md">
             {project.title}
           </h3>
-        </div>
-
-        {/* Botões no canto inferior direito sobre a imagem (Seta ↗ e Bookmark) */}
-        <div className="absolute bottom-3.5 right-3.5 flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={(e) => onToggleBookmark(project.id, e)}
-            className="size-7 sm:size-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-white/70 hover:text-cyan hover:border-cyan/60 hover:scale-105 transition-all"
-            title="Salvar projeto"
-          >
-            <Bookmark
-              className={`size-3.5 ${isSaved ? "fill-cyan text-cyan" : ""}`}
-            />
-          </button>
-
-          <div className="size-7 sm:size-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-white/80 group-hover:text-cyan group-hover:border-cyan/60 group-hover:scale-110 transition-all duration-300 shadow-sm">
-            <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </div>
         </div>
       </div>
 
@@ -205,7 +183,6 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
 
   const [activeCategory, setActiveCategory] = useState<string>("ALL");
   const [selectedProject, setSelectedProject] = useState<DisplayProject | null>(null);
-  const [savedProjects, setSavedProjects] = useState<Record<string | number, boolean>>({});
   const [videoErrors, setVideoErrors] = useState<Record<string | number, boolean>>({});
   const [lightboxVideoError, setLightboxVideoError] = useState<boolean>(false);
 
@@ -336,11 +313,6 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const toggleBookmark = (id: string | number, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSavedProjects((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
   return (
     <section
       id="trabalhos"
@@ -407,8 +379,6 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
           <FeaturedProjectCard
             key={project.id}
             project={project}
-            isSaved={Boolean(savedProjects[project.id])}
-            onToggleBookmark={toggleBookmark}
             onSelect={setSelectedProject}
           />
         ))}
@@ -502,18 +472,6 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
               </div>
 
               <div className="flex items-center gap-3 self-start md:self-auto shrink-0">
-                {selectedProject.link && (
-                  <a
-                    href={selectedProject.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-4 py-2.5 font-mono text-xs uppercase tracking-wider transition-all"
-                  >
-                    <span>Ver site ao vivo</span>
-                    <ArrowUpRight className="size-3.5" />
-                  </a>
-                )}
-
                 <a
                   href="#diagnostico"
                   onClick={() => setSelectedProject(null)}
