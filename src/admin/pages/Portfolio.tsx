@@ -118,7 +118,7 @@ function AdminProjectCard({
             {projeto.category}
           </span>
           <h4 className="text-white font-medium text-sm line-clamp-1">
-            {projeto.client} — {projeto.title}
+            {projeto.title}
           </h4>
         </div>
       </div>

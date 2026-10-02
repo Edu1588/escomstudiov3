@@ -1108,7 +1108,23 @@ app.get("/proposta-:slug", async (req, res) => {
   }
 });
 
-// Serve site gerado por leadId (novo padrão — sem slug)
+// Serve site gerado por leadId — rota limpa sem /api/
+app.get("/proposta/:leadId", async (req, res) => {
+  try {
+    const rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(req.params.leadId)}&select=site_html,nome&limit=1`).catch(() => []);
+    if (!rows || rows.length === 0 || !rows[0].site_html) {
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      return res.status(404).send(PAGINA_PROPOSTA_NAO_ENCONTRADA);
+    }
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.setHeader("X-Robots-Tag", "noindex, nofollow");
+    res.status(200).send(rows[0].site_html);
+  } catch (e) {
+    res.status(500).send("Erro ao carregar a proposta");
+  }
+});
+
+// Alias legado /api/ver-proposta/:leadId → redireciona para /proposta/:leadId
 app.get("/api/ver-proposta/:leadId", async (req, res) => {
   try {
     const rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(req.params.leadId)}&select=site_html,nome&limit=1`).catch(() => []);
@@ -1131,7 +1147,7 @@ app.post("/api/salvar-proposta", async (req, res) => {
     if (!leadId) return res.status(400).json({ error: "leadId obrigatorio" });
     const html = siteHtml || indexHtml || "";
     const baseUrl = "https://www.escomstudio.com.br";
-    const siteUrl = `${baseUrl}/api/ver-proposta/${leadId}`;
+    const siteUrl = `${baseUrl}/proposta/${leadId}`;
     const patch: any = { site_gerado: siteUrl };
     if (html) patch.site_html = html;
     if (slug) patch.site_slug = slug;
@@ -2920,6 +2936,13 @@ app.get("/api/gerar-analise/:leadId", async (req, res) => {
     const rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(req.params.leadId)}&select=*&limit=1`);
     if (!rows || rows.length === 0) return res.status(404).send("<h1>Lead não encontrado</h1>");
     const lead = rows[0];
+
+    // 1b. Se análise já foi gerada e não está pedindo PDF, serve o cache
+    if (lead.analise_html && !req.query.pdf && !req.query.regenerar) {
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("X-Robots-Tag", "noindex, nofollow");
+      return res.status(200).send(lead.analise_html);
+    }
     const diag = lead.diagnostico || {};
     const ps = diag.pagespeed || {};
 
@@ -3282,6 +3305,15 @@ window.addEventListener('load', () => {
     const htmlComBotao = html.includes("</body>")
       ? html.replace("</body>", autoPdfScript + "</body>")
       : html + autoPdfScript;
+
+    // Salva no Supabase para servir do cache nas próximas requisições
+    try {
+      await sbFetch(`/leads?id=eq.${encodeURIComponent(req.params.leadId)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
+        body: JSON.stringify({ analise_html: htmlComBotao }),
+      });
+    } catch {}
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.send(htmlComBotao);

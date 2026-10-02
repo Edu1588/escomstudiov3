@@ -48,6 +48,7 @@
     { "source": "/:slug(proposta-escom-[a-zA-Z0-9-]+)", "destination": "/baseproposta" },
     { "source": "/:slug(proposta-[a-zA-Z0-9-]+)", "destination": "/api" },
     { "source": "/template-silva-autocenter/silva-autocenter.pdf", "destination": "/template-silva-autocenter/dossie" },
+    { "source": "/proposta/:leadId", "destination": "/api" },
     { "source": "/api/:path*", "destination": "/api" },
     { "source": "/admin/(.*)", "destination": "/admin" },
     { "source": "/sobre", "destination": "/sobre/index.html" },

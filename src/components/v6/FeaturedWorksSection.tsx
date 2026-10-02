@@ -26,6 +26,13 @@ interface FeaturedProjectCardProps {
   onSelect: (project: DisplayProject) => void;
 }
 
+function getInitials(name: string): string {
+  if (!name) return "ES";
+  const words = name.trim().split(/\s+/);
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[1][0]).toUpperCase();
+}
+
 function FeaturedProjectCard({
   project,
   isSaved,
@@ -99,11 +106,11 @@ function FeaturedProjectCard({
 
         {/* Textos no canto inferior esquerdo sobre a imagem */}
         <div className="absolute bottom-3.5 left-4 right-14 pointer-events-none">
-          <span className="block text-[9px] sm:text-[10px] tracking-[0.16em] uppercase font-mono text-zinc-300 font-semibold mb-0.5 opacity-90 drop-shadow">
+          <span className="block text-[9px] sm:text-[10px] tracking-[0.16em] uppercase font-mono text-cyan font-bold mb-0.5 opacity-90 drop-shadow">
             {project.tagType}
           </span>
           <h3 className="text-white text-sm sm:text-base font-medium tracking-tight leading-snug line-clamp-1 drop-shadow-md">
-            {project.client} — {project.title}
+            {project.title}
           </h3>
         </div>
 
@@ -126,21 +133,21 @@ function FeaturedProjectCard({
         </div>
       </div>
 
-      {/* BARRA DE AUTOR / CRÉDITOS & BADGES ABAIXO DA IMAGEM */}
+      {/* BARRA DE IDENTIFICAÇÃO DO PROJETO & BADGES ABAIXO DA IMAGEM */}
       <div className="mt-3 flex items-center justify-between px-1">
-        <div className="flex items-center gap-2">
-          <div className="size-5 sm:size-5.5 rounded-full bg-zinc-900 border border-white/20 flex items-center justify-center font-mono text-[9px] font-bold text-cyan">
-            ES
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="size-5 sm:size-5.5 rounded-full bg-cyan/10 border border-cyan/40 flex items-center justify-center font-mono text-[9px] font-bold text-cyan shrink-0">
+            {getInitials(project.client || project.title)}
           </div>
-          <span className="text-xs font-sans font-medium text-white/90">
-            ESCOM Studio
+          <span className="text-xs font-sans font-semibold text-white/95 truncate">
+            {project.client}
           </span>
-          <span className="text-[8px] font-mono font-bold tracking-wider px-1.5 py-0.5 rounded bg-cyan/15 border border-cyan/40 text-cyan">
-            PRO
+          <span className="text-[8px] font-mono font-bold tracking-wider px-1.5 py-0.5 rounded bg-white/10 border border-white/20 text-zinc-300 shrink-0">
+            {project.year || "2025"}
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5 font-mono text-[9px]">
+        <div className="flex items-center gap-1.5 font-mono text-[9px] shrink-0">
           {project.badges.map((badge, bIdx) => {
             const isSotd = badge === "SOTD";
             const isDev = badge === "DEV";
