@@ -253,33 +253,44 @@ export default function Leads() {
     }
   };
 
-  const handleGerarProposta = async (lead: any) => {
+  const handleGerarAnalise = async (lead: any) => {
     if (generatingSiteId) return;
     setGeneratingSiteId(lead.id);
+    setGeracaoStep("analise");
     try {
-      setGeracaoStep("analise");
       await fetch(`/api/gerar-analise/${lead.id}`);
-      // Analise URL é sempre conhecida após o step 1
-      setAnaliseUrls(prev => ({ ...prev, [lead.id]: `/api/gerar-analise/${lead.id}` }));
+      const analiseUrl = `/api/gerar-analise/${lead.id}`;
+      setAnaliseUrls(prev => ({ ...prev, [lead.id]: analiseUrl }));
+      window.open(analiseUrl, "_blank");
+      notify("✅ Análise gerada! Clique em 'Gerar Site' para criar o site.");
+    } catch (err: any) {
+      notify(`Erro: ${err.message}`, "error");
+    } finally {
+      setGeneratingSiteId(null);
+      setGeracaoStep("");
+    }
+  };
 
-      setGeracaoStep("site");
+  const handleGerarSite = async (lead: any) => {
+    if (generatingSiteId) return;
+    setGeneratingSiteId(lead.id);
+    setGeracaoStep("site");
+    try {
       const res = await fetch("/api/gerar-proposta", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ leadId: lead.id })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Erro ao gerar proposta");
+      if (!res.ok) throw new Error(data.error || "Erro ao gerar site");
 
-      setGeracaoStep("pronto");
       const siteUrl = data.siteUrl || data.propostaUrl || data.url || "";
       if (siteUrl) {
         setGeneratedSiteUrls(prev => ({ ...prev, [lead.id]: siteUrl }));
         setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, siteGerado: siteUrl } : l));
-        notify("✅ Proposta gerada! Clique em 'Site' para abrir.");
+        notify("✅ Site gerado! Clique em 'Ver Site' para abrir.");
         window.open(siteUrl, "_blank");
       } else {
-        // N8N processa em segundo plano — inicia polling + mensagens
         setPendingLeads(prev => ({ ...prev, [lead.id]: true }));
         startProgressMessages(lead.id);
         notify("⏳ Gerando site em segundo plano... Você será avisado quando pronto.");
@@ -798,52 +809,36 @@ export default function Leads() {
                           </a>
                         ) : null}
 
-                        {/* Botão Gerar Proposta */}
+                        {/* Botão Proposta / Gerar Site */}
                         {generatingSiteId === lead.id ? (
-                          <div className="flex flex-col gap-1 px-2.5 py-1.5 bg-cyan/5 border border-cyan/20 min-w-[140px]">
-                            {/* Barra de progresso */}
+                          <div className="flex flex-col gap-1 px-2.5 py-1.5 bg-cyan/5 border border-cyan/20 min-w-[120px]">
                             <div className="relative h-0.5 bg-white/10 rounded-full overflow-hidden">
-                              <div
-                                className="absolute inset-y-0 left-0 bg-cyan transition-all duration-700 ease-in-out rounded-full"
-                                style={{
-                                  width: geracaoStep === "analise" ? "33%" : geracaoStep === "site" ? "66%" : geracaoStep === "pronto" ? "100%" : "5%",
-                                  backgroundColor: geracaoStep === "pronto" ? "#34d399" : undefined,
-                                }}
-                              />
+                              <div className="absolute inset-y-0 left-0 bg-cyan rounded-full animate-pulse" style={{ width: "60%" }} />
                             </div>
-                            {/* Steps */}
                             <div className="flex items-center justify-between gap-1">
-                              {(["analise", "site", "pronto"] as const).map((step, i) => {
-                                const labels = ["Análise", "Site", "Pronto"];
-                                const isActive = geracaoStep === step;
-                                const isPast = (geracaoStep === "site" && i === 0) || (geracaoStep === "pronto" && i < 2);
-                                const isDone = geracaoStep === "pronto";
-                                return (
-                                  <div key={step} className="flex items-center gap-0.5">
-                                    <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                                      isDone && i < 3 ? "bg-emerald-400" :
-                                      isPast ? "bg-cyan/70" :
-                                      isActive ? "bg-cyan animate-pulse" :
-                                      "bg-white/20"
-                                    }`} />
-                                    <span className={`font-mono text-[9px] transition-colors duration-300 ${
-                                      isDone ? "text-emerald-400" :
-                                      isActive ? "text-cyan" :
-                                      isPast ? "text-cyan/50" :
-                                      "text-white/25"
-                                    }`}>{labels[i]}</span>
-                                  </div>
-                                );
-                              })}
-                              <Loader2 size={8} className={`animate-spin ml-0.5 ${geracaoStep === "pronto" ? "text-emerald-400" : "text-cyan"}`} />
+                              <span className="font-mono text-[9px] text-cyan">
+                                {geracaoStep === "analise" ? "Gerando análise..." : "Gerando site..."}
+                              </span>
+                              <Loader2 size={8} className="animate-spin text-cyan" />
                             </div>
                           </div>
-                        ) : (
+                        ) : (lead.siteGerado || generatedSiteUrls[lead.id]) ? null
+                          : (lead.diagnostico || analiseUrls[lead.id]) ? (
                           <button
-                            onClick={() => handleGerarProposta(lead)}
+                            onClick={() => handleGerarSite(lead)}
                             disabled={!!generatingSiteId}
                             className="px-2.5 py-1 bg-cyan/10 hover:bg-cyan/20 text-cyan border border-cyan/30 flex items-center gap-1 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                            title="Gerar análise + site via N8N"
+                            title="Gerar site via N8N"
+                          >
+                            <Globe size={11} />
+                            <span>Gerar Site</span>
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleGerarAnalise(lead)}
+                            disabled={!!generatingSiteId}
+                            className="px-2.5 py-1 bg-cyan/10 hover:bg-cyan/20 text-cyan border border-cyan/30 flex items-center gap-1 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                            title="Gerar análise estratégica"
                           >
                             <Sparkles size={11} />
                             <span>Proposta</span>
