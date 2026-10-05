@@ -8,22 +8,26 @@ import * as cheerio from "cheerio";
 import Groq from "groq-sdk";
 import cron from "node-cron";
 import { Resend } from "resend";
+import { GoogleGenAI } from "@google/genai";
+
 async function groqGenerate(prompt: string, opts?: { temperature?: number; maxTokens?: number }): Promise<string> {
   const apiKey = process.env.GROQ_API_KEY || "";
   if (!apiKey) return "";
   const groq = new Groq({ apiKey });
-  const models = ["openai/gpt-oss-120b", "qwen/qwen3.8-27b"];
+  const models = ["qwen/qwen3.8-27b", "allam-2-7b"];
   for (const model of models) {
     try {
       const r = await groq.chat.completions.create({
         model,
         messages: [{ role: "user", content: prompt }],
         temperature: opts?.temperature ?? 0.4,
-        max_tokens: opts?.maxTokens ?? 16000,
+        max_tokens: opts?.maxTokens ?? 3800,
       });
       const text = r.choices?.[0]?.message?.content || "";
       if (text.length > 20) return text;
-    } catch {}
+    } catch (e: any) {
+      console.warn(`[groqGenerate] Model ${model} failed:`, e?.message);
+    }
   }
   return "";
 }
@@ -1125,43 +1129,38 @@ async function fetchPinterestRefs(categoria: string): Promise<{ urls: string[]; 
   } catch { return { urls: [], descs: [] }; }
 }
 
-// Gera site-amostra via Groq (com refs Pinterest) e salva HTML no Supabase.
-app.post("/api/gerar-proposta", async (req, res) => {
-  try {
-    const { leadId } = req.body;
-    if (!leadId) return res.status(400).json({ error: "leadId obrigatorio" });
-    const rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(leadId)}&select=*&limit=1`);
-    if (!rows || rows.length === 0) return res.status(404).json({ error: "Lead nao encontrado" });
-    const lead: any = rows[0];
+// Função central de geração de landing page para lead via IA (Gemini 3.8 Flash + Groq Qwen/Allam fallback)
+async function generateSiteForLead(lead: any, observacoes = ""): Promise<string | null> {
+  const leadId = lead.id;
+  const baseUrl = process.env.BASE_URL || "https://www.escomstudio.com.br";
+  const siteUrl = `${baseUrl}/proposta/${leadId}`;
+  const heroImg = getCoverPhotoUrl(lead.categoria || "");
+  const rating = lead.rating || "4.8";
+  const reviews = lead.reviews_count || lead.reviewsCount || 120;
+  const cidade = lead.cidade || "";
+  const telefone = lead.telefone || "";
+  const endereco = lead.endereco || "";
+  const waLink = `https://wa.me/55${telefone.replace(/\D/g, "")}`;
+  const botaoAceitarUrl = `${baseUrl}/api/aceitar-proposta`;
+  const slug = lead.site_slug || leadId;
 
-    const baseUrl = process.env.BASE_URL || "https://www.escomstudio.com.br";
-    const siteUrl = `${baseUrl}/proposta/${leadId}`;
-
-    const regenerar = req.body.regenerar || req.query.regenerar;
-    if (lead.site_html && !regenerar) {
-      return res.json({ siteUrl, cached: true });
-    }
-
-    const heroImg = getCoverPhotoUrl(lead.categoria || "");
-    const rating = lead.rating || "4.8";
-    const reviews = lead.reviews_count || lead.reviewsCount || 120;
-    const cidade = lead.cidade || "";
-    const telefone = lead.telefone || "";
-    const endereco = lead.endereco || "";
-    const waLink = `https://wa.me/55${telefone.replace(/\D/g, "")}`;
-    const botaoAceitarUrl = `${baseUrl}/api/aceitar-proposta`;
-    const slug = lead.site_slug || leadId;
-
-    // 1. Busca referências visuais no Pinterest
-    const { urls: pinterestUrls, descs: pinterestDescs } = await fetchPinterestRefs(lead.categoria || "negocio");
-    const pinterestBlock = pinterestUrls.length > 0
-      ? `REFERÊNCIAS VISUAIS DO PINTEREST (inspire-se nestas imagens para paleta, tipografia e layout):
+  // 1. Busca referências visuais no Pinterest
+  const { urls: pinterestUrls, descs: pinterestDescs } = await fetchPinterestRefs(lead.categoria || "negocio");
+  const pinterestBlock = pinterestUrls.length > 0
+    ? `REFERÊNCIAS VISUAIS DO PINTEREST (inspire-se nestas imagens para paleta, tipografia e layout):
 ${pinterestUrls.map((u, i) => `  - ${u}${pinterestDescs[i] ? ` (${pinterestDescs[i]})` : ""}`).join("\n")}`
-      : "";
+    : "";
 
-    const prompt = `Você é um web designer senior especializado em sites de alto impacto para negócios locais. Gere um site-amostra COMPLETO e LONGO em HTML para "${lead.nome}", ${lead.categoria} em ${cidade}.
+  const observacoesBlock = observacoes && observacoes.trim() ? `
+═══════════ AJUSTES SOLICITADOS PELO USUÁRIO (PRIORIDADE ABSOLUTA) ═══════════
+O usuário revisou a versão anterior deste site e solicitou as seguintes correções e customizações específicas:
+"${observacoes.trim()}"
+Você DEVE aplicar com prioridade máxima todas as correções pedidas acima (cores, textos, foco dos serviços, botões e imagens)!
+` : "";
 
-OBJETIVO: Mostrar ao dono do negócio como seria o site profissional da ESCOM Studio. Deve parecer um site REAL e PREMIUM, visualmente impressionante. O site é uma amostra que fica no ar por 3 dias — ela precisa VENDER a ideia.
+  const prompt = `Você é um web designer sênior da ESCOM Studio especializado em sites de alto impacto e máxima conversão para negócios locais. Gere uma landing page COMPLETA e PROFISSIONAL em HTML puro para "${lead.nome}", ${lead.categoria} em ${cidade}.
+${observacoesBlock}
+OBJETIVO: Mostrar ao dono do negócio como seria o site oficial de alto padrão desenvolvido pela ESCOM Studio. Deve parecer um site REAL, PREMIUM e visualmente impactante.
 
 DADOS DO NEGÓCIO:
 - Nome: ${lead.nome}
@@ -1173,165 +1172,131 @@ DADOS DO NEGÓCIO:
 
 ${pinterestBlock}
 
-═══════════ DESIGN SYSTEM ═══════════
-Inspire-se nas referências acima e aplique:
-- Barbearia/Barba: dark premium (fundo #0D0D0D com textura grain CSS, acento #C9A84C dourado, títulos em caps)
-- Academia/Fitness: energético (preto + #FF6B00 laranja, tipografia bold condensada)
-- Salão/Beleza: elegante rosé (#1C1C1C + #C4956A + blush #F5EFE6)
-- Restaurante: quente (#1A0E00 + terracota #C17B4B, textura madeira via CSS)
-- Clínica/Saúde: clean (#0A1628 + azul #2563EB, linhas finas)
-- Default: dark premium com accent color do nicho
+═══════════ DESIGN SYSTEM & ESTÉTICA ═══════════
+- Barbearia/Barba: dark premium (fundo #0D0D0D, acento dourado #C9A84C ou âmbar #F59E0B, tipografia imponente)
+- Academia/Fitness: energético (preto + #FF6B00 laranja neon, tipografia bold)
+- Salão/Estética: elegante rosé/ouro (#141414 + #C4956A + detalhes em bronze/dourado)
+- Restaurante/Gastronomia: dark aconchegante (#1A0E00 + terracota #C17B4B)
+- Saúde/Odonto/Clínica: clean sofisticado (#0A1628 + azul royal #2563EB + branco)
+- Padrão geral: Dark mode sofisticado com Tailwind CSS e acentos luminosos.
 
-Fontes via Google Fonts (máximo 2):
-- Barbearia: "Bebas Neue" (display) + "Inter" (corpo)
-- Academia: "Oswald" + "Roboto"
-- Salão: "Playfair Display" + "Lato"
-- Restaurante: "Cormorant Garamond" + "Open Sans"
-- Clínica: "Montserrat" + "Nunito"
+BIBLIOTECAS (inclua no <head>):
+- Tailwind CSS: <script src="https://cdn.tailwindcss.com"></script>
+- GSAP + ScrollTrigger via CDN: <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
-ANIMAÇÕES: inclua GSAP via CDN (https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js e ScrollTrigger). Anime: hero texto com fade+slideUp ao carregar; títulos de seção e cards com fade+slideUp ao rolar (stagger 0.15s entre items).
+═══════════ SEÇÕES OBRIGATÓRIAS ═══════════
+1. BANNER ESCOM: topo fixo sutil "✨ Demonstração criada pela ESCOM Studio • Solicitar site oficial" (link https://escomstudio.com.br)
+2. NAVBAR: sticky backdrop-blur, Logo "${lead.nome}", âncoras (#servicos, #sobre, #avaliacoes, #contato) e botão WhatsApp (${waLink})
+3. HERO: fundo escuro com imagem de destaque, badge de categoria/cidade, H1 marcante, subheadline persuasiva, prova social (${rating} estrelas no Google) e botões de ação ("Agendar via WhatsApp" e "Ver Serviços")
+4. STATS: 4 números de destaque (Clientes atendidos, Anos no mercado, Avaliações positivas, etc.)
+5. SOBRE: história e diferenciais de excelência de "${lead.nome}"
+6. SERVIÇOS: grid de 6 cards de serviços reais do nicho com preços "a partir de R$ XX", descrições e botão direto WhatsApp
+7. DIFERENCIAIS / PRODUTOS: qualidade dos insumos e atendimento personalizado
+8. GALERIA / TRABALHOS: 6 cards visuais com fotos ilustrativas do segmento
+9. COMO FUNCIONA: 4 passos simples (Agendamento → Recepção → Atendimento → Satisfação Garantida)
+10. DEPOIMENTOS: 3 a 4 avaliações 5 estrelas reais e convincentes
+11. FAQ: 4 perguntas e respostas essenciais com accordion JS
+12. CONTATO / LOCALIZAÇÃO: endereço completo (${endereco}), horários de funcionamento e mapa incorporado
+13. PROPOSTA EXCLUSIVA ESCOM: oferta especial por tempo limitado (R$ 990 com domínio incluído por 1 ano) e botão "Aceitar Proposta" (${botaoAceitarUrl})
+14. FOOTER: links, copyright © ${lead.nome} e créditos ESCOM Studio
+15. BOTÃO FLUTUANTE WHATSAPP: fixado no canto inferior direito pulsando (${waLink})
 
-═══════════ 15 SEÇÕES OBRIGATÓRIAS ═══════════
+REGRAS TÉCNICAS:
+- Use Tailwind CSS para estilização rápida e responsiva.
+- GSAP para animações de fade e entrada nos títulos e cards.
+- Retorne APENAS o código HTML completo começando com <!DOCTYPE html> e terminando com </html>.
+- Sem blocos de markdown e sem explicações externas.`;
 
-SEÇÃO 1 — BANNER ESCOM STUDIO (faixa topo, py-2, fundo #0f172a):
-Texto: "✨ Site demonstrativo criado pela ESCOM Studio"  •  link "Quero um site assim" → https://escomstudio.com.br
+  console.log(`[generateSiteForLead] Gerando landing page para ${leadId} (${lead.nome})...`);
+  let html = "";
 
-SEÇÃO 2 — NAVBAR (sticky, backdrop-blur, altura 70px):
-- Logo: nome do negócio em font-display maiúsculo, bold
-- Links âncora: #sobre | #servicos | #galeria | #depoimentos | #contato
-- Botão CTA WhatsApp verde (href="${waLink}"): "📱 Agendar"
-- Menu hamburguer no mobile
-
-SEÇÃO 3 — HERO (min-height: 100vh):
-- background-image: url("${heroImg}"), background-size:cover, background-position:center
-- Overlay: rgba(0,0,0,0.70) ou gradiente escuro com cor do tema
-- Badge acima do H1 (pequeno, borda, uppercase): "${lead.categoria} • ${cidade}"
-- H1 GRANDE (font-size: clamp(3rem, 8vw, 7rem), font-display, uppercase/bold): headline de impacto do nicho
-- Parágrafo subtítulo (max-width: 600px): proposta de valor em 2 linhas
-- 2 botões CTA: [WhatsApp — Agendar Agora] + [Ver Serviços]
-- Badge Google Reviews: "⭐ ${rating} · ${reviews} avaliações no Google"
-- Scroll indicator (chevron animado)
-
-SEÇÃO 4 — NÚMEROS / STATS (faixa horizontal alternada):
-- 4 stats: Anos de Experiência | Clientes Atendidos | Avaliação Google | Município
-- Números grandes em font-display com contador animado via GSAP
-- Fundo levemente diferente do hero
-
-SEÇÃO 5 — SOBRE (id="sobre", 2 colunas desktop):
-- Coluna texto: história da empresa (3 parágrafos específicos e coerentes), lista de diferenciais com checkmark SVG inline
-- Coluna visual: card com fundo escuro, quote inspiracional do nicho em font-display italic, assinatura do proprietário
-- Badge/tag: "Fundado em [ano coerente] • ${cidade}"
-
-SEÇÃO 6 — SERVIÇOS (id="servicos"):
-- Título de seção: "Nossos Serviços" com linha decorativa abaixo
-- Grid 2x3 ou 3x2 (responsivo): mínimo 6 cards de serviços
-- Cada card: ícone SVG inline (desenhado, não Font Awesome) + nome + descrição 2 linhas + preço "a partir de R$ XX" + botão "Agendar" (href="${waLink}")
-- Cards com hover: translateY(-8px) + box-shadow maior
-- Serviços REAIS e ESPECÍFICOS para ${lead.categoria} (preços coerentes com mercado de ${cidade})
-
-SEÇÃO 7 — PRODUTOS PREMIUM (fundo diferente):
-- Título: "Produtos que Utilizamos" ou equivalente do nicho
-- 3-4 cards de produtos/marcas premium típicos do nicho (use placehold.co para imagens: https://placehold.co/200x200/1a1a1a/C9A84C?text=Produto)
-- Carousel visual (CSS scroll snap) ou grid estático
-
-SEÇÃO 8 — GALERIA (id="galeria", grid 3x2):
-- Título: "Nosso Trabalho" / "Transformations" / equivalente
-- 6 cards com imagens via placehold.co (tamanho 400x300, fundo escuro + texto do serviço como label)
-- Hover: scale(1.05) com overlay de texto
-- Subtítulo: "[Substituir por fotos reais do negócio]" em texto pequeno
-
-SEÇÃO 9 — COMO FUNCIONA (processo em 4 steps):
-- 4 steps numerados: Agendamento → Atendimento → Resultado → Fidelização (adaptar ao nicho)
-- Cada step: número grande em destaque + ícone SVG + título + descrição
-- Layout: steps conectados por linha horizontal desktop / vertical mobile
-
-SEÇÃO 10 — EQUIPE (grid 3 cards):
-- Título: "Nossa Equipe"
-- 3 cards de profissionais: avatar via placehold.co 200x200 (circular) + nome + cargo + especialidade
-- Card com fundo levemente diferente, borda sutil
-
-SEÇÃO 11 — BLOG / DICAS (3 cards):
-- Título: "Dicas & Novidades"
-- 3 cards de artigos do nicho com: imagem placehold.co 400x250 + tag categoria + título + data + "Ler mais →"
-- Grid responsivo
-
-SEÇÃO 12 — DEPOIMENTOS (id="depoimentos"):
-- Título: "O Que Nossos Clientes Dizem"
-- 4 cards de depoimentos: avatar circular (placehold.co 60x60 + iniciais) + nome + serviço + ⭐⭐⭐⭐⭐ + texto de 3-4 frases realistas
-- Nota: "[Depoimentos reais serão inseridos pelo cliente]"
-- Cards com fundo levemente diferente, borda sutil
-
-SEÇÃO 13 — FAQ (accordion JavaScript, 5 perguntas):
-- 5 perguntas REAIS e ESPECÍFICAS para o nicho ${lead.categoria}
-- Accordion funcional com JS vanilla (toggle de classe)
-- Perguntas abertas/fechadas com ícone + animação
-
-SEÇÃO 14 — PARCEIROS / CERTIFICAÇÕES:
-- Logos de marcas/parceiros típicos do nicho (placehold.co 120x60 grayscale → colorido no hover)
-- Ou selos de qualidade/certificações do segmento
-
-SEÇÃO 15 — CONTATO (id="contato", fundo escuro):
-- Título: "Fale Conosco"
-- Grid 2 colunas: dados de contato + mapa
-- Dados: endereço (${endereco}), telefone (${telefone}), horário de funcionamento (coerente com o nicho)
-- Mapa: iframe Google Maps com query "${encodeURIComponent(endereco || lead.nome + " " + cidade)}" — width:100%, height:350px, border:0
-- Botão WhatsApp grande: href="${waLink}"
-
-═══════════ SEÇÕES DE PROSPECÇÃO (OBRIGATÓRIAS) ═══════════
-
-SEÇÃO 16 — QUEM É A ESCOM STUDIO (fundo #0f172a, texto branco):
-- Logo/nome ESCOM Studio em destaque
-- 2-3 frases persuasivas: "Somos especialistas em criar presença digital de alto impacto para negócios locais como o seu. Cada site é construído com foco em conversão, velocidade e identidade visual única."
-- 3 ícones com diferenciais: Sites que convertem | Entrega rápida | Suporte contínuo
-
-SEÇÃO 17 — OFERTA EXCLUSIVA (fundo com gradiente da cor tema, CTA principal):
-- Headline: "Esta amostra fica no ar por apenas 3 dias"
-- Texto da oferta: "Sites como este, totalmente otimizados para Google e velocidade, custam a partir de R$ 2.497. Por tempo limitado, você está recebendo uma oferta única: site completo + domínio próprio por 1 ano por apenas R$ 990."
-- Timer visual (CSS animado, decorativo)
-- Botão GRANDE "✅ Aceitar Proposta e Garantir Oferta" — faz fetch POST para "${botaoAceitarUrl}" com body {leadId:"${leadId}",propostaSlug:"${slug}"} e redireciona para checkoutUrl na resposta
-- Texto abaixo do botão: "Pagamento seguro via MercadoPago • Suporte via WhatsApp"
-
-FOOTER:
-- Logo + tagline
-- Links: Sobre | Serviços | Contato
-- Ícones redes sociais (SVG inline: Instagram, Facebook, WhatsApp)
-- Copyright © 2025 ${lead.nome}
-- "Site criado por ESCOM Studio" com link → https://escomstudio.com.br
-
-BOTÃO FLUTUANTE WHATSAPP (fixo bottom-right, sempre visível):
-- Círculo verde 60px com ícone WhatsApp SVG branco
-- href="${waLink}"
-- Pulse animation CSS
-
-═══════════ REGRAS ABSOLUTAS ═══════════
-- PROIBIDO URLs de imagem externas — exceto hero (${heroImg}) e placehold.co
-- Use ícones SVG inline — NUNCA Font Awesome CDN
-- Links internos: âncoras com # (nunca URLs absolutas)
-- <meta name="robots" content="noindex, nofollow"> obrigatório
-- GSAP obrigatório para animações
-- FAQ accordion com JS vanilla funcional
-- Botão "Aceitar Proposta" com fetch POST funcional
-- HTML MÍNIMO 800 linhas
-- Retorne APENAS o HTML completo começando com <!DOCTYPE html>
-- Sem markdown, sem explicações fora do HTML`;
-
-    console.log(`[gerar-proposta] gerando HTML com Groq para ${leadId} (${pinterestUrls.length} refs visuais)...`);
-    const html = await groqGenerateWithVision(prompt, pinterestUrls, { temperature: 0.5, maxTokens: 16000 });
-
-    if (!html || html.length < 500) {
-      return res.status(500).json({ error: "Groq nao gerou HTML suficiente" });
+  // 1. Tenta Gemini 3.8 Flash (rápido e suporta textos longos)
+  if (process.env.GEMINI_API_KEY) {
+    try {
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const resp = await ai.models.generateContent({
+        model: "gemini-3.8-flash",
+        contents: prompt,
+      });
+      const t = resp.text || "";
+      if (t.length > 800) {
+        console.log(`[generateSiteForLead] Sucesso via Gemini 3.8 Flash (${t.length} chars)`);
+        html = t;
+      }
+    } catch (e: any) {
+      console.warn(`[generateSiteForLead] Gemini 3.8 Flash indisponível (${e.message}), acionando fallback Groq...`);
     }
+  }
 
-    // Extrai HTML limpo
-    const cleanHtml = html.replace(/^```html?\n?/i, "").replace(/\n?```$/i, "").trim();
+  // 2. Fallback Groq com modelos que respeitam a cota (qwen3.8-27b e allam-2-7b com max_tokens: 3800)
+  if (!html && process.env.GROQ_API_KEY) {
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const groqModels = ["qwen/qwen3.8-27b", "allam-2-7b"];
+    for (const m of groqModels) {
+      try {
+        const r = await groq.chat.completions.create({
+          model: m,
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.5,
+          max_tokens: 3800,
+        });
+        const t = r.choices[0]?.message?.content || "";
+        if (t.length > 800) {
+          console.log(`[generateSiteForLead] Sucesso via Groq ${m} (${t.length} chars)`);
+          html = t;
+          break;
+        }
+      } catch (e: any) {
+        console.warn(`[generateSiteForLead] Groq ${m} falhou:`, e.message);
+      }
+    }
+  }
 
+  if (!html || html.length < 500) {
+    console.error(`[generateSiteForLead] Falha ao gerar HTML para ${leadId}`);
+    return null;
+  }
+
+  // Extrai HTML limpo
+  const cleanHtml = html.replace(/^```html?\n?/i, "").replace(/\n?```$/i, "").trim();
+
+  // Salva no Supabase
+  try {
     await sbFetch(`/leads?id=eq.${encodeURIComponent(leadId)}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
       body: JSON.stringify({ site_html: cleanHtml, site_gerado: siteUrl }),
     });
+    console.log(`[generateSiteForLead] HTML salvo com sucesso no Supabase para ${leadId} (${cleanHtml.length} chars)`);
+  } catch (err: any) {
+    console.error(`[generateSiteForLead] Erro ao persistir no Supabase:`, err.message);
+  }
 
-    console.log(`[gerar-proposta] HTML salvo para ${leadId} (${cleanHtml.length} chars)`);
+  return cleanHtml;
+}
+
+// Endpoint para gerar ou regenerar site-amostra com IA (com suporte a observações de ajuste)
+app.post("/api/gerar-proposta", async (req, res) => {
+  try {
+    const { leadId, observacoes } = req.body;
+    if (!leadId) return res.status(400).json({ error: "leadId obrigatorio" });
+    const rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(leadId)}&select=*&limit=1`);
+    if (!rows || rows.length === 0) return res.status(404).json({ error: "Lead nao encontrado" });
+    const lead: any = rows[0];
+
+    const baseUrl = process.env.BASE_URL || "https://www.escomstudio.com.br";
+    const siteUrl = `${baseUrl}/proposta/${leadId}`;
+
+    const regenerar = req.body.regenerar || req.query.regenerar || !!observacoes;
+    if (lead.site_html && !regenerar) {
+      return res.json({ siteUrl, cached: true });
+    }
+
+    const cleanHtml = await generateSiteForLead(lead, observacoes);
+    if (!cleanHtml) {
+      return res.status(500).json({ error: "A IA não conseguiu gerar o site. Tente novamente." });
+    }
+
     res.json({ siteUrl, generated: true });
   } catch(e: any) { res.status(500).json({ error: e.message }); }
 });
@@ -1395,38 +1360,45 @@ app.get("/proposta-:slug", async (req, res) => {
 app.get("/proposta/:leadId", async (req, res) => {
   try {
     const slug = req.params.leadId;
-    // Tenta por id exato primeiro, depois por site_gerado contendo o slug
-    let rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(slug)}&select=site_html,nome&limit=1`).catch(() => []);
-    if ((!rows || rows.length === 0 || !rows[0].site_html)) {
-      const baseUrl = process.env.BASE_URL || "https://www.escomstudio.com.br";
-      rows = await sbFetch(`/leads?site_gerado=eq.${encodeURIComponent(`${baseUrl}/proposta/${slug}`)}&select=site_html,nome&limit=1`).catch(() => []);
+    const baseUrl = process.env.BASE_URL || "https://www.escomstudio.com.br";
+    // Tenta por id exato primeiro, depois por site_gerado contendo o slug, depois por site_slug
+    let rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(slug)}&select=*&limit=1`).catch(() => []);
+    if (!rows || rows.length === 0) {
+      rows = await sbFetch(`/leads?site_gerado=eq.${encodeURIComponent(`${baseUrl}/proposta/${slug}`)}&select=*&limit=1`).catch(() => []);
     }
-    if (!rows || rows.length === 0 || !rows[0].site_html) {
+    if (!rows || rows.length === 0) {
+      rows = await sbFetch(`/leads?site_slug=eq.${encodeURIComponent(slug)}&select=*&limit=1`).catch(() => []);
+    }
+    if (!rows || rows.length === 0) {
       res.setHeader("Content-Type", "text/html; charset=utf-8");
       return res.status(404).send(PAGINA_PROPOSTA_NAO_ENCONTRADA);
     }
+    const lead = rows[0];
+    if (lead.site_html && lead.site_html.trim().length > 100) {
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("X-Robots-Tag", "noindex, nofollow");
+      return res.status(200).send(lead.site_html);
+    }
+
+    // Lead existe, mas site_html ainda não foi gerado ou está vazio: gera na hora com IA!
+    console.log(`[proposta] Lead ${lead.id} encontrado sem site_html. Gerando dinamicamente...`);
+    const generatedHtml = await generateSiteForLead(lead);
+    if (generatedHtml) {
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("X-Robots-Tag", "noindex, nofollow");
+      return res.status(200).send(generatedHtml);
+    }
+
     res.setHeader("Content-Type", "text/html; charset=utf-8");
-    res.setHeader("X-Robots-Tag", "noindex, nofollow");
-    res.status(200).send(rows[0].site_html);
+    return res.status(404).send(PAGINA_PROPOSTA_NAO_ENCONTRADA);
   } catch (e) {
     res.status(500).send("Erro ao carregar a proposta");
   }
 });
 
 // Alias legado /api/ver-proposta/:leadId → redireciona para /proposta/:leadId
-app.get("/api/ver-proposta/:leadId", async (req, res) => {
-  try {
-    const rows = await sbFetch(`/leads?id=eq.${encodeURIComponent(req.params.leadId)}&select=site_html,nome&limit=1`).catch(() => []);
-    if (!rows || rows.length === 0 || !rows[0].site_html) {
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      return res.status(404).send(PAGINA_PROPOSTA_NAO_ENCONTRADA);
-    }
-    res.setHeader("Content-Type", "text/html; charset=utf-8");
-    res.setHeader("X-Robots-Tag", "noindex, nofollow");
-    res.status(200).send(rows[0].site_html);
-  } catch (e) {
-    res.status(500).send("Erro ao carregar a proposta");
-  }
+app.get("/api/ver-proposta/:leadId", (req, res) => {
+  res.redirect(`/proposta/${encodeURIComponent(req.params.leadId)}`);
 });
 
 // Recebe HTML do N8N e salva em Supabase (substitui o salvamento no Firebase propostas)

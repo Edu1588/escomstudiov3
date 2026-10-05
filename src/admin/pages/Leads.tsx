@@ -4,7 +4,7 @@ import {
   Search, Plus, Trash2, ChevronDown, Globe, Phone, MapPin, 
   Sparkles, CheckSquare, Square, Download, Send, Loader2, Star,
   Copy, Check, ExternalLink, Instagram, MessageCircle, RefreshCw,
-  Filter, ArrowUpRight
+  Filter, ArrowUpRight, RotateCcw
 } from "lucide-react";
 import { db } from "../../lib/firebase";
 import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
@@ -103,6 +103,8 @@ export default function Leads() {
   const [emailInput, setEmailInput] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
   const [showMineradorModal, setShowMineradorModal] = useState(false);
+  const [refazerSiteModal, setRefazerSiteModal] = useState<{ lead: any } | null>(null);
+  const [observacoesInput, setObservacoesInput] = useState("");
 
   const notify = (msg: string, type: "success" | "error" = "success") => {
     setNotification({ msg, type });
@@ -271,7 +273,7 @@ export default function Leads() {
     }
   };
 
-  const handleGerarSite = async (lead: any) => {
+  const handleGerarSite = async (lead: any, observacoes = "", regenerar = false) => {
     if (generatingSiteId) return;
     setGeneratingSiteId(lead.id);
     setGeracaoStep("site");
@@ -279,7 +281,7 @@ export default function Leads() {
       const res = await fetch("/api/gerar-proposta", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ leadId: lead.id })
+        body: JSON.stringify({ leadId: lead.id, observacoes, regenerar })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Erro ao gerar site");
@@ -287,8 +289,8 @@ export default function Leads() {
       const siteUrl = data.siteUrl || data.propostaUrl || data.url || "";
       if (siteUrl) {
         setGeneratedSiteUrls(prev => ({ ...prev, [lead.id]: siteUrl }));
-        setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, siteGerado: siteUrl } : l));
-        notify("✅ Site gerado! Clique em 'Ver Site' para abrir.");
+        setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, siteGerado: siteUrl, site_gerado: siteUrl } : l));
+        notify(regenerar ? "✅ Site atualizado com sucesso com suas observações!" : "✅ Site gerado! Clique em 'Ver Site' para abrir.");
         window.open(siteUrl, "_blank");
       } else {
         setPendingLeads(prev => ({ ...prev, [lead.id]: true }));
@@ -711,6 +713,15 @@ export default function Leads() {
                                     <span>Ver Site</span>
                                   </a>
                                   <button
+                                    onClick={() => { setRefazerSiteModal({ lead }); setObservacoesInput(""); }}
+                                    disabled={generatingSiteId === lead.id}
+                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-mono hover:bg-amber-500/20 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                                    title="Refazer site com instruções para a IA"
+                                  >
+                                    <RotateCcw size={9} />
+                                    <span>Refazer Site</span>
+                                  </button>
+                                  <button
                                     onClick={() => { setEmailModal({ lead }); setEmailInput(""); }}
                                     className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-emerald-500/10 border border-emerald-500/40 text-emerald-400 text-[10px] font-mono hover:bg-emerald-500/20 transition-colors"
                                     title="Enviar proposta por email"
@@ -822,8 +833,17 @@ export default function Leads() {
                               <Loader2 size={8} className="animate-spin text-cyan" />
                             </div>
                           </div>
-                        ) : (lead.siteGerado || generatedSiteUrls[lead.id]) ? null
-                          : (lead.diagnostico || analiseUrls[lead.id]) ? (
+                        ) : (lead.siteGerado || generatedSiteUrls[lead.id]) ? (
+                          <button
+                            onClick={() => { setRefazerSiteModal({ lead }); setObservacoesInput(""); }}
+                            disabled={!!generatingSiteId}
+                            className="px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                            title="Refazer site com instruções específicas para a IA"
+                          >
+                            <RotateCcw size={11} />
+                            <span>Refazer Site</span>
+                          </button>
+                        ) : (lead.diagnostico || analiseUrls[lead.id]) ? (
                           <button
                             onClick={() => handleGerarSite(lead)}
                             disabled={!!generatingSiteId}
@@ -914,6 +934,118 @@ export default function Leads() {
             >
               {sendingEmail ? "Enviando..." : "✉ Enviar Proposta"}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL REFAZER SITE COM IA */}
+      {refazerSiteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md" onClick={() => !generatingSiteId && setRefazerSiteModal(null)}>
+          <div className="w-full max-w-lg bg-[#09090b] border border-amber-500/40 p-6 space-y-4 shadow-2xl relative" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <div className="p-1 bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                    <RotateCcw size={14} />
+                  </div>
+                  <h2 className="font-serif text-xl font-light text-white">Refazer Site com IA</h2>
+                </div>
+                <p className="font-mono text-xs text-white/50 mt-1">
+                  {refazerSiteModal.lead.nome} • {refazerSiteModal.lead.cidade} ({refazerSiteModal.lead.categoria})
+                </p>
+              </div>
+              <button 
+                onClick={() => !generatingSiteId && setRefazerSiteModal(null)} 
+                disabled={!!generatingSiteId}
+                className="text-white/40 hover:text-white text-xl leading-none disabled:opacity-30"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block font-mono text-xs text-white/70 uppercase tracking-wider mb-1">
+                  O que não ficou de acordo? (Instruções para a IA)
+                </label>
+                <p className="text-xs text-white/40 mb-2 leading-relaxed">
+                  Descreva o que a IA deve corrigir ou melhorar (ex: mudar paleta de cores, trocar headline, focar em serviços específicos, estilo mais clean ou luxuoso).
+                </p>
+                <textarea
+                  rows={4}
+                  value={observacoesInput}
+                  onChange={e => setObservacoesInput(e.target.value)}
+                  placeholder="Ex: Mudar a cor de destaque para dourado metálico e fundo preto total. Focar em corte degradê e barboterapia. Colocar preços a partir de R$ 45 e destacar botão de WhatsApp..."
+                  className="w-full bg-white/5 border border-white/15 px-3 py-2.5 text-sm text-white placeholder-white/25 outline-none focus:border-amber-400/60 transition-colors font-sans resize-none"
+                  autoFocus
+                  disabled={!!generatingSiteId}
+                />
+              </div>
+
+              {/* Sugestões rápidas de ajustes */}
+              <div>
+                <span className="font-mono text-[10px] text-white/40 uppercase tracking-wider block mb-1.5">
+                  Sugestões Rápidas:
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    "+ Cores mais escuras / Dourado",
+                    "+ Estilo minimalista de luxo",
+                    "+ Focar em serviços com preços visíveis",
+                    "+ Botão WhatsApp mais destacado",
+                    "+ Adicionar mais fotos e avaliações",
+                    "+ Headline mais agressiva de conversão"
+                  ].map((sugestao, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      disabled={!!generatingSiteId}
+                      onClick={() => {
+                        const clean = sugestao.replace(/^\+\s*/, "");
+                        setObservacoesInput(prev => prev ? `${prev}. ${clean}` : clean);
+                      }}
+                      className="px-2 py-0.5 bg-white/5 hover:bg-white/10 text-white/60 hover:text-white text-[11px] font-mono border border-white/10 transition-colors"
+                    >
+                      {sugestao}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-white/10 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setRefazerSiteModal(null)}
+                disabled={!!generatingSiteId}
+                className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white/60 hover:text-white font-mono text-xs transition-colors disabled:opacity-40"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  const lead = refazerSiteModal.lead;
+                  const obs = observacoesInput;
+                  setRefazerSiteModal(null);
+                  await handleGerarSite(lead, obs, true);
+                }}
+                disabled={!!generatingSiteId}
+                className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black font-mono text-xs font-bold flex items-center gap-1.5 transition-colors disabled:opacity-40 cursor-pointer"
+              >
+                {generatingSiteId === refazerSiteModal.lead.id ? (
+                  <>
+                    <Loader2 size={12} className="animate-spin" />
+                    <span>Regenerando Site...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={12} />
+                    <span>⚡ Refazer Site com IA</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
