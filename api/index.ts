@@ -1713,91 +1713,169 @@ REGRAS TÉCNICAS:
       }
     }
 
-    // Seção de proposta comercial ESCOM Studio completa + Footer + Botão WhatsApp + Scripts
+    // Seção de proposta comercial ESCOM Studio completa + Footer de 4 colunas + Botão WhatsApp + Scripts
     const propostaBlock = `
-  <!-- PROPOSTA COMERCIAL ESCOM STUDIO -->
-  <section id="proposta-escom" class="py-20 bg-dark bg-gradient-to-r from-black via-[#141414] to-black border-t border-amber-500/20">
-    <div class="max-w-5xl mx-auto px-4 text-center">
-      <div class="inline-block bg-amber-500 text-black font-extrabold text-xs uppercase rounded-full px-4 py-1.5 mb-6 tracking-wider shadow-lg">✨ OPORTUNIDADE DE PARCERIA ESCOM STUDIO</div>
-      <h2 class="font-title text-4xl text-amber-300 mb-4">Gostou do que viu? Este site oficial pode ser seu hoje mesmo</h2>
-      <p class="text-neutral-300 max-w-3xl mx-auto mb-10 text-sm md:text-base leading-relaxed">
-        A ESCOM Studio desenvolveu este protótipo sob medida para <strong class="text-white">${lead.nome}</strong>. Pronto para colocar no ar com domínio oficial, SEO otimizado para o Google e atração de novos clientes diariamente.
+  <!-- PROPOSTA COMERCIAL ESCOM STUDIO (ALTO IMPACTO E MÁXIMA CONVERSÃO) -->
+  <section id="proposta-escom" class="py-24 bg-neutral-950 relative overflow-hidden border-t-2 border-amber-500/30">
+    <div class="max-w-6xl mx-auto px-4 relative z-10 text-center">
+      <div class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 text-black font-black text-xs uppercase rounded-full px-5 py-2 mb-6 tracking-widest shadow-xl">
+        <span>⚡ OPORTUNIDADE EXCLUSIVA ESCOM STUDIO</span>
+      </div>
+
+      <h2 class="font-title text-3xl md:text-5xl font-black text-white mb-4 tracking-tight">
+        Gostou do que viu? Este site oficial pode ser seu <span style="background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 50%, #D97706 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">hoje mesmo</span>
+      </h2>
+      <p class="text-neutral-300 max-w-3xl mx-auto mb-14 text-sm md:text-base leading-relaxed">
+        A equipe de engenharia da <strong class="text-amber-400 font-bold">ESCOM Studio</strong> desenvolveu este projeto personalizado para <strong class="text-white">${lead.nome}</strong> em ${cidade}. Um site moderno, ultra-rápido e preparado para transformar buscas do Google em clientes recorrentes.
       </p>
-      
-      <div class="grid md:grid-cols-2 gap-6 mb-10 text-left">
-        <div class="bg-black/60 p-6 rounded-2xl border border-white/5">
-          <h3 class="font-title text-xl text-red-400 mb-3 flex items-center gap-2">
-            <span>✕</span> Sem Site ou Apenas Instagram
-          </h3>
-          <ul class="text-neutral-400 space-y-2 text-sm">
-            <li>• Dependência de algoritmos que não entregam suas publicações</li>
-            <li>• Falta de presença quando o cliente busca no Google</li>
-            <li>• Imagem amadora comparada a concorrentes da região</li>
+
+      <!-- Comparativo visual -->
+      <div class="grid md:grid-cols-2 gap-8 mb-14 text-left max-w-5xl mx-auto">
+        <div class="bg-neutral-900/80 p-8 rounded-2xl border border-red-500/30 shadow-xl">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="w-8 h-8 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center font-bold text-lg">✕</span>
+            <h3 class="font-title text-xl text-red-400 font-bold">Sem Site Oficial ou Apenas Redes Sociais</h3>
+          </div>
+          <ul class="text-neutral-300 space-y-3 text-sm">
+            <li class="flex items-start gap-2"><span class="text-red-400 font-bold">•</span><span><strong>Invisível nas buscas:</strong> Quando alguém pesquisa pelo seu serviço no Google, encontra seus concorrentes.</span></li>
+            <li class="flex items-start gap-2"><span class="text-red-400 font-bold">•</span><span><strong>Dependência de algoritmos:</strong> O Instagram entrega publicações para menos de 10% do seu público.</span></li>
+            <li class="flex items-start gap-2"><span class="text-red-400 font-bold">•</span><span><strong>Perda de agendamentos:</strong> Clientes com pressa não encontram preços nem botão direto de WhatsApp.</span></li>
           </ul>
         </div>
-        <div class="bg-black/60 p-6 rounded-2xl border border-amber-500/30 shadow-xl">
-          <h3 class="font-title text-xl text-amber-400 mb-3 flex items-center gap-2">
-            <span>✓</span> Site Oficial ESCOM Studio
-          </h3>
-          <ul class="text-neutral-200 space-y-2 text-sm">
-            <li>• Google Meu Negócio em destaque com máxima autoridade</li>
-            <li>• Carregamento instantâneo em menos de 1 segundo</li>
-            <li>• Agendamentos 24 horas direto no seu WhatsApp</li>
+
+        <div class="bg-neutral-900/90 p-8 rounded-2xl border-2 border-amber-500/60 shadow-2xl relative">
+          <div class="absolute -top-3 right-6 bg-amber-500 text-black text-[11px] font-black uppercase px-3 py-1 rounded-full shadow-md">
+            Padrão Recomendado
+          </div>
+          <div class="flex items-center gap-3 mb-4">
+            <span class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg">✓</span>
+            <h3 class="font-title text-xl text-amber-300 font-bold">Com o Site Oficial ESCOM Studio</h3>
+          </div>
+          <ul class="text-neutral-200 space-y-3 text-sm">
+            <li class="flex items-start gap-2"><span class="text-amber-400 font-bold">•</span><span><strong>Google Meu Negócio em 1º lugar:</strong> Destaque absoluto no mapa com nota e avaliações visíveis.</span></li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 font-bold">•</span><span><strong>Carregamento ultra-rápido (0.8s):</strong> Navegação fluida sem travamentos no celular ou computador.</span></li>
+            <li class="flex items-start gap-2"><span class="text-amber-400 font-bold">•</span><span><strong>Agendamento em 1 clique:</strong> Menu de serviços claro e botão direto para o seu WhatsApp corporativo.</span></li>
           </ul>
         </div>
       </div>
 
-      <!-- BOX DE OFERTA EXCLUSIVA -->
-      <div class="bg-gradient-to-b from-neutral-900 to-black p-8 rounded-3xl border border-amber-500/40 shadow-2xl max-w-3xl mx-auto">
-        <div class="inline-block text-amber-400 text-xs font-bold uppercase tracking-widest mb-2">Condição Especial de Lançamento</div>
-        <div class="text-3xl md:text-5xl font-extrabold text-white mb-2">
-          De <span class="line-through text-neutral-500 text-2xl md:text-3xl">R$ 4.500</span> por <span class="text-amber-400">R$ 990</span>
-        </div>
-        <p class="text-neutral-400 text-xs mb-6">Taxa única de implantação • Sem mensalidades obrigatórias de manutenção</p>
-        
-        <div class="grid sm:grid-cols-2 gap-3 text-left text-xs md:text-sm text-neutral-300 mb-8 max-w-xl mx-auto">
-          <div class="flex items-center gap-2"><span class="text-amber-400">✓</span> Domínio .com.br grátis por 1 ano</div>
-          <div class="flex items-center gap-2"><span class="text-amber-400">✓</span> Hospedagem rápida inclusa por 12 meses</div>
-          <div class="flex items-center gap-2"><span class="text-amber-400">✓</span> Animações fluidas GSAP de elite</div>
-          <div class="flex items-center gap-2"><span class="text-amber-400">✓</span> Botão WhatsApp integrado</div>
+      <!-- BOX DE OFERTA EXCLUSIVA COM MÁXIMO CONTRASTE -->
+      <div style="background: linear-gradient(180deg, rgba(28,22,12,0.95) 0%, rgba(12,10,8,0.98) 100%); border: 2px solid #F59E0B; box-shadow: 0 0 50px rgba(245,158,11,0.25);" class="p-8 md:p-12 rounded-3xl max-w-3xl mx-auto relative text-center">
+        <span class="inline-block bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
+          CONDIÇÃO ESPECIAL DE LANÇAMENTO
+        </span>
+
+        <div class="my-6">
+          <div class="text-neutral-400 text-sm font-semibold mb-1">
+            Valor Regular de Desenvolvimento: <span class="line-through text-red-400 font-bold text-lg">R$ 4.500</span>
+          </div>
+          <div class="text-4xl md:text-6xl font-black text-white flex items-center justify-center gap-2">
+            <span class="text-2xl text-amber-400">R$</span>
+            <span style="color: #F59E0B; text-shadow: 0 0 20px rgba(245,158,11,0.5);" class="text-5xl md:text-7xl">990</span>
+            <span class="text-xs text-amber-200 font-bold uppercase tracking-wider bg-amber-500/20 border border-amber-500/40 px-3 py-1.5 rounded-lg self-center ml-2">Taxa Única</span>
+          </div>
+          <p class="text-emerald-400 font-bold text-sm mt-3 flex items-center justify-center gap-1.5">
+            <span>✓</span> Economia imediata de R$ 3.510 • Sem mensalidades obrigatórias de manutenção
+          </p>
         </div>
 
-        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <a href="${waEscomUrl}" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold py-3.5 px-8 rounded-full text-sm md:text-base shadow-xl transition-all hover:scale-105">
-            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20.52 3.48A11.99 11.99 0 0 0 12 .5C6.21.5 1.5 5.21 1.5 11c0 1.94.5 3.78 1.39 5.41L0 23.5l7.21-1.86c1.55.84 3.31 1.33 5.19 1.33h.01c5.79 0 10.5-4.71 10.5-10.5 0-2.8-1.09-5.34-2.88-7.21zM12 20.5c-1.73 0-3.37-.46-4.79-1.25l-.34-.2-4.28 1.1 1.14-4.16-.23-.35A8.98 8.98 0 0 1 3 11c0-4.97 4.03-9 9-9s9 4.03 9 9-4.03 9-9 9z"/></svg>
-            Aceitar Proposta & Publicar Site (R$ 990)
-          </a>
-          <a href="${botaoAceitarUrl}" class="text-neutral-400 hover:text-amber-400 text-xs underline transition">
-            Acessar contrato digital
+        <div class="grid sm:grid-cols-2 gap-4 text-left text-xs md:text-sm text-neutral-200 my-8 max-w-xl mx-auto bg-black/60 p-6 rounded-2xl border border-amber-500/20">
+          <div class="flex items-center gap-2.5"><span class="text-amber-400 text-base font-black">✓</span><span><strong>Domínio .com.br</strong> registrado grátis por 1 ano</span></div>
+          <div class="flex items-center gap-2.5"><span class="text-amber-400 text-base font-black">✓</span><span><strong>Hospedagem rápida</strong> inclusa por 12 meses</span></div>
+          <div class="flex items-center gap-2.5"><span class="text-amber-400 text-base font-black">✓</span><span><strong>Animações fluidas GSAP</strong> de elite</span></div>
+          <div class="flex items-center gap-2.5"><span class="text-amber-400 text-base font-black">✓</span><span><strong>Botão WhatsApp</strong> integrado com mensagem pronta</span></div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mt-6">
+          <a href="${waEscomUrl}" target="_blank" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%) !important; color: #000000 !important; font-weight: 900 !important; box-shadow: 0 4px 20px rgba(245,158,11,0.45) !important;" class="w-full sm:w-auto inline-flex items-center justify-center gap-3 py-4 px-10 rounded-full text-base md:text-lg transition hover:scale-105">
+            <svg class="w-6 h-6 fill-black" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.585 1.961.947 2.796.947 3.179 0 5.765-2.587 5.765-5.766 0-3.18-2.586-5.766-5.765-5.766zm9.969 5.766c0 5.503-4.477 9.98-9.969 9.98-1.748 0-3.385-.453-4.819-1.246l-5.212 1.367 1.391-5.084c-.883-1.488-1.391-3.226-1.391-5.087 0-5.503 4.477-9.98 9.969-9.98 5.502 0 9.969 4.477 9.969 9.98z"/></svg>
+            <span>Aceitar Proposta & Publicar Site (R$ 990)</span>
           </a>
         </div>
-        <p class="text-neutral-500 text-xs mt-6">Garantia incondicional de 7 dias • Entrega completa e no ar em até 72 horas úteis</p>
+        
+        <div class="mt-4">
+          <a href="${botaoAceitarUrl}" class="text-neutral-400 hover:text-amber-300 text-xs underline transition">
+            Ou acesse o contrato digital de prestação de serviços
+          </a>
+        </div>
+
+        <p class="text-neutral-400 text-xs mt-6">Garantia incondicional de 7 dias • Entrega completa e no ar em até 72 horas úteis</p>
       </div>
     </div>
   </section>
 
-  <!-- FOOTER -->
-  <footer class="bg-black border-t border-white/5 py-12 text-center text-neutral-500 text-xs">
-    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
-      <div class="text-left">
-        <div class="font-title text-base text-gold font-bold">${lead.nome}</div>
-        <p class="text-neutral-500 mt-1">${lead.categoria} de excelência em ${cidade}.</p>
+  <!-- RODAPÉ CORPORATIVO COMPLETO E DETALHADO (4 COLUNAS) -->
+  <footer class="bg-black border-t-2 border-amber-500/20 pt-16 pb-12 text-neutral-400 text-xs">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12 text-left">
+      <div>
+        <div class="font-title text-xl text-amber-400 font-bold mb-3 tracking-wide">${lead.nome}</div>
+        <p class="text-neutral-400 text-xs leading-relaxed mb-4">
+          ${lead.categoria} de excelência e tradição em ${cidade}. Experiência clássica com alto padrão de atendimento.
+        </p>
+        <div class="space-y-1.5 text-xs text-neutral-300">
+          <p class="flex items-center gap-2"><span class="text-amber-400">📍</span> ${endereco}</p>
+          <p class="flex items-center gap-2"><span class="text-amber-400">📞</span> ${telefone}</p>
+        </div>
       </div>
-      <div class="text-center md:text-right">
-        <p>© 2026 ${lead.nome} • Todos os direitos reservados.</p>
-        <p class="mt-1 text-neutral-400">Desenvolvido com excelência por <a href="https://escomstudio.com.br" target="_blank" class="text-amber-400 font-semibold hover:underline">ESCOM Studio</a>.</p>
+
+      <div>
+        <h4 class="font-title text-sm text-white font-bold uppercase tracking-wider mb-4 border-b border-amber-500/30 pb-2">Navegação Rápida</h4>
+        <ul class="space-y-2 text-xs">
+          <li><a href="#hero" class="hover:text-amber-400 transition">Início</a></li>
+          <li><a href="#servicos" class="hover:text-amber-400 transition">Serviços & Preços</a></li>
+          <li><a href="#sobre" class="hover:text-amber-400 transition">Sobre a Empresa</a></li>
+          <li><a href="#galeria" class="hover:text-amber-400 transition">Galeria de Trabalhos</a></li>
+          <li><a href="#avaliacoes" class="hover:text-amber-400 transition">Avaliações de Clientes</a></li>
+          <li><a href="#proposta-escom" class="hover:text-amber-400 transition font-bold text-amber-400">Proposta Oficial ESCOM</a></li>
+        </ul>
       </div>
+
+      <div>
+        <h4 class="font-title text-sm text-white font-bold uppercase tracking-wider mb-4 border-b border-amber-500/30 pb-2">Horário de Funcionamento</h4>
+        <ul class="space-y-1.5 text-xs text-neutral-300 mb-4">
+          <li class="flex justify-between"><span>Segunda a Sexta:</span> <strong class="text-white">09:00 – 20:00</strong></li>
+          <li class="flex justify-between"><span>Sábado:</span> <strong class="text-white">09:00 – 18:00</strong></li>
+          <li class="flex justify-between"><span>Domingo:</span> <span class="text-neutral-500">Fechado</span></li>
+        </ul>
+        <div class="pt-2">
+          <p class="text-[11px] uppercase tracking-wider text-neutral-500 font-bold mb-2">Formas de Pagamento:</p>
+          <div class="flex flex-wrap gap-2 text-[11px] text-neutral-300">
+            <span class="bg-neutral-900 border border-white/10 px-2.5 py-1 rounded">Pix</span>
+            <span class="bg-neutral-900 border border-white/10 px-2.5 py-1 rounded">Crédito</span>
+            <span class="bg-neutral-900 border border-white/10 px-2.5 py-1 rounded">Débito</span>
+            <span class="bg-neutral-900 border border-white/10 px-2.5 py-1 rounded">Dinheiro</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="font-title text-sm text-white font-bold uppercase tracking-wider mb-4 border-b border-amber-500/30 pb-2">Desenvolvimento & Tecnologia</h4>
+        <p class="text-xs text-neutral-400 leading-relaxed mb-4">
+          Demonstração de landing page desenvolvida com exclusividade pela <a href="https://escomstudio.com.br" target="_blank" class="text-amber-400 font-bold hover:underline">ESCOM Studio</a>.
+        </p>
+        <div class="bg-neutral-900/90 p-4 rounded-xl border border-amber-500/30">
+          <p class="text-amber-300 font-bold text-xs">ESCOM STUDIO BRASIL</p>
+          <p class="text-neutral-400 text-[11px] mt-1">Engenharia de Conversão & Presença Digital de Alta Performance.</p>
+          <a href="https://escomstudio.com.br" target="_blank" class="inline-block mt-2 text-xs text-amber-400 font-bold hover:underline">Conheça nossos projetos →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-neutral-500 text-[11px]">
+      <p>© 2026 ${lead.nome} • Todos os direitos reservados.</p>
+      <p>Desenvolvido com excelência técnica por <a href="https://escomstudio.com.br" target="_blank" class="text-amber-400 font-semibold hover:underline">ESCOM Studio</a>.</p>
     </div>
   </footer>
 
-  <!-- BOTÃO FLUTUANTE WHATSAPP -->
-  <a href="${waLink}" target="_blank" class="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 bg-emerald-500 hover:bg-emerald-400 text-white rounded-full shadow-2xl transition-all hover:scale-110 animate-bounce" title="Falar no WhatsApp">
-    <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M20.52 3.48A11.99 11.99 0 0 0 12 .5C6.21.5 1.5 5.21 1.5 11c0 1.94.5 3.78 1.39 5.41L0 23.5l7.21-1.86c1.55.84 3.31 1.33 5.19 1.33h.01c5.79 0 10.5-4.71 10.5-10.5 0-2.8-1.09-5.34-2.88-7.21zM12 20.5c-1.73 0-3.37-.46-4.79-1.25l-.34-.2-4.28 1.1 1.14-4.16-.23-.35A8.98 8.98 0 0 1 3 11c0-4.97 4.03-9 9-9s9 4.03 9 9-4.03 9-9 9z"/></svg>
+  <!-- BOTÃO FLUTUANTE WHATSAPP (OFICIAL COM VERDE #25D366) -->
+  <a href="${waLink}" target="_blank" class="fixed bottom-6 right-6 z-50 flex items-center justify-center w-16 h-16 bg-[#25D366] hover:bg-[#20ba59] text-white rounded-full transition-all hover:scale-110 animate-bounce" style="box-shadow: 0 4px 25px rgba(37, 211, 102, 0.5);" title="Falar no WhatsApp">
+    <svg class="w-9 h-9 fill-white" viewBox="0 0 24 24">
+      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.585 1.961.947 2.796.947 3.179 0 5.765-2.587 5.765-5.766 0-3.18-2.586-5.766-5.765-5.766zm9.969 5.766c0 5.503-4.477 9.98-9.969 9.98-1.748 0-3.385-.453-4.819-1.246l-5.212 1.367 1.391-5.084c-.883-1.488-1.391-3.226-1.391-5.087 0-5.503 4.477-9.98 9.969-9.98 5.502 0 9.969 4.477 9.969 9.98z"/>
+    </svg>
   </a>
 
   <!-- SCRIPTS DE INTERATIVIDADE -->
   <script>
-    // Contador Regressivo em Tempo Real (48 horas)
     (function initCountdown() {
       let remaining = 48 * 3600 - 15;
       const display = document.getElementById('countdown-timer');
@@ -1811,7 +1889,6 @@ REGRAS TÉCNICAS:
       }, 1000);
     })();
 
-    // Accordion do FAQ
     document.querySelectorAll('#faq-accordion button').forEach(btn => {
       btn.addEventListener('click', () => {
         const targetId = btn.getAttribute('data-target');
