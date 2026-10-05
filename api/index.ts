@@ -1107,16 +1107,83 @@ function getCoverPhotoUrl(categoria: string): string {
   return `https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&q=80&auto=format&fit=crop`;
 }
 
-// Busca referências visuais do Pinterest para o nicho
+// Referências visuais curadas de alta resolução por nicho (usadas caso token do Pinterest esteja inválido/expirado)
+const FALLBACK_NICHE_REFS: Record<string, { urls: string[]; descs: string[] }> = {
+  barbearia: {
+    urls: [
+      "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=900&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=900&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=900&q=80&auto=format&fit=crop"
+    ],
+    descs: [
+      "Ambiente de barbearia clássica com poltronas vintage e acabamento em madeira e dourado",
+      "Navalha de precisão e toalha quente para acabamento tradicional",
+      "Iluminação dramática e ambiente sofisticado para cuidados masculinos"
+    ]
+  },
+  academia: {
+    urls: [
+      "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=900&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=900&q=80&auto=format&fit=crop"
+    ],
+    descs: [
+      "Espaço fitness moderno com pesos livres e estética dark/neon",
+      "Treinamento funcional de alta performance e foco"
+    ]
+  },
+  odonto: {
+    urls: [
+      "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=900&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=900&q=80&auto=format&fit=crop"
+    ],
+    descs: [
+      "Consultório odontológico de tecnologia avançada e estética clean",
+      "Atendimento humanizado e reabilitação estética do sorriso"
+    ]
+  },
+  clinica: {
+    urls: [
+      "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=900&q=80&auto=format&fit=crop"
+    ],
+    descs: ["Clínica médica moderna e recepção sofisticada"]
+  },
+  salao: {
+    urls: [
+      "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=900&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=900&q=80&auto=format&fit=crop"
+    ],
+    descs: [
+      "Design de salão de beleza premium com espelhos iluminados",
+      "Tratamentos estéticos faciais e cuidados capilares avançados"
+    ]
+  },
+  restaurante: {
+    urls: [
+      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&q=80&auto=format&fit=crop"
+    ],
+    descs: ["Salão aconchegante com iluminação intimista e alta gastronomia"]
+  }
+};
+
+// Busca referências visuais do Pinterest para o nicho (com fallback resiliente para Unsplash caso token expire)
 async function fetchPinterestRefs(categoria: string): Promise<{ urls: string[]; descs: string[] }> {
+  const catKey = (categoria || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const fallback = Object.entries(FALLBACK_NICHE_REFS).find(([k]) => catKey.includes(k))?.[1] || {
+    urls: ["https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&q=80&auto=format&fit=crop"],
+    descs: ["Ambiente corporativo de alta credibilidade e presença digital"]
+  };
+
   const token = process.env.PINTEREST_ACCESS_TOKEN || "";
-  if (!token) return { urls: [], descs: [] };
+  if (!token) return fallback;
   try {
     const query = encodeURIComponent(`${categoria} website design premium`);
     const resp = await fetch(`https://api.pinterest.com/v5/search/pins?query=${query}&page_size=10`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!resp.ok) return { urls: [], descs: [] };
+    if (!resp.ok) {
+      console.warn(`[Pinterest] Status ${resp.status} (${resp.statusText}) ao buscar referências. Usando referências visuais curadas.`);
+      return fallback;
+    }
     const data = await resp.json();
     const items: any[] = data.items || [];
     const urls = items.slice(0, 6)
@@ -1125,11 +1192,11 @@ async function fetchPinterestRefs(categoria: string): Promise<{ urls: string[]; 
     const descs = items.slice(0, 6)
       .map((p: any) => p?.title || p?.description || "")
       .filter((d: string) => d.length > 0);
-    return { urls, descs };
-  } catch { return { urls: [], descs: [] }; }
+    return urls.length > 0 ? { urls, descs } : fallback;
+  } catch { return fallback; }
 }
 
-// Função central de geração de landing page para lead via IA (Gemini 3.8 Flash + Groq Qwen/Allam fallback)
+// Função central de geração de landing page para lead via IA (Groq gpt-oss-120b + Gemini + Qwen fallback)
 async function generateSiteForLead(lead: any, observacoes = ""): Promise<string | null> {
   const leadId = lead.id;
   const baseUrl = process.env.BASE_URL || "https://www.escomstudio.com.br";
@@ -1144,10 +1211,10 @@ async function generateSiteForLead(lead: any, observacoes = ""): Promise<string 
   const botaoAceitarUrl = `${baseUrl}/api/aceitar-proposta`;
   const slug = lead.site_slug || leadId;
 
-  // 1. Busca referências visuais no Pinterest
+  // 1. Busca referências visuais no Pinterest (ou referências curadas em fallback)
   const { urls: pinterestUrls, descs: pinterestDescs } = await fetchPinterestRefs(lead.categoria || "negocio");
   const pinterestBlock = pinterestUrls.length > 0
-    ? `REFERÊNCIAS VISUAIS DO PINTEREST (inspire-se nestas imagens para paleta, tipografia e layout):
+    ? `REFERÊNCIAS VISUAIS DE INSPIRAÇÃO:
 ${pinterestUrls.map((u, i) => `  - ${u}${pinterestDescs[i] ? ` (${pinterestDescs[i]})` : ""}`).join("\n")}`
     : "";
 
@@ -1182,7 +1249,7 @@ ${pinterestBlock}
 
 BIBLIOTECAS (inclua no <head>):
 - Tailwind CSS: <script src="https://cdn.tailwindcss.com"></script>
-- GSAP + ScrollTrigger via CDN: <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+- GSAP: <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
 ═══════════ SEÇÕES OBRIGATÓRIAS ═══════════
 1. BANNER ESCOM: topo fixo sutil "✨ Demonstração criada pela ESCOM Studio • Solicitar site oficial" (link https://escomstudio.com.br)
@@ -1201,42 +1268,48 @@ BIBLIOTECAS (inclua no <head>):
 14. FOOTER: links, copyright © ${lead.nome} e créditos ESCOM Studio
 15. BOTÃO FLUTUANTE WHATSAPP: fixado no canto inferior direito pulsando (${waLink})
 
-REGRAS TÉCNICAS:
-- Use Tailwind CSS para estilização rápida e responsiva.
-- GSAP para animações de fade e entrada nos títulos e cards.
-- Retorne APENAS o código HTML completo começando com <!DOCTYPE html> e terminando com </html>.
-- Sem blocos de markdown e sem explicações externas.`;
+REGRAS TÉCNICAS RÍGIDAS:
+- Use classes do Tailwind CSS no próprio HTML.
+- O código DEVE ser gerado por completo do início <!DOCTYPE html> até fechar </html>. Não pare no meio.
+- Retorne APENAS o código HTML completo sem markdown e sem crases.`;
 
   console.log(`[generateSiteForLead] Gerando landing page para ${leadId} (${lead.nome})...`);
   let html = "";
 
-  // 1. Tenta Gemini 3.8 Flash (rápido e suporta textos longos)
-  if (process.env.GEMINI_API_KEY) {
+  // 1. Tenta Groq openai/gpt-oss-120b (modelo potente de 120B com 8k tokens e reasoning oculto)
+  if (process.env.GROQ_API_KEY) {
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const resp = await ai.models.generateContent({
-        model: "gemini-3.8-flash",
-        contents: prompt,
+      const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+      const r = await groq.chat.completions.create({
+        model: "openai/gpt-oss-120b",
+        messages: [
+          { role: "system", content: "Você é um engenheiro de front-end sênior da ESCOM Studio. Retorne APENAS código HTML puro começando em <!DOCTYPE html> e fechando em </html>. Sem explicações, sem texto fora do HTML e sem blocos com crases." },
+          { role: "user", content: prompt }
+        ],
+        max_tokens: 8000,
+        reasoning_format: "hidden" as any
       });
-      const t = resp.text || "";
+      const t = r.choices[0]?.message?.content || "";
       if (t.length > 800) {
-        console.log(`[generateSiteForLead] Sucesso via Gemini 3.8 Flash (${t.length} chars)`);
+        console.log(`[generateSiteForLead] Sucesso via Groq gpt-oss-120b (${t.length} chars)`);
         html = t;
       }
     } catch (e: any) {
-      console.warn(`[generateSiteForLead] Gemini 3.8 Flash indisponível (${e.message}), acionando fallback Groq...`);
+      console.warn(`[generateSiteForLead] Groq gpt-oss-120b falhou (${e.message}), tentando fallbacks...`);
     }
   }
 
-  // 2. Fallback Groq com modelos que respeitam a cota (qwen3.8-27b e allam-2-7b com max_tokens: 3800)
+  // 2. Fallback Groq qwen3.8-27b e allam-2-7b
   if (!html && process.env.GROQ_API_KEY) {
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-    const groqModels = ["qwen/qwen3.8-27b", "allam-2-7b"];
-    for (const m of groqModels) {
+    for (const m of ["qwen/qwen3.8-27b", "allam-2-7b"]) {
       try {
         const r = await groq.chat.completions.create({
           model: m,
-          messages: [{ role: "user", content: prompt }],
+          messages: [
+            { role: "system", content: "Retorne APENAS código HTML completo do <!DOCTYPE html> ao </html>." },
+            { role: "user", content: prompt }
+          ],
           temperature: 0.5,
           max_tokens: 3800,
         });
@@ -1249,6 +1322,24 @@ REGRAS TÉCNICAS:
       } catch (e: any) {
         console.warn(`[generateSiteForLead] Groq ${m} falhou:`, e.message);
       }
+    }
+  }
+
+  // 3. Fallback Gemini se disponível
+  if (!html && process.env.GEMINI_API_KEY) {
+    try {
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const resp = await ai.models.generateContent({
+        model: "gemini-3.5-flash",
+        contents: prompt,
+      });
+      const t = resp.text || "";
+      if (t.length > 800) {
+        console.log(`[generateSiteForLead] Sucesso via Gemini 3.5 Flash (${t.length} chars)`);
+        html = t;
+      }
+    } catch (e: any) {
+      console.warn(`[generateSiteForLead] Gemini 3.5 Flash falhou:`, e.message);
     }
   }
 
