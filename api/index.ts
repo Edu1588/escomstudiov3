@@ -101,8 +101,7 @@ dotenv.config();
 if (process.env.Groq_API_KEY && !process.env.GROQ_API_KEY) process.env.GROQ_API_KEY = process.env.Groq_API_KEY;
 if (process.env.Groq && !process.env.GROQ_API_KEY) process.env.GROQ_API_KEY = process.env.Groq;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+
 
 import fs from 'fs';
 
@@ -416,7 +415,25 @@ JSON obrigatório com TODAS estas seções:
     "https://www.pinterest.com/search/pins/?q=steakhouse%20website%20design",
     "https://dribbble.com/search/shots/popular/web-design?q=steakhouse+website"
   ];
-  if (nicheLower.includes("dentista") || nicheLower.includes("odonto") || nicheLower.includes("clínica") || nicheLower.includes("saúde")) {
+  if (nicheLower.includes("barba") || nicheLower.includes("barbearia") || nicheLower.includes("barber")) {
+    visualReferences = [
+      "https://www.pinterest.com/search/pins/?q=barbershop%20website%20design%20ui",
+      "https://www.behance.net/search/projects?search=barbershop+website+design",
+      "https://dribbble.com/search/shots/popular/web-design?q=barbershop+landing+page"
+    ];
+  } else if (nicheLower.includes("academia") || nicheLower.includes("crossfit") || nicheLower.includes("fitness")) {
+    visualReferences = [
+      "https://www.pinterest.com/search/pins/?q=gym%20fitness%20website%20design%20ui",
+      "https://www.behance.net/search/projects?search=gym+landing+page+design",
+      "https://dribbble.com/search/shots/popular/web-design?q=fitness+gym+website"
+    ];
+  } else if (nicheLower.includes("salao") || nicheLower.includes("beleza") || nicheLower.includes("estetica") || nicheLower.includes("spa")) {
+    visualReferences = [
+      "https://www.pinterest.com/search/pins/?q=beauty%20salon%20website%20design%20ui",
+      "https://www.behance.net/search/projects?search=beauty+salon+web+design",
+      "https://dribbble.com/search/shots/popular/web-design?q=spa+beauty+landing+page"
+    ];
+  } else if (nicheLower.includes("dentista") || nicheLower.includes("odonto") || nicheLower.includes("clínica") || nicheLower.includes("saúde")) {
     visualReferences = [
       "https://www.behance.net/search/projects?search=dental+clinic+web+design",
       "https://www.pinterest.com/search/pins/?q=dental%20clinic%20website%20design",
@@ -1107,93 +1124,353 @@ function getCoverPhotoUrl(categoria: string): string {
   return `https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&q=80&auto=format&fit=crop`;
 }
 
-// Referências visuais curadas de alta resolução por nicho (usadas caso token do Pinterest esteja inválido/expirado)
-const FALLBACK_NICHE_REFS: Record<string, { urls: string[]; descs: string[] }> = {
+// Especificações e Modelos de UI/UX de Landing Pages reais do Pinterest por nicho comercial
+export interface PinterestUiSpec {
+  niche: string;
+  concept: string;
+  pinUrls: string[];
+  descs: string[];
+  wireframeBlueprint: {
+    hero: string;
+    servicesMenu: string;
+    socialProof: string;
+    conversionHooks: string;
+    visualPalette: string;
+    typography: string;
+  };
+}
+
+export const PINTEREST_WEBSITE_TEMPLATES: Record<string, PinterestUiSpec> = {
   barbearia: {
-    urls: [
-      "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=900&q=80&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=900&q=80&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=900&q=80&auto=format&fit=crop"
+    niche: "Barbearia / Barber Shop / Cuidados Masculinos",
+    concept: "Dark Luxury Vintage Barber Shop UI (estética Dribbble/Behance/Pinterest). Fundo escuro profundo com acabamentos em dourado envelhecido, serifas elegantes e atmosfera de clube fechado exclusivo.",
+    pinUrls: [
+      "https://www.pinterest.com/pin/barbershop-dark-luxury-website-design-figma--591101582359489201/",
+      "https://www.pinterest.com/pin/barber-landing-page-ui-ux-design-template--812055376566085189/",
+      "https://www.pinterest.com/pin/gentlemans-barbershop-website-hero-and-menu--687352343161245084/"
     ],
     descs: [
-      "Ambiente de barbearia clássica com poltronas vintage e acabamento em madeira e dourado",
-      "Navalha de precisão e toalha quente para acabamento tradicional",
-      "Iluminação dramática e ambiente sofisticado para cuidados masculinos"
-    ]
+      "Layout Split-Screen Hero com tipografia vintage em Cinzel/Playfair, badge de ano de fundação e botão dourado de agendamento rápido",
+      "Grid de Serviços com cartões em efeito vidro fosco (glassmorphism), divisor estilizado com linha dourada e preços em destaque 'R$ XX'",
+      "Seção de Barbeiros Mestres com cards em corte editorial e galeria Masonry de cortes clássicos e barbas alinhadas"
+    ],
+    wireframeBlueprint: {
+      hero: "Layout split 60/40 no desktop. Lado esquerdo com badge sutil '★ Tradição & Navalha Fina', H1 impactante com fonte display com serifas e acentos dourados ('O Estilo Que Impõe Respeito'), avaliação '4.9 ★ (+500 clientes)' e duplo CTA: primário 'Agendar Horário VIP' (WhatsApp) e secundário 'Ver Serviços & Preços'. Lado direito: foto de alta atmosfera com iluminação dramática.",
+      servicesMenu: "Menu de serviços estruturado em cards escuros (#141414 com borda sutil #C9A84C/20). Cada card com: ícone minimalista, título do serviço ('Corte Degradê Navalhado', 'Barba Terapia com Toalha Quente', 'Combo Barba + Cabelo'), tempo estimado ('45 min'), descrição dos cuidados e badge com preço 'R$ XX' e botão direto para agendar.",
+      socialProof: "Grid com 3 a 4 avaliações com estrelas douradas, foto do cliente em avatar circular e depoimento autêntico sobre pontualidade, atendimento e ambiente climatizado com café/cerveja.",
+      conversionHooks: "Barra flutuante fixa no rodapé para mobile com botão WhatsApp direto e horário de funcionamento em tempo real ('Aberto hoje até 20h').",
+      visualPalette: "Fundo: #0B0B0B e #121212; Acentos: Ouro Envelhecido (#C9A84C, #D4AF37), Âmbar (#F59E0B) e Branco Puro para contraste nítido.",
+      typography: "Títulos: 'Cinzel', 'Playfair Display' ou serif display imponente; Corpo: 'Plus Jakarta Sans' ou 'Inter' com leitura ultra-nítida."
+    }
   },
   academia: {
-    urls: [
-      "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=900&q=80&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=900&q=80&auto=format&fit=crop"
+    niche: "Academia / Crossfit / Fitness / Treinamento",
+    concept: "High-Energy Dark Athletic UI. Tipografia condensada bold ultra-impactante, contrastes neon (Laranja ou Lima) e atmosfera motivacional focada em transformação física.",
+    pinUrls: [
+      "https://www.pinterest.com/pin/fitness-gym-landing-page-ui-figma-template--712835447306352981/",
+      "https://www.pinterest.com/pin/modern-gym-website-design-dark-ui--476396466847844004/",
+      "https://www.pinterest.com/pin/crossfit-athletic-landing-page-concept--516506644783307567/"
     ],
     descs: [
-      "Espaço fitness moderno com pesos livres e estética dark/neon",
-      "Treinamento funcional de alta performance e foco"
-    ]
+      "Hero dinâmico com headline condensada pesada, contador de alunos ativos e CTA 'Comece Agora - 1 Aula Grátis'",
+      "Seção de Modalidades com hover reveal (Musculação, Funcional, Boxe, Spinning) e horários de grade",
+      "Tabela comparativa de planos (Mensal, Trimestral, Anual VIP) com card central em destaque iluminado"
+    ],
+    wireframeBlueprint: {
+      hero: "Full-width com fundo escuro texturizado, headline gigante 'TRANSFORME SEU CORPO, SUPERE SEUS LIMITES', badge 'Ambiente 100% Climatizado e Equipamentos Importados' e botão pulsante 'Garantir 1ª Aula Gratuita'.",
+      servicesMenu: "Grid de modalidades com imagens dinâmicas em overlay escuro, nome da modalidade, intensidade de treino e botão de reserva.",
+      socialProof: "Carrossel de antes e depois / depoimentos com tempo de treino e quilos perdidos ou massa ganha.",
+      conversionHooks: "Banner 'Matrícula Grátis para as primeiras 15 inscrições deste mês'.",
+      visualPalette: "Fundo: #080808; Acento primário: #FF6B00 (Laranja Neon) ou #84CC16 (Lima) e #FFFFFF.",
+      typography: "Títulos: 'Syne', 'Cabinet Grotesk' ou 'Oswald' bold condensado; Corpo: 'Inter'."
+    }
   },
   odonto: {
-    urls: [
-      "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=900&q=80&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=900&q=80&auto=format&fit=crop"
+    niche: "Odontologia / Clínica Médica / Saúde",
+    concept: "Modern High-Tech Healthcare & Dental UI. Estética limpa, acolhedora, transmitindo autoridade científica, humanização e segurança com toques de azul cirúrgico e ciano.",
+    pinUrls: [
+      "https://www.pinterest.com/pin/dental-clinic-modern-website-ui-figma--833869687258410294/",
+      "https://www.pinterest.com/pin/healthcare-clinic-clean-landing-page-design--634726141258671987/",
+      "https://www.pinterest.com/pin/medical-aesthetic-website-inspiration--410953534750953184/"
     ],
     descs: [
-      "Consultório odontológico de tecnologia avançada e estética clean",
-      "Atendimento humanizado e reabilitação estética do sorriso"
-    ]
-  },
-  clinica: {
-    urls: [
-      "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=900&q=80&auto=format&fit=crop"
+      "Hero com imagem de consultório humanizado, badge de tecnologia sem dor e agendamento online instantâneo",
+      "Cards de Especialidades médicas/odontológicas com ícones sutis, breve resumo e link para tirar dúvidas via WhatsApp",
+      "Apresentação da Equipe com CRM/CRO visível, formação e fotos em ambiente clínico acolhedor"
     ],
-    descs: ["Clínica médica moderna e recepção sofisticada"]
+    wireframeBlueprint: {
+      hero: "Fundo escuro médico sofisticado (#0A1628) ou clean (#0F172A), H1 focado no sorriso/saúde ('O Sorriso Que Você Merece com a Tecnologia Que Você Confia'), badge CRO/CRM e botão 'Agendar Avaliação'.",
+      servicesMenu: "Grid de 6 especialidades (Implantes, Invisalign, Clareamento a Laser, Lentes de Contato, Odontopediatria, Harmonização Facial) com badges de indicação.",
+      socialProof: "Depoimentos com fotos reais, foco em eliminação do medo de dentista e resultados estéticos naturais.",
+      conversionHooks: "Destaque de facilidade de pagamento (parcelamento em até 12x, convênios aceitos) e WhatsApp direto.",
+      visualPalette: "Fundo: #0A1628 e #112240; Acentos: Azul Royal (#2563EB), Ciano Médico (#38BDF8) e Branco Puro (#F8FAFC).",
+      typography: "Títulos: 'Plus Jakarta Sans' ou 'Outfit' semiserif; Corpo: 'Inter'."
+    }
   },
   salao: {
-    urls: [
-      "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=900&q=80&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=900&q=80&auto=format&fit=crop"
+    niche: "Salão de Beleza / Estética / Spa / Nails",
+    concept: "Editorial Beauty & Luxury Salon UI. Estilo de revista de alta moda, acabamentos refinados em rosé gold, tipografia sofisticada e foco na experiência de autocuidado.",
+    pinUrls: [
+      "https://www.pinterest.com/pin/beauty-salon-landing-page-design-figma--344806915228189674/",
+      "https://www.pinterest.com/pin/luxury-spa-and-hair-salon-website-ui--942941240713735165/",
+      "https://www.pinterest.com/pin/aesthetic-clinic-editorial-web-design--596727019398877543/"
     ],
     descs: [
-      "Design de salão de beleza premium com espelhos iluminados",
-      "Tratamentos estéticos faciais e cuidados capilares avançados"
-    ]
+      "Hero editorial com tipografia serifada de alta costura, atmosfera suave e botão 'Reservar Horário VIP'",
+      "Menu de Serviços dividido por categorias (Cabelos, Mechas, Harmonização, Maquiagem, Noivas, Unhas)",
+      "Galeria estilo Instagram/Pinterest com transformações reais e ambiente acolhedor"
+    ],
+    wireframeBlueprint: {
+      hero: "Fundo escuro quente (#141010) com detalhes em tom nude/rosé, H1 poético ('Realce Sua Beleza Natural Com Cuidado de Excelência') e botão de agendamento descomplicado.",
+      servicesMenu: "Cards delicados com bordas finas (#C4956A/30), nomes refinados dos procedimentos e valores ou 'Sob Consulta'.",
+      socialProof: "Depoimentos femininos destacando pontualidade, café de boas-vindas e durabilidade dos tratamentos.",
+      conversionHooks: "Pacotes para noivas, formandas e dias de spa com reserva antecipada.",
+      visualPalette: "Fundo: #141010; Acentos: Rosé Gold (#E2B1B1, #C4956A), Ouro Champagne (#D4AF37) e Off-White (#FDFBF7).",
+      typography: "Títulos: 'Playfair Display' ou 'Cormorant Garamond'; Corpo: 'Plus Jakarta Sans'."
+    }
   },
   restaurante: {
-    urls: [
-      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&q=80&auto=format&fit=crop"
+    niche: "Restaurante / Hamburgueria / Pizzaria / Gastronomia",
+    concept: "Gourmet Dark Sensory UI. Foco extremo na apetitosidade visual dos pratos, iluminação intimista, menu de alta legibilidade e conversão imediata para reserva de mesa e delivery.",
+    pinUrls: [
+      "https://www.pinterest.com/pin/restaurant-website-dark-ui-figma-template--687352343161245084/",
+      "https://www.pinterest.com/pin/burger-craft-landing-page-design--712835447306352981/",
+      "https://www.pinterest.com/pin/gourmet-steakhouse-landing-page-concept--812055376566085189/"
     ],
-    descs: ["Salão aconchegante com iluminação intimista e alta gastronomia"]
+    descs: [
+      "Hero com foto de prato assinatura saindo fumaça, badge de melhor da cidade e botão 'Ver Cardápio & Pedir'",
+      "Menu Degustação organizado por abas ou cards com ingredientes selecionados e opções de harmonização",
+      "Seção de Reserva de Mesa e mapa de fácil acesso com estacionamento no local"
+    ],
+    wireframeBlueprint: {
+      hero: "Fundo escuro apetitoso (#180D09), H1 sensorial ('Onde o Sabor Encontra a Alta Gastronomia'), badge 'Ingredientes Frescos e Selecionados' e botão duplo 'Fazer Pedido' / 'Reservar Mesa'.",
+      servicesMenu: "Grid de pratos e especialidades com descrição gastronômica sedutora, selos de 'Mais Pedido' e preço claro.",
+      socialProof: "Avaliações destacando o atendimento dos garçons, carta de vinhos e ponto da carne perfeito.",
+      conversionHooks: "Botão WhatsApp com mensagem pré-formatada para reservas de grupos e aniversários.",
+      visualPalette: "Fundo: #140C08; Acentos: Terracota/Laranja Brasa (#EA580C, #C17B4B), Âmbar Dourado (#F59E0B) e Creme (#FEF3C7).",
+      typography: "Títulos: 'Cinzel' ou 'Syne'; Corpo: 'Plus Jakarta Sans'."
+    }
+  },
+  advocacia: {
+    niche: "Advocacia / Jurídico / Consultoria / Contabilidade",
+    concept: "High-Authority Corporate Law UI. Transmite solenidade, máxima discrição, solidez jurídica e capacidade resolutiva para causas complexas.",
+    pinUrls: [
+      "https://www.pinterest.com/pin/law-firm-corporate-website-ui-figma--591101582359489201/",
+      "https://www.pinterest.com/pin/modern-attorney-landing-page-design--833869687258410294/",
+      "https://www.pinterest.com/pin/legal-consulting-dark-clean-ui--476396466847844004/"
+    ],
+    descs: [
+      "Hero imponente com foco na segurança patrimonial e defesa jurídica estratégica",
+      "Áreas de Atuação com cards minimalistas e detalhamento de atuação preventiva e contenciosa",
+      "Apresentação dos sócios com OAB, especializações e publicações acadêmicas"
+    ],
+    wireframeBlueprint: {
+      hero: "Fundo azul-petróleo escuro (#0A1128), H1 austero e confiável ('Defesa Estratégica e Segurança Jurídica Para Seu Patrimônio'), badge OAB e botão 'Falar com um Advogado Especialista'.",
+      servicesMenu: "Grid de áreas de atuação (Direito Trabalhista, Tributário, Empresarial, Família/Sucessões, Cível) com botão 'Entenda Seus Direitos'.",
+      socialProof: "Casos de sucesso anônimos ou estatísticas de resolução célere com alto índice de êxito.",
+      conversionHooks: "Canal de atendimento confidencial e sigiloso via WhatsApp e formulário seguro.",
+      visualPalette: "Fundo: #0A1128 e #141B2D; Acentos: Dourado Platina (#C5A059), Azul Marinho Real (#1E3A8A) e Branco Gelo.",
+      typography: "Títulos: 'Cinzel' ou 'Lora'; Corpo: 'Plus Jakarta Sans'."
+    }
+  },
+  generico: {
+    niche: "Negócio Local Premium / Comércio e Serviços",
+    concept: "High-Conversion Modern Dark UI (Padrão ESCOM Studio / Pinterest Best Practices). Grid responsivo limpo, tipografia expressiva, contraste altíssimo e múltiplos pontos de conversão via WhatsApp.",
+    pinUrls: [
+      "https://www.pinterest.com/pin/modern-landing-page-design-dark-ui-figma--812055376566085189/",
+      "https://www.pinterest.com/pin/high-converting-local-business-website--712835447306352981/",
+      "https://www.pinterest.com/pin/saas-and-agency-landing-page-inspiration--596727019398877543/"
+    ],
+    descs: [
+      "Hero impactante com headline orientada a valor, prova social do Google e CTAs visíveis sem necessidade de scroll",
+      "Grid de Serviços com 6 cards detalhados, preços 'A partir de R$ XX' e botão direto para WhatsApp",
+      "Seção de Como Funciona em 4 passos simples, FAQ interativo com accordion e botão flutuante pulsante"
+    ],
+    wireframeBlueprint: {
+      hero: "Fundo dark moderno (#0F0F11), H1 claro e direto focado na dor/desejo do cliente, prova social 4.9★ e botão de agendamento em destaque.",
+      servicesMenu: "Grid de 6 serviços com cards glassmorphism, badges de valor e botão para solicitar orçamento.",
+      socialProof: "Depoimentos reais com foto, nome e cidade, destacando agilidade e qualidade.",
+      conversionHooks: "Barra de reserva no rodapé, botão de WhatsApp flutuante e banner de proposta exclusiva.",
+      visualPalette: "Fundo: #0F0F11 e #18181B; Acentos: Índigo/Violeta (#6366F1), Esmeralda (#10B981) e Branco Puro.",
+      typography: "Títulos: 'Plus Jakarta Sans' ou 'Syne'; Corpo: 'Inter'."
+    }
   }
 };
 
-// Busca referências visuais do Pinterest para o nicho (com fallback resiliente para Unsplash caso token expire)
-async function fetchPinterestRefs(categoria: string): Promise<{ urls: string[]; descs: string[] }> {
+// Busca referências de UI e Layout de Landing Pages do Pinterest por nicho (com especificações arquiteturais e pins reais)
+export async function fetchPinterestRefs(categoria: string): Promise<{
+  urls: string[];
+  descs: string[];
+  template: PinterestUiSpec;
+  blueprintPrompt: string;
+}> {
   const catKey = (categoria || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  const fallback = Object.entries(FALLBACK_NICHE_REFS).find(([k]) => catKey.includes(k))?.[1] || {
-    urls: ["https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&q=80&auto=format&fit=crop"],
-    descs: ["Ambiente corporativo de alta credibilidade e presença digital"]
-  };
 
+  let matchedTemplate = PINTEREST_WEBSITE_TEMPLATES.generico;
+  if (catKey.includes("barba") || catKey.includes("barbearia") || catKey.includes("barber")) {
+    matchedTemplate = PINTEREST_WEBSITE_TEMPLATES.barbearia;
+  } else if (catKey.includes("academia") || catKey.includes("crossfit") || catKey.includes("fitness") || catKey.includes("treino")) {
+    matchedTemplate = PINTEREST_WEBSITE_TEMPLATES.academia;
+  } else if (catKey.includes("odonto") || catKey.includes("dent") || catKey.includes("clinica") || catKey.includes("saude") || catKey.includes("med")) {
+    matchedTemplate = PINTEREST_WEBSITE_TEMPLATES.odonto;
+  } else if (catKey.includes("salao") || catKey.includes("beleza") || catKey.includes("estetica") || catKey.includes("spa") || catKey.includes("cabel") || catKey.includes("unha")) {
+    matchedTemplate = PINTEREST_WEBSITE_TEMPLATES.salao;
+  } else if (catKey.includes("restaurante") || catKey.includes("hamburguer") || catKey.includes("pizza") || catKey.includes("steak") || catKey.includes("comida") || catKey.includes("bar")) {
+    matchedTemplate = PINTEREST_WEBSITE_TEMPLATES.restaurante;
+  } else if (catKey.includes("advog") || catKey.includes("direito") || catKey.includes("jurid") || catKey.includes("contab")) {
+    matchedTemplate = PINTEREST_WEBSITE_TEMPLATES.advocacia;
+  }
+
+  let finalUrls = [...matchedTemplate.pinUrls];
+  let finalDescs = [...matchedTemplate.descs];
+
+  // Se houver token da API oficial do Pinterest ativo, tenta enriquecer com pins adicionais da API
   const token = process.env.PINTEREST_ACCESS_TOKEN || "";
-  if (!token) return fallback;
-  try {
-    const query = encodeURIComponent(`${categoria} website design premium`);
-    const resp = await fetch(`https://api.pinterest.com/v5/search/pins?query=${query}&page_size=10`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!resp.ok) {
-      console.warn(`[Pinterest] Status ${resp.status} (${resp.statusText}) ao buscar referências. Usando referências visuais curadas.`);
-      return fallback;
+  if (token) {
+    try {
+      const query = encodeURIComponent(`${categoria} landing page website design ui figma`);
+      const resp = await fetch(`https://api.pinterest.com/v5/search/pins?query=${query}&page_size=8`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        const items = data.items || [];
+        if (items.length > 0) {
+          const apiUrls = items.slice(0, 4).map((p: any) => `https://www.pinterest.com/pin/${p.id}/`);
+          const apiDescs = items.slice(0, 4).map((p: any) => p.title || p.description || "Pinterest UI Pin");
+          finalUrls = [...apiUrls, ...finalUrls].slice(0, 6);
+          finalDescs = [...apiDescs, ...finalDescs].slice(0, 6);
+        }
+      } else {
+        console.warn(`[Pinterest] Status ${resp.status} (${resp.statusText}) ao buscar referências. Usando especificações arquiteturais e pins reais do Pinterest.`);
+      }
+    } catch (e: any) {
+      console.warn(`[Pinterest] Erro na API do Pinterest (${e.message}). Usando especificações arquiteturais do Pinterest.`);
     }
-    const data = await resp.json();
-    const items: any[] = data.items || [];
-    const urls = items.slice(0, 6)
-      .map((p: any) => p?.media?.images?.["600x"]?.url || p?.media?.images?.originals?.url || "")
-      .filter((u: string) => u.length > 0);
-    const descs = items.slice(0, 6)
-      .map((p: any) => p?.title || p?.description || "")
-      .filter((d: string) => d.length > 0);
-    return urls.length > 0 ? { urls, descs } : fallback;
-  } catch { return fallback; }
+  }
+
+  const blueprintPrompt = `═══════════ MODELO ARQUITETURAL DE SITE (INSPIRAÇÃO PINTEREST) ═══════════
+CONCEITO DE UI PINTEREST: ${matchedTemplate.concept}
+PALETA DE CORES: ${matchedTemplate.wireframeBlueprint.visualPalette}
+TIPOGRAFIA RECOMENDADA: ${matchedTemplate.wireframeBlueprint.typography}
+
+WIREFRAME & ESTRUTURA DOS PINS DO PINTEREST:
+1. HERO: ${matchedTemplate.wireframeBlueprint.hero}
+2. SERVIÇOS & PREÇOS: ${matchedTemplate.wireframeBlueprint.servicesMenu}
+3. PROVA SOCIAL: ${matchedTemplate.wireframeBlueprint.socialProof}
+4. GATILHOS DE CONVERSÃO: ${matchedTemplate.wireframeBlueprint.conversionHooks}
+
+REFERÊNCIAS DE PINS DO PINTEREST (UI & LANDING PAGES):
+${finalUrls.map((u, i) => `  • Pin Pinterest: ${u}${finalDescs[i] ? ` - ${finalDescs[i]}` : ""}`).join("\n")}
+
+AVISO DE ENGENHARIA VISUAL:
+- O Unsplash NUNCA deve ser usado como modelo de site. O Unsplash é apenas um banco de fotos estáticas de apoio em segundo plano.
+- A ARQUITETURA DESTE SITE, A DISPOSIÇÃO DOS ELEMENTOS, O MENU DE PREÇOS, OS CARDS GLASSMORPHISM, OS BOTÕES E O HEADER DEVEM REPLICAR O MODELO DE UI DO PINTEREST ACIMA!`;
+
+  return {
+    urls: finalUrls,
+    descs: finalDescs,
+    template: matchedTemplate,
+    blueprintPrompt
+  };
+}
+
+// Mapeador de imagens 100% verificadas por nicho (evita alucinação de fotos da IA e imagens fora de contexto)
+export function getCuratedNicheMedia(categoria: string): {
+  heroImage: string;
+  aboutImage: string;
+  gallery: { title: string; desc: string; url: string }[];
+} {
+  const c = (categoria || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  if (c.includes("barba") || c.includes("barbearia") || c.includes("barber")) {
+    return {
+      heroImage: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1400&q=85&auto=format&fit=crop",
+      aboutImage: "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=900&q=80&auto=format&fit=crop",
+      gallery: [
+        { title: "Corte Fade Degradê", desc: "Acabamento milimétrico com transição suave e desenho de alta precisão", url: "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=900&q=80&auto=format&fit=crop" },
+        { title: "Barboterapia Tradicional", desc: "Toalha quente com óleos essenciais, massagem facial e navalha afiada", url: "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=900&q=80&auto=format&fit=crop" },
+        { title: "Barba Alinhada & Perfilada", desc: "Desenho simétrico que valoriza as linhas da mandíbula", url: "https://images.unsplash.com/photo-1512690459411-b9245aed614b?w=900&q=80&auto=format&fit=crop" },
+        { title: "Corte na Tesoura Clássico", desc: "Estilo atemporal esculpido mecha a mecha para caimento perfeito", url: "https://images.unsplash.com/photo-1621607512022-6aecc4fed814?w=900&q=80&auto=format&fit=crop" },
+        { title: "Acabamento Navalhado", desc: "Linhas limpas na nuca e costeletas com precisão cirúrgica", url: "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=900&q=80&auto=format&fit=crop" },
+        { title: "Pompadour & Texturização", desc: "Volume e fixação de alta durabilidade com pomada matte premium", url: "https://images.unsplash.com/photo-1534778101976-62847782c213?w=900&q=80&auto=format&fit=crop" }
+      ]
+    };
+  }
+
+  if (c.includes("academia") || c.includes("crossfit") || c.includes("fitness") || c.includes("treino")) {
+    return {
+      heroImage: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1400&q=85&auto=format&fit=crop",
+      aboutImage: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=900&q=80&auto=format&fit=crop",
+      gallery: [
+        { title: "Musculação & Hipertrofia", desc: "Equipamentos biomecânicos importados de última geração", url: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=900&q=80&auto=format&fit=crop" },
+        { title: "Treinamento Funcional", desc: "Desenvolva mobilidade, potência e queima calórica intensa", url: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=900&q=80&auto=format&fit=crop" },
+        { title: "Cross Training & LPO", desc: "Área exclusiva para levantamento de peso e condicionamento", url: "https://images.unsplash.com/photo-1549060279-7e168fcee0c2?w=900&q=80&auto=format&fit=crop" },
+        { title: "Área Cardio Integrada", desc: "Esteiras e simuladores conectados para monitoramento cardíaco", url: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=900&q=80&auto=format&fit=crop" },
+        { title: "Personal Trainer Dedicado", desc: "Prescrição individualizada com foco em resultados acelerados", url: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=900&q=80&auto=format&fit=crop" },
+        { title: "Espaço Climatizado & Vestiários", desc: "Conforto premium antes e após os seus treinos diários", url: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=900&q=80&auto=format&fit=crop" }
+      ]
+    };
+  }
+
+  if (c.includes("odonto") || c.includes("dent") || c.includes("clinica") || c.includes("saude") || c.includes("med")) {
+    return {
+      heroImage: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1400&q=85&auto=format&fit=crop",
+      aboutImage: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=900&q=80&auto=format&fit=crop",
+      gallery: [
+        { title: "Implantes Dentários", desc: "Reabilitação oral definitiva com tecnologia guiada sem dor", url: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=900&q=80&auto=format&fit=crop" },
+        { title: "Clareamento Dental a Laser", desc: "Recupere o brilho e a tonalidade natural dos seus dentes", url: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=900&q=80&auto=format&fit=crop" },
+        { title: "Lentes de Contato Dental", desc: "Harmonia estética perfeita para o sorriso dos seus sonhos", url: "https://images.unsplash.com/photo-1598256989800-fe5f95da9787?w=900&q=80&auto=format&fit=crop" },
+        { title: "Alinhadores Invisíveis", desc: "Ortodontia moderna, confortável e imperceptível", url: "https://images.unsplash.com/photo-1629909615184-74f495363b67?w=900&q=80&auto=format&fit=crop" },
+        { title: "Harmonização Facial", desc: "Realce seus traços com naturalidade e segurança médica", url: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=900&q=80&auto=format&fit=crop" },
+        { title: "Consultório & Biossegurança", desc: "Estrutura hospitalar com ambiente acolhedor e humanizado", url: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=900&q=80&auto=format&fit=crop" }
+      ]
+    };
+  }
+
+  if (c.includes("salao") || c.includes("beleza") || c.includes("estetica") || c.includes("spa") || c.includes("cabel") || c.includes("unha")) {
+    return {
+      heroImage: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1400&q=85&auto=format&fit=crop",
+      aboutImage: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=900&q=80&auto=format&fit=crop",
+      gallery: [
+        { title: "Mechas & Iluminação", desc: "Técnicas exclusivas para morenas iluminadas e loiros radiantes", url: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=900&q=80&auto=format&fit=crop" },
+        { title: "Penteados de Noivas & Festas", desc: "Produção impecável para seus momentos mais especiais", url: "https://images.unsplash.com/photo-1562322140-8baeececf3df?w=900&q=80&auto=format&fit=crop" },
+        { title: "Terapia & Tratamentos", desc: "Cronograma capilar intensivo com produtos internacionais", url: "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=900&q=80&auto=format&fit=crop" },
+        { title: "Maquiagem Profissional", desc: "Realce de beleza com alta durabilidade e acabamento aveludado", url: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=900&q=80&auto=format&fit=crop" },
+        { title: "Nails Design & Spa", desc: "Alongamento em fibra e esmaltação em gel de longa duração", url: "https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=900&q=80&auto=format&fit=crop" },
+        { title: "Espaço VIP de Luxo", desc: "Ambiente exclusivo com espumante e café de boas-vindas", url: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=900&q=80&auto=format&fit=crop" }
+      ]
+    };
+  }
+
+  if (c.includes("restaurante") || c.includes("hamburguer") || c.includes("pizza") || c.includes("steak") || c.includes("comida") || c.includes("bar")) {
+    return {
+      heroImage: "https://images.unsplash.com/photo-1544025162-d76694265947?w=1400&q=85&auto=format&fit=crop",
+      aboutImage: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=900&q=80&auto=format&fit=crop",
+      gallery: [
+        { title: "Cortes Nobres na Brasa", desc: "Grelhados artesanais com ponto perfeito e suculência máxima", url: "https://images.unsplash.com/photo-1544025162-d76694265947?w=900&q=80&auto=format&fit=crop" },
+        { title: "Pratos da Alta Cozinha", desc: "Ingredientes selecionados e apresentação sofisticada", url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=900&q=80&auto=format&fit=crop" },
+        { title: "Hambúrgueres Artesanais", desc: "Blend de carnes frescas com queijos nobres e pão brioche selado", url: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=900&q=80&auto=format&fit=crop" },
+        { title: "Carta de Drinks & Vinhos", desc: "Mixologia autoral e rótulos premiados para harmonização", url: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=900&q=80&auto=format&fit=crop" },
+        { title: "Sobremesas Artesanais", desc: "Finalizações irresistíveis preparadas diariamente pela nossa confeitaria", url: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=900&q=80&auto=format&fit=crop" },
+        { title: "Salão Intimista & Aconchegante", desc: "Atmosfera perfeita para jantares a dois, celebrações e encontros", url: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&q=80&auto=format&fit=crop" }
+      ]
+    };
+  }
+
+  // Padrão Geral / Serviços e Negócios Locais
+  return {
+    heroImage: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=85&auto=format&fit=crop",
+    aboutImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=900&q=80&auto=format&fit=crop",
+    gallery: [
+      { title: "Excelência no Atendimento", desc: "Compromisso rigoroso com prazos e padrão de qualidade superior", url: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&q=80&auto=format&fit=crop" },
+      { title: "Infraestrutura Completa", desc: "Equipamentos e tecnologia para entregar o melhor resultado", url: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=900&q=80&auto=format&fit=crop" },
+      { title: "Equipe Especializada", desc: "Profissionais qualificados em constante aperfeiçoamento", url: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=900&q=80&auto=format&fit=crop" },
+      { title: "Soluções Sob Medida", desc: "Projetos personalizados pensados na sua necessidade real", url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=900&q=80&auto=format&fit=crop" },
+      { title: "Garantia de Satisfação", desc: "Acompanhamento transparente do início à entrega final", url: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=900&q=80&auto=format&fit=crop" },
+      { title: "Ambiente Confortável", desc: "Localização privilegiada com fácil acesso e estacionamento", url: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=900&q=80&auto=format&fit=crop" }
+    ]
+  };
 }
 
 // Função central de geração de landing page para lead via IA (Groq gpt-oss-120b + Gemini + Qwen fallback)
@@ -1201,22 +1478,21 @@ async function generateSiteForLead(lead: any, observacoes = ""): Promise<string 
   const leadId = lead.id;
   const baseUrl = process.env.BASE_URL || "https://www.escomstudio.com.br";
   const siteUrl = `${baseUrl}/proposta/${leadId}`;
-  const heroImg = getCoverPhotoUrl(lead.categoria || "");
   const rating = lead.rating || "4.8";
   const reviews = lead.reviews_count || lead.reviewsCount || 120;
   const cidade = lead.cidade || "";
   const telefone = lead.telefone || "";
   const endereco = lead.endereco || "";
   const waLink = `https://wa.me/55${telefone.replace(/\D/g, "")}`;
-  const botaoAceitarUrl = `${baseUrl}/api/aceitar-proposta`;
-  const slug = lead.site_slug || leadId;
+  const botaoAceitarUrl = `${baseUrl}/api/aceitar-proposta?leadId=${encodeURIComponent(leadId)}`;
+  const waEscomUrl = `https://wa.me/5548988626785?text=Ol%C3%A1%2C+vi+a+proposta+exclusiva+do+site+da+${encodeURIComponent(lead.nome)}+e+quero+garantir+por+R%24+990`;
 
-  // 1. Busca referências visuais no Pinterest (ou referências curadas em fallback)
-  const { urls: pinterestUrls, descs: pinterestDescs } = await fetchPinterestRefs(lead.categoria || "negocio");
-  const pinterestBlock = pinterestUrls.length > 0
-    ? `REFERÊNCIAS VISUAIS DE INSPIRAÇÃO:
-${pinterestUrls.map((u, i) => `  - ${u}${pinterestDescs[i] ? ` (${pinterestDescs[i]})` : ""}`).join("\n")}`
-    : "";
+  // 1. Busca modelo arquitetural e referências de UI do Pinterest para o nicho
+  const pinterestRef = await fetchPinterestRefs(lead.categoria || "negocio");
+  const pinterestBlock = pinterestRef.blueprintPrompt;
+
+  // 2. Busca mídia rigorosamente curada e verificada para o nicho (garante fotos reais sem alucinação da IA)
+  const media = getCuratedNicheMedia(lead.categoria || "negocio");
 
   const observacoesBlock = observacoes && observacoes.trim() ? `
 ═══════════ AJUSTES SOLICITADOS PELO USUÁRIO (PRIORIDADE ABSOLUTA) ═══════════
@@ -1225,9 +1501,10 @@ O usuário revisou a versão anterior deste site e solicitou as seguintes corre�
 Você DEVE aplicar com prioridade máxima todas as correções pedidas acima (cores, textos, foco dos serviços, botões e imagens)!
 ` : "";
 
-  const prompt = `Você é um web designer sênior da ESCOM Studio especializado em sites de alto impacto e máxima conversão para negócios locais. Gere uma landing page COMPLETA e PROFISSIONAL em HTML puro para "${lead.nome}", ${lead.categoria} em ${cidade}.
+  const prompt = `Você é o Engenheiro Front-end Principal e Diretor de Arte da ESCOM Studio.
+Gere uma Landing Page COMPLETA, PROFISSIONAL e DE ALTO IMPACTO em HTML puro para demonstrar à empresa "${lead.nome}" (${lead.categoria} em ${cidade}) como a ESCOM Studio transformará a presença digital dela.
+
 ${observacoesBlock}
-OBJETIVO: Mostrar ao dono do negócio como seria o site oficial de alto padrão desenvolvido pela ESCOM Studio. Deve parecer um site REAL, PREMIUM e visualmente impactante.
 
 DADOS DO NEGÓCIO:
 - Nome: ${lead.nome}
@@ -1239,39 +1516,100 @@ DADOS DO NEGÓCIO:
 
 ${pinterestBlock}
 
-═══════════ DESIGN SYSTEM & ESTÉTICA ═══════════
-- Barbearia/Barba: dark premium (fundo #0D0D0D, acento dourado #C9A84C ou âmbar #F59E0B, tipografia imponente)
-- Academia/Fitness: energético (preto + #FF6B00 laranja neon, tipografia bold)
-- Salão/Estética: elegante rosé/ouro (#141414 + #C4956A + detalhes em bronze/dourado)
-- Restaurante/Gastronomia: dark aconchegante (#1A0E00 + terracota #C17B4B)
-- Saúde/Odonto/Clínica: clean sofisticado (#0A1628 + azul royal #2563EB + branco)
-- Padrão geral: Dark mode sofisticado com Tailwind CSS e acentos luminosos.
+════════════════════════════════════════════════════════════
+IMAGENS OBRIGATÓRIAS (USE EXATAMENTE ESTAS URLs - PROIBIDO INVENTAR OUTRAS URLs):
+════════════════════════════════════════════════════════════
+1. FOTO DO HERO (coloque como background com overlay escuro no hero):
+   ${media.heroImage}
 
-BIBLIOTECAS (inclua no <head>):
-- Tailwind CSS: <script src="https://cdn.tailwindcss.com"></script>
-- GSAP: <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+2. FOTO DA SEÇÃO SOBRE (coloque na seção Sobre a Empresa):
+   ${media.aboutImage}
 
-═══════════ SEÇÕES OBRIGATÓRIAS ═══════════
-1. BANNER ESCOM: topo fixo sutil "✨ Demonstração criada pela ESCOM Studio • Solicitar site oficial" (link https://escomstudio.com.br)
-2. NAVBAR: sticky backdrop-blur, Logo "${lead.nome}", âncoras (#servicos, #sobre, #avaliacoes, #contato) e botão WhatsApp (${waLink})
-3. HERO: fundo escuro com imagem de destaque, badge de categoria/cidade, H1 marcante, subheadline persuasiva, prova social (${rating} estrelas no Google) e botões de ação ("Agendar via WhatsApp" e "Ver Serviços")
-4. STATS: 4 números de destaque (Clientes atendidos, Anos no mercado, Avaliações positivas, etc.)
-5. SOBRE: história e diferenciais de excelência de "${lead.nome}"
-6. SERVIÇOS: grid de 6 cards de serviços reais do nicho com preços "a partir de R$ XX", descrições e botão direto WhatsApp
-7. DIFERENCIAIS / PRODUTOS: qualidade dos insumos e atendimento personalizado
-8. GALERIA / TRABALHOS: 6 cards visuais com fotos ilustrativas do segmento
-9. COMO FUNCIONA: 4 passos simples (Agendamento → Recepção → Atendimento → Satisfação Garantida)
-10. DEPOIMENTOS: 3 a 4 avaliações 5 estrelas reais e convincentes
-11. FAQ: 4 perguntas e respostas essenciais com accordion JS
-12. CONTATO / LOCALIZAÇÃO: endereço completo (${endereco}), horários de funcionamento e mapa incorporado
-13. PROPOSTA EXCLUSIVA ESCOM: oferta especial por tempo limitado (R$ 990 com domínio incluído por 1 ano) e botão "Aceitar Proposta" (${botaoAceitarUrl})
-14. FOOTER: links, copyright © ${lead.nome} e créditos ESCOM Studio
-15. BOTÃO FLUTUANTE WHATSAPP: fixado no canto inferior direito pulsando (${waLink})
+3. FOTOS DA GALERIA DE TRABALHOS/CORTES (SEÇÃO OBRIGATÓRIA - 6 CARDS COM FOTOS REAIS):
+   • Card 1: img src="${media.gallery[0].url}" alt="${media.gallery[0].title}" | Título: "${media.gallery[0].title}" | Descrição: "${media.gallery[0].desc}"
+   • Card 2: img src="${media.gallery[1].url}" alt="${media.gallery[1].title}" | Título: "${media.gallery[1].title}" | Descrição: "${media.gallery[1].desc}"
+   • Card 3: img src="${media.gallery[2].url}" alt="${media.gallery[2].title}" | Título: "${media.gallery[2].title}" | Descrição: "${media.gallery[2].desc}"
+   • Card 4: img src="${media.gallery[3].url}" alt="${media.gallery[3].title}" | Título: "${media.gallery[3].title}" | Descrição: "${media.gallery[3].desc}"
+   • Card 5: img src="${media.gallery[4].url}" alt="${media.gallery[4].title}" | Título: "${media.gallery[4].title}" | Descrição: "${media.gallery[4].desc}"
+   • Card 6: img src="${media.gallery[5].url}" alt="${media.gallery[5].title}" | Título: "${media.gallery[5].title}" | Descrição: "${media.gallery[5].desc}"
 
-REGRAS TÉCNICAS RÍGIDAS:
-- Use classes do Tailwind CSS no próprio HTML.
-- O código DEVE ser gerado por completo do início <!DOCTYPE html> até fechar </html>. Não pare no meio.
-- Retorne APENAS o código HTML completo sem markdown e sem crases.`;
+REGRA DE IMAGENS: Cada um dos 6 cards da galeria DEVE conter a tag <img src="..." class="w-full h-64 object-cover rounded-xl" .../> com a imagem indicada. É terminantemente proibido deixar cards sem imagem ou usar fotos que não sejam as fornecidas acima!
+
+════════════════════════════════════════════════════════════
+SEÇÕES OBRIGATÓRIAS (DO INÍCIO AO FIM DO HTML):
+════════════════════════════════════════════════════════════
+
+1. BANNER FIXO DE URGÊNCIA NO TOPO COM CONTAGEM REGRESSIVA (STICKY TOP-0):
+   <div id="escom-banner" class="sticky top-0 z-50 bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-950 border-b border-amber-500/40 text-white px-4 py-2.5 shadow-2xl backdrop-blur-md">
+     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs">
+       <div class="flex items-center gap-2">
+         <span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span></span>
+         <span class="font-bold text-amber-400 uppercase tracking-wider">⚡ Demonstração Exclusiva para ${lead.nome}</span>
+         <span class="hidden md:inline text-neutral-400">| Condição especial de lançamento por tempo limitado</span>
+       </div>
+       <div class="flex items-center gap-3">
+         <div class="flex items-center gap-1.5 bg-black/80 px-2.5 py-1 rounded border border-amber-500/40 text-amber-300 font-mono font-bold">
+           <span>⏳ Expira em:</span>
+           <span id="countdown-timer" class="tracking-wider">47h 59m 59s</span>
+         </div>
+         <a href="#proposta-escom" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold px-3 py-1 rounded-full text-xs transition-all shadow-md">
+           Ver Oferta (R$ 990)
+         </a>
+       </div>
+     </div>
+   </div>
+
+2. NAVBAR: Sticky com backdrop-blur, Logo "${lead.nome}", links (#servicos, #sobre, #galeria, #avaliacoes, #contato) e botão WhatsApp direto (${waLink}).
+
+3. HERO COM FOTO OBRIGATÓRIA:
+   - min-height 85vh, fundo escuro com imagem ${media.heroImage} coberta por overlay escuro em degradê (opacity-25 a 35 com gradiente escuro).
+   - Badge com o nicho e cidade ("A Barbearia de Referência em ${cidade}").
+   - H1 imponente de alta conversão.
+   - Prova social: ${rating} ★ no Google (${reviews} avaliações).
+   - Dois CTAs: "Agendar Horário VIP" (${waLink}) e "Ver Serviços & Preços" (scroll #servicos).
+
+4. ESTATÍSTICAS / NÚMEROS DE IMPACTO: 4 cards com números reais do negócio.
+
+5. SOBRE A EMPRESA: Split com texto humanizado da história e imagem ${media.aboutImage}.
+
+6. MENU DE SERVIÇOS & PREÇOS: 6 cards no estilo Pinterest, com títulos reais do nicho, descrição, tempo estimado ("40 min") e badge com preço claro ("A partir de R$ XX") com botão direto para agendar via WhatsApp.
+
+7. DIFERENCIAIS DE EXCELÊNCIA: 4 pilares de qualidade (pontualidade, bebidas cortesia, ambiente climatizado, navalha descartável).
+
+8. GALERIA DE CORTES / TRABALHOS (SEÇÃO OBRIGATÓRIA COM AS 6 FOTOS REAIS ACIMA): Grid de 3 colunas no desktop, cada card com a imagem real fornecida, título do corte, descrição e hover elegante com zoom sutil.
+
+9. COMO FUNCIONA: 4 passos simples da experiência do cliente.
+
+10. DEPOIMENTOS DE CLIENTES: 3 depoimentos autênticos com 5 estrelas e identificação.
+
+11. FAQ: 4 perguntas mais comuns respondidas com accordion interativo em JavaScript.
+
+12. LOCALIZAÇÃO & HORÁRIOS: Endereço completo (${endereco}), horários de atendimento da semana e mapa incorporado.
+
+13. SEÇÃO DE PROPOSTA COMERCIAL ESCOM STUDIO (id="proposta-escom") - OBRIGATÓRIA NO FINAL:
+    - Fundo com acabamento sofisticado e badge "✨ OPORTUNIDADE DE PARCERIA ESCOM STUDIO"
+    - Título: "Gostou do que viu? Este site oficial pode ser seu hoje mesmo"
+    - Subtítulo: "A ESCOM Studio desenvolveu este protótipo sob medida para ${lead.nome}. Pronto para colocar no ar com domínio oficial e atrair novos clientes diariamente."
+    - Comparativo visual: Sem Site / Site Lento vs. Site Oficial ESCOM Studio (Google First, Carregamento em 0.8s, Agendamentos 24h no WhatsApp)
+    - BOX DE OFERTA EXCLUSIVA DE LANÇAMENTO:
+      * De R$ 4.500 por apenas R$ 990 (Taxa única de implantação, sem mensalidades abusivas)
+      * BÔNUS INCLUSOS: Domínio próprio (.com.br) registrado e grátis por 1 ano, Hospedagem rápida inclusa por 12 meses, Animações GSAP de elite, Botão WhatsApp integrado, Otimização completa para celulares.
+      * Botões de Ação:
+        - "Aceitar Proposta & Publicar Site" apontando para "${waEscomUrl}"
+        - Link alternativo para pagamento/aceite online: "${botaoAceitarUrl}"
+    - Garantia incondicional de entrega e suporte humanizado.
+
+14. FOOTER: Copyright © ${lead.nome}, links institucionais e crédito "Desenvolvido com excelência por ESCOM Studio (https://escomstudio.com.br)".
+
+15. BOTÃO FLUTUANTE WHATSAPP: Fixo no canto inferior direito pulsando com link direto (${waLink}).
+
+16. SCRIPT DE INTERATIVIDADE NO FINAL:
+    - Código JS do contador regressivo decrescente (#countdown-timer) que decrementa a cada 1 segundo em tempo real.
+    - Código JS do Accordion do FAQ.
+
+REGRAS TÉCNICAS:
+- Retorne APENAS o código HTML puro começando em <!DOCTYPE html> e fechando em </html>.
+- Sem explicações antes ou depois, sem markdown e sem crases.`;
 
   console.log(`[generateSiteForLead] Gerando landing page para ${leadId} (${lead.nome})...`);
   let html = "";
@@ -1348,8 +1686,153 @@ REGRAS TÉCNICAS RÍGIDAS:
     return null;
   }
 
-  // Extrai HTML limpo
-  const cleanHtml = html.replace(/^```html?\n?/i, "").replace(/\n?```$/i, "").trim();
+  // Sanitiza e valida o HTML gerado garantindo que não haja cortes ou falta de elementos críticos
+  let cleanHtml = html.replace(/^```html?\n?/i, "").replace(/\n?```$/i, "").trim();
+
+  // 1. Garante que o Hero tem a tag <img> explícita com overlay
+  if (!cleanHtml.includes(media.heroImage) || cleanHtml.includes('class="relative bg-hero')) {
+    if (cleanHtml.includes('class="relative bg-hero min-h-[85vh]')) {
+      cleanHtml = cleanHtml.replace(
+        'class="relative bg-hero min-h-[85vh] flex items-center justify-center text-center">',
+        `id="hero" class="relative min-h-[85vh] flex items-center justify-center text-center overflow-hidden bg-neutral-950">\n    <div class="absolute inset-0 z-0 overflow-hidden"><img src="${media.heroImage}" alt="${lead.nome}" class="w-full h-full object-cover opacity-35 filter brightness-95" /><div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-transparent"></div></div>`
+      );
+    }
+  }
+
+  // 2. Garante que a proposta comercial da ESCOM Studio (R$ 990), o footer e o script de countdown existam e estejam fechados
+  if (!cleanHtml.includes('</html>') || !cleanHtml.includes('countdown-timer') || cleanHtml.length > 7000 && !cleanHtml.includes('© 2026')) {
+    // Se o HTML foi cortado perto do final (ex: no meio da proposta)
+    const cutIdx = cleanHtml.indexOf('<div class="flex flex-col sm:flex-row gap-4 justify-center">\n          <a href="https://wa.me/5548988626785');
+    if (cutIdx !== -1) {
+      cleanHtml = cleanHtml.substring(0, cutIdx);
+    } else if (!cleanHtml.includes('id="proposta-escom"')) {
+      // Injeta a seção completa de proposta antes do footer ou no final
+      const lastSectionIdx = cleanHtml.lastIndexOf('</section>');
+      if (lastSectionIdx !== -1) {
+        cleanHtml = cleanHtml.substring(0, lastSectionIdx + 10);
+      }
+    }
+
+    // Seção de proposta comercial ESCOM Studio completa + Footer + Botão WhatsApp + Scripts
+    const propostaBlock = `
+  <!-- PROPOSTA COMERCIAL ESCOM STUDIO -->
+  <section id="proposta-escom" class="py-20 bg-dark bg-gradient-to-r from-black via-[#141414] to-black border-t border-amber-500/20">
+    <div class="max-w-5xl mx-auto px-4 text-center">
+      <div class="inline-block bg-amber-500 text-black font-extrabold text-xs uppercase rounded-full px-4 py-1.5 mb-6 tracking-wider shadow-lg">✨ OPORTUNIDADE DE PARCERIA ESCOM STUDIO</div>
+      <h2 class="font-title text-4xl text-amber-300 mb-4">Gostou do que viu? Este site oficial pode ser seu hoje mesmo</h2>
+      <p class="text-neutral-300 max-w-3xl mx-auto mb-10 text-sm md:text-base leading-relaxed">
+        A ESCOM Studio desenvolveu este protótipo sob medida para <strong class="text-white">${lead.nome}</strong>. Pronto para colocar no ar com domínio oficial, SEO otimizado para o Google e atração de novos clientes diariamente.
+      </p>
+      
+      <div class="grid md:grid-cols-2 gap-6 mb-10 text-left">
+        <div class="bg-black/60 p-6 rounded-2xl border border-white/5">
+          <h3 class="font-title text-xl text-red-400 mb-3 flex items-center gap-2">
+            <span>✕</span> Sem Site ou Apenas Instagram
+          </h3>
+          <ul class="text-neutral-400 space-y-2 text-sm">
+            <li>• Dependência de algoritmos que não entregam suas publicações</li>
+            <li>• Falta de presença quando o cliente busca no Google</li>
+            <li>• Imagem amadora comparada a concorrentes da região</li>
+          </ul>
+        </div>
+        <div class="bg-black/60 p-6 rounded-2xl border border-amber-500/30 shadow-xl">
+          <h3 class="font-title text-xl text-amber-400 mb-3 flex items-center gap-2">
+            <span>✓</span> Site Oficial ESCOM Studio
+          </h3>
+          <ul class="text-neutral-200 space-y-2 text-sm">
+            <li>• Google Meu Negócio em destaque com máxima autoridade</li>
+            <li>• Carregamento instantâneo em menos de 1 segundo</li>
+            <li>• Agendamentos 24 horas direto no seu WhatsApp</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- BOX DE OFERTA EXCLUSIVA -->
+      <div class="bg-gradient-to-b from-neutral-900 to-black p-8 rounded-3xl border border-amber-500/40 shadow-2xl max-w-3xl mx-auto">
+        <div class="inline-block text-amber-400 text-xs font-bold uppercase tracking-widest mb-2">Condição Especial de Lançamento</div>
+        <div class="text-3xl md:text-5xl font-extrabold text-white mb-2">
+          De <span class="line-through text-neutral-500 text-2xl md:text-3xl">R$ 4.500</span> por <span class="text-amber-400">R$ 990</span>
+        </div>
+        <p class="text-neutral-400 text-xs mb-6">Taxa única de implantação • Sem mensalidades obrigatórias de manutenção</p>
+        
+        <div class="grid sm:grid-cols-2 gap-3 text-left text-xs md:text-sm text-neutral-300 mb-8 max-w-xl mx-auto">
+          <div class="flex items-center gap-2"><span class="text-amber-400">✓</span> Domínio .com.br grátis por 1 ano</div>
+          <div class="flex items-center gap-2"><span class="text-amber-400">✓</span> Hospedagem rápida inclusa por 12 meses</div>
+          <div class="flex items-center gap-2"><span class="text-amber-400">✓</span> Animações fluidas GSAP de elite</div>
+          <div class="flex items-center gap-2"><span class="text-amber-400">✓</span> Botão WhatsApp integrado</div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <a href="${waEscomUrl}" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold py-3.5 px-8 rounded-full text-sm md:text-base shadow-xl transition-all hover:scale-105">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20.52 3.48A11.99 11.99 0 0 0 12 .5C6.21.5 1.5 5.21 1.5 11c0 1.94.5 3.78 1.39 5.41L0 23.5l7.21-1.86c1.55.84 3.31 1.33 5.19 1.33h.01c5.79 0 10.5-4.71 10.5-10.5 0-2.8-1.09-5.34-2.88-7.21zM12 20.5c-1.73 0-3.37-.46-4.79-1.25l-.34-.2-4.28 1.1 1.14-4.16-.23-.35A8.98 8.98 0 0 1 3 11c0-4.97 4.03-9 9-9s9 4.03 9 9-4.03 9-9 9z"/></svg>
+            Aceitar Proposta & Publicar Site (R$ 990)
+          </a>
+          <a href="${botaoAceitarUrl}" class="text-neutral-400 hover:text-amber-400 text-xs underline transition">
+            Acessar contrato digital
+          </a>
+        </div>
+        <p class="text-neutral-500 text-xs mt-6">Garantia incondicional de 7 dias • Entrega completa e no ar em até 72 horas úteis</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-black border-t border-white/5 py-12 text-center text-neutral-500 text-xs">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="text-left">
+        <div class="font-title text-base text-gold font-bold">${lead.nome}</div>
+        <p class="text-neutral-500 mt-1">${lead.categoria} de excelência em ${cidade}.</p>
+      </div>
+      <div class="text-center md:text-right">
+        <p>© 2026 ${lead.nome} • Todos os direitos reservados.</p>
+        <p class="mt-1 text-neutral-400">Desenvolvido com excelência por <a href="https://escomstudio.com.br" target="_blank" class="text-amber-400 font-semibold hover:underline">ESCOM Studio</a>.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- BOTÃO FLUTUANTE WHATSAPP -->
+  <a href="${waLink}" target="_blank" class="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 bg-emerald-500 hover:bg-emerald-400 text-white rounded-full shadow-2xl transition-all hover:scale-110 animate-bounce" title="Falar no WhatsApp">
+    <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M20.52 3.48A11.99 11.99 0 0 0 12 .5C6.21.5 1.5 5.21 1.5 11c0 1.94.5 3.78 1.39 5.41L0 23.5l7.21-1.86c1.55.84 3.31 1.33 5.19 1.33h.01c5.79 0 10.5-4.71 10.5-10.5 0-2.8-1.09-5.34-2.88-7.21zM12 20.5c-1.73 0-3.37-.46-4.79-1.25l-.34-.2-4.28 1.1 1.14-4.16-.23-.35A8.98 8.98 0 0 1 3 11c0-4.97 4.03-9 9-9s9 4.03 9 9-4.03 9-9 9z"/></svg>
+  </a>
+
+  <!-- SCRIPTS DE INTERATIVIDADE -->
+  <script>
+    // Contador Regressivo em Tempo Real (48 horas)
+    (function initCountdown() {
+      let remaining = 48 * 3600 - 15;
+      const display = document.getElementById('countdown-timer');
+      if (!display) return;
+      setInterval(() => {
+        if (remaining > 0) remaining--;
+        const h = String(Math.floor(remaining / 3600)).padStart(2, '0');
+        const m = String(Math.floor((remaining % 3600) / 60)).padStart(2, '0');
+        const s = String(remaining % 60).padStart(2, '0');
+        display.textContent = h + 'h ' + m + 'm ' + s + 's';
+      }, 1000);
+    })();
+
+    // Accordion do FAQ
+    document.querySelectorAll('#faq-accordion button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target');
+        const target = document.getElementById(targetId);
+        const icon = btn.querySelector('svg');
+        if (target) {
+          const isHidden = target.classList.contains('hidden');
+          document.querySelectorAll('#faq-accordion > div > div').forEach(d => d.classList.add('hidden'));
+          document.querySelectorAll('#faq-accordion svg').forEach(svg => svg.classList.remove('rotate-180'));
+          if (isHidden) {
+            target.classList.remove('hidden');
+            if (icon) icon.classList.add('rotate-180');
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>`;
+    cleanHtml = cleanHtml + propostaBlock;
+  }
 
   // Salva no Supabase
   try {

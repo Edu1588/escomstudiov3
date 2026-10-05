@@ -4,8 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const PORT = Number(process.env.PORT) || 3000;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+
 
 async function startLocalServer() {
   if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
