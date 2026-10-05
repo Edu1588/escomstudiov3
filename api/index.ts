@@ -1145,9 +1145,9 @@ export const PINTEREST_WEBSITE_TEMPLATES: Record<string, PinterestUiSpec> = {
     niche: "Barbearia / Barber Shop / Cuidados Masculinos",
     concept: "Dark Luxury Vintage Barber Shop UI (estética Dribbble/Behance/Pinterest). Fundo escuro profundo com acabamentos em dourado envelhecido, serifas elegantes e atmosfera de clube fechado exclusivo.",
     pinUrls: [
-      "https://www.pinterest.com/pin/barbershop-dark-luxury-website-design-figma--591101582359489201/",
-      "https://www.pinterest.com/pin/barber-landing-page-ui-ux-design-template--812055376566085189/",
-      "https://www.pinterest.com/pin/gentlemans-barbershop-website-hero-and-menu--687352343161245084/"
+      "https://www.pinterest.com/search/pins/?q=barbershop+website+design",
+      "https://www.pinterest.com/search/pins/?q=barber+landing+page+ui+figma",
+      "https://www.pinterest.com/search/pins/?q=dark+luxury+barber+shop+website"
     ],
     descs: [
       "Layout Split-Screen Hero com tipografia vintage em Cinzel/Playfair, badge de ano de fundação e botão dourado de agendamento rápido",
@@ -1167,9 +1167,9 @@ export const PINTEREST_WEBSITE_TEMPLATES: Record<string, PinterestUiSpec> = {
     niche: "Academia / Crossfit / Fitness / Treinamento",
     concept: "High-Energy Dark Athletic UI. Tipografia condensada bold ultra-impactante, contrastes neon (Laranja ou Lima) e atmosfera motivacional focada em transformação física.",
     pinUrls: [
-      "https://www.pinterest.com/pin/fitness-gym-landing-page-ui-figma-template--712835447306352981/",
-      "https://www.pinterest.com/pin/modern-gym-website-design-dark-ui--476396466847844004/",
-      "https://www.pinterest.com/pin/crossfit-athletic-landing-page-concept--516506644783307567/"
+      "https://www.pinterest.com/search/pins/?q=gym+fitness+landing+page+ui+design",
+      "https://www.pinterest.com/search/pins/?q=crossfit+athletic+website+figma",
+      "https://www.pinterest.com/search/pins/?q=modern+gym+website+design+dark+ui"
     ],
     descs: [
       "Hero dinâmico com headline condensada pesada, contador de alunos ativos e CTA 'Comece Agora - 1 Aula Grátis'",
@@ -1189,9 +1189,9 @@ export const PINTEREST_WEBSITE_TEMPLATES: Record<string, PinterestUiSpec> = {
     niche: "Odontologia / Clínica Médica / Saúde",
     concept: "Modern High-Tech Healthcare & Dental UI. Estética limpa, acolhedora, transmitindo autoridade científica, humanização e segurança com toques de azul cirúrgico e ciano.",
     pinUrls: [
-      "https://www.pinterest.com/pin/dental-clinic-modern-website-ui-figma--833869687258410294/",
-      "https://www.pinterest.com/pin/healthcare-clinic-clean-landing-page-design--634726141258671987/",
-      "https://www.pinterest.com/pin/medical-aesthetic-website-inspiration--410953534750953184/"
+      "https://www.pinterest.com/search/pins/?q=dental+clinic+website+ui+design",
+      "https://www.pinterest.com/search/pins/?q=healthcare+medical+landing+page+figma",
+      "https://www.pinterest.com/search/pins/?q=modern+clinic+website+dark+ui"
     ],
     descs: [
       "Hero com imagem de consultório humanizado, badge de tecnologia sem dor e agendamento online instantâneo",
@@ -1211,9 +1211,9 @@ export const PINTEREST_WEBSITE_TEMPLATES: Record<string, PinterestUiSpec> = {
     niche: "Salão de Beleza / Estética / Spa / Nails",
     concept: "Editorial Beauty & Luxury Salon UI. Estilo de revista de alta moda, acabamentos refinados em rosé gold, tipografia sofisticada e foco na experiência de autocuidado.",
     pinUrls: [
-      "https://www.pinterest.com/pin/beauty-salon-landing-page-design-figma--344806915228189674/",
-      "https://www.pinterest.com/pin/luxury-spa-and-hair-salon-website-ui--942941240713735165/",
-      "https://www.pinterest.com/pin/aesthetic-clinic-editorial-web-design--596727019398877543/"
+      "https://www.pinterest.com/search/pins/?q=beauty+salon+website+landing+page+ui",
+      "https://www.pinterest.com/search/pins/?q=luxury+spa+aesthetic+web+design",
+      "https://www.pinterest.com/search/pins/?q=hair+salon+editorial+website+figma"
     ],
     descs: [
       "Hero editorial com tipografia serifada de alta costura, atmosfera suave e botão 'Reservar Horário VIP'",
@@ -1233,9 +1233,9 @@ export const PINTEREST_WEBSITE_TEMPLATES: Record<string, PinterestUiSpec> = {
     niche: "Restaurante / Hamburgueria / Pizzaria / Gastronomia",
     concept: "Gourmet Dark Sensory UI. Foco extremo na apetitosidade visual dos pratos, iluminação intimista, menu de alta legibilidade e conversão imediata para reserva de mesa e delivery.",
     pinUrls: [
-      "https://www.pinterest.com/pin/restaurant-website-dark-ui-figma-template--687352343161245084/",
-      "https://www.pinterest.com/pin/burger-craft-landing-page-design--712835447306352981/",
-      "https://www.pinterest.com/pin/gourmet-steakhouse-landing-page-concept--812055376566085189/"
+      "https://www.pinterest.com/search/pins/?q=restaurant+website+landing+page+ui",
+      "https://www.pinterest.com/search/pins/?q=gourmet+burger+dark+website+figma",
+      "https://www.pinterest.com/search/pins/?q=steakhouse+craft+landing+page+ui"
     ],
     descs: [
       "Hero com foto de prato assinatura saindo fumaça, badge de melhor da cidade e botão 'Ver Cardápio & Pedir'",
@@ -1255,9 +1255,9 @@ export const PINTEREST_WEBSITE_TEMPLATES: Record<string, PinterestUiSpec> = {
     niche: "Advocacia / Jurídico / Consultoria / Contabilidade",
     concept: "High-Authority Corporate Law UI. Transmite solenidade, máxima discrição, solidez jurídica e capacidade resolutiva para causas complexas.",
     pinUrls: [
-      "https://www.pinterest.com/pin/law-firm-corporate-website-ui-figma--591101582359489201/",
-      "https://www.pinterest.com/pin/modern-attorney-landing-page-design--833869687258410294/",
-      "https://www.pinterest.com/pin/legal-consulting-dark-clean-ui--476396466847844004/"
+      "https://www.pinterest.com/search/pins/?q=law+firm+website+landing+page+ui",
+      "https://www.pinterest.com/search/pins/?q=attorney+corporate+web+design",
+      "https://www.pinterest.com/search/pins/?q=legal+consulting+dark+clean+ui"
     ],
     descs: [
       "Hero imponente com foco na segurança patrimonial e defesa jurídica estratégica",
@@ -1277,9 +1277,9 @@ export const PINTEREST_WEBSITE_TEMPLATES: Record<string, PinterestUiSpec> = {
     niche: "Negócio Local Premium / Comércio e Serviços",
     concept: "High-Conversion Modern Dark UI (Padrão ESCOM Studio / Pinterest Best Practices). Grid responsivo limpo, tipografia expressiva, contraste altíssimo e múltiplos pontos de conversão via WhatsApp.",
     pinUrls: [
-      "https://www.pinterest.com/pin/modern-landing-page-design-dark-ui-figma--812055376566085189/",
-      "https://www.pinterest.com/pin/high-converting-local-business-website--712835447306352981/",
-      "https://www.pinterest.com/pin/saas-and-agency-landing-page-inspiration--596727019398877543/"
+      "https://www.pinterest.com/search/pins/?q=modern+landing+page+ui+design+dark",
+      "https://www.pinterest.com/search/pins/?q=high+conversion+local+business+website",
+      "https://www.pinterest.com/search/pins/?q=clean+dark+ui+landing+page+figma"
     ],
     descs: [
       "Hero impactante com headline orientada a valor, prova social do Google e CTAs visíveis sem necessidade de scroll",
