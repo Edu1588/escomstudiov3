@@ -4,7 +4,7 @@ import { useLanguage } from "@/components/v6/LanguageContext";
 import { InteractiveBlurTitle } from "@/components/v6/InteractiveBlurTitle";
 import { getPortfolioProjects, PortfolioProject } from "@/firebase";
 import { INITIAL_PORTFOLIO_PROJECTS, PortfolioItem } from "@/data/initialPortfolio";
-import { RoulettePortfolioCarousel } from "./RoulettePortfolioCarousel";
+import { LiquidGlassCarousel, LiquidGlassCarouselItem } from "@/components/ui/liquid-glass-carousel";
 
 export interface DisplayProject {
   id: string | number;
@@ -374,11 +374,29 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
         </div>
       </div>
 
-      {/* ROLETA 3D CILÍNDRICA COM ROTAÇÃO NO SCROLL & HUD NO HOVER (INSPIRAÇÃO PINTEREST) */}
-      <RoulettePortfolioCarousel
-        projects={filteredProjects}
-        onSelect={setSelectedProject}
-      />
+      {/* CARROSSEL LIQUID GLASS WEBGL (THREE.JS + GSAP LENS SHADER) */}
+      <div className="relative z-10 my-8 w-full h-[540px] sm:h-[600px] md:h-[650px] rounded-3xl overflow-hidden border border-white/10 shadow-[0_20px_70px_rgba(0,0,0,0.85)]">
+        <LiquidGlassCarousel
+          items={filteredProjects.map((p) => ({
+            src: p.image || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900&h=1200&q=85&auto=format&fit=crop",
+            title: `${p.client} — ${p.title}`,
+            category: p.category,
+            year: p.year,
+            metrics: p.deliverables,
+            aspect: 16 / 10,
+          }))}
+          background="#000000"
+          panelHeight={480}
+          gap={18}
+          entry={false}
+          className="w-full h-full"
+          onSelectProject={(idx) => {
+            if (filteredProjects[idx]) {
+              setSelectedProject(filteredProjects[idx]);
+            }
+          }}
+        />
+      </div>
 
       {/* CTA INFERIOR PARA AGENDAR DIAGNÓSTICO (ESPAÇAMENTO OTIMIZADO) */}
       <div className="relative z-10 mt-8 md:mt-10 pt-5 border-t border-white/10 flex flex-wrap items-center justify-between gap-6">

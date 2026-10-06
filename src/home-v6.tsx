@@ -9,6 +9,7 @@ import { MethodStage } from "@/components/v6/MethodStage";
 import { AboutInsightsStage } from "@/components/v6/AboutInsightsStage";
 import { DiagnosisStage } from "@/components/v6/DiagnosisStage";
 import { FixedContactButton, FixedBottomBar } from "@/components/v6/FixedUIElements";
+import { FloatingOrbContactButton } from "@/components/v6/FloatingOrbContactButton";
 import { LanguageProvider, useLanguage } from "@/components/v6/LanguageContext";
 import { DynamicSectionFrame } from "@/components/v6/DynamicSectionFrame";
 import { DeliveryPlansSection } from "@/components/v6/DeliveryPlansSection";
@@ -93,6 +94,9 @@ export function HomeV6() {
     <main className="relative bg-[#000000] text-foreground pb-8">
       {/* BOTÃO FIXO NO CANTO SUPERIOR DIREITO DE CONTATO (Ref: APPLY ->) */}
       <FixedContactButton />
+
+      {/* BOTÃO FIXO NO CANTO INFERIOR DIREITO COM ANIMAÇÃO LIVE ORB */}
+      <FloatingOrbContactButton />
 
       {/* BARRA FIXA NO RODAPÉ COM IDIOMAS EN/ES/PT E HORÁRIO DE SP AO VIVO */}
       <FixedBottomBar />
