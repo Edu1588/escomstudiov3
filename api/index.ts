@@ -9,6 +9,7 @@ import Groq from "groq-sdk";
 import cron from "node-cron";
 import { Resend } from "resend";
 import { GoogleGenAI } from "@google/genai";
+import { renderBarbershopLandingPage } from "./barbershopTemplate.js";
 
 async function groqGenerate(prompt: string, opts?: { temperature?: number; maxTokens?: number }): Promise<string> {
   const apiKey = process.env.GROQ_API_KEY || "";
@@ -1499,6 +1500,28 @@ async function generateSiteForLead(lead: any, observacoes = ""): Promise<string 
 
   // 2. Busca mídia rigorosamente curada e verificada para o nicho (garante fotos reais sem alucinação da IA)
   const media = getCuratedNicheMedia(lead.categoria || "negocio");
+
+  // Se o nicho for barbearia, utiliza a Masterpiece Barbershop Engine (100% aderente ao Pinterest Luxury & Dribbble)
+  const catKey = `${lead.categoria || ""} ${lead.id || ""} ${lead.nome || ""}`.toLowerCase();
+  const isBarbearia = catKey.includes("barba") || catKey.includes("barber");
+  if (isBarbearia) {
+    console.log(`[generateSiteForLead] Utilizando Masterpiece Barbershop Engine (Pinterest Dark Luxury) para ${leadId}...`);
+    const cleanHtml = renderBarbershopLandingPage(lead, media, waEscomUrl, botaoAceitarUrl);
+    try {
+      await sbFetch(`/leads?id=eq.${encodeURIComponent(leadId)}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          site_html: cleanHtml,
+          site_gerado: siteUrl,
+          site_status: "gerado"
+        })
+      });
+      console.log(`[generateSiteForLead] HTML salvo com sucesso no Supabase para ${leadId} (${cleanHtml.length} chars)`);
+    } catch (err: any) {
+      console.error(`[generateSiteForLead] Erro ao persistir no Supabase:`, err.message);
+    }
+    return cleanHtml;
+  }
 
   const observacoesBlock = observacoes && observacoes.trim() ? `
 ═══════════ AJUSTES SOLICITADOS PELO USUÁRIO (PRIORIDADE ABSOLUTA) ═══════════
