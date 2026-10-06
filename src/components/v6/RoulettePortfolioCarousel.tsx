@@ -241,7 +241,7 @@ export function RoulettePortfolioCarousel({
                 onMouseEnter={() => setHoveredIndex(i)}
                 onMouseLeave={() => setHoveredIndex(null)}
                 onClick={() => onSelect(project)}
-                className="absolute w-[90vw] sm:w-[540px] md:w-[640px] lg:w-[700px] aspect-[16/10] rounded-2xl md:rounded-3xl cursor-pointer transition-all duration-300 transform-gpu group"
+                className="roulette-card absolute w-[90vw] sm:w-[540px] md:w-[640px] lg:w-[700px] aspect-[16/10] rounded-2xl md:rounded-3xl cursor-pointer transition-all duration-300 transform-gpu group"
                 style={{
                   transformStyle: "preserve-3d",
                   transform: `translateY(${translateY}px) translateZ(${translateZ}px) rotateX(${rotateX}deg) scale(${scale})`,
@@ -265,7 +265,7 @@ export function RoulettePortfolioCarousel({
                       alt={project.title}
                       loading="lazy"
                       className={`size-full object-cover transition-transform duration-700 ease-out ${
-                        isHovered ? "scale-105" : "scale-100"
+                        isHovered ? "scale-105" : "scale-100 group-hover:scale-105"
                       }`}
                     />
                   ) : (
@@ -275,21 +275,23 @@ export function RoulettePortfolioCarousel({
                   )}
 
                   {/* VÍDEO NO HOVER (Toca imediatamente ao passar o mouse) */}
-                  {project.video && isHovered && (
+                  {project.video && (
                     <video
                       src={project.video}
                       autoPlay
                       muted
                       loop
                       playsInline
-                      className="absolute inset-0 size-full object-cover z-10 transition-opacity duration-300"
+                      className={`absolute inset-0 size-full object-cover z-10 transition-opacity duration-300 ${
+                        isHovered ? "opacity-100" : "opacity-0 group-hover:opacity-100 pointer-events-none"
+                      }`}
                     />
                   )}
 
                   {/* OVERLAY SUTIL QUANDO REPOUSO */}
                   <div
                     className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/30 transition-opacity duration-300 ${
-                      isHovered ? "opacity-30" : "opacity-80"
+                      isHovered ? "opacity-30" : "opacity-80 group-hover:opacity-30"
                     }`}
                   />
 
@@ -308,7 +310,7 @@ export function RoulettePortfolioCarousel({
                     className={`absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 z-20 flex items-center justify-between transition-all duration-300 ${
                       isHovered
                         ? "opacity-0 translate-y-3 pointer-events-none"
-                        : "opacity-100 translate-y-0 group-hover:opacity-0 group-hover:translate-y-3"
+                        : "opacity-100 translate-y-0 group-hover:opacity-0 group-hover:translate-y-3 pointer-events-none"
                     }`}
                   >
                     <div>
@@ -330,11 +332,12 @@ export function RoulettePortfolioCarousel({
                       ("no hover de thumb aparece as infos do projeto")
                      ══════════════════════════════════════════════════════════ */}
                   <div
-                    className={`absolute inset-0 z-30 p-5 sm:p-7 md:p-9 flex flex-col justify-between bg-black/90 backdrop-blur-xl border-2 border-cyan/60 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto ${
+                    className={`roulette-hud absolute inset-0 z-30 p-5 sm:p-7 md:p-9 flex flex-col justify-between bg-black/90 backdrop-blur-xl border-2 border-cyan/60 transition-all duration-300 ease-out opacity-0 translate-y-4 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto`}
+                    style={
                       isHovered
-                        ? "opacity-100 translate-y-0 pointer-events-auto"
-                        : "opacity-0 translate-y-4 pointer-events-none"
-                    }`}
+                        ? { opacity: 1, transform: "translateY(0)", pointerEvents: "auto" }
+                        : undefined
+                    }
                   >
                     {/* Topo do HUD de Informações */}
                     <div className="flex items-center justify-between">
