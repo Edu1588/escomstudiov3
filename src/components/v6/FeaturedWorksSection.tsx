@@ -4,6 +4,7 @@ import { useLanguage } from "@/components/v6/LanguageContext";
 import { InteractiveBlurTitle } from "@/components/v6/InteractiveBlurTitle";
 import { getPortfolioProjects, PortfolioProject } from "@/firebase";
 import { INITIAL_PORTFOLIO_PROJECTS, PortfolioItem } from "@/data/initialPortfolio";
+import { RoulettePortfolioCarousel } from "./RoulettePortfolioCarousel";
 
 export interface DisplayProject {
   id: string | number;
@@ -373,16 +374,11 @@ export function FeaturedWorksSection({ Eyebrow }: FeaturedWorksSectionProps) {
         </div>
       </div>
 
-      {/* GRID DE CARDS ESTILO AWWWARDS (3 COLUNAS) */}
-      <div className="relative z-10 mt-6 md:mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 lg:gap-8">
-        {filteredProjects.map((project) => (
-          <FeaturedProjectCard
-            key={project.id}
-            project={project}
-            onSelect={setSelectedProject}
-          />
-        ))}
-      </div>
+      {/* ROLETA 3D CILÍNDRICA COM ROTAÇÃO NO SCROLL & HUD NO HOVER (INSPIRAÇÃO PINTEREST) */}
+      <RoulettePortfolioCarousel
+        projects={filteredProjects}
+        onSelect={setSelectedProject}
+      />
 
       {/* CTA INFERIOR PARA AGENDAR DIAGNÓSTICO (ESPAÇAMENTO OTIMIZADO) */}
       <div className="relative z-10 mt-8 md:mt-10 pt-5 border-t border-white/10 flex flex-wrap items-center justify-between gap-6">
