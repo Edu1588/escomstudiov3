@@ -306,7 +306,9 @@ export function RoulettePortfolioCarousel({
                   {/* IDENTIFICAÇÃO BÁSICA DO CLIENTE NO RODAPÉ DO CARD */}
                   <div
                     className={`absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 z-20 flex items-center justify-between transition-all duration-300 ${
-                      isHovered ? "opacity-0 translate-y-3 pointer-events-none" : "opacity-100 translate-y-0"
+                      isHovered
+                        ? "opacity-0 translate-y-3 pointer-events-none"
+                        : "opacity-100 translate-y-0 group-hover:opacity-0 group-hover:translate-y-3"
                     }`}
                   >
                     <div>
@@ -328,7 +330,7 @@ export function RoulettePortfolioCarousel({
                       ("no hover de thumb aparece as infos do projeto")
                      ══════════════════════════════════════════════════════════ */}
                   <div
-                    className={`absolute inset-0 z-30 p-5 sm:p-7 md:p-9 flex flex-col justify-between bg-black/85 backdrop-blur-xl border border-cyan/40 transition-all duration-300 ease-out ${
+                    className={`absolute inset-0 z-30 p-5 sm:p-7 md:p-9 flex flex-col justify-between bg-black/90 backdrop-blur-xl border-2 border-cyan/60 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto ${
                       isHovered
                         ? "opacity-100 translate-y-0 pointer-events-auto"
                         : "opacity-0 translate-y-4 pointer-events-none"
