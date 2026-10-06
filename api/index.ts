@@ -1510,10 +1510,11 @@ async function generateSiteForLead(lead: any, observacoes = ""): Promise<string 
     try {
       await sbFetch(`/leads?id=eq.${encodeURIComponent(leadId)}`, {
         method: "PATCH",
+        headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
         body: JSON.stringify({
           site_html: cleanHtml,
           site_gerado: siteUrl,
-          site_status: "gerado"
+          status: "site_gerado"
         })
       });
       console.log(`[generateSiteForLead] HTML salvo com sucesso no Supabase para ${leadId} (${cleanHtml.length} chars)`);
