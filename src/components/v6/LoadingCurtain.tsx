@@ -3,9 +3,10 @@ import React, { useEffect, useState } from "react";
 interface LoadingCurtainProps {
   progress: number; // 0 to 100
   onFinished?: () => void;
+  onCurtainsOpen?: () => void;
 }
 
-export function LoadingCurtain({ progress, onFinished }: LoadingCurtainProps) {
+export function LoadingCurtain({ progress, onFinished, onCurtainsOpen }: LoadingCurtainProps) {
   const [displayProgress, setDisplayProgress] = useState(0);
   const [hideNumber, setHideNumber] = useState(false);
   const [openCurtains, setOpenCurtains] = useState(false);
@@ -68,6 +69,7 @@ export function LoadingCurtain({ progress, onFinished }: LoadingCurtainProps) {
       // 2. Abre as duas metades da cortina lateralmente
       const openTimer = setTimeout(() => {
         setOpenCurtains(true);
+        if (onCurtainsOpen) onCurtainsOpen();
       }, 750);
 
       // 3. Remove o elemento do DOM após a conclusão da animação
@@ -78,6 +80,7 @@ export function LoadingCurtain({ progress, onFinished }: LoadingCurtainProps) {
           document.body.style.overflow = "";
           window.scrollTo(0, 0);
         }
+        if (onCurtainsOpen) onCurtainsOpen();
         if (onFinished) onFinished();
       }, 1800);
 

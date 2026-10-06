@@ -11,6 +11,7 @@ interface RobozitoSequenceBackgroundProps {
   className?: string;
   onProgress?: (progressPercent: number) => void;
   onLoaded?: () => void;
+  curtainsOpen?: boolean;
 }
 
 export function RobozitoSequenceBackground({
@@ -20,15 +21,22 @@ export function RobozitoSequenceBackground({
   className = "",
   onProgress,
   onLoaded,
+  curtainsOpen = false,
 }: RobozitoSequenceBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const satelliteVideoRef = useRef<HTMLVideoElement>(null);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
   const imagesRef = useRef<HTMLImageElement[]>([]);
   const loadedCountRef = useRef<number>(0);
   const [initialLoaded, setInitialLoaded] = useState(false);
   const lastDrawnFrameRef = useRef<number>(-1);
 
-  // Pre-carregamento dos 95 frames com monitoramento da meta (metade das imagens)
+  // Transição sequencial: Tela de loading -> Vídeo do Satélite -> Vídeo do Robô Hero em looping
+  const [satelliteEnded, setSatelliteEnded] = useState(false);
+  const satelliteEndedRef = useRef(false);
+  const satelliteStartedRef = useRef(false);
+
+  // Pré-carregamento dos 96 frames com monitoramento da meta (metade das imagens)
   useEffect(() => {
     let isMounted = true;
     const images: HTMLImageElement[] = [];
@@ -46,7 +54,7 @@ export function RobozitoSequenceBackground({
       }
     };
 
-    // Timeout de segurança: após 4.5 segundos, se a rede for lenta, completa para não travar
+    // Timeout de segurança: após 4.5 segundos, completa para não travar
     const safetyTimer = setTimeout(() => {
       if (isMounted && onProgress) {
         onProgress(100);
@@ -75,7 +83,7 @@ export function RobozitoSequenceBackground({
         handleSingleLoad();
       } else {
         img.onload = handleSingleLoad;
-        img.onerror = handleSingleLoad; // Erro em frame individual não bloqueia o carregamento
+        img.onerror = handleSingleLoad;
       }
 
       images.push(img);
@@ -87,7 +95,62 @@ export function RobozitoSequenceBackground({
     };
   }, []);
 
-  // Função para desenhar o frame com aspect-ratio "cover" de alta resolução e brilho natural
+  // Transição suave para o vídeo Hero quando o vídeo do Satélite termina
+  const handleSatelliteEnded = () => {
+    if (satelliteEndedRef.current) return;
+    satelliteEndedRef.current = true;
+    setSatelliteEnded(true);
+
+    const hero = heroVideoRef.current;
+    if (hero) {
+      hero.currentTime = 0;
+      hero.play().catch(() => {});
+    }
+  };
+
+  const handleSatelliteTimeUpdate = () => {
+    const sat = satelliteVideoRef.current;
+    if (sat && sat.duration > 0) {
+      // 0.35s antes do término, inicia a transição suave para o Hero
+      if (sat.currentTime >= sat.duration - 0.35) {
+        handleSatelliteEnded();
+      }
+    }
+  };
+
+  // Disparo do vídeo do Satélite exatamente quando as cortinas de loading se abrem
+  useEffect(() => {
+    if (!curtainsOpen) return;
+    const sat = satelliteVideoRef.current;
+    if (sat && !satelliteStartedRef.current) {
+      satelliteStartedRef.current = true;
+      sat.currentTime = 0;
+      const playPromise = sat.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn("Satellite autoplay blocked or errored:", err);
+          handleSatelliteEnded();
+        });
+      }
+    }
+  }, [curtainsOpen]);
+
+  // Timeout de segurança caso curtainsOpen demore a responder
+  useEffect(() => {
+    const safetyTimeout = setTimeout(() => {
+      if (!satelliteStartedRef.current) {
+        const sat = satelliteVideoRef.current;
+        if (sat) {
+          satelliteStartedRef.current = true;
+          sat.play().catch(() => handleSatelliteEnded());
+        }
+      }
+    }, 4500);
+
+    return () => clearTimeout(safetyTimeout);
+  }, []);
+
+  // Função para desenhar o frame no canvas
   const renderFrame = (targetIndex: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -95,9 +158,8 @@ export function RobozitoSequenceBackground({
     if (!ctx) return;
 
     const clamped = Math.max(0, Math.min(TOTAL_FRAMES - 1, Math.round(targetIndex)));
-    
-    // Tenta obter a imagem alvo; se não carregou ainda, pega a imagem mais próxima carregada
     let img = imagesRef.current[clamped];
+
     if (!img || !img.complete || img.naturalWidth === 0) {
       let found = false;
       for (let offset = 1; offset < TOTAL_FRAMES; offset++) {
@@ -128,30 +190,21 @@ export function RobozitoSequenceBackground({
     const nw = iw * scale;
     const nh = ih * scale;
 
-    // Ponto focal horizontal do robô na imagem de origem (1920x1080):
-    // Nos frames 001 a 045 o robô está em ~0.77 (lado direito da imagem original).
-    // Conforme o scroll avança (frames 45 a 96), a câmera dá zoom in aproximando-se do olho ciano (~0.50).
     const frameProgress = Math.max(0, Math.min(1, clamped / (TOTAL_FRAMES - 1)));
     const focusXRatio = 0.77 - frameProgress * 0.27;
 
-    // Em telas widescreen/desktop (onde nw <= cw), centraliza normalmente com o robô à direita.
-    // Em telas mobile/portrait (onde nw > cw), desloca a imagem para a esquerda
-    // de modo que o robô (que fica na direita no frame 16:9) apareça perfeitamente enquadrado.
     let nx = (cw - nw) / 2;
     if (nw > cw) {
-      // Posiciona o robô no centro-direita (52% da largura do canvas) no mobile
       const targetScreenX = cw * 0.52;
       const targetNx = targetScreenX - focusXRatio * nw;
-      // Garante que a imagem cubra todo o canvas sem sobrar espaços vazios
       nx = Math.max(cw - nw, Math.min(0, targetNx));
     }
 
     const ny = (ch - nh) / 2;
-
     ctx.drawImage(img, nx, ny, nw, nh);
   };
 
-  // Animação e verificação contínua via RAF para 60-120fps ultra suave sem re-renders
+  // Loop RAF de sincronização com scroll
   useEffect(() => {
     let animId: number;
 
@@ -169,20 +222,31 @@ export function RobozitoSequenceBackground({
         renderFrame(clamped);
       }
 
-      // Sincroniza vídeo inicial em looping no topo com crossfade para a sequência no scroll
-      const video = videoRef.current;
-      if (video) {
-        // Conforme o scroll avança (frames 0 a 6), a opacidade do vídeo vai suavemente de 1 para 0
+      // Sincroniza vídeo ativo no topo com crossfade para a sequência de scroll
+      const isHeroActive = satelliteEndedRef.current;
+      const activeVideo = isHeroActive ? heroVideoRef.current : satelliteVideoRef.current;
+      const inactiveVideo = isHeroActive ? satelliteVideoRef.current : heroVideoRef.current;
+
+      if (activeVideo) {
+        // Conforme o scroll avança (frames 0 a 6), a opacidade do vídeo diminui até revelar o canvas
         const videoOpacity = Math.max(0, Math.min(1, 1 - (clamped / 5)));
-        video.style.opacity = String(videoOpacity);
+        activeVideo.style.opacity = String(videoOpacity);
+
         if (clamped > 15) {
-          if (!video.paused) {
-            video.pause();
+          if (!activeVideo.paused) {
+            activeVideo.pause();
           }
         } else {
-          if (video.paused) {
-            video.play().catch(() => {});
+          if (activeVideo.paused && (satelliteStartedRef.current || isHeroActive)) {
+            activeVideo.play().catch(() => {});
           }
+        }
+      }
+
+      if (inactiveVideo) {
+        inactiveVideo.style.opacity = "0";
+        if (!inactiveVideo.paused && isHeroActive) {
+          inactiveVideo.pause();
         }
       }
 
@@ -196,7 +260,7 @@ export function RobozitoSequenceBackground({
     };
   }, [currentFrame, frameRef, progressRef, initialLoaded]);
 
-  // Redimensionamento do canvas conforme a janela
+  // Redimensionamento do canvas
   useEffect(() => {
     const handleResize = () => {
       const canvas = canvasRef.current;
@@ -233,23 +297,38 @@ export function RobozitoSequenceBackground({
         className="absolute inset-0 w-full h-full object-cover"
       />
 
-      {/* Vídeo do Robô em Looping inicial no topo da página (sem áudio e sem controles) */}
+      {/* 1. VÍDEO DO SATÉLITE (Executa primeiro após a tela de loading) */}
       <video
-        ref={videoRef}
+        ref={satelliteVideoRef}
+        src="https://res.cloudinary.com/ifuatk2z/video/upload/v1791323378/satelite.mp4"
+        muted
+        playsInline
+        preload="auto"
+        onEnded={handleSatelliteEnded}
+        onTimeUpdate={handleSatelliteTimeUpdate}
+        onError={handleSatelliteEnded}
+        className="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700 pointer-events-none"
+        style={{ opacity: satelliteEnded ? 0 : 1 }}
+      />
+
+      {/* 2. VÍDEO DO ROBÔ HERO (Entra em seguida em looping contínuo até haver scroll) */}
+      <video
+        ref={heroVideoRef}
         src="https://res.cloudinary.com/ifuatk2z/video/upload/v1790688472/robot_inicio.mp4"
-        autoPlay
         loop
         muted
         playsInline
         preload="auto"
-        className="absolute inset-0 w-full h-full object-cover object-[77%_center] md:object-center transition-opacity duration-300 pointer-events-none"
-        style={{ opacity: 1 }}
+        className="absolute inset-0 w-full h-full object-cover object-[77%_center] md:object-center transition-opacity duration-700 pointer-events-none"
+        style={{ opacity: satelliteEnded ? 1 : 0 }}
       />
 
-      {/* Sombra lateral suave no desktop e vinheta balanceada no mobile para garantir leitura sem ofuscar o robô */}
+      {/* Sombra lateral suave no desktop e vinheta balanceada no mobile */}
       <div className="absolute inset-0 bg-black/20 md:hidden pointer-events-none" />
       <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-black/40 to-transparent pointer-events-none" />
       <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/35 to-transparent pointer-events-none" />
     </div>
   );
 }
+
+export default RobozitoSequenceBackground;

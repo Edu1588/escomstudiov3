@@ -34,6 +34,7 @@ export function HeroManifestoStage({
   const frameRef = useRef(0);
   const pixelProgressRef = useRef(0.0);
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const [curtainsOpen, setCurtainsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -214,7 +215,10 @@ export function HeroManifestoStage({
   return (
     <div ref={stageRef} className="relative w-full">
       {/* TELA DE LOADING FUNCIONAL COM ABERTURA EM CORTINA */}
-      <LoadingCurtain progress={loadingProgress} />
+      <LoadingCurtain
+        progress={loadingProgress}
+        onCurtainsOpen={() => setCurtainsOpen(true)}
+      />
 
       {/* Viewport fixado onde as 3 seções ocorrem com o Robô de fundo animando no scroll */}
       <div
@@ -225,6 +229,7 @@ export function HeroManifestoStage({
         <RobozitoSequenceBackground
           frameRef={frameRef}
           onProgress={setLoadingProgress}
+          curtainsOpen={curtainsOpen}
         />
 
         {/* CAMADA 1: SEÇÃO 1 - HERO */}
