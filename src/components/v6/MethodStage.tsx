@@ -48,7 +48,7 @@ export function MethodStage({
         },
       });
 
-      // 1. Micro-pixels claros crescem sobre a tela preta de Soluções (começa imediatamente)
+      // 1. Micro-pixels claros crescem sobre a tela imediatamente
       tl.fromTo(
         progressRef,
         { current: 0.0 },
@@ -60,51 +60,52 @@ export function MethodStage({
         0.0
       );
 
-      // 2. Linhas dinâmicas que se expandem com a rolagem (Referência The Model)
-      tl.fromTo(".method-line-top", { top: "45%" }, { top: "10%", duration: 0.30, ease: "power2.out" }, 0.22);
-      tl.fromTo(".method-line-bottom", { bottom: "45%" }, { bottom: "10%", duration: 0.30, ease: "power2.out" }, 0.22);
-      tl.fromTo(".method-line-left", { left: "45%" }, { left: "8vw", duration: 0.30, ease: "power2.out" }, 0.22);
-      tl.fromTo(".method-line-right", { right: "45%" }, { right: "8vw", duration: 0.30, ease: "power2.out" }, 0.22);
-
-      tl.fromTo(".method-star-tl", { top: "45%", left: "45%", opacity: 0 }, { top: "10%", left: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.22);
-      tl.fromTo(".method-star-tr", { top: "45%", right: "45%", opacity: 0 }, { top: "10%", right: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.22);
-      tl.fromTo(".method-star-bl", { bottom: "45%", left: "45%", opacity: 0 }, { bottom: "10%", left: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.22);
-      tl.fromTo(".method-star-br", { bottom: "45%", right: "45%", opacity: 0 }, { bottom: "10%", right: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.22);
-
-      tl.fromTo(".method-tag", { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.28);
-
-      // 3. Revela Método com foco óptico no fundo bege
-      const children = Array.from(content.children);
+      // 2. Revela Método e fundo bege suavemente desde o início do scroll
       tl.fromTo(
         content,
         { opacity: 0 },
         {
           opacity: 1,
-          duration: 0.22,
+          duration: 0.25,
           ease: "power2.out",
           onStart: () => {
             content.style.pointerEvents = "auto";
           },
         },
-        0.28
+        0.05
       );
 
+      // 3. Linhas dinâmicas que se expandem com a rolagem (Referência The Model)
+      tl.fromTo(".method-line-top", { top: "45%" }, { top: "10%", duration: 0.30, ease: "power2.out" }, 0.10);
+      tl.fromTo(".method-line-bottom", { bottom: "45%" }, { bottom: "10%", duration: 0.30, ease: "power2.out" }, 0.10);
+      tl.fromTo(".method-line-left", { left: "45%" }, { left: "8vw", duration: 0.30, ease: "power2.out" }, 0.10);
+      tl.fromTo(".method-line-right", { right: "45%" }, { right: "8vw", duration: 0.30, ease: "power2.out" }, 0.10);
+
+      tl.fromTo(".method-star-tl", { top: "45%", left: "45%", opacity: 0 }, { top: "10%", left: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.10);
+      tl.fromTo(".method-star-tr", { top: "45%", right: "45%", opacity: 0 }, { top: "10%", right: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.10);
+      tl.fromTo(".method-star-bl", { bottom: "45%", left: "45%", opacity: 0 }, { bottom: "10%", left: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.10);
+      tl.fromTo(".method-star-br", { bottom: "45%", right: "45%", opacity: 0 }, { bottom: "10%", right: "8vw", opacity: 1, duration: 0.30, ease: "power2.out" }, 0.10);
+
+      tl.fromTo(".method-tag", { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, 0.15);
+
+      // 4. Elementos de texto ganham nitidez
+      const children = Array.from(content.children);
       tl.fromTo(
         children,
         {
           opacity: 0,
-          filter: "blur(14px)",
-          y: 20,
+          filter: "blur(10px)",
+          y: 16,
         },
         {
           opacity: 1,
           filter: "blur(0px)",
           y: 0,
-          duration: 0.30,
-          stagger: 0.05,
+          duration: 0.28,
+          stagger: 0.04,
           ease: "power2.out",
         },
-        0.30
+        0.12
       );
     }, stage);
 

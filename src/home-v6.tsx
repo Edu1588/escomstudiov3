@@ -13,6 +13,7 @@ import { LanguageProvider, useLanguage } from "@/components/v6/LanguageContext";
 import { DynamicSectionFrame } from "@/components/v6/DynamicSectionFrame";
 import { DeliveryPlansSection } from "@/components/v6/DeliveryPlansSection";
 import { FeaturedWorksSection } from "@/components/v6/FeaturedWorksSection";
+import { PageSpeedAuditSection } from "@/components/v6/PageSpeedAuditSection";
 import { ClientsMarqueeSection } from "@/components/v6/ClientsMarqueeSection";
 import { InteractiveBlurTitle } from "@/components/v6/InteractiveBlurTitle";
 import RobotBust3D from "@/components/RobotBust3D";
@@ -212,6 +213,9 @@ export function HomeV6() {
 
       {/* ALGUNS DE NOSSOS TRABALHOS (2 COLUNAS: ESQUERDA FIXA / DIREITA SCROLL GALLERY) */}
       <FeaturedWorksSection Eyebrow={Eyebrow} />
+
+      {/* AUDITORIA DE PERFORMANCE GOOGLE PAGESPEED INSIGHTS (CORE WEB VITALS) */}
+      <PageSpeedAuditSection Eyebrow={Eyebrow} />
 
       {/* PALCO 2: TRANSIÇÃO SOLUÇÕES (Preto) -> MÉTODO (Bege) */}
       <MethodStage Eyebrow={Eyebrow} />
