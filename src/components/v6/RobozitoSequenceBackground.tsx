@@ -300,10 +300,10 @@ export function RobozitoSequenceBackground({
         className="absolute inset-0 w-full h-full object-cover"
       />
 
-      {/* 1. VÍDEO DO SATÉLITE (Executa primeiro após a tela de loading) */}
+      {/* 1. VÍDEO INTRO (Executa primeiro após a tela de loading) */}
       <video
         ref={satelliteVideoRef}
-        src="https://res.cloudinary.com/ifuatk2z/video/upload/v1791323378/satelite.mp4"
+        src="https://res.cloudinary.com/djw0tqmiw/video/upload/v1791414177/3b27634a8847a4cb026917bbf308094e.mp4"
         muted
         playsInline
         preload="auto"
