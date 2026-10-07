@@ -35,6 +35,7 @@ export function HeroManifestoStage({
   const pixelProgressRef = useRef(0.0);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [curtainsOpen, setCurtainsOpen] = useState(false);
+  const [heroRevealed, setHeroRevealed] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -230,6 +231,7 @@ export function HeroManifestoStage({
           frameRef={frameRef}
           onProgress={setLoadingProgress}
           curtainsOpen={curtainsOpen}
+          onSatelliteEnded={() => setHeroRevealed(true)}
         />
 
         {/* CAMADA 1: SEÇÃO 1 - HERO */}
@@ -238,7 +240,15 @@ export function HeroManifestoStage({
           ref={heroRef}
           className="absolute inset-0 z-20 flex flex-col justify-between pt-12 md:pt-14 dark bg-transparent text-foreground pointer-events-auto"
         >
-          <div className="relative z-20 flex h-full flex-1 flex-col justify-between px-5 pt-2 pb-6 md:px-12 xl:px-[22vw] md:pt-4 md:pb-8 pointer-events-auto">
+          {/* Conteúdo do Hero só aparece quando o vídeo do robô (2º vídeo) assume a tela */}
+          <div
+            className="relative z-20 flex h-full flex-1 flex-col justify-between px-5 pt-2 pb-6 md:px-12 xl:px-[22vw] md:pt-4 md:pb-8 transition-all duration-1000 ease-out"
+            style={{
+              opacity: heroRevealed ? 1 : 0,
+              transform: heroRevealed ? "translateY(0)" : "translateY(14px)",
+              pointerEvents: heroRevealed ? "auto" : "none",
+            }}
+          >
             <div className="pointer-events-auto">
               <Eyebrow cyan>{t.hero.eyebrow}</Eyebrow>
             </div>

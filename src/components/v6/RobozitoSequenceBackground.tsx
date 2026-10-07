@@ -12,7 +12,11 @@ interface RobozitoSequenceBackgroundProps {
   onProgress?: (progressPercent: number) => void;
   onLoaded?: () => void;
   curtainsOpen?: boolean;
+  onSatelliteEnded?: () => void;
 }
+
+/** Pausa após a cortina abrir totalmente, para o início do vídeo do satélite não ser cortado. */
+const SATELLITE_START_DELAY_MS = 450;
 
 export function RobozitoSequenceBackground({
   currentFrame = 0,
@@ -22,6 +26,7 @@ export function RobozitoSequenceBackground({
   onProgress,
   onLoaded,
   curtainsOpen = false,
+  onSatelliteEnded,
 }: RobozitoSequenceBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const satelliteVideoRef = useRef<HTMLVideoElement>(null);
@@ -96,10 +101,14 @@ export function RobozitoSequenceBackground({
   }, []);
 
   // Transição suave para o vídeo Hero quando o vídeo do Satélite termina
+  const onSatelliteEndedRef = useRef(onSatelliteEnded);
+  onSatelliteEndedRef.current = onSatelliteEnded;
+
   const handleSatelliteEnded = () => {
     if (satelliteEndedRef.current) return;
     satelliteEndedRef.current = true;
     setSatelliteEnded(true);
+    onSatelliteEndedRef.current?.();
 
     const hero = heroVideoRef.current;
     if (hero) {
@@ -118,35 +127,29 @@ export function RobozitoSequenceBackground({
     }
   };
 
-  // Disparo do vídeo do Satélite exatamente quando as cortinas de loading se abrem
+  const startSatellite = () => {
+    const sat = satelliteVideoRef.current;
+    if (!sat || satelliteStartedRef.current) return;
+    satelliteStartedRef.current = true;
+    sat.currentTime = 0;
+    sat.play().catch((err) => {
+      console.warn("Satellite autoplay blocked or errored:", err);
+      handleSatelliteEnded();
+    });
+  };
+
+  // Disparo do vídeo do Satélite após a cortina abrir TOTALMENTE + pequena pausa,
+  // garantindo que o primeiro frame do vídeo seja visto pelo usuário.
   useEffect(() => {
     if (!curtainsOpen) return;
-    const sat = satelliteVideoRef.current;
-    if (sat && !satelliteStartedRef.current) {
-      satelliteStartedRef.current = true;
-      sat.currentTime = 0;
-      const playPromise = sat.play();
-      if (playPromise !== undefined) {
-        playPromise.catch((err) => {
-          console.warn("Satellite autoplay blocked or errored:", err);
-          handleSatelliteEnded();
-        });
-      }
-    }
+    const t = setTimeout(startSatellite, SATELLITE_START_DELAY_MS);
+    return () => clearTimeout(t);
   }, [curtainsOpen]);
 
-  // Timeout de segurança caso curtainsOpen demore a responder
+  // Rede de segurança: só atua se a cortina nunca sinalizar abertura.
+  // (O loading completa no máximo em ~4.5s + 1.8s de animação de cortina.)
   useEffect(() => {
-    const safetyTimeout = setTimeout(() => {
-      if (!satelliteStartedRef.current) {
-        const sat = satelliteVideoRef.current;
-        if (sat) {
-          satelliteStartedRef.current = true;
-          sat.play().catch(() => handleSatelliteEnded());
-        }
-      }
-    }, 4500);
-
+    const safetyTimeout = setTimeout(startSatellite, 12000);
     return () => clearTimeout(safetyTimeout);
   }, []);
 

@@ -1089,6 +1089,110 @@ app.post("/api/screenshot-site", async (req, res) => {
   }
 });
 
+// Injeta server-side elementos críticos que o modelo frequentemente omite:
+// GSAP + ScrollTrigger, SEO meta tags, correções mobile, WhatsApp flutuante.
+function enhanceGeneratedHtml(html: string, lead: any, siteUrl: string): string {
+  const nome = lead.nome || "";
+  const categoria = lead.categoria || "";
+  const cidade = lead.cidade || "";
+  const telefone = (lead.telefone || "").replace(/\D/g, "");
+  const waLink = telefone ? `https://wa.me/55${telefone}` : "#";
+  const desc = `${nome} em ${cidade} — ${categoria}. Veja nossos serviços, preços e agende pelo WhatsApp.`;
+
+  // ── SEO & Open Graph ─────────────────────────────────────────────────────
+  const seoBlock = `
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="${desc.replace(/"/g, "'")}">
+  <meta property="og:title" content="${nome}">
+  <meta property="og:description" content="${desc.replace(/"/g, "'")}">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="${siteUrl}">`;
+
+  // ── GSAP + ScrollTrigger CDN ──────────────────────────────────────────────
+  const gsapScripts = `
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>`;
+
+  // ── CSS: correções mobile + smooth scroll ─────────────────────────────────
+  const globalCss = `
+  <style id="escom-enhance">
+    html { scroll-behavior: smooth; }
+    /* Previne overflow horizontal em mobile */
+    body { overflow-x: hidden; max-width: 100vw; }
+    * { box-sizing: border-box; }
+    /* Navbar: logo não transborda em telas pequenas */
+    nav a:first-child, nav .logo, nav [class*="logo"], nav [class*="brand"] {
+      max-width: calc(100vw - 130px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    /* H1 hero: quebra palavra longa em mobile */
+    h1 { word-break: break-word; overflow-wrap: break-word; hyphens: auto; }
+    /* WA float é gerado pelo modelo via Section 15 do prompt */
+    /* Imagens responsivas */
+    img { max-width: 100%; height: auto; }
+    /* Seções: padding lateral mínimo em mobile */
+    section, [class*="section"] { padding-left: max(16px, 4vw); padding-right: max(16px, 4vw); }
+  </style>`;
+
+  // ── GSAP animation init ───────────────────────────────────────────────────
+  const gsapInit = `
+  <script>
+    (function() {
+      if (typeof gsap === 'undefined') return;
+      gsap.registerPlugin(ScrollTrigger);
+      // Hero: fade+slide do conteúdo ao carregar
+      gsap.from("h1, h1 + *, h1 + * + *", {
+        opacity: 0, y: 40, duration: 1, stagger: 0.2, ease: "power3.out", delay: 0.2
+      });
+      // Seções: fade ao rolar
+      gsap.utils.toArray("section h2, section h3").forEach(el => {
+        gsap.from(el, {
+          scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" },
+          opacity: 0, y: 30, duration: 0.7, ease: "power2.out"
+        });
+      });
+      // Cards: stagger ao aparecer
+      document.querySelectorAll("section .grid, section .flex:not(nav)").forEach(grid => {
+        const children = Array.from(grid.children);
+        if (children.length < 2) return;
+        gsap.from(children, {
+          scrollTrigger: { trigger: grid, start: "top 80%", toggleActions: "play none none none" },
+          opacity: 0, y: 40, duration: 0.6, stagger: 0.12, ease: "power2.out"
+        });
+      });
+      // Stats: contador numérico animado
+      document.querySelectorAll("[data-count], .stat-num, [class*='count']").forEach(el => {
+        const target = parseInt(el.textContent?.replace(/\D/g, "") || "0");
+        if (!target) return;
+        const suffix = el.textContent?.replace(/[\d]/g, "") || "";
+        gsap.from({val: 0}, {
+          val: target, duration: 2, ease: "power1.out",
+          scrollTrigger: { trigger: el, start: "top 85%" },
+          onUpdate: function() { el.textContent = Math.round(this.targets()[0].val) + suffix; }
+        });
+      });
+    })();
+  </script>`;
+
+  // Não injeta WA float — o prompt da Section 15 já instrui o modelo a criar um.
+  // Injetar aqui causaria duplicata (13 botões observados no audit).
+  const waFloat = "";
+
+  // ── Injeção ───────────────────────────────────────────────────────────────
+  let out = html;
+
+  // Injeta SEO + CSS + GSAP scripts no <head>
+  if (out.includes("</head>")) {
+    out = out.replace("</head>", `${seoBlock}${globalCss}${gsapScripts}\n</head>`);
+  }
+
+  // Injeta GSAP init + WhatsApp float antes de </body>
+  if (out.includes("</body>")) {
+    out = out.replace("</body>", `${waFloat}${gsapInit}\n</body>`);
+  }
+
+  return out;
+}
+
 // Mapa categoria → foto Unsplash curada (IDs verificados)
 const COVER_PHOTOS: Record<string, string> = {
   barbearia:    "photo-1503951914875-452162b0f3f1",
@@ -2241,6 +2345,108 @@ function renderBarbershopLandingPage(lead: any, media: any, waEscomUrl: string, 
 }
 
 
+// Extrai cores reais da marca do cliente a partir do diagnostico ou usa defaults por nicho.
+// NUNCA retorna verde/emerald — essa é a cor da ESCOM Studio.
+function extractClientBrandColors(lead: any): { primary: string; accent: string } {
+  try {
+    const diag = typeof lead.diagnostico === "string" ? JSON.parse(lead.diagnostico) : (lead.diagnostico || {});
+    const hex = diag?.brandAnalysis?.primaryHex || diag?.identidadeVisualUI?.corPrimaria || diag?.primaryHex;
+    if (hex && /^#[0-9a-f]{6}/i.test(hex) && !/(22c5|10b9|16a3|4ade|86ef|6ee7|34d3|a7f3|d1fa)/i.test(hex)) {
+      return { primary: hex, accent: diag?.brandAnalysis?.accentHex || "#1f2937" };
+    }
+  } catch {}
+
+  const cat = (lead.categoria || "").toLowerCase();
+  if (cat.includes("academia") || cat.includes("gym") || cat.includes("fitness") || cat.includes("musculação")) return { primary: "#f97316", accent: "#1f2937" };
+  if (cat.includes("restaurante") || cat.includes("pizz") || cat.includes("churrasco") || cat.includes("lanche")) return { primary: "#dc2626", accent: "#7c2d12" };
+  if (cat.includes("barbearia") || cat.includes("barber")) return { primary: "#d4af37", accent: "#1c1c1c" };
+  if (cat.includes("beleza") || cat.includes("estética") || cat.includes("salão") || cat.includes("spa")) return { primary: "#db2777", accent: "#831843" };
+  if (cat.includes("clínica") || cat.includes("médico") || cat.includes("saúde") || cat.includes("odonto")) return { primary: "#0ea5e9", accent: "#0369a1" };
+  if (cat.includes("auto") || cat.includes("mecânic") || cat.includes("veículo") || cat.includes("car")) return { primary: "#dc2626", accent: "#374151" };
+  if (cat.includes("advogad") || cat.includes("jurídic") || cat.includes("contab") || cat.includes("financ")) return { primary: "#1d4ed8", accent: "#1e3a5f" };
+  if (cat.includes("imobili") || cat.includes("imóvel") || cat.includes("constru")) return { primary: "#d97706", accent: "#1c1917" };
+  if (cat.includes("pet") || cat.includes("animal") || cat.includes("veterinár")) return { primary: "#8b5cf6", accent: "#4c1d95" };
+  if (cat.includes("moda") || cat.includes("roupa") || cat.includes("fashion")) return { primary: "#18181b", accent: "#d4a76a" };
+  return { primary: "#f97316", accent: "#1f2937" };
+}
+
+// Faz fetch do site do cliente, extrai hex colors do CSS e pede ao Gemini para
+// identificar a cor primária da marca. Retorna null se não conseguir.
+async function fetchBrandColorsFromWebsite(websiteUrl: string, categoria: string): Promise<{ primary: string; accent: string } | null> {
+  try {
+    const resp = await fetch(websiteUrl.startsWith("http") ? websiteUrl : `https://${websiteUrl}`, {
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; ESCOMStudio/1.0)" },
+      signal: AbortSignal.timeout(8000)
+    });
+    if (!resp.ok) return null;
+    const html = await resp.text();
+
+    // Extrai todas as cores hex do HTML/CSS (inline styles, style tags, atributos)
+    const hexRaw = html.match(/#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/g) || [];
+    const freq: Record<string, number> = {};
+    for (const raw of hexRaw) {
+      // Normaliza para 6 dígitos
+      let h = raw.toLowerCase();
+      if (h.length === 4) h = "#" + h[1] + h[1] + h[2] + h[2] + h[3] + h[3];
+      const r = parseInt(h.slice(1, 3), 16);
+      const g = parseInt(h.slice(3, 5), 16);
+      const b = parseInt(h.slice(5, 7), 16);
+      // Descarta near-black, near-white e cinzas (baixa saturação)
+      const brightness = (r + g + b) / 3;
+      if (brightness < 25 || brightness > 230) continue;
+      if (Math.max(r, g, b) - Math.min(r, g, b) < 35) continue;
+      freq[h] = (freq[h] || 0) + 1;
+    }
+
+    const topColors = Object.entries(freq)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(([hex]) => hex);
+
+    if (topColors.length === 0) return null;
+
+    // Sem Gemini: retorna a cor mais frequente diretamente
+    const geminiKey = process.env.GEMINI_API_KEY || process.env.STITCH_API_KEY;
+    if (!geminiKey) return { primary: topColors[0], accent: topColors[1] || "#1f2937" };
+
+    const prompt = `Você é um especialista em identidade visual.
+Extraí estas cores hex do site de uma empresa de "${categoria}": ${topColors.join(", ")}.
+Identifique: (1) a COR PRIMÁRIA da marca — o destaque mais característico, não fundo ou texto neutro; (2) a COR DE ACENTO — complementar ou contraste.
+Responda APENAS com JSON no formato: {"primary":"#hex","accent":"#hex"}`;
+
+    const gResp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.1, maxOutputTokens: 80 }
+        }),
+        signal: AbortSignal.timeout(10000)
+      }
+    );
+    if (!gResp.ok) return { primary: topColors[0], accent: topColors[1] || "#1f2937" };
+
+    const gData = await gResp.json();
+    const text = gData?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const jsonMatch = text.match(/\{[^}]+\}/);
+    if (jsonMatch) {
+      const parsed = JSON.parse(jsonMatch[0]);
+      if (parsed.primary && /^#[0-9a-f]{6}/i.test(parsed.primary)) {
+        return {
+          primary: parsed.primary,
+          accent: (parsed.accent && /^#[0-9a-f]{6}/i.test(parsed.accent)) ? parsed.accent : "#1f2937"
+        };
+      }
+    }
+
+    return { primary: topColors[0], accent: topColors[1] || "#1f2937" };
+  } catch {
+    return null;
+  }
+}
+
 // Função central de geração de landing page para lead via IA (Groq gpt-oss-120b + Gemini + Qwen fallback)
 async function generateSiteForLead(lead: any, observacoes = ""): Promise<string | null> {
   const leadId = lead.id;
@@ -2262,12 +2468,25 @@ async function generateSiteForLead(lead: any, observacoes = ""): Promise<string 
   // 2. Busca mídia rigorosamente curada e verificada para o nicho (garante fotos reais sem alucinação da IA)
   const media = getCuratedNicheMedia(lead.categoria || "negocio");
 
+  // 3. Extrai cores reais do cliente:
+  //    Prioridade: site existente (Gemini analisa) → diagnostico → defaults por nicho
+  let clientColors = extractClientBrandColors(lead);
+  if (lead.website) {
+    console.log(`[generateSiteForLead] Tentando extrair cores do site do cliente: ${lead.website}`);
+    const websiteColors = await fetchBrandColorsFromWebsite(lead.website, lead.categoria || "negocio");
+    if (websiteColors) {
+      clientColors = websiteColors;
+      console.log(`[generateSiteForLead] Cores do cliente extraídas via Gemini: primary=${websiteColors.primary} accent=${websiteColors.accent}`);
+    }
+  }
+
   // Se o nicho for barbearia, utiliza a Masterpiece Barbershop Engine (100% aderente ao Pinterest Luxury & Dribbble)
   const catKey = `${lead.categoria || ""} ${lead.id || ""} ${lead.nome || ""}`.toLowerCase();
   const isBarbearia = catKey.includes("barba") || catKey.includes("barber");
   if (isBarbearia) {
     console.log(`[generateSiteForLead] Utilizando Masterpiece Barbershop Engine (Pinterest Dark Luxury) para ${leadId}...`);
-    const cleanHtml = renderBarbershopLandingPage(lead, media, waEscomUrl, botaoAceitarUrl);
+    let cleanHtml = renderBarbershopLandingPage(lead, media, waEscomUrl, botaoAceitarUrl);
+    cleanHtml = enhanceGeneratedHtml(cleanHtml, lead, siteUrl);
     try {
       await sbFetch(`/leads?id=eq.${encodeURIComponent(leadId)}`, {
         method: "PATCH",
@@ -2292,6 +2511,16 @@ O usuário revisou a versão anterior deste site e solicitou as seguintes corre�
 Você DEVE aplicar com prioridade máxima todas as correções pedidas acima (cores, textos, foco dos serviços, botões e imagens)!
 ` : "";
 
+  const nicheLabel = (() => {
+    const c = (lead.categoria || "").toLowerCase();
+    if (c.includes("academia") || c.includes("gym") || c.includes("fitness")) return "Academia de Referência";
+    if (c.includes("restaurante")) return "Restaurante de Referência";
+    if (c.includes("barbearia") || c.includes("barber")) return "Barbearia de Referência";
+    if (c.includes("beleza") || c.includes("estética") || c.includes("salão")) return "Salão de Referência";
+    if (c.includes("clínica") || c.includes("médico") || c.includes("saúde")) return "Clínica de Referência";
+    return `${lead.categoria || "Empresa"} de Referência`;
+  })();
+
   const prompt = `Você é o Engenheiro Front-end Principal e Diretor de Arte da ESCOM Studio.
 Gere uma Landing Page COMPLETA, PROFISSIONAL e DE ALTO IMPACTO em HTML puro para demonstrar à empresa "${lead.nome}" (${lead.categoria} em ${cidade}) como a ESCOM Studio transformará a presença digital dela.
 
@@ -2304,6 +2533,18 @@ DADOS DO NEGÓCIO:
 - Telefone: ${telefone}
 - Endereço: ${endereco}
 - Rating Google: ${rating} estrelas (${reviews} avaliações)
+
+════════════════════════════════════════════════════════════
+SISTEMA DE CORES — LEIA COM ATENÇÃO:
+════════════════════════════════════════════════════════════
+CORES DO CLIENTE ${lead.nome}:
+- COR_PRIMARIA: ${clientColors.primary}  ← use para H2, H3, destaques, botões, bordas, ícones, badges do site do CLIENTE
+- COR_ACENTO: ${clientColors.accent}  ← use para fundos de cards, hovers, gradientes do site do CLIENTE
+
+CORES DA ESCOM STUDIO (somente no banner id="escom-banner"):
+- Emerald/verde (#10b981, #22c55e, emerald-*) → EXCLUSIVO do banner ESCOM no topo. PROIBIDO usar em qualquer outro elemento.
+
+⚠️ REGRA CRÍTICA DE CORES: H1, H2, H3 e CTAs do site do cliente usam APENAS ${clientColors.primary}. NUNCA text-emerald-* fora do id="escom-banner".
 
 ${pinterestBlock}
 
@@ -2354,7 +2595,7 @@ SEÇÕES OBRIGATÓRIAS (DO INÍCIO AO FIM DO HTML):
 
 3. HERO COM FOTO OBRIGATÓRIA:
    - min-height 85vh, fundo escuro com imagem ${media.heroImage} coberta por overlay escuro em degradê (opacity-25 a 35 com gradiente escuro).
-   - Badge com o nicho e cidade ("A Barbearia de Referência em ${cidade}").
+   - Badge com o nicho e cidade ("${nicheLabel} em ${cidade}").
    - H1 imponente de alta conversão.
    - Prova social: ${rating} ★ no Google (${reviews} avaliações).
    - Dois CTAs: "Agendar Horário VIP" (${waLink}) e "Ver Serviços & Preços" (scroll #servicos).
@@ -2363,7 +2604,7 @@ SEÇÕES OBRIGATÓRIAS (DO INÍCIO AO FIM DO HTML):
 
 5. SOBRE A EMPRESA: Split com texto humanizado da história e imagem ${media.aboutImage}.
 
-6. MENU DE SERVIÇOS & PREÇOS: 6 cards no estilo Pinterest, com títulos reais do nicho, descrição, tempo estimado ("40 min") e badge com PREÇO EM VERDE VIBRANTE (#22C55E / text-emerald-400 font-bold) bem visível ("A partir de R$ XX") com botão direto para agendar via WhatsApp.
+6. MENU DE SERVIÇOS & PREÇOS: 6 cards no estilo Pinterest, com títulos reais do nicho, descrição, tempo estimado e badge com PREÇO DESTACADO na cor ${clientColors.primary} (font-bold) bem visível ("A partir de R$ XX") com botão direto para agendar via WhatsApp. Ícones SVG inline (não emoji) para cada serviço.
 
 7. DIFERENCIAIS DE EXCELÊNCIA: 4 pilares de qualidade (pontualidade, bebidas cortesia, ambiente climatizado, navalha descartável).
 
@@ -2384,7 +2625,7 @@ SEÇÕES OBRIGATÓRIAS (DO INÍCIO AO FIM DO HTML):
     - Comparativo visual: Sem Site / Site Lento vs. Site Oficial ESCOM Studio (Google First, Carregamento em 0.8s, Agendamentos 24h no WhatsApp)
     - BOX DE OFERTA EXCLUSIVA DE LANÇAMENTO:
       * De R$ 4.500 por apenas R$ 990 (Taxa única de implantação, sem mensalidades abusivas)
-      * PREÇO DESTACADO EM VERDE ESMERALDA VIBRANTE (#22C55E).
+      * PREÇO DESTACADO EM VERDE ESMERALDA VIBRANTE (#22C55E) — aqui pode usar verde pois é o CTA de conversão da ESCOM.
       * BÔNUS INCLUSOS: Domínio próprio (.com.br) registrado e grátis por 1 ano, Hospedagem rápida inclusa por 12 meses, Animações e transições fluidas de alta conversão, Botão WhatsApp integrado, Otimização completa para celulares. (PROIBIDO citar GSAP ou painéis inexistentes).
       * Botão de Ação VERDE vibrante estilo WhatsApp/Conversão:
         - "Aceitar Proposta & Publicar Site (R$ 990)" com fundo verde esmeralda (#22C55E) apontando para "${waEscomUrl}"
@@ -2690,6 +2931,9 @@ REGRAS TÉCNICAS:
 </html>`;
     cleanHtml = cleanHtml + propostaBlock;
   }
+
+  // Injeta GSAP, SEO e correções mobile server-side (o modelo frequentemente omite esses elementos)
+  cleanHtml = enhanceGeneratedHtml(cleanHtml, lead, siteUrl);
 
   // Salva no Supabase
   try {

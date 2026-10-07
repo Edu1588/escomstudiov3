@@ -11,6 +11,19 @@ export function LoadingCurtain({ progress, onFinished, onCurtainsOpen }: Loading
   const [hideNumber, setHideNumber] = useState(false);
   const [openCurtains, setOpenCurtains] = useState(false);
   const [isRemoved, setIsRemoved] = useState(false);
+  const [viewport, setViewport] = useState(() => ({
+    w: typeof window !== "undefined" ? window.innerWidth : 1440,
+  }));
+
+  useEffect(() => {
+    const onResize = () => setViewport({ w: window.innerWidth });
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  // Altura do logotipo por breakpoint (px) — a largura final é sempre 97vw
+  const logoHeightPx =
+    viewport.w < 640 ? 40 : viewport.w < 768 ? 56 : viewport.w < 1024 ? 72 : 88;
 
   // Garantir que a página sempre abra no topo e sem barra de rolagem durante o loading
   useEffect(() => {
@@ -69,7 +82,6 @@ export function LoadingCurtain({ progress, onFinished, onCurtainsOpen }: Loading
       // 2. Abre as duas metades da cortina lateralmente
       const openTimer = setTimeout(() => {
         setOpenCurtains(true);
-        if (onCurtainsOpen) onCurtainsOpen();
       }, 750);
 
       // 3. Remove o elemento do DOM após a conclusão da animação
@@ -94,8 +106,11 @@ export function LoadingCurtain({ progress, onFinished, onCurtainsOpen }: Loading
 
   if (isRemoved) return null;
 
-  // Cálculo matemático rigoroso do esticamento do "O" de ESCOM (preloader-0 -> preloader-100)
-  const S = (displayProgress / 100) * 4148.731;
+  // Esticamento do "O" calculado a partir da viewport: em 100% o logotipo inteiro
+  // ocupa exatamente 97% da largura da tela (viewBox altura 500, largura base 3217).
+  const svgWidthPx = viewport.w * 0.97;
+  const maxStretch = Math.max(0, (svgWidthPx * 500) / logoHeightPx - 3217);
+  const S = (displayProgress / 100) * maxStretch;
   const viewBoxWidth = 3217 + S;
 
   const oPath =
@@ -159,7 +174,7 @@ export function LoadingCurtain({ progress, onFinished, onCurtainsOpen }: Loading
 
       {/* Canto Inferior: Efeito ESCOM com "O" que estica até 100% de ponta a ponta */}
       <div
-        className="absolute bottom-0 left-0 right-0 z-20 w-full px-4 sm:px-8 md:px-10 pb-4 sm:pb-8 flex flex-col gap-2 pointer-events-none transition-all duration-300"
+        className="absolute bottom-0 left-0 right-0 z-20 w-full px-[1.5vw] pb-4 sm:pb-8 flex flex-col gap-2 pointer-events-none transition-all duration-300"
         style={{
           opacity: hideNumber ? 0 : 1,
           transform: hideNumber ? "translateY(16px)" : "translateY(0)",
@@ -182,8 +197,8 @@ export function LoadingCurtain({ progress, onFinished, onCurtainsOpen }: Loading
           <svg
             viewBox={`0 360 ${viewBoxWidth} 500`}
             preserveAspectRatio="xMidYMid meet"
-            className="w-full h-10 sm:h-14 md:h-18 lg:h-22 fill-white drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]"
-            style={{ display: "block", willChange: "viewBox" }}
+            className="w-full fill-white drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+            style={{ display: "block", height: logoHeightPx }}
           >
             {/* 1. Letras 'ESC' (Fixas na esquerda) */}
             <g>
