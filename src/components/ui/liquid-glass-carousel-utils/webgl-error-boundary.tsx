@@ -16,10 +16,7 @@ export class WebGLErrorBoundary extends Component<
   WebGLErrorBoundaryProps,
   WebGLErrorBoundaryState
 > {
-  constructor(props: WebGLErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false };
-  }
+  public state: WebGLErrorBoundaryState = { hasError: false };
 
   static getDerivedStateFromError(error: Error): WebGLErrorBoundaryState {
     return { hasError: true, error };

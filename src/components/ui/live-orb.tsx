@@ -20,6 +20,8 @@ export type LiveOrbOptions = {
   blink?: boolean;
   /** Fires when WebGL is ready (`true`) or torn down (`false`). */
   onHasGl?: (ok: boolean) => void;
+  /** Pointer tracking reference: "screen" (middle of screen looks forward) | "element" (relative to orb bounds). Default `"screen"`. */
+  lookOrigin?: "screen" | "element";
 };
 
 export type LiveOrbInstance = {
@@ -250,12 +252,13 @@ export function createLiveOrb(
   initial: LiveOrbOptions = {},
 ): LiveOrbInstance | null {
   let options: Required<
-    Pick<LiveOrbOptions, "variant" | "interactive" | "blink">
+    Pick<LiveOrbOptions, "variant" | "interactive" | "blink" | "lookOrigin">
   > &
     LiveOrbOptions = {
     variant: "white",
     interactive: true,
     blink: true,
+    lookOrigin: "screen",
     ...initial,
   };
 
@@ -353,16 +356,37 @@ export function createLiveOrb(
 
   const onMove = (e: PointerEvent) => {
     if (!options.interactive) return;
-    const parent = canvas.parentElement;
-    if (!parent) return;
-    const rect = parent.getBoundingClientRect();
-    if (rect.width <= 0 || rect.height <= 0) return;
-    const dx = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
-    const dy = (rect.top + rect.height / 2 - e.clientY) / (rect.height / 2);
-    targetLook.x = Math.min(1, Math.max(-1, dx));
-    targetLook.y = Math.min(1, Math.max(-1, dy));
+    if (options.lookOrigin === "element") {
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      const rect = parent.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+      const dx = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
+      const dy = (rect.top + rect.height / 2 - e.clientY) / (rect.height / 2);
+      targetLook.x = Math.min(1, Math.max(-1, dx));
+      targetLook.y = Math.min(1, Math.max(-1, dy));
+    } else {
+      // Modo "screen": o centro da janela da tela é a referência neutra (olhando direto para a frente)
+      const winW = typeof window !== "undefined" ? window.innerWidth : 1920;
+      const winH = typeof window !== "undefined" ? window.innerHeight : 1080;
+      const midX = winW / 2;
+      const midY = winH / 2;
+      const nx = (e.clientX - midX) / midX;
+      const ny = (midY - e.clientY) / midY; // positivo para cima
+      // Quando no centro da tela (nx=0, ny=0): targetLook.x = 0, targetLook.y = 0.08 (perfeitamente frontal)
+      targetLook.x = Math.min(0.85, Math.max(-0.85, nx * 0.8));
+      targetLook.y = Math.min(0.85, Math.max(-0.85, ny * 0.7 + 0.08));
+    }
   };
+
+  const onLeave = () => {
+    // Retorna suavemente para a posição frontal de repouso se o mouse sair da tela
+    targetLook.x = 0;
+    targetLook.y = 0.08;
+  };
+
   window.addEventListener("pointermove", onMove, { passive: true });
+  window.addEventListener("pointerleave", onLeave, { passive: true });
 
   const tick = (now: number) => {
     if (!running) return;
@@ -432,6 +456,7 @@ export function createLiveOrb(
       ro.disconnect();
       mqReduce.removeEventListener("change", onReduce);
       window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerleave", onLeave);
       options.onHasGl?.(false);
       gl.deleteProgram(program);
       gl.deleteShader(vs);
@@ -460,6 +485,7 @@ export function LiveOrb({
   colors,
   interactive = true,
   blink = true,
+  lookOrigin = "screen",
 }: LiveOrbProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const instanceRef = useRef<LiveOrbInstance | null>(null);
@@ -475,6 +501,7 @@ export function LiveOrb({
       colors,
       interactive,
       blink,
+      lookOrigin,
       onHasGl: setHasGl,
     });
     return () => {
@@ -493,9 +520,10 @@ export function LiveOrb({
       colors,
       interactive,
       blink,
+      lookOrigin,
       onHasGl: setHasGl,
     });
-  }, [variant, color, eyeColor, colors, interactive, blink]);
+  }, [variant, color, eyeColor, colors, interactive, blink, lookOrigin]);
 
   const resolved = resolveVariant(variant, color, eyeColor, colors);
 

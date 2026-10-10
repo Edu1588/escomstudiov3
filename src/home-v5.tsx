@@ -444,7 +444,7 @@ function HomeV5Content() {
       {/* Back to Top Button */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className={`fixed bottom-6 right-6 z-50 p-3 bg-transparent transition-all duration-500 flex items-center justify-center border border-transparent
+        className={`fixed bottom-[100px] right-6 sm:right-9 z-40 p-3 bg-transparent transition-all duration-500 flex items-center justify-center border border-transparent
           ${scrollY > 400 ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'}`}
         aria-label="Voltar ao topo"
       >

@@ -90,7 +90,7 @@ export const liquidGlassCarouselDefaultItems: LiquidGlassCarouselItem[] = [
 ];
 
 const LENS = {
-  sizeX: 0.565,
+  sizeX: 0.78,
   sizeY: 1,
   posX: 0.5,
   posY: 0.5,
@@ -243,11 +243,14 @@ vec3 discLens(vec2 center, float aspectCorrect, out float outA) {
   if (N > MAX_SAMPLES) N = MAX_SAMPLES;
   vec3 col = vec3(0.0);
   vec3 caW = vec3(0.0);
+  float content = 0.0;
   for (int i = 0; i < MAX_SAMPLES; i++) {
     if (i >= N) break;
     float t = float(i) / float(N - 1);
     vec2 sUV = baseUV + dispDir * (t - 0.5);
-    vec3 s = texture2D(uTex, sUV).rgb;
+    vec4 s4 = texture2D(uTex, sUV);
+    content = max(content, s4.a);
+    vec3 s = s4.rgb;
     vec3 w = vec3(
       exp(-pow((t - 0.00) / 0.38, 2.0)),
       exp(-pow((t - 0.50) / 0.38, 2.0)),
@@ -280,7 +283,9 @@ vec3 discLens(vec2 center, float aspectCorrect, out float outA) {
   float gs = max(uNovaSize * uGlow * 0.003, 0.004);
   float nova = exp(-r2 / gs) + exp(-r2 / (gs * 7.0)) * 0.18;
   nova *= uWhiteGlow * (uGlow / 17.0) * 1.15;
-  col += vec3(nova);
+  // Glows are additive: on a light background they vanish outside the panels,
+  // on a dark one they'd draw a neon oval. Restrict them to panel pixels.
+  col += vec3(nova) * content;
 
   float dC = shapeND * 0.5;
   float tR = clamp(uRingRadius, 0.1, 0.49);
@@ -289,8 +294,8 @@ vec3 discLens(vec2 center, float aspectCorrect, out float outA) {
   ring *= uBlueRing * (uGlow / 17.0) * 1.8;
   if (uShimmer > 0.5) ring *= sin(angle * uShimmerFreq + uTime * uShimmerSpeed) * uShimmerDepth + (1.0 - uShimmerDepth);
   float ringAura = exp(-pow((dC - tR) / (rW * 6.0), 2.0)) * 0.28 * uBlueRing * (uGlow / 17.0);
-  col += uBlueColor * (ring + ringAura);
-  col += vec3(exp(-pow((dC - uRimLinePos) / max(uRimLineWidth, 0.0001), 2.0)) * uRimLine);
+  col += uBlueColor * (ring + ringAura) * content;
+  col += vec3(exp(-pow((dC - uRimLinePos) / max(uRimLineWidth, 0.0001), 2.0)) * uRimLine) * content;
 
   outA = smoothstep(1.0, 0.93, maskND);
   return col;
@@ -1233,12 +1238,31 @@ function createCarousel(
   let raf = 0;
   let running = true;
   let visible = true;
+  const DRIFT_PX_PER_S = 45;
+  let lastTickT = performance.now();
 
   function tick() {
     if (!running) return;
     if (!visible || document.hidden) {
       raf = 0;
       return;
+    }
+    const nowT = performance.now();
+    const dt = Math.min(0.05, (nowT - lastTickT) / 1000);
+    lastTickT = nowT;
+    const drifting =
+      !reduced &&
+      !(pointerInside && lastPointerType === "mouse") &&
+      !dragging &&
+      !pendingFocus &&
+      !focusState.active &&
+      !entryActive &&
+      !entrySettled &&
+      Math.abs(velocity) < 0.05 &&
+      nowT - lastInput > 1500;
+    if (drifting) {
+      target += DRIFT_PX_PER_S * dt;
+      snapped = true;
     }
     if (!dragging) {
       target += velocity;
@@ -1297,9 +1321,12 @@ function createCarousel(
       lensUniforms[key].value = lensFxFull[key] * fx;
     }
 
+    // Alpha 0 in the target marks background, so the lens shader can tell panels apart.
     renderer.setRenderTarget(rt);
+    renderer.setClearAlpha(0);
     renderer.render(scene, camera);
     renderer.setRenderTarget(null);
+    renderer.setClearAlpha(1);
     renderer.render(lensScene, lensCam);
     raf = requestAnimationFrame(tick);
   }
@@ -1410,7 +1437,6 @@ export function LiquidGlassCarousel({
   const cursorRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<LiquidGlassCarouselHandle | null>(null);
   const titleRef = useRef<HTMLParagraphElement>(null);
-  const counterRef = useRef<HTMLParagraphElement>(null);
   const revealPlayedRef = useRef(false);
   const [active, setActive] = useState(0);
   const [focused, setFocused] = useState(false);
@@ -1463,14 +1489,12 @@ export function LiquidGlassCarousel({
 
   useEffect(() => {
     const title = titleRef.current;
-    const counter = counterRef.current;
-    if (!title || !counter) return;
+    if (!title) return;
     const reduced = prefersReducedMotion();
     gsap.set(title, { xPercent: -50 });
-    gsap.set(counter, { xPercent: -50 });
 
     if (!entryDone && entry && !reduced) {
-      gsap.set([title, counter], { autoAlpha: 0 });
+      gsap.set(title, { autoAlpha: 0 });
       revealPlayedRef.current = false;
       return;
     }
@@ -1483,27 +1507,12 @@ export function LiquidGlassCarousel({
         { autoAlpha: 0 },
         { autoAlpha: 1, duration: reduced ? 0 : 1.6, ease: "power2.out" },
       );
-      gsap.fromTo(
-        counter,
-        { autoAlpha: 0 },
-        {
-          autoAlpha: 1,
-          duration: reduced ? 0 : 1.6,
-          ease: "power2.out",
-          delay: reduced ? 0 : 0.18,
-        },
-      );
       return;
     }
 
     gsap.to(title, {
       y,
       autoAlpha: 1,
-      duration: reduced ? 0 : 0.4,
-      ease: "power3.out",
-    });
-    gsap.to(counter, {
-      autoAlpha: focused ? 0 : 1,
       duration: reduced ? 0 : 0.4,
       ease: "power3.out",
     });
@@ -1581,16 +1590,6 @@ export function LiquidGlassCarousel({
           </p>
         )}
       </div>
-
-      <p
-        ref={counterRef}
-        className={cn(
-          "pointer-events-none absolute bottom-[6%] left-1/2 z-10 m-0 text-center text-[13px] font-mono tracking-wider tabular-nums opacity-0 sm:text-[15px]",
-          isDark ? "text-zinc-400" : "text-black",
-        )}
-      >
-        {pad(active + 1)}/{pad(items.length)}
-      </p>
 
       <div
         ref={cursorRef}

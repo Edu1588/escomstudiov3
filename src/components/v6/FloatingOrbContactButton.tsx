@@ -98,6 +98,7 @@ export function FloatingOrbContactButton() {
               eyeColor="#000000"
               interactive={true}
               blink={true}
+              lookOrigin="screen"
               className="pointer-events-none"
             />
           </div>
