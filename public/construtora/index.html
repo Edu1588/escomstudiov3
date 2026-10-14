@@ -52,6 +52,8 @@
   .hero{position:relative;height:100vh;height:100svh;min-height:620px;overflow:hidden;isolation:isolate}
   canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:pan-y}
   canvas#c.pointing{cursor:pointer}
+  /* vinheta em CSS: mesmo efeito de lente sem um pass extra de GPU em tela cheia */
+  .hero .vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 75% 70% at 50% 45%,transparent 55%,rgba(4,6,24,.32) 100%)}
   button{font:inherit;color:inherit;cursor:pointer}
   .serif{font-family:Fraunces,Georgia,serif}
 
@@ -170,6 +172,41 @@
   #tip{position:fixed;z-index:6;pointer-events:none;background:rgba(8,11,30,.92);border:1px solid var(--line);border-radius:9px;padding:6px 10px;font-size:12px;white-space:nowrap;opacity:0;transition:opacity .12s}
   #tip b{font-weight:600}
   #tip .s{color:var(--green)} #tip .s.sold{color:var(--gold)}
+  /* card com foto ao passar o mouse num local do mapa */
+  #tip.rich{white-space:normal;width:248px;padding:0;overflow:hidden}
+  #tip.rich img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#141a3c}
+  #tip.rich .tx{padding:8px 11px 9px}
+  #tip.rich .tx b{display:block;font-size:13px}
+  #tip.rich .tx span{color:var(--muted)}
+  #tip.rich .ai{display:block;margin-top:4px;font-size:10px;color:var(--faint)}
+  /* galeria do apartamento */
+  .gal-btn{display:flex;align-items:center;gap:10px;width:100%;margin:12px 0 2px;padding:7px;border-radius:11px;border:1px solid var(--line);background:var(--card-2);color:var(--text);font:inherit;font-weight:600;cursor:pointer;text-align:left;transition:border-color .15s,background .15s}
+  .gal-btn:hover{border-color:rgba(246,198,91,.5);background:rgba(246,198,91,.06)}
+  .gal-btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  .gal-btn .th{display:flex;flex:none}
+  .gal-btn .th img{width:38px;height:38px;border-radius:7px;object-fit:cover;border:2px solid #0b1030;margin-left:-10px;background:#141a3c}
+  .gal-btn .th img:first-child{margin-left:0}
+  .gal-btn small{display:block;font-weight:400;color:var(--muted);font-size:11px}
+  .gal-btn .go{margin-left:auto;color:var(--gold);font-size:16px;padding-right:4px}
+  #gal{position:fixed;inset:0;z-index:30;display:grid;grid-template-rows:auto 1fr auto;background:rgba(3,5,18,.94);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .2s}
+  #gal.open{opacity:1;pointer-events:auto}
+  #gal .gh{display:flex;align-items:center;gap:12px;padding:14px 16px}
+  #gal .gh b{font-family:Fraunces,serif;font-size:18px;font-weight:600}
+  #gal .gh small{color:var(--muted)}
+  #gal .gx{margin-left:auto;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card-2);color:var(--text);font-size:16px;cursor:pointer}
+  #gal .stage{position:relative;display:grid;place-items:center;min-height:0;padding:0 56px}
+  #gal .stage img{max-width:100%;max-height:100%;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5);object-fit:contain}
+  #gal .nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(10,14,38,.8);color:var(--text);font-size:20px;cursor:pointer}
+  #gal .nav.p{left:8px} #gal .nav.n{right:8px}
+  #gal .gx:focus-visible,#gal .nav:focus-visible,#gal .gt button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  #gal .gf{padding:12px 16px 16px;text-align:center}
+  #gal .cap{font-weight:600}
+  #gal .cap small{display:block;font-weight:400;color:var(--faint);font-size:11px;margin-top:2px}
+  #gal .gt{display:flex;justify-content:center;gap:8px;margin-top:10px}
+  #gal .gt button{padding:0;border:2px solid transparent;border-radius:9px;background:none;cursor:pointer;opacity:.55;transition:opacity .15s,border-color .15s}
+  #gal .gt button.on{border-color:var(--gold);opacity:1}
+  #gal .gt img{display:block;width:72px;height:48px;object-fit:cover;border-radius:7px}
+  @media (max-width:640px){ #gal .stage{padding:0 8px} #gal .nav{display:none} #gal .gt img{width:58px;height:40px} }
   .hint{position:absolute;bottom:84px;left:50%;transform:translateX(-50%);z-index:3;color:var(--muted);font-size:12px;background:rgba(8,11,30,.55);padding:6px 14px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
   .demo{position:absolute;bottom:16px;right:16px;z-index:3;font-size:11px;color:var(--faint)}
   .compass{position:absolute;right:16px;bottom:44px;z-index:4;display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none}
@@ -436,6 +473,7 @@
 <section class="hero" id="hero" aria-label="Simulação 3D do empreendimento">
 <h1 class="sr-only">Espelho de vendas 3D para construtoras e incorporadoras</h1>
 <canvas id="c"></canvas>
+<div class="vignette" aria-hidden="true"></div>
 
 <div class="brand">
   <div class="mark">E</div>
@@ -500,6 +538,11 @@
   <div class="kicker" id="uKicker"></div>
   <div class="uhead"><span class="num" id="uNum"></span><span class="badge" id="uBadge"></span></div>
   <div class="utype" id="uType"></div>
+  <button class="gal-btn" id="openGal" type="button" aria-haspopup="dialog">
+    <span class="th" id="galThumbs"></span>
+    <span>Ver galeria de fotos<small id="galSub">4 ambientes decorados</small></span>
+    <span class="go" aria-hidden="true">→</span>
+  </button>
   <div class="specs">
     <div class="spec"><small>Área privativa</small><b id="uArea"></b></div>
     <div class="spec"><small>Pavimento</small><b id="uFloor"></b></div>
@@ -560,6 +603,15 @@
 </section>
 
 <div id="tip"></div>
+<div id="gal" role="dialog" aria-modal="true" aria-labelledby="galTitle" aria-hidden="true">
+  <div class="gh"><div><b id="galTitle"></b><br><small id="galType"></small></div><button class="gx" id="galClose" aria-label="Fechar galeria">✕</button></div>
+  <div class="stage">
+    <button class="nav p" id="galPrev" aria-label="Foto anterior">‹</button>
+    <img id="galImg" alt="">
+    <button class="nav n" id="galNext" aria-label="Próxima foto">›</button>
+  </div>
+  <div class="gf"><div class="cap" id="galCap"></div><div class="gt" id="galStrip"></div></div>
+</div>
 <div id="toast"></div>
 
 <main class="lp" id="servicos">
@@ -894,6 +946,47 @@ function flushStatic(){
 
 // ----- céu: gerado pelo horário em setTime() (paintSky) -----
 scene.fog = new THREE.Fog(0x2b3274, 140, 520);
+// cúpula do céu em shader: gradiente atmosférico, halo do sol/lua, brilho no horizonte e nuvens procedurais.
+// Acompanha a câmera e é desenhada primeiro; o horizonte usa a mesma cor da névoa, então cidade e céu se fundem.
+const skyU = {
+  uTop: { value: new THREE.Color() }, uMid: { value: new THREE.Color() }, uHor: { value: new THREE.Color() },
+  uSunDir: { value: new THREE.Vector3(0, 1, 0) }, uSunCol: { value: new THREE.Color() },
+  uSunUp: { value: 1 }, uGold: { value: 0 }, uDay: { value: 1 }, uTime: { value: 0 },
+};
+const skyDome = new THREE.Mesh(new THREE.SphereGeometry(1400, 48, 24), new THREE.ShaderMaterial({
+  uniforms: skyU, side: THREE.BackSide, depthWrite: false, depthTest: false, fog: false,
+  vertexShader: `varying vec3 vDir; void main(){ vDir = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: `
+    uniform vec3 uTop, uMid, uHor, uSunDir, uSunCol; uniform float uSunUp, uGold, uDay, uTime;
+    varying vec3 vDir;
+    float hsh(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+    float vn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+      return mix(mix(hsh(i), hsh(i + vec2(1, 0)), f.x), mix(hsh(i + vec2(0, 1)), hsh(i + vec2(1, 1)), f.x), f.y); }
+    float fbm(vec2 p){ float s = 0.0, a = 0.5; for (int i = 0; i < 4; i++){ s += a * vn(p); p = p * 2.03 + vec2(1.7, 9.2); a *= 0.5; } return s; }
+    void main(){
+      vec3 d = normalize(vDir); float h = d.y;
+      vec3 col = mix(uHor, uMid, smoothstep(0.0, 0.1, h));
+      col = mix(col, uTop, smoothstep(0.06, 0.45, h));
+      float sd = max(dot(d, uSunDir), 0.0);
+      col += uSunCol * (pow(sd, 7.0) * (0.18 + uGold * 0.8) + pow(sd, 60.0) * 0.5) * uSunUp;
+      col += uSunCol * sd * sd * uGold * 0.45 * (1.0 - smoothstep(0.0, 0.3, h)) * uSunUp;   // horizonte aquecido no lado do sol
+      if (h > 0.0) {
+        vec2 uv = d.xz / (h + 0.1) * 1.3 + vec2(uTime * 0.006, uTime * 0.002);
+        float n = fbm(uv);
+        float c = smoothstep(0.5, 0.78, n) * smoothstep(0.0, 0.25, h);
+        float lit = clamp((n - vn((uv + uSunDir.xz * 0.12) * 2.0) * 0.6 - 0.2) * 3.0 + 0.5, 0.0, 1.0);    // lado virado para o sol mais claro (1 amostra, barato)
+        vec3 cLit = mix(vec3(1.0, 0.99, 0.97), uSunCol * 1.2 + 0.15, uGold * 0.9);
+        vec3 cShade = mix(uMid, uHor, 0.5) * 0.8;
+        vec3 cc = mix(cShade, cLit, lit);
+        cc = mix(uMid * 0.65 + vec3(0.03, 0.025, 0.04), cc, uDay);                       // à noite: nuvem escura com reflexo da cidade
+        col = mix(col, cc, c * mix(0.45, 0.85, uDay));
+      }
+      col = mix(col, uHor, 1.0 - smoothstep(-0.03, 0.05, h));
+      col += (hsh(gl_FragCoord.xy) - 0.5) * 0.004;                                     // dithering: sem "degraus" no degradê
+      gl_FragColor = vec4(col, 1.0);
+    }`
+}));
+skyDome.renderOrder = -10; skyDome.frustumCulled = false; scene.add(skyDome);
 
 const hemi = new THREE.HemisphereLight(0x7d8cff, 0x0b1030, 0.75);
 scene.add(hemi);
@@ -937,6 +1030,18 @@ moon.position.set(-420, 330, -620); scene.add(moon);
 // ----- chão, ruas, praça -----
 const ground = new THREE.Mesh(new THREE.PlaneGeometry(1600, 1600), new THREE.MeshStandardMaterial({ color: 0x0c1236, roughness: 1 }));
 ground.rotation.x = -Math.PI/2; ground.receiveShadow = true; scene.add(ground);
+// terreno com manchas suaves (gramado, terra, sombra de lote) em vez de uma cor chapada
+ground.material.onBeforeCompile = s => {
+  s.vertexShader = s.vertexShader.replace('#include <common>', '#include <common>\nvarying vec2 vGW;')
+    .replace('#include <project_vertex>', '#include <project_vertex>\nvGW = (modelMatrix * vec4(transformed, 1.0)).xz;');
+  s.fragmentShader = s.fragmentShader.replace('#include <common>', `#include <common>
+    varying vec2 vGW;
+    float gh(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+    float gn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+      return mix(mix(gh(i), gh(i + vec2(1, 0)), f.x), mix(gh(i + vec2(0, 1)), gh(i + vec2(1, 1)), f.x), f.y); }`)
+    .replace('#include <map_fragment>', `#include <map_fragment>
+    diffuseColor.rgb *= 0.82 + 0.22 * gn(vGW * 0.035) + 0.1 * gn(vGW * 0.21);`);
+};
 
 const BLOCK = 18;
 const roadMat = new THREE.MeshStandardMaterial({ color: 0x161d4a, roughness: .9 });
@@ -976,34 +1081,53 @@ scene.add(lamps);
 const nightU = { value: 1 };
 const cityMat = new THREE.MeshStandardMaterial({ color: 0x1b2457, roughness: .85, metalness: .1 });
 cityMat.onBeforeCompile = s => {
-  s.uniforms.uNight = nightU;
+  s.uniforms.uNight = nightU; s.uniforms.uRefl = interiorU.uRefl;
   s.vertexShader = s.vertexShader
-    .replace('#include <common>', '#include <common>\nvarying vec3 vWPos;\nvarying vec3 vWN;')
+    .replace('#include <common>', '#include <common>\nvarying vec3 vWPos;\nvarying vec3 vWN;\nvarying vec2 vBId;')
     .replace('#include <project_vertex>', `#include <project_vertex>
       vec4 cwp = vec4(transformed, 1.0);
       vec3 cwn = objectNormal;
       #ifdef USE_INSTANCING
         cwp = instanceMatrix * cwp;
         cwn = mat3(instanceMatrix) * cwn;
+        vBId = instanceMatrix[3].xz;
+      #else
+        vBId = floor((modelMatrix * cwp).xz / 18.0);
       #endif
       vWPos = (modelMatrix * cwp).xyz;
       vWN = normalize(mat3(modelMatrix) * cwn);`);
   s.fragmentShader = s.fragmentShader
-    .replace('#include <common>', '#include <common>\nvarying vec3 vWPos;\nvarying vec3 vWN;\nuniform float uNight;')
+    .replace('#include <common>', '#include <common>\nvarying vec3 vWPos;\nvarying vec3 vWN;\nvarying vec2 vBId;\nuniform float uNight;\nuniform vec3 uRefl;')
     .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
       {
         vec3 an = abs(vWN);
+        // estilo por prédio: 0 = janelas recortadas, 1 = pele de vidro, 2 = faixas horizontais (fita de janelas)
+        float bh = fract(sin(dot(vBId, vec2(41.31, 17.73))) * 43758.5453);
+        float sty = bh < 0.55 ? 0.0 : (bh < 0.8 ? 1.0 : 2.0);
         if (an.y < 0.5) {
           vec2 c = an.x > 0.5 ? vec2(vWPos.z, vWPos.y) : vec2(vWPos.x, vWPos.y);
           vec2 g = c / vec2(2.0, 2.8);
           vec2 f = fract(g); vec2 id = floor(g);
-          float w = step(0.22,f.x)*step(f.x,0.78)*step(0.3,f.y)*step(f.y,0.8);
+          float w = sty == 0.0 ? step(0.22,f.x)*step(f.x,0.78)*step(0.3,f.y)*step(f.y,0.8)
+                  : sty == 1.0 ? step(0.04,f.x)*step(f.x,0.96)*step(0.12,f.y)*step(f.y,0.94)
+                  :              step(0.38,f.y)*step(f.y,0.82) * (1.0 - step(0.97, f.x));
           float h = fract(sin(dot(id + vec2(sign(vWN.x)*31.0 + sign(vWN.z)*7.0, sign(vWN.z)*17.0), vec2(12.9898,78.233))) * 43758.5453);
           float lit = w * step(0.66, h) * step(1.4, vWPos.y);
           vec3 col = mix(vec3(1.0,0.70,0.36), vec3(0.72,0.84,1.0), step(0.92, h));
           totalEmissiveRadiance += lit * col * (0.45 + 0.9*fract(h*13.0)) * uNight;
-          diffuseColor.rgb *= 1.0 + w * (1.0 - uNight) * 0.6;
+          // de dia: vidro escuro que reflete o céu conforme o ângulo (Fresnel), com variação de tom por pano
+          vec3 vd = normalize(vWPos - cameraPosition);
+          float fres = pow(1.0 - abs(dot(vd, vWN)), 3.0);
+          vec3 glass = mix(vec3(0.07, 0.09, 0.13), vec3(0.12, 0.14, 0.17), fract(h * 7.0)) * (sty == 1.0 ? 1.15 : 1.0);
+          float far = 1.0 - 0.6 * smoothstep(120.0, 300.0, length(vWPos - cameraPosition));   // ao longe: menos contraste, sem moiré
+          diffuseColor.rgb = mix(diffuseColor.rgb, glass, w * far * (1.0 - uNight * 0.4));
+          totalEmissiveRadiance += w * uRefl * (0.12 + fres * 0.7) * (1.0 - uNight) * (1.0 - lit);
+          // friso de laje entre os andares + platibanda no topo do volume
+          float band = 1.0 - smoothstep(0.0, 0.06, f.y);
+          diffuseColor.rgb *= 1.0 - band * 0.18 * (1.0 - w);
         }
+        // oclusão de contato: a base do prédio escurece onde encontra a calçada (tira o efeito "flutuando")
+        diffuseColor.rgb *= mix(0.5, 1.0, smoothstep(0.0, 5.0, vWPos.y));
       }`);
 };
 /* ----- OPCIONAIS: pontos de interesse do entorno (fictícios) -----
@@ -1020,13 +1144,16 @@ const OPC = [
   { key:'raios',        nome:'Raios de distância',   ic:'◎',  cor:'#e8ecff' },
 ];
 const POIS = [
-  ['mercados','Supermercado Bom Preço',2,1], ['mercados','Mercado do Bairro',-3,-2], ['mercados','Hortifruti Verde Vida',1,-4],
-  ['parques','Parque Municipal',-2,3], ['parques','Praça das Flores',4,-2], ['parques','Bosque Norte',-5,-5],
-  ['escolas','Colégio Integrado',3,3], ['escolas','Escola Primeiros Passos',-4,1],
-  ['saude','Hospital São Lucas',5,2], ['saude','Farmácia 24h',-1,-2],
-  ['academias','Academia Forma',2,-2], ['academias','Studio Pilates',-3,4],
-  ['restaurantes','Café da Esquina',1,2], ['restaurantes','Cantina Bella',-2,-1], ['restaurantes','Sushi Bar',4,4],
-].map(([key, nome, gx, gz]) => ({ key, nome, x: gx*BLOCK, z: gz*BLOCK }));
+  ['mercados','Supermercado Bom Preço',2,1,'mercado-bom-preco'], ['mercados','Mercado do Bairro',-3,-2,'mercado-bairro'], ['mercados','Hortifruti Verde Vida',1,-4,'hortifruti'],
+  ['parques','Parque Municipal',-2,3,'parque-municipal'], ['parques','Praça das Flores',4,-2,'praca-flores'], ['parques','Bosque Norte',-5,-5,'bosque-norte'],
+  ['escolas','Colégio Integrado',3,3,'colegio-integrado'], ['escolas','Escola Primeiros Passos',-4,1,'escola-primeiros-passos'],
+  ['saude','Hospital São Lucas',5,2,'hospital'], ['saude','Farmácia 24h',-1,-2,'farmacia'],
+  ['academias','Academia Forma',2,-2,'academia'], ['academias','Studio Pilates',-3,4,'pilates'],
+  ['restaurantes','Café da Esquina',1,2,'cafe'], ['restaurantes','Cantina Bella',-2,-1,'cantina'], ['restaurantes','Sushi Bar',4,4,'sushi'],
+].map(([key, nome, gx, gz, img]) => ({ key, nome, img, x: gx*BLOCK, z: gz*BLOCK }));
+// fotos ilustrativas (geradas por IA) — caminho absoluto: a página é servida em /construtora (sem barra final)
+const IMG = '/construtora/img/';
+const imgLocal = slug => `${IMG}locais/${slug}.webp`;
 const reserved = new Set(POIS.map(p => `${p.x},${p.z}`));
 
 const cityBoxes = [];
@@ -1054,7 +1181,7 @@ cityBoxes.forEach(([x,h,z,w,dp],i) => {
   city.setColorAt(i, _c.setHSL(pink ? 0.86 + rng()*0.08 : 0.6 + rng()*0.08, 0.08 + rng()*0.25, 0.62 + rng()*0.38));
   if (h > 8 && rng() < 0.6) roofBits.push([x + (rng()-0.5)*w*0.4, h, z + (rng()-0.5)*dp*0.4, w*(0.2 + rng()*0.25), 0.8 + rng()*1.8, dp*(0.2 + rng()*0.25)]);
 });
-city.receiveShadow = true; scene.add(city);
+city.receiveShadow = true; city.castShadow = true; scene.add(city);
 // caixas d'água / casas de máquinas nos telhados
 const roofMat = new THREE.MeshStandardMaterial({ color: 0x232a55, roughness: .9 });
 const roofs = new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1), roofMat, roofBits.length);
@@ -1103,13 +1230,20 @@ for (const p of POIS) {
 // ----- árvores -----
 for (let i = 0; i < 70; i++) { const a = rng()*Math.PI*2, r = 22 + rng()*9; treePos.push([Math.cos(a)*r*1.15, Math.sin(a)*r*0.95, 1.4 + rng()*1.4]); }
 for (let i = 0; i < 380; i++) { const x = (rng()-0.5)*420, z = (rng()-0.5)*420; if (Math.hypot(x,z) > 40) treePos.push([x, z, 1.2 + rng()*1.8]); }
-const treeMat = new THREE.MeshStandardMaterial({ color: 0x1f7a68, roughness: .9 });
+const treeMat = new THREE.MeshStandardMaterial({ color: 0x1f7a68, roughness: .9, flatShading: true });
 const trees = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), treeMat, treePos.length);
+// tronco aparente: a copa sobe um pouco e ganha um caule, em vez de uma bola encostada no chão
+const trunkMat = new THREE.MeshStandardMaterial({ color: 0x4a3828, roughness: 1 });
+const trunks = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.1, 0.16, 1, 5), trunkMat, treePos.length);
+const _q = new THREE.Quaternion(), _e = new THREE.Euler();
 treePos.forEach(([x,z,s],i) => {
-  _m.compose(new THREE.Vector3(x, s*1.1, z), new THREE.Quaternion(), new THREE.Vector3(s, s*(1.1 + rng()*0.4), s)); trees.setMatrixAt(i,_m);
+  const cy = s*1.05 + 0.7;
+  _m.compose(new THREE.Vector3(x, cy, z), _q.setFromEuler(_e.set(0, rng()*6.28, 0)), new THREE.Vector3(s, s*(1.1 + rng()*0.4), s)); trees.setMatrixAt(i,_m);
   trees.setColorAt(i, _c.setHSL(0.47 + rng()*0.1, 0.3 + rng()*0.3, 0.55 + rng()*0.45));
+  _m.compose(new THREE.Vector3(x, cy/2, z), _q.identity(), new THREE.Vector3(s*0.7, cy, s*0.7)); trunks.setMatrixAt(i,_m);
 });
-scene.add(trees);
+trees.castShadow = trees.receiveShadow = true; trunks.castShadow = true;
+scene.add(trees, trunks);
 
 /* =========================================================
    3. A TORRE
@@ -1118,58 +1252,133 @@ const FH = 3.1, PODIUM_H = 12.8, W = 22, D = 13;
 const NF = CFG.andarFim - CFG.andarIni + 1, TOWER_H = NF * FH;
 const floorBase = fl => PODIUM_H + (fl - CFG.andarIni) * FH;
 const tower = new THREE.Group(); scene.add(tower);
+// janela com o tamanho real gravado na geometria (atributo aSize): o shader de interior usa para montar o cômodo
+const winGeo = (w, h) => {
+  const g = new THREE.PlaneGeometry(w, h);
+  g.setAttribute('aSize', new THREE.Float32BufferAttribute(Array.from({ length: g.attributes.position.count }, () => [w, h]).flat(), 2));
+  return g;
+};
 
-// textura de fachada: placas de revestimento com juntas finas (1 placa = 1/6 da largura × 1 andar)
-function panelTexture(){
-  const c = document.createElement('canvas'); c.width = 128; c.height = 128; const g = c.getContext('2d');
-  g.fillStyle = '#d7dcef'; g.fillRect(0,0,128,128);
-  for (let i = 0; i < 400; i++) { g.fillStyle = `rgba(80,90,140,${Math.random()*0.05})`; g.fillRect(Math.random()*128, Math.random()*128, 2, 2); }
-  g.fillStyle = 'rgba(40,46,90,.45)'; g.fillRect(0,0,128,2); g.fillRect(0,0,2,128); g.fillRect(64,0,1,128);
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping;
-  t.anisotropy = 4; return t;
+/* ----- texturas PBR procedurais (cor + relevo + rugosidade), geradas em canvas: nada é baixado.
+   Cada material ganha normal map (juntas e frisos com profundidade real na luz) e roughness map
+   (placa acetinada x junta fosca), o que tira o aspecto de "cor chapada". ----- */
+const ANISO = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+const TEX_S = IS_MOBILE ? 256 : 512;                  // celular: metade da resolução (4× menos memória)
+const mkCanvas = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return [c, c.getContext('2d')]; };
+const R = Math.random;
+// normal map a partir de um mapa de altura (diferenças finitas, bordas repetem para o tile não ter costura)
+function heightToNormal(hc, k){
+  const w = hc.width, h = hc.height, hd = hc.getContext('2d').getImageData(0, 0, w, h).data;
+  const [nc, ng] = mkCanvas(w, h), nd = ng.createImageData(w, h);
+  const H = (x, y) => hd[(((y + h) % h) * w + ((x + w) % w)) * 4] / 255;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const dx = (H(x + 1, y) - H(x - 1, y)) * k, dy = (H(x, y + 1) - H(x, y - 1)) * k, l = Math.hypot(dx, dy, 1), i = (y * w + x) * 4;
+    nd.data[i] = (-dx / l * .5 + .5) * 255; nd.data[i + 1] = (dy / l * .5 + .5) * 255; nd.data[i + 2] = (1 / l * .5 + .5) * 255; nd.data[i + 3] = 255;
+  }
+  ng.putImageData(nd, 0, 0); return nc;
 }
-const panelTex = panelTexture();
-const facadeMat = new THREE.MeshStandardMaterial({ color: 0x6c78b4, map: panelTex, roughness: .7, metalness: .1, envMap: envTex, envMapIntensity: 0.15 });
-// pedra natural (cor + relevo): gerada em código, sem baixar arquivos
+function mkTex(c, srgb, rx = 1, ry = 1){
+  const t = new THREE.CanvasTexture(c); if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = ANISO; t.repeat.set(rx, ry); return t;
+}
+const gray = v => { v = Math.max(0, Math.min(255, v | 0)); return `rgb(${v},${v},${v})`; };
+
+// fachada: porcelanato de grande formato (2 placas por tile = 1/6 da largura × 1 andar), mesclado, com juntas rebaixadas
+function panelMaps(){
+  const S = TEX_S, k = S / 512;
+  const [c, g] = mkCanvas(S, S), [hc, hg] = mkCanvas(S, S), [rc, rg] = mkCanvas(S, S);
+  hg.fillStyle = gray(200); hg.fillRect(0, 0, S, S);
+  rg.fillStyle = gray(115); rg.fillRect(0, 0, S, S);
+  for (let p = 0; p < 2; p++) {                                   // cada placa com um tom levemente diferente
+    const x0 = p * S / 2, l = 86 + R() * 5;
+    g.fillStyle = `hsl(${222 + R() * 12},${10 + R() * 8}%,${l}%)`; g.fillRect(x0, 0, S / 2, S);
+    for (let i = 0; i < 70; i++) {                                // veios/manchas suaves do porcelanato
+      const x = x0 + R() * S / 2, y = R() * S, r = (20 + R() * 70) * k;
+      const gr = g.createRadialGradient(x, y, 0, x, y, r), a = .025 + R() * .05;
+      gr.addColorStop(0, R() < .5 ? `rgba(120,128,160,${a})` : `rgba(255,255,255,${a * 1.4})`); gr.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = gr; g.fillRect(x0, 0, S / 2, S);
+      rg.fillStyle = `rgba(${R() < .5 ? '90,90,90' : '150,150,150'},.12)`; rg.beginPath(); rg.arc(x, y, r * .6, 0, 7); rg.fill();
+    }
+  }
+  for (let i = 0; i < 9000 * k * k; i++) {                         // granulado fino
+    const a = R() * .07; g.fillStyle = R() < .5 ? `rgba(40,45,70,${a})` : `rgba(255,255,255,${a})`;
+    g.fillRect(R() * S, R() * S, 1, 1);
+  }
+  const J = Math.max(2, 5 * k);                                   // junta (rejunte) com chanfro
+  for (const [x, y, w, h] of [[0, 0, S, J], [0, 0, J, S], [S / 2 - J / 2, 0, J, S]]) {
+    g.fillStyle = 'rgba(52,56,82,.85)'; g.fillRect(x, y, w, h);
+    hg.fillStyle = gray(120); hg.fillRect(x - J * .4, y - J * .4, w + J * .8, h + J * .8);
+    hg.fillStyle = gray(30); hg.fillRect(x, y, w, h);
+    rg.fillStyle = gray(235); rg.fillRect(x, y, w, h);
+  }
+  return [mkTex(c, true, 6, NF), mkTex(heightToNormal(hc, 5), false, 6, NF), mkTex(rc, false, 6, NF)];
+}
+const [panelTex, panelNor, panelRough] = panelMaps();
+const facadeMat = new THREE.MeshStandardMaterial({ color: 0x6c78b4, map: panelTex, normalMap: panelNor, roughnessMap: panelRough,
+  roughness: 1, metalness: .05, envMap: envTex, envMapIntensity: 0.25 });
+
+// pedra natural em fiadas (cor + relevo + rugosidade)
 function stoneMaps(){
-  const S = 256, c = document.createElement('canvas'), hc = document.createElement('canvas');
-  c.width = c.height = hc.width = hc.height = S;
-  const g = c.getContext('2d'), hg = hc.getContext('2d');
-  g.fillStyle = '#4c463f'; g.fillRect(0, 0, S, S);              // rejunte
-  hg.fillStyle = '#1a1a1a'; hg.fillRect(0, 0, S, S);
+  const S = TEX_S, k = S / 256;
+  const [c, g] = mkCanvas(S, S), [hc, hg] = mkCanvas(S, S), [rc, rg] = mkCanvas(S, S);
+  g.fillStyle = '#4a443d'; g.fillRect(0, 0, S, S);              // rejunte
+  hg.fillStyle = gray(20); hg.fillRect(0, 0, S, S);
+  rg.fillStyle = gray(255); rg.fillRect(0, 0, S, S);
   let y = 0;
   while (y < S) {
-    let rh = 16 + Math.random() * 26; if (S - y - rh < 14) rh = S - y;
-    let x = -Math.random() * 40;
+    let rh = (16 + R() * 26) * k; if (S - y - rh < 14 * k) rh = S - y;
+    let x = -R() * 40 * k;
     while (x < S) {
-      const w = 26 + Math.random() * 58, l = 50 + Math.random() * 22;
-      g.fillStyle = `hsl(${28 + Math.random() * 14},${8 + Math.random() * 14}%,${l}%)`;
-      g.beginPath(); g.roundRect(x + 2, y + 2, w - 4, rh - 4, 5); g.fill();
-      const hv = 150 + Math.random() * 90 | 0; hg.fillStyle = `rgb(${hv},${hv},${hv})`;
-      hg.beginPath(); hg.roundRect(x + 2, y + 2, w - 4, rh - 4, 6); hg.fill();
+      const w = (26 + R() * 58) * k, l = 48 + R() * 24, hue = 26 + R() * 16, sat = 8 + R() * 16, gap = 2 * k;
+      g.fillStyle = `hsl(${hue},${sat}%,${l}%)`;
+      g.beginPath(); g.roundRect(x + gap, y + gap, w - 2 * gap, rh - 2 * gap, 5 * k); g.fill();
+      // face da pedra levemente abaulada: mais alta no meio, cai nas bordas
+      const hv = 150 + R() * 80, gr = hg.createRadialGradient(x + w / 2, y + rh / 2, 0, x + w / 2, y + rh / 2, Math.max(w, rh) * .62);
+      gr.addColorStop(0, gray(hv + 25)); gr.addColorStop(.75, gray(hv)); gr.addColorStop(1, gray(hv - 60));
+      hg.fillStyle = gr; hg.beginPath(); hg.roundRect(x + gap, y + gap, w - 2 * gap, rh - 2 * gap, 6 * k); hg.fill();
+      rg.fillStyle = gray(190 + R() * 50); rg.beginPath(); rg.roundRect(x + gap, y + gap, w - 2 * gap, rh - 2 * gap, 5 * k); rg.fill();
+      for (let s = 0; s < 3; s++) {                               // manchas minerais dentro da pedra
+        const sx = x + R() * w, sy = y + R() * rh, sr = (4 + R() * 10) * k;
+        const sg = g.createRadialGradient(sx, sy, 0, sx, sy, sr); sg.addColorStop(0, `hsla(${hue + 8},${sat + 10}%,${l - 12}%,.35)`); sg.addColorStop(1, 'rgba(0,0,0,0)');
+        g.fillStyle = sg; g.fillRect(sx - sr, sy - sr, sr * 2, sr * 2);
+      }
       x += w;
     }
     y += rh;
   }
-  for (let i = 0; i < 4000; i++) {                               // granulação da pedra
-    const px = Math.random() * S, py = Math.random() * S, a = Math.random() * .12;
-    g.fillStyle = Math.random() < .5 ? `rgba(0,0,0,${a})` : `rgba(255,250,240,${a})`; g.fillRect(px, py, 1.5, 1.5);
+  for (let i = 0; i < 6000 * k * k; i++) {                       // granulação: cor e microrrelevo
+    const px = R() * S, py = R() * S, a = R() * .14, up = R() < .5;
+    g.fillStyle = up ? `rgba(255,250,240,${a})` : `rgba(0,0,0,${a})`; g.fillRect(px, py, 1.5, 1.5);
+    hg.fillStyle = up ? 'rgba(255,255,255,.18)' : 'rgba(0,0,0,.18)'; hg.fillRect(px, py, 1.5, 1.5);
   }
-  // normal map a partir do relevo (diferenças finitas)
-  const hd = hg.getImageData(0, 0, S, S).data, nc = document.createElement('canvas'); nc.width = nc.height = S;
-  const ng = nc.getContext('2d'), nd = ng.createImageData(S, S), H = (x, y) => hd[(((y + S) % S) * S + ((x + S) % S)) * 4] / 255;
-  for (let yy = 0; yy < S; yy++) for (let xx = 0; xx < S; xx++) {
-    const dx = (H(xx + 1, yy) - H(xx - 1, yy)) * 3, dy = (H(xx, yy + 1) - H(xx, yy - 1)) * 3, l = Math.hypot(dx, dy, 1), i = (yy * S + xx) * 4;
-    nd.data[i] = (-dx / l * .5 + .5) * 255; nd.data[i + 1] = (dy / l * .5 + .5) * 255; nd.data[i + 2] = (1 / l * .5 + .5) * 255; nd.data[i + 3] = 255;
-  }
-  ng.putImageData(nd, 0, 0);
-  const col = new THREE.CanvasTexture(c), nor = new THREE.CanvasTexture(nc);
-  col.colorSpace = THREE.SRGBColorSpace;
-  for (const t of [col, nor]) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4; }
-  return [col, nor];
+  return [c, heightToNormal(hc, 4.5), rc];
 }
-const [stoneCol, stoneNor] = stoneMaps();
-const stoneTex = (rx, ry) => { const a = stoneCol.clone(), b = stoneNor.clone(); a.repeat.set(rx, ry); b.repeat.set(rx, ry); a.needsUpdate = b.needsUpdate = true; return [a, b]; };
+const STONE = stoneMaps();
+const stoneTex = (rx, ry) => [mkTex(STONE[0], true, rx, ry), mkTex(STONE[1], false, rx, ry), mkTex(STONE[2], false, rx, ry)];
+
+// envelhecimento sutil em coordenadas de mundo: manchas de chuva escorrendo sob as lajes e variação de tom.
+// Funciona em qualquer peça sem depender da UV (as caixas esticadas não deformam o efeito).
+function weather(mat, amt){
+  mat.customProgramCacheKey = () => 'weather';
+  mat.onBeforeCompile = s => {
+    s.uniforms.uWeather = { value: amt };
+    s.vertexShader = s.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vWW;')
+      .replace('#include <project_vertex>', '#include <project_vertex>\nvWW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    s.fragmentShader = s.fragmentShader.replace('#include <common>', `#include <common>
+      varying vec3 vWW; uniform float uWeather;
+      float wh(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+      float wn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+        return mix(mix(wh(i), wh(i + vec2(1, 0)), f.x), mix(wh(i + vec2(0, 1)), wh(i + vec2(1, 1)), f.x), f.y); }`)
+      .replace('#include <map_fragment>', `#include <map_fragment>
+      {
+        float u = vWW.x + vWW.z;
+        float blot = wn(vec2(u, vWW.y) * 0.22);
+        float streak = wn(vec2(u * 2.3, vWW.y * 0.09)) * wn(vec2(u * 7.0, vWW.y * 0.5));
+        float drip = 1.0 - smoothstep(0.0, 1.4, mod(12.65 - vWW.y, 3.1));     // escorre logo abaixo de cada laje
+        diffuseColor.rgb *= 1.0 - uWeather * (0.35 * blot + 0.9 * streak * (0.4 + drip));
+      }`);
+  };
+}
 // brilhos aditivos: "luz rasante" na parede e poças de luz no chão
 function glowTexture(kind){
   const c = document.createElement('canvas'); c.width = 64; c.height = kind === 'wash' ? 128 : 64; const g = c.getContext('2d');
@@ -1182,27 +1391,51 @@ function glowTexture(kind){
 const glowMat = (kind) => new THREE.MeshBasicMaterial({ map: glowTexture(kind), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false });
 const washMat = glowMat('wash'), poolLightMat = glowMat('pool');
 const spotMat = new THREE.MeshBasicMaterial({ color: 0xfff0d0 });
-const [crownStone, crownStoneN] = stoneTex(3, 1.4);
-panelTex.repeat.set(6, NF);
-const crownMat  = new THREE.MeshStandardMaterial({ color: 0x6c78b4, map: crownStone, normalMap: crownStoneN, roughness: .9 });   // volume da cobertura em pedra
-const slabMat   = new THREE.MeshStandardMaterial({ color: 0xe2e6f7, roughness: .6 });
-const pillarMat = new THREE.MeshStandardMaterial({ color: 0x3a4378, roughness: .6 });
+const [crownStone, crownStoneN, crownStoneR] = stoneTex(3, 1.4);
+const crownMat  = new THREE.MeshStandardMaterial({ color: 0x6c78b4, map: crownStone, normalMap: crownStoneN, roughnessMap: crownStoneR, roughness: 1 });   // volume da cobertura em pedra
+const slabMat   = new THREE.MeshStandardMaterial({ color: 0xe2e6f7, roughness: .55 });
+const pillarMat = new THREE.MeshStandardMaterial({ color: 0x3a4378, roughness: .5, metalness: .25, envMap: envTex, envMapIntensity: .3 });   // pilar com acabamento em ACM
+weather(facadeMat, 0.16); weather(slabMat, 0.2); weather(pillarMat, 0.12); weather(crownMat, 0.12);
 
 // (peças fixas viram uma malha só por material — de ~70 draw calls para 6)
 addStatic(unitBox, facadeMat, 0, PODIUM_H + TOWER_H/2, 0, 0, 0, W, TOWER_H, D);
 
 // ripado de madeira (textura procedural): dá o acabamento "real" dos lançamentos atuais
-function woodTexture(){
-  const c = document.createElement('canvas'); c.width = 128; c.height = 256; const g = c.getContext('2d');
-  const gr = g.createLinearGradient(0, 0, 128, 0); gr.addColorStop(0, '#a46f3d'); gr.addColorStop(.5, '#b9824c'); gr.addColorStop(1, '#9b663a');
-  g.fillStyle = gr; g.fillRect(0, 0, 128, 256);
-  for (let i = 0; i < 90; i++) { g.strokeStyle = `rgba(70,40,15,${.05 + Math.random()*.12})`; g.lineWidth = 1; const x = Math.random()*128;
-    g.beginPath(); g.moveTo(x, 0); g.bezierCurveTo(x + 3, 80, x - 3, 170, x + 1, 256); g.stroke(); }          // veios
-  for (let x = 0; x < 128; x += 16) { g.fillStyle = 'rgba(45,25,8,.75)'; g.fillRect(x, 0, 2, 256); }      // frestas entre as ripas
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4;
-  t.repeat.set(1, NF); return t;
+// 8 ripas por tile (1,15 m × 1 andar): cada ripa com tom próprio, veios, nós, quinas arredondadas e fresta funda
+function woodMaps(){
+  const Wd = TEX_S / 2, Ht = TEX_S * 2, N = 8, sw = Wd / N, gap = Math.max(2, sw * .14);
+  const [c, g] = mkCanvas(Wd, Ht), [hc, hg] = mkCanvas(Wd, Ht), [rc, rg] = mkCanvas(Wd, Ht);
+  g.fillStyle = '#2e1a0b'; g.fillRect(0, 0, Wd, Ht);                // fundo da fresta
+  hg.fillStyle = gray(10); hg.fillRect(0, 0, Wd, Ht);
+  rg.fillStyle = gray(240); rg.fillRect(0, 0, Wd, Ht);
+  for (let s = 0; s < N; s++) {
+    const x0 = s * sw + gap / 2, w = sw - gap, hue = 24 + R() * 8, sat = 42 + R() * 14, l = 36 + R() * 12;
+    g.fillStyle = `hsl(${hue},${sat}%,${l}%)`; g.fillRect(x0, 0, w, Ht);
+    g.save(); g.beginPath(); g.rect(x0, 0, w, Ht); g.clip();
+    for (let i = 0; i < 26; i++) {                                // veios longos e ondulados
+      const x = x0 + R() * w, amp = 1 + R() * 2.5, ph = R() * 6;
+      g.strokeStyle = `hsla(${hue - 4},${sat + 10}%,${l - 14 - R() * 8}%,${.18 + R() * .3})`; g.lineWidth = .6 + R() * 1.2;
+      g.beginPath(); for (let y = 0; y <= Ht; y += 16) g.lineTo(x + Math.sin(y * .012 + ph) * amp, y); g.stroke();
+    }
+    if (R() < .45) {                                              // nó da madeira
+      const ky = R() * Ht, kx = x0 + w * (.3 + R() * .4);
+      for (let r = 7; r > 0; r -= 1.5) { g.strokeStyle = `hsla(${hue - 6},${sat + 12}%,${l - 22 + r}%,.5)`; g.lineWidth = 1.2; g.beginPath(); g.ellipse(kx, ky, r * .55, r * 1.8, 0, 0, 7); g.stroke(); }
+    }
+    g.restore();
+    const gr = hg.createLinearGradient(x0, 0, x0 + w, 0);           // ripa com quinas arredondadas
+    gr.addColorStop(0, gray(110)); gr.addColorStop(.18, gray(205)); gr.addColorStop(.82, gray(205)); gr.addColorStop(1, gray(110));
+    hg.fillStyle = gr; hg.fillRect(x0, 0, w, Ht);
+    rg.fillStyle = gray(150 + R() * 40); rg.fillRect(x0, 0, w, Ht);
+  }
+  for (let i = 0; i < Wd * Ht / 30; i++) {                          // poros: microrrelevo e variação de brilho
+    const x = R() * Wd, y = R() * Ht, a = R() * .25;
+    hg.fillStyle = `rgba(0,0,0,${a})`; hg.fillRect(x, y, 1, 3);
+    rg.fillStyle = `rgba(255,255,255,${a * .5})`; rg.fillRect(x, y, 1, 3);
+  }
+  return [mkTex(c, true, 1, NF), mkTex(heightToNormal(hc, 3), false, 1, NF), mkTex(rc, false, 1, NF)];
 }
-const woodMat  = new THREE.MeshStandardMaterial({ color: 0xffffff, map: woodTexture(), roughness: .72 });
+const [woodCol, woodNor, woodRough] = woodMaps();
+const woodMat  = new THREE.MeshStandardMaterial({ color: 0xffffff, map: woodCol, normalMap: woodNor, roughnessMap: woodRough, roughness: 1, envMap: envTex, envMapIntensity: .2 });
 const plantMat = new THREE.MeshStandardMaterial({ color: 0x3f8f5a, roughness: .95 });
 const potMat   = new THREE.MeshStandardMaterial({ color: 0x2b2f45, roughness: .8 });
 
@@ -1272,7 +1505,7 @@ const crownWinMat = new THREE.MeshStandardMaterial({ color: 0x2a1d08, emissive: 
 // casa de máquinas / salão gourmet ocupa a metade esquerda; a direita vira deck com piscina
 const CX = -4, CW = 12;                                    // centro e largura do volume da cobertura
 addStatic(unitBox, crownMat, CX, TOP + 2.8, -0.6, 0, 0, CW, 5.6, D-4);
-const cwGeo = new THREE.PlaneGeometry(3.2, 3.4);
+const cwGeo = winGeo(3.2, 3.4);
 for (const x of [CX - 4.1, CX, CX + 4.1]) {
   addStatic(cwGeo, crownWinMat, x, TOP + 2.9, (D-4)/2 - 0.6 + 0.03);
   addStatic(cwGeo, crownWinMat, x, TOP + 2.9, -(D-4)/2 - 0.6 - 0.03, 0, Math.PI);
@@ -1294,13 +1527,17 @@ addStatic(unitBox, pillarMat, CX - 3, TOP + 6.6, -2, 0, 0, 3.2, 1.4, 2.4);
 addStatic(unitBox, pillarMat, CX + 2.5, TOP + 6.4, -3, 0, 0, 2.2, 1.0, 2.2);
 addStatic(new THREE.CylinderGeometry(1.3, 1.3, 2.2, 16), slabMat, CX, TOP + 7, 1.2);
 addStatic(unitBox, pillarMat, CX - 5.2, TOP + 9, -3, 0, 0, 0.18, 6.5, 0.18);
+// luz de balizamento (aviação) no topo do mastro: pisca em vermelho, o bloom faz o halo
+const beaconMat = new THREE.MeshBasicMaterial({ color: 0xff2a1a, fog: false });
+const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.26, 10, 8), beaconMat);
+beacon.position.set(CX - 5.2, TOP + 12.4, -3); scene.add(beacon);
 // pergolado de madeira sobre o terraço do salão
 for (let i = 0; i < 6; i++) addStatic(unitBox, woodMat, CX - 5.2 + i*2.1, TOP + 3.6, D/2 - 1.2, 0, 0, 0.22, 0.22, 3.2);
 addStatic(unitBox, slabMat, CX, TOP + 3.75, D/2 + 0.3, 0, 0, CW, 0.25, 0.25);
 
 // embasamento (pódio) com faixa de lazer iluminada no topo
 const podiumMat = new THREE.MeshStandardMaterial({ color: 0x3a4690, roughness: .8 });
-{ const [pc, pn] = stoneTex(7, 2.8); podiumMat.map = pc; podiumMat.normalMap = pn; podiumMat.roughness = .9; podiumMat.needsUpdate = true; }
+{ const [pc, pn, pr] = stoneTex(7, 2.8); Object.assign(podiumMat, { map: pc, normalMap: pn, roughnessMap: pr, roughness: 1 }); podiumMat.needsUpdate = true; weather(podiumMat, 0.1); }
 addStatic(unitBox, podiumMat, 0, PODIUM_H/2, 0, 0, 0, 32, PODIUM_H, 22);
 // marquise de madeira na entrada, com spots embutidos e luz no piso
 addStatic(unitBox, woodMat, 0, 4.35, 11 + 1.6, 0, 0, 20, 0.35, 3.2);
@@ -1310,7 +1547,7 @@ for (let i = 0; i < 7; i++) {
   addStatic(new THREE.PlaneGeometry(2.4, 2.4), poolLightMat, x, 0.08, 13.2, -Math.PI/2);
 }
 const lobbyMat = new THREE.MeshStandardMaterial({ color: 0x302410, emissive: 0xffd9a0, emissiveMap: litTex, emissiveIntensity: 1.0 });
-const lobbyGeo = new THREE.PlaneGeometry(3.4, 3.6), amenGeo = new THREE.PlaneGeometry(3.4, 2.4);
+const lobbyGeo = winGeo(3.4, 3.6), amenGeo = winGeo(3.4, 2.4);
 for (let i = 0; i < 8; i++) {
   addStatic(lobbyGeo, lobbyMat, -13.3 + i*3.8, 2.1, 11.02);                         // térreo envidraçado
   addStatic(amenGeo, lobbyMat, -13.3 + i*3.8, PODIUM_H - 1.7, 11.02);               // salão de festas / academia
@@ -1349,7 +1586,95 @@ const MAT = {
 const LIT = [[0xffd690, 1.15], [0xffe6b8, 1.4], [0xfff3e2, 1.0], [0xffb45c, 0.65], [0xffcf7a, 0.9]].map(([c, i]) =>
   new THREE.MeshStandardMaterial({ color: 0x2a1d08, emissive: c, emissiveMap: litTex, emissiveIntensity: i, roughness: .4, userData: { base: i } }));
 const litMat = u => LIT[(u.floor * 7 + parseInt(u.fin) * 3) % LIT.length];
-const geoF = new THREE.PlaneGeometry(2.95, 2.35), geoS = new THREE.PlaneGeometry(3.8, 2.35);
+const geoF = winGeo(2.95, 2.35), geoS = winGeo(3.8, 2.35);
+/* ----- interior mapping: cada janela mostra um cômodo de verdade (piso, teto, paredes, luminária, móveis,
+   cortina e persiana) desenhado por raio dentro de uma caixa virtual — dá profundidade e paralaxe sem geometria extra.
+   Mantém a leitura do espelho: disponível = luz acesa (emissivo), vendida = vidro escuro refletindo o céu. ----- */
+const interiorU = { uDay: { value: 1 }, uRefl: { value: new THREE.Color(0x9ab8e8) } };
+const ROOM_GLSL = `
+  varying vec3 vIP; varying vec3 vID; varying vec3 vIC; varying vec2 vIUv; varying vec2 vISz;
+  uniform float uDay; uniform vec3 uRefl;
+  float ihs(vec3 p){ return fract(sin(dot(p, vec3(12.9898, 78.233, 37.719))) * 43758.5453); }
+  vec3 room(out float frame, out float fres){
+    vec2 sz = vISz;
+    vec3 d = normalize(vID); d.z = min(d.z, -1e-3);
+    float hw = sz.x * 0.5 + 0.35, yb = -sz.y * 0.5 - 0.32, yt = sz.y * 0.5 + 0.28, dep = 3.4;
+    vec3 p = vIP;
+    vec3 inv = 1.0 / (d + vec3(equal(d, vec3(0.0))) * 1e-4);
+    vec3 tA = (vec3(-hw, yb, -dep) - p) * inv, tB = (vec3(hw, yt, 1.0) - p) * inv, tM = max(tA, tB);
+    float t = min(min(tM.x, tM.y), tM.z);
+    vec3 q = p + d * t;
+    float h = ihs(floor(vIC * 0.5 + 0.137)), h2 = fract(h * 17.31), h3 = fract(h * 91.7);
+    vec3 wall = mix(vec3(0.88, 0.81, 0.70), vec3(0.74, 0.77, 0.83), h2);
+    if (h3 > 0.78) wall = mix(wall, vec3(0.52, 0.40, 0.34), 0.55);                       // parede de destaque
+    vec3 c;
+    if (t == tM.z) {                                                                    // parede do fundo
+      c = wall;
+      float sofa = step(abs(q.x - (h - 0.5) * 0.8), hw * 0.55) * step(q.y, yb + 0.72);
+      c = mix(c, mix(vec3(0.24, 0.21, 0.19), vec3(0.33, 0.30, 0.42), h2), sofa);
+      float pic = step(abs(q.x + (h2 - 0.5) * 0.7), 0.45) * step(abs(q.y - (yb + 1.65)), 0.3) * step(0.3, h);
+      c = mix(c, h3 > 0.5 ? vec3(0.04, 0.045, 0.06) : vec3(0.62, 0.36, 0.24), pic);      // quadro ou TV
+    } else if (t == tM.y) {
+      c = d.y < 0.0 ? vec3(0.44, 0.29, 0.17) * (0.86 + 0.14 * step(0.5, fract(q.x * 2.3))) // piso de madeira
+                    : vec3(0.93, 0.91, 0.87);                                             // teto
+    } else c = wall * 0.88;                                                              // paredes laterais
+    vec3 lp = vec3((h - 0.5) * hw, yt - 0.25, -dep * 0.45);
+    float dl = length(q - lp);
+    float lit = 0.32 + 1.3 / (1.0 + dl * dl * 0.6);
+    if (t == tM.y && d.y > 0.0) lit += 2.2 * exp(-dl * dl * 5.0);                       // facho da luminária no teto
+    c *= lit * mix(1.0, 0.6, clamp(-q.z / dep, 0.0, 1.0));
+    vec2 u = vIUv;                                                                      // cortina e persiana no plano do vidro
+    float cw = 0.05 + 0.2 * h2;
+    float curt = max(step(u.x, cw), step(1.0 - cw, u.x));
+    float blind = step(1.0 - (h3 > 0.55 ? 0.12 + 0.42 * h : 0.0), u.y);
+    vec3 cc = mix(vec3(1.0, 0.93, 0.80), vec3(0.86, 0.88, 0.95), h3);
+    c = mix(c, cc * (0.62 + 0.12 * sin(u.x * sz.x * 40.0)), curt * 0.9);
+    c = mix(c, cc * 0.82 * (0.86 + 0.14 * step(0.5, fract(u.y * sz.y * 11.0))), blind * 0.95);
+    vec2 m = u * sz;                                                                    // caixilho: moldura, montante e bandeira
+    float bd = min(min(m.x, sz.x - m.x), min(m.y, sz.y - m.y));
+    frame = max(step(bd, 0.055), max(step(abs(m.x - sz.x * 0.5), 0.028), step(abs(u.y - 0.73) * sz.y, 0.028)));
+    fres = pow(1.0 - abs(d.z), 3.0);
+    return c;
+  }`;
+function interior(mat, kind){
+  mat.customProgramCacheKey = () => 'room-' + kind;
+  mat.onBeforeCompile = s => {
+    s.uniforms.uDay = interiorU.uDay; s.uniforms.uRefl = interiorU.uRefl;
+    s.vertexShader = s.vertexShader
+      .replace('#include <common>', `#include <common>
+        attribute vec2 aSize;
+        varying vec3 vIP; varying vec3 vID; varying vec3 vIC; varying vec2 vIUv; varying vec2 vISz;`)
+      .replace('#include <project_vertex>', `#include <project_vertex>
+        {
+          vec3 iwp = (modelMatrix * vec4(transformed, 1.0)).xyz;
+          vec3 iN = normalize(mat3(modelMatrix) * objectNormal);
+          vec3 iT = normalize(cross(vec3(0.0, 1.0, 0.0), iN));
+          vec3 rd = iwp - cameraPosition;
+          vID = vec3(dot(rd, iT), rd.y, dot(rd, iN));
+          vIP = vec3((uv - 0.5) * aSize, 0.0);
+          vIC = iwp - iT * vIP.x - vec3(0.0, vIP.y, 0.0);
+          vIUv = uv; vISz = aSize;
+        }`);
+    s.fragmentShader = s.fragmentShader
+      .replace('#include <common>', '#include <common>\n' + ROOM_GLSL)
+      .replace('#include <map_fragment>', kind === 'glass' ? '' : '#include <map_fragment>')
+      .replace('#include <emissivemap_fragment>', kind === 'lit' ? `{
+          float fr, fs; vec3 rc = room(fr, fs);
+          totalEmissiveRadiance *= rc * vec3(1.0, 0.84, 0.6) * (1.0 - fr);      // luz incandescente: mantém o "aceso = amarelo" do espelho
+          totalEmissiveRadiance += uRefl * fs * 0.3 * (1.0 - fr);
+          diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.05, 0.05, 0.07), fr);
+        }` : `{
+          float fr, fs; vec3 rc = room(fr, fs);
+          diffuseColor.rgb = mix(rc * (0.03 + 0.12 * uDay) + vec3(0.008, 0.012, 0.025), vec3(0.05, 0.05, 0.07), fr);
+          totalEmissiveRadiance *= (0.35 + rc * 0.4) * (1.0 - fr);
+          totalEmissiveRadiance += uRefl * (0.07 + fs * 0.55) * (0.35 + 0.65 * uDay) * (1.0 - fr);
+        }`);
+  };
+  mat.needsUpdate = true;
+}
+for (const m of [...LIT, MAT.avGlow, crownWinMat, lobbyMat]) interior(m, 'lit');
+interior(MAT.av, 'glass');
+Object.assign(MAT.av, { metalness: 0.1, roughness: 0.06 });
 const windowMeshes = [];
 const NORMALS = { pz: new THREE.Vector3(0,0,1), nz: new THREE.Vector3(0,0,-1), px: new THREE.Vector3(1,0,0), nx: new THREE.Vector3(-1,0,0) };
 function addWin(u, geo, x, y, z, face){
@@ -1397,7 +1722,7 @@ function addPin(key, x, z, y, info){
   optGroups[key].add(new THREE.Line(lg, new THREE.LineBasicMaterial({ color: o.cor, transparent: true, opacity: .7 })));
 }
 const distM = (x, z) => Math.round(Math.hypot(x, z) * M_PER_U / 10) * 10;
-for (const p of POIS) addPin(p.key, p.x, p.z, p.key === 'parques' ? 12 : 18, { nome: p.nome });
+for (const p of POIS) addPin(p.key, p.x, p.z, p.key === 'parques' ? 12 : 18, { nome: p.nome, img: p.img });
 
 // ----- linhas de ônibus: faixa fina sobre as ruas + ônibus circulando -----
 const RX = i => i*BLOCK + BLOCK/2;
@@ -1427,7 +1752,7 @@ for (const L of LINHAS) {
   // pontos de parada ao longo da linha
   for (const f of [0.12, 0.34, 0.56, 0.78, 0.95]) {
     const p = L.at(f * total);
-    addPin('onibus', p.x + 3, p.z + 3, 9, { nome: 'Ponto de ônibus', extra: L.nome });
+    addPin('onibus', p.x + 3, p.z + 3, 9, { nome: 'Ponto de ônibus', extra: L.nome, img: 'onibus' });
   }
   const busMat = new THREE.MeshStandardMaterial({ color: L.cor, emissive: L.cor, emissiveIntensity: .35, roughness: .5 });
   for (let b = 0; b < 3; b++) {
@@ -1435,6 +1760,44 @@ for (const L of LINHAS) {
     buses.push({ mesh: bus, L, s: total * b / 3, v: 9 });
   }
 }
+// ----- trânsito: carros nas ruas (faróis e lanternas acendem à noite) -----
+// 3 InstancedMesh = 3 draw calls no total; quantidade menor no celular
+const CAR_N = IS_MOBILE ? 36 : 84;
+const carGeo = new THREE.BoxGeometry(1.7, 1.0, 3.6), carLightGeo = new THREE.BoxGeometry(1.3, 0.22, 0.08);
+const carBodies = new THREE.InstancedMesh(carGeo, new THREE.MeshStandardMaterial({ roughness: .35, metalness: .4 }), CAR_N);
+const headMat = new THREE.MeshBasicMaterial({ color: 0xfff1d0 }), tailMat = new THREE.MeshBasicMaterial({ color: 0xff2a1a });
+const carHeads = new THREE.InstancedMesh(carLightGeo, headMat, CAR_N), carTails = new THREE.InstancedMesh(carLightGeo, tailMat, CAR_N);
+const CAR_COLS = [0xf2f2f2, 0x1c1c1e, 0x8a8f99, 0xb3261e, 0x23395d, 0xd6d6d6, 0x4a4f57, 0x6b7c5c];
+const carLines = [];
+for (let i = -8; i <= 7; i++) { const p = RX(i); if (Math.abs(p) > 26) carLines.push(p); }
+const cars = Array.from({ length: CAR_N }, (_, i) => {
+  carBodies.setColorAt(i, _c.set(CAR_COLS[Math.floor(rng() * CAR_COLS.length)]));
+  return { alongX: rng() < 0.5, p: carLines[Math.floor(rng() * carLines.length)], dir: rng() < 0.5 ? 1 : -1, s: (rng() - 0.5) * 300, v: 7 + rng() * 6 };
+});
+for (const m of [carBodies, carHeads, carTails]) { m.instanceMatrix.setUsage(THREE.DynamicDrawUsage); m.frustumCulled = false; scene.add(m); }
+carBodies.castShadow = true;
+const _cp = new THREE.Vector3(), _cf = new THREE.Vector3(), _cs = new THREE.Vector3(1, 1, 1);
+function updateCars(dt){
+  for (let i = 0; i < CAR_N; i++) {
+    const c = cars[i];
+    c.s += c.v * c.dir * dt; if (c.s > 150) c.s -= 300; else if (c.s < -150) c.s += 300;
+    // mão direita: faixa à direita de quem dirige
+    if (c.alongX) { _cp.set(c.s, 0.7, c.p + 1.1 * c.dir); _cf.set(c.dir, 0, 0); _q.setFromEuler(_e.set(0, c.dir * Math.PI / 2, 0)); }
+    else { _cp.set(c.p - 1.1 * c.dir, 0.7, c.s); _cf.set(0, 0, c.dir); _q.setFromEuler(_e.set(0, c.dir > 0 ? 0 : Math.PI, 0)); }
+    _m.compose(_cp, _q, _cs); carBodies.setMatrixAt(i, _m);
+    _m.compose(_cp.addScaledVector(_cf, 1.82), _q, _cs); carHeads.setMatrixAt(i, _m);
+    _m.compose(_cp.addScaledVector(_cf, -3.64), _q, _cs); carTails.setMatrixAt(i, _m);
+  }
+  carBodies.instanceMatrix.needsUpdate = carHeads.instanceMatrix.needsUpdate = carTails.instanceMatrix.needsUpdate = true;
+}
+updateCars(0);
+// poças de luz dos postes no chão (só perto da torre, onde a câmera enxerga): 1 draw call
+const lampPoolPos = lampPos.filter(([x, z]) => Math.hypot(x, z) < (IS_MOBILE ? 110 : 160));
+const lampPoolMat = glowMat('pool');
+const lampPools = new THREE.InstancedMesh(new THREE.PlaneGeometry(5, 5), lampPoolMat, lampPoolPos.length);
+lampPoolPos.forEach(([x, z], i) => { _m.compose(_cp.set(x, 0.07, z), _q.setFromEuler(_e.set(-Math.PI / 2, 0, 0)), _cs); lampPools.setMatrixAt(i, _m); });
+scene.add(lampPools);
+
 function updateBuses(dt){
   if (!optGroups.onibus.visible) return;
   for (const b of buses) {
@@ -1546,8 +1909,64 @@ function flowRows(u){
     ['Parcela nas chaves', `${chaves}%`, BRL.format(vC)],
   ]};
 }
+/* ----- galeria de fotos por tipologia (imagens ilustrativas geradas por IA) -----
+   as fotos grandes só baixam quando a galeria abre; o painel carrega apenas miniaturas de ~10 KB */
+const GALERIA = {
+  '2d': [['2d-sala', 'Living integrado à cozinha'], ['2d-cozinha', 'Cozinha'], ['2d-suite', 'Suíte'], ['2d-varanda', 'Varanda']],
+  '3d': [['3d-sala', 'Living e jantar'], ['3d-cozinha', 'Cozinha com ilha'], ['3d-quarto', 'Dormitório'], ['3d-varanda', 'Varanda gourmet']],
+  '3s': [['3s-living', 'Living panorâmico'], ['3s-cozinha', 'Cozinha gourmet'], ['3s-suite', 'Suíte master'], ['3s-varanda', 'Varanda gourmet']],
+};
+const imgApto = (slug, mini) => `${IMG}aptos/${slug}${mini ? '-mini' : ''}.webp`;
+const gal = { list: [], i: 0, opener: null };
+let galThumbsFor = '';
+function galThumbs(u){
+  if (galThumbsFor === u.f) return; galThumbsFor = u.f;
+  $('galThumbs').innerHTML = GALERIA[u.f].slice(0, 3).map(([s]) => `<img src="${imgApto(s, true)}" alt="" width="38" height="38" loading="lazy" decoding="async">`).join('');
+  $('galSub').textContent = `${GALERIA[u.f].length} ambientes decorados`;
+}
+function galShow(i){
+  gal.i = (i + gal.list.length) % gal.list.length;
+  const [s, nome] = gal.list[gal.i];
+  // enquanto a foto grande baixa, a miniatura (já em cache) ocupa o lugar — nunca fica um vazio na tela
+  const im = $('galImg'), full = imgApto(s); im.alt = nome;
+  if (!im.src.endsWith(full)) {
+    im.src = imgApto(s, true);
+    const pre = new Image(); pre.onload = () => { if (gal.list[gal.i][0] === s) im.src = full; }; pre.src = full;
+  }
+  $('galCap').innerHTML = `${nome} <small>${gal.i + 1} de ${gal.list.length} · imagem ilustrativa gerada por IA, decoração sugerida</small>`;
+  $('galStrip').querySelectorAll('button').forEach((b, k) => { b.classList.toggle('on', k === gal.i); b.setAttribute('aria-current', k === gal.i); });
+  const nx = gal.list[(gal.i + 1) % gal.list.length][0]; new Image().src = imgApto(nx);   // pré-carrega a próxima
+}
+function galOpen(){
+  const u = state.sel; if (!u) return;
+  gal.list = GALERIA[u.f]; gal.opener = document.activeElement;
+  $('galTitle').textContent = `Apto ${u.id}`;
+  $('galType').textContent = `${u.tipo} · ${num(u.area)} m²`;
+  $('galStrip').innerHTML = gal.list.map(([s, nome], k) => `<button type="button" aria-label="${nome}"><img src="${imgApto(s, true)}" alt="" width="72" height="48" decoding="async"></button>`).join('');
+  galShow(0);
+  const g = $('gal'); g.classList.add('open'); g.setAttribute('aria-hidden', 'false');
+  $('galClose').focus();
+}
+function galClose(){
+  const g = $('gal'); if (!g.classList.contains('open')) return;
+  g.classList.remove('open'); g.setAttribute('aria-hidden', 'true');
+  gal.opener?.focus?.();
+}
+const galIsOpen = () => $('gal').classList.contains('open');
+$('openGal').onclick = galOpen;
+$('galClose').onclick = galClose;
+$('galPrev').onclick = () => galShow(gal.i - 1);
+$('galNext').onclick = () => galShow(gal.i + 1);
+$('galStrip').addEventListener('click', e => { const b = e.target.closest('button'); if (b) galShow([...$('galStrip').children].indexOf(b)); });
+$('gal').addEventListener('click', e => { if (e.target.id === 'gal' || e.target.classList.contains('stage')) galClose(); });
+// deslizar no celular troca a foto
+{ let sx = null; const st = $('gal');
+  st.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+  st.addEventListener('touchend', e => { if (sx === null) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 40) galShow(gal.i + (dx < 0 ? 1 : -1)); sx = null; }); }
+
 function renderPanel(){
   const u = state.sel; if (!u) return;
+  galThumbs(u);
   $('uKicker').textContent = `Apartamento · final ${u.fin} · ${u.floor}º pavimento`;
   $('uNum').textContent = u.id;
   const b = $('uBadge'); b.textContent = u.sold ? '● Vendida' : '● Disponível'; b.className = 'badge ' + (u.sold ? 'sold' : 'av');
@@ -1673,12 +2092,17 @@ function setTime(h){
   state.night = dl < 0.5;
   PALETA ??= PAL();
   for (const [c, n, d] of PALETA) c.lerpColors(_cn.set(n), _cd.set(d), dl);
-  paintSky(dl, gl); scene.background = skyTex;
+  paintSky(dl, gl);   // skyTex continua alimentando o reflexo (env map); o fundo visível é a cúpula em shader
   if (Math.abs(h - envHour) > 0.25) {                    // reflexo do céu: recalcula só quando o horário muda de verdade
     envHour = h; clearTimeout(envTimer); envTimer = setTimeout(refreshSkyEnv, 60);
   }
   scene.fog.color.lerpColors(_cn.set(0x2c56d0), _cd.set(0xc6d9f4), dl).lerp(_cd.set(0xf0b48a), gl * 0.8);
   scene.fog.near = lerp(170, 220, dl); scene.fog.far = lerp(640, 1000, dl);
+  const skyAt = p => sampleStops(SKY_STOPS.night, p).lerp(sampleStops(SKY_STOPS.day, p), dl).lerp(sampleStops(SKY_STOPS.golden, p), gl);
+  skyU.uHor.value.copy(scene.fog.color); skyU.uMid.value.copy(skyAt(0.45)); skyU.uTop.value.copy(skyAt(0.0));
+  skyU.uDay.value = dl; skyU.uGold.value = gl;
+  interiorU.uDay.value = dl;
+  interiorU.uRefl.value.lerpColors(_cn.set(0x1c2a68), _cd.set(0x9cb9e6), dl).lerp(_cd.set(0xf3a774), gl * 0.6);
   hemi.intensity = lerp(1.25, 1.5, dl);
   // sol (de dia) ou lua (de noite)
   if (sunUp) {
@@ -1692,6 +2116,8 @@ function setTime(h){
     const sc = 150 * (1 + gl * 1.2); sunDisk.scale.set(sc, sc, 1);
   } else { sun.position.set(-80, 120, 60); sun.color.set(0xbfd0ff); sun.intensity = 1.0; }
   sunDisk.visible = sunUp;
+  if (sunUp) { skyU.uSunDir.value.copy(sunDir(h)); skyU.uSunCol.value.copy(sun.color); skyU.uSunUp.value = smooth(5.6, 6.3, h) * (1 - smooth(17.7, 18.4, h)); }
+  else { skyU.uSunDir.value.copy(moon.position).normalize(); skyU.uSunCol.value.setRGB(0.32, 0.38, 0.62); skyU.uSunUp.value = 0.6; }
   sun.castShadow = dl > 0.25 && !IS_MOBILE && shadowsOK;   // sombras suaves com sol (no celular ficam desligadas)
   // céu noturno e luzes que acendem ao escurecer
   stars.visible = moon.visible = dl < 0.35;
@@ -1701,7 +2127,7 @@ function setTime(h){
   poolMat.emissiveIntensity = poolMat.userData.base * lerp(1, 0.15, dl);
   lobbyMat.emissiveIntensity = lerp(1.0, 0.3, dl);
   crownWinMat.emissiveIntensity = crownWinMat.userData.base * lerp(1, 0.32, dl);
-  LIT.forEach(m => m.emissiveIntensity = m.userData.base * lerp(1, 0.22, dl));
+  LIT.forEach(m => m.emissiveIntensity = m.userData.base * lerp(1, 0.36, dl));
   MAT.avGlow.emissiveIntensity = MAT.avGlow.userData.base * lerp(1, 0.45, dl);
   MAT.av.emissiveIntensity = lerp(0.35, 0.05, dl);
   MAT.av.envMapIntensity = lerp(0.55, 1.0, dl);
@@ -1710,6 +2136,9 @@ function setTime(h){
   spotMat.color.lerpColors(_cn.set(0x9aa0b4), _cd.set(0xfff0d0), noite);
   washMat.opacity = noite * 0.95; poolLightMat.opacity = noite;
   washMat.visible = poolLightMat.visible = noite > 0.01;
+  lampPoolMat.opacity = noite * 0.55; lampPools.visible = noite > 0.01;
+  headMat.color.lerpColors(_cn.set(0xb9bcc4), _cd.set(0xfff1d0), noite).multiplyScalar(1 + noite * 2.5);   // HDR: o bloom pega à noite
+  tailMat.color.lerpColors(_cn.set(0x7a1410), _cd.set(0xff2a1a), noite).multiplyScalar(1 + noite * 1.5);
   bloom.strength = lerp(0.5, 0.22, dl) + gl * 0.2;            // brilho do sol / pôr do sol
   renderer.toneMappingExposure = lerp(1.05, 0.95, dl);
   // interface
@@ -1753,17 +2182,29 @@ function handleMove(){
   const e = pendingMove; pendingMove = null; if (!e) return;
   const { unit: u, poi } = pick(e); setHover(u || null);
   canvas.classList.toggle('pointing', !!(u || poi));
+  showTip(e.clientX, e.clientY, u, poi);
+}
+// tooltip: unidade = linha de texto; local do mapa = card com foto (a imagem só baixa no 1º hover)
+function showTip(cx, cy, u, poi){
   const key = u ? 'u' + u.id + u.sold : poi ? 'p' + poi.nome + poi.x : '';
   if (key === tipKey) { /* mesmo alvo: só reposiciona */ }
   else if (u) {
+    tip.classList.remove('rich');
     tip.innerHTML = `<b>Apto ${u.id}</b> · ${u.tipo.split(' · ')[0]} · <span class="s ${u.sold ? 'sold' : ''}">${u.sold ? 'Vendida' : 'Disponível'}</span>`;
   } else if (poi) {
-    const m = distM(poi.x, poi.z);
-    tip.innerHTML = `${poi.cat.ic} <b>${poi.nome}</b>${poi.extra ? ' · ' + poi.extra : ''} · ${m} m · ${Math.max(1, Math.round(m/80))} min a pé`;
+    const m = distM(poi.x, poi.z), walk = `${m} m · ${Math.max(1, Math.round(m/80))} min a pé`;
+    tip.classList.toggle('rich', !!poi.img);
+    tip.innerHTML = poi.img
+      ? `<img src="${imgLocal(poi.img)}" alt="" width="248" height="140" decoding="async"><div class="tx"><b>${poi.cat.ic} ${poi.nome}</b><span>${poi.extra ? poi.extra + ' · ' : ''}${walk}</span><small class="ai">Imagem ilustrativa gerada por IA</small></div>`
+      : `${poi.cat.ic} <b>${poi.nome}</b>${poi.extra ? ' · ' + poi.extra : ''} · ${walk}`;
   }
   tipKey = key;
-  if (u || poi) { tip.style.left = (e.clientX + 16) + 'px'; tip.style.top = (e.clientY + 14) + 'px'; tip.style.opacity = 1; }
-  else tip.style.opacity = 0;
+  if (!(u || poi)) { tip.style.opacity = 0; return; }
+  // não deixa o card sair da tela (perto da borda direita/inferior ele vira para o outro lado)
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = (cx + 16 + w > innerWidth - 8 ? cx - w - 12 : cx + 16) + 'px';
+  tip.style.top = (cy + 14 + h > innerHeight - 8 ? Math.max(8, cy - h - 10) : cy + 14) + 'px';
+  tip.style.opacity = 1;
 }
 canvas.addEventListener('pointerleave', () => { setHover(null); tip.style.opacity = 0; });
 canvas.addEventListener('pointerdown', e => { down = [e.clientX, e.clientY]; });
@@ -1771,7 +2212,11 @@ canvas.addEventListener('pointerup', e => {
   if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6) return;
   const { unit: u, poi } = pick(e);
   if (u) select(u);
-  else if (poi) { const k = Math.hypot(poi.x, poi.z) || 1; flyTo([poi.x + poi.x/k*45, 48, poi.z + poi.z/k*45], [poi.x*0.6, 8, poi.z*0.6]); }
+  else if (poi) {
+    const k = Math.hypot(poi.x, poi.z) || 1; flyTo([poi.x + poi.x/k*45, 48, poi.z + poi.z/k*45], [poi.x*0.6, 8, poi.z*0.6]);
+    // no toque não existe hover: o card com a foto aparece por alguns segundos
+    if (e.pointerType === 'touch') { tipKey = ''; showTip(e.clientX, e.clientY, null, poi); clearTimeout(showTip._t); showTip._t = setTimeout(() => { tip.style.opacity = 0; tipKey = ''; }, 3500); }
+  }
 });
 
 // ----- menu Opcionais -----
@@ -1792,10 +2237,17 @@ function syncOpt(){
 // sempre inicia com tudo desligado (o navegador às vezes restaura caixas marcadas ao recarregar)
 optList.querySelectorAll('input').forEach(i => { i.checked = false; i.autocomplete = 'off'; optGroups[i.dataset.k].visible = false; });
 syncOpt();
-optList.addEventListener('change', e => { const k = e.target.dataset.k; if (k) { optGroups[k].visible = e.target.checked; syncOpt(); } });
+// ao ligar uma categoria, pré-carrega as fotos dela em segundo plano (o hover já abre com a imagem pronta)
+const prefetched = new Set();
+function prefetchCat(k){
+  if (prefetched.has(k)) return; prefetched.add(k);
+  const slugs = k === 'onibus' ? ['onibus'] : POIS.filter(p => p.key === k).map(p => p.img);
+  for (const s of slugs) { const im = new Image(); im.decoding = 'async'; im.src = imgLocal(s); }
+}
+optList.addEventListener('change', e => { const k = e.target.dataset.k; if (k) { optGroups[k].visible = e.target.checked; if (e.target.checked) prefetchCat(k); syncOpt(); } });
 $('optAll').onclick = () => {
   const all = OPC.some(o => !optGroups[o.key].visible);
-  optList.querySelectorAll('input').forEach(i => { i.checked = all; optGroups[i.dataset.k].visible = all; });
+  optList.querySelectorAll('input').forEach(i => { i.checked = all; optGroups[i.dataset.k].visible = all; if (all) prefetchCat(i.dataset.k); });
   syncOpt();
 };
 $('tgOpt').onclick = e => {
@@ -1849,6 +2301,12 @@ document.querySelectorAll('#camSeg .btn').forEach(b => b.onclick = () => {
 });
 addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+  if (galIsOpen()) {                       // galeria aberta: o teclado navega as fotos, não as unidades
+    if (e.key === 'Escape') galClose();
+    else if (e.key === 'ArrowRight') galShow(gal.i + 1);
+    else if (e.key === 'ArrowLeft') galShow(gal.i - 1);
+    return;
+  }
   if (e.key === 'Escape') { if (!optMenu.classList.contains('hidden')) $('tgOpt').click(); else select(null); }
   if (e.key === 'ArrowRight') stepAvailable(1);
   if (e.key === 'ArrowLeft') stepAvailable(-1);
@@ -1915,6 +2373,10 @@ function loop(){
     }
   }
   updateBuses(dt);
+  updateCars(dt);
+  skyU.uTime.value = t;
+  const bk = (t % 1.5) < 0.12 ? 1 : 0;                            // balizamento: flash curto a cada 1,5 s
+  beaconMat.color.setRGB(0.25 + bk * 5, 0.03 + bk * 0.25, 0.02 + bk * 0.15);
   if (tween) {
     tween.k = Math.min(1, tween.k + dt / tween.dur);
     const k = ease(tween.k);
@@ -1930,6 +2392,7 @@ function loop(){
   updateCompass();
   const rot = controls.autoRotate; if (tween) controls.autoRotate = false;
   controls.update(); controls.autoRotate = rot;
+  skyDome.position.copy(camera.position);
   composer.render();
   if (++warmFrames === 10) LD.set(1, 'Pronto');
 
