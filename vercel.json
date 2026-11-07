@@ -1,6 +1,9 @@
 {
   "functions": {
-    "api/index.ts": { "maxDuration": 60 }
+    "api/index.ts": {
+      "maxDuration": 60,
+      "excludeFiles": "{public/models/**,public/**/*.glb,public/**/*.blend,public/**/*.mp4,public/**/*.m3u8,public/**/*.webm,home-v5/**,dist/**,scripts/**,scratch/**,docs/**,_ideias/**}"
+    }
   },
   "cleanUrls": true,
   "redirects": [
