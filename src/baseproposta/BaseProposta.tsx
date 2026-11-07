@@ -700,6 +700,9 @@ export default function BaseProposta() {
             <span className="text-6xl md:text-8xl font-black tracking-tighter">{totalValueSplit[0]}</span>
             <span className="text-xl font-bold mt-2">{isEn ? "." : ","}{totalValueSplit[1] || '00'}</span>
           </div>
+          {proposal?.mensal && (
+            <p className="text-lg text-[#00d1ff] font-bold mb-8 -mt-4">+ {isEn ? "$" : "R$"} {proposal.mensal}{isEn ? "/month" : "/mês"}</p>
+          )}
 
           <p className="text-gray-400 text-sm mb-12">
             {t.validDesc}
@@ -852,6 +855,7 @@ export default function BaseProposta() {
             )}
             
             <p className="text-4xl text-[#00d1ff] font-black leading-none mb-2">{isEn ? "$" : "R$"} {totalValueSplit[0]}{isEn ? "." : ","}{totalValueSplit[1] || '00'}</p>
+            {proposal?.mensal && <p className="text-lg text-[#00d1ff] font-bold mb-2">+ {isEn ? "$" : "R$"} {proposal.mensal}{isEn ? "/month" : "/mês"}</p>}
             <p className="text-sm text-gray-400 mt-2">{t.validDesc}</p>
         </div>
 

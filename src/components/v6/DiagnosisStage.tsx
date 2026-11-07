@@ -49,6 +49,21 @@ export function DiagnosisStage({
     );
 
     window.open(`https://wa.me/5513981062787?text=${text}`, "_blank");
+
+    // Grava o contato no painel (Admin > Leads) e avisa por e-mail, mesmo que a pessoa não envie a mensagem no WhatsApp.
+    // Depois do window.open para o navegador não bloquear a janela; keepalive garante o envio se a aba mudar.
+    fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: JSON.stringify({
+        name: formData.nome,
+        email: formData.email,
+        phone: formData.whatsapp,
+        message: (formData.empresa ? `Empresa: ${formData.empresa}\n\n` : "") + formData.mensagem,
+        origem: "home",
+      }),
+    }).catch(() => {});
   };
 
   useEffect(() => {
@@ -197,6 +212,7 @@ export function DiagnosisStage({
                           type="submit"
                           size="xl"
                           variant="editorial"
+                          className="max-md:w-full max-md:justify-center"
                         >
                           {t.diagnosis.submitBtn}
                           <ArrowRight />

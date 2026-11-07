@@ -15,16 +15,6 @@ export default defineConfig(({mode}) => {
           server.middlewares.use(async (req, res, next) => {
             const url = req.url?.split('?')[0];
             const routeMap: Record<string, string> = {
-              '/home-v2': 'home-v2/index.html',
-              '/home-v2/': 'home-v2/index.html',
-              '/home2': 'home-v2/index.html',
-              '/home2/': 'home-v2/index.html',
-              '/home-v4': 'home-v4/index.html',
-              '/home-v4/': 'home-v4/index.html',
-              '/home4': 'home-v4/index.html',
-              '/home4/': 'home-v4/index.html',
-              '/home-v3': 'home-v3/index.html',
-              '/home-v3/': 'home-v3/index.html',
               '/home3': 'home3/index.html',
               '/home3/': 'home3/index.html',
               '/portfolioedu': 'portfolioedu/index.html',
@@ -84,10 +74,7 @@ export default defineConfig(({mode}) => {
           admin: path.resolve(__dirname, 'admin/index.html'),
           sobre: path.resolve(__dirname, 'sobre/index.html'),
           baseproposta: path.resolve(__dirname, 'baseproposta/index.html'),
-          homev2: path.resolve(__dirname, 'home-v2/index.html'),
-          homev3: path.resolve(__dirname, 'home-v3/index.html'),
           home3: path.resolve(__dirname, 'home3/index.html'),
-          homev4: path.resolve(__dirname, 'home-v4/index.html'),
           homev5: path.resolve(__dirname, 'home-v5/index.html'),
           home5: path.resolve(__dirname, 'home5/index.html'),
           homev6: path.resolve(__dirname, 'home-v6/index.html'),

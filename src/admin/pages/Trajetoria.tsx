@@ -64,7 +64,7 @@ export default function Trajetoria() {
 
   return (
     <div className="flex-1 overflow-y-auto w-full">
-      <Header title="Análise Geral" />
+      <Header title="Trajetória" />
       <div className="p-8 max-w-[1200px] mx-auto mt-4">
         
         <div className="flex justify-between items-start mb-8">

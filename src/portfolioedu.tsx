@@ -8,7 +8,7 @@ import { BreakableCard } from "./components/ui/kinetic-shatter-box-section";
 
 function PortfolioEduExtra() {
   useEffect(() => {
-    logPageView("Portfolio EDU");
+    logPageView("portfolioedu");
   }, []);
   
   return (

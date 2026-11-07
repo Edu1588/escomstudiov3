@@ -4,7 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitTextReveal } from "@/components/v6/SplitTextReveal";
 import { Button } from "@/components/ui/button";
 import { ArrowDown } from "lucide-react";
-import { RobozitoSequenceBackground } from "@/components/v6/RobozitoSequenceBackground";
+import { ForestHeroBackground } from "@/components/v6/floresta/ForestHeroBackground";
 import { PixelTransitionCanvas } from "@/components/v6/PixelTransitionCanvas";
 import { LoadingCurtain } from "@/components/v6/LoadingCurtain";
 import { useLanguage } from "@/components/v6/LanguageContext";
@@ -226,12 +226,12 @@ export function HeroManifestoStage({
         ref={screenRef}
         className="relative h-screen w-full overflow-hidden bg-[#000000]"
       >
-        {/* SEQUÊNCIA DE FUNDO DO ROBÔ COM BRILHO NATURAL (Frames 001 a 096 fluindo no scroll) */}
-        <RobozitoSequenceBackground
+        {/* FUNDO 3D: robô agachado na floresta com a borboleta azul (a rolagem aproxima a câmera) */}
+        <ForestHeroBackground
           frameRef={frameRef}
           onProgress={setLoadingProgress}
           curtainsOpen={curtainsOpen}
-          onSatelliteEnded={() => setHeroRevealed(true)}
+          onRevealed={() => setHeroRevealed(true)}
         />
 
         {/* CAMADA 1: SEÇÃO 1 - HERO */}
@@ -242,7 +242,7 @@ export function HeroManifestoStage({
         >
           {/* Conteúdo do Hero só aparece quando o vídeo do robô (2º vídeo) assume a tela */}
           <div
-            className="relative z-20 flex h-full flex-1 flex-col justify-between px-5 pt-2 pb-6 md:px-12 xl:px-[22vw] md:pt-4 md:pb-8 transition-all duration-1000 ease-out"
+            className="relative z-20 flex h-full flex-1 flex-col justify-between px-5 pt-2 pb-6 md:px-12 xl:pl-[calc(8vw+2.5rem)] xl:pr-[calc(8vw+2rem)] md:pt-4 md:pb-8 transition-all duration-1000 ease-out"
             style={{
               opacity: heroRevealed ? 1 : 0,
               transform: heroRevealed ? "translateY(0)" : "translateY(14px)",
@@ -253,7 +253,8 @@ export function HeroManifestoStage({
               <Eyebrow cyan>{t.hero.eyebrow}</Eyebrow>
             </div>
             
-            <div className="relative z-30 max-w-3xl py-2 md:py-5 pointer-events-auto">
+            {/* no celular o robô fica em cima e o texto desce para a parte de baixo */}
+            <div className="relative z-30 max-w-3xl py-2 md:py-5 max-md:mt-auto pointer-events-auto">
               <InteractiveBlurTitle
                 as="h1"
                 className="max-w-2xl font-serif text-2xl sm:text-3xl md:text-7xl lg:text-[5.5rem] leading-[1.08] md:leading-[0.95] font-light text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]"
@@ -264,8 +265,8 @@ export function HeroManifestoStage({
                 {t.hero.subtitle}
               </p>
               <div className="mt-4 md:mt-6 flex flex-wrap gap-2.5 md:gap-3">
-                <AnchorButton className="h-9 px-4 text-[10px] tracking-[0.16em] md:h-12 md:px-6">{t.hero.ctaPrimary}</AnchorButton>
-                <Button asChild variant="editorialOutline" className="h-9 px-4 text-[10px] tracking-[0.16em] md:h-12 md:px-6">
+                <AnchorButton className="h-9 px-4 text-[10px] tracking-[0.16em] md:h-12 md:px-6 max-md:w-full max-md:justify-center">{t.hero.ctaPrimary}</AnchorButton>
+                <Button asChild variant="editorialOutline" className="h-9 px-4 text-[10px] tracking-[0.16em] md:h-12 md:px-6 max-md:w-full max-md:justify-center">
                   <a href="#solucoes">
                     {t.hero.ctaSecondary}
                     <ArrowDown className="size-3 md:size-4" />
@@ -279,8 +280,6 @@ export function HeroManifestoStage({
 
             <div className="flex flex-wrap justify-between gap-3 border-t border-white/15 pt-3 pb-2 font-mono text-[9px] uppercase tracking-[0.12em] text-zinc-400 pointer-events-auto">
               <span>{t.hero.footerStatus}</span>
-              <span>System status: ready</span>
-              <span>Built for conversion</span>
             </div>
           </div>
         </section>

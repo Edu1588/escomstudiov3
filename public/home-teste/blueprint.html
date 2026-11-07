@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<title>Galpão Blueprint — render de referência</title>
+<style>html,body{margin:0;height:100%;background:#030405;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.184.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<script type="module">
+// Galpão industrial procedural em linhas de blueprint (pórticos, treliças, terças, contraventamento).
+// Query: ?cam=x,y,z&alvo=x,y,z&fov=48
+import * as THREE from "three";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+
+const q = new URLSearchParams(location.search);
+const vec = (s, d) => s ? new THREE.Vector3(...s.split(",").map(Number)) : d;
+const CAM = vec(q.get("cam"), new THREE.Vector3(-3.5, 1.35, -4));
+const ALVO = vec(q.get("alvo"), new THREE.Vector3(1.2, 3.2, 30));
+const FOV = Number(q.get("fov") || 50);
+
+const W = innerWidth, H = innerHeight;
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(devicePixelRatio);
+renderer.setSize(W, H);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color("#030405");
+scene.fog = new THREE.Fog("#030405", 8, 62);
+const camera = new THREE.PerspectiveCamera(FOV, W / H, 0.05, 300);
+camera.position.copy(CAM);
+camera.lookAt(ALVO);
+
+// ---------- acumuladores de linhas por "peso" ----------
+const camadas = {
+  forte: { pts: [], cor: "#7fe0ff", op: 0.95 },   // estrutura principal
+  media: { pts: [], cor: "#4fb8e6", op: 0.6 },    // secundária (terças, travessas)
+  fina:  { pts: [], cor: "#2f86b0", op: 0.35 },   // detalhes, cotas, chão
+};
+const L = (c, a, b) => camadas[c].pts.push(a[0], a[1], a[2], b[0], b[1], b[2]);
+const caixa = (c, x0, y0, z0, x1, y1, z1) => {    // aresta de um paralelepípedo
+  const v = [[x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1],[x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1]];
+  [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]].forEach(([i,j]) => L(c, v[i], v[j]));
+};
+
+// ---------- dimensões ----------
+const MEIA = 12;          // meia largura (24 m de vão)
+const BEIRAL = 7.5;       // altura do pilar
+const CUMEEIRA = 10.5;    // altura da cumeeira
+const Z0 = -6, VAO = 6, N = 9;   // 9 pórticos a cada 6 m
+const ZF = Z0 + VAO * (N - 1);
+const COL = 0.22;
+
+const yTelhado = (x) => BEIRAL + (CUMEEIRA - BEIRAL) * (1 - Math.abs(x) / MEIA);
+
+for (let i = 0; i < N; i++) {
+  const z = Z0 + i * VAO;
+  // pilares em perfil (caixa fina)
+  for (const s of [-1, 1]) {
+    const x = s * MEIA;
+    caixa("forte", x - COL, 0, z - COL, x + COL, BEIRAL, z + COL);
+    caixa("fina", x - 0.5, 0, z - 0.5, x + 0.5, 0.06, z + 0.5); // sapata
+    // mão-francesa
+    L("media", [x, BEIRAL - 1.6, z], [x - s * 1.6, BEIRAL, z]);
+  }
+  // treliça: banzo superior, banzo inferior, montantes e diagonais
+  const PAIN = 12;
+  const yInf = BEIRAL;
+  for (let k = 0; k < PAIN; k++) {
+    const xa = -MEIA + (2 * MEIA * k) / PAIN, xb = -MEIA + (2 * MEIA * (k + 1)) / PAIN;
+    L("forte", [xa, yTelhado(xa), z], [xb, yTelhado(xb), z]);
+    L("forte", [xa, yInf, z], [xb, yInf, z]);
+    L("media", [xb, yInf, z], [xb, yTelhado(xb), z]);
+    const meio = k < PAIN / 2;
+    L("media", meio ? [xa, yInf, z] : [xa, yTelhado(xa), z], meio ? [xb, yTelhado(xb), z] : [xb, yInf, z]);
+  }
+}
+
+// terças do telhado e longarinas
+for (let k = 0; k <= 12; k++) {
+  const x = -MEIA + (2 * MEIA * k) / 12;
+  L("media", [x, yTelhado(x) + 0.05, Z0], [x, yTelhado(x) + 0.05, ZF]);
+}
+L("forte", [0, CUMEEIRA, Z0], [0, CUMEEIRA, ZF]);
+for (const s of [-1, 1]) {
+  L("forte", [s * MEIA, BEIRAL, Z0], [s * MEIA, BEIRAL, ZF]);
+  // travessas de fechamento lateral
+  for (const y of [1.2, 3.2, 5.2]) L("fina", [s * MEIA, y, Z0], [s * MEIA, y, ZF]);
+  // contraventamento em X nos vãos 2 e 7
+  for (const i of [1, 6]) {
+    const za = Z0 + i * VAO, zb = za + VAO;
+    L("media", [s * MEIA, 0, za], [s * MEIA, BEIRAL, zb]);
+    L("media", [s * MEIA, BEIRAL, za], [s * MEIA, 0, zb]);
+  }
+  // janelas altas (faixa de lanternim) por vão
+  for (let i = 0; i < N - 1; i++) {
+    const za = Z0 + i * VAO + 0.8, zb = za + VAO - 1.6;
+    caixa("fina", s * MEIA - 0.02, 5.6, za, s * MEIA + 0.02, 6.9, zb);
+    L("fina", [s * MEIA, 5.6, (za + zb) / 2], [s * MEIA, 6.9, (za + zb) / 2]);
+  }
+}
+// contraventamento no plano do telhado (vãos 2 e 7)
+for (const i of [1, 6]) {
+  const za = Z0 + i * VAO, zb = za + VAO;
+  for (const s of [-1, 1]) {
+    L("fina", [s * MEIA, BEIRAL, za], [0, CUMEEIRA, zb]);
+    L("fina", [0, CUMEEIRA, za], [s * MEIA, BEIRAL, zb]);
+  }
+}
+
+// fundo: oitão com portão de enrolar
+const zF = ZF;
+L("forte", [-MEIA, 0, zF], [MEIA, 0, zF]);
+for (let x = -MEIA + 4; x < MEIA; x += 4) L("media", [x, 0, zF], [x, yTelhado(x), zF]);
+caixa("forte", -4, 0, zF - 0.05, 4, 5.5, zF + 0.05);
+for (let y = 0.25; y < 5.5; y += 0.25) L("fina", [-4, y, zF], [4, y, zF]);
+caixa("media", -4.3, 5.5, zF - 0.3, 4.3, 6.1, zF + 0.1); // caixa do rolo
+
+// ponte rolante ao longo do galpão
+for (const s of [-1, 1]) L("media", [s * (MEIA - 0.6), 6.4, Z0], [s * (MEIA - 0.6), 6.4, ZF]);
+caixa("media", -MEIA + 0.6, 6.25, 18, MEIA - 0.6, 6.7, 18.8);
+L("fina", [2, 6.25, 18.4], [2, 2.4, 18.4]);
+caixa("fina", 1.7, 2.1, 18.1, 2.3, 2.4, 18.7);
+
+// chão: grade técnica fina + faixas de demarcação + cotas sem texto
+for (let x = -MEIA; x <= MEIA; x += 1) L("fina", [x, 0.001, Z0 - 8], [x, 0.001, ZF]);
+for (let z = Z0 - 8; z <= ZF; z += 1) L("fina", [-MEIA, 0.001, z], [MEIA, 0.001, z]);
+for (const x of [-3, 3]) L("media", [x, 0.003, Z0 - 8], [x, 0.003, ZF]);   // faixa de corredor
+// linha de cota ao longo do pé-direito esquerdo
+const cx = -MEIA + 1.2;
+L("media", [cx, 0.01, Z0], [cx, 0.01, ZF]);
+for (let i = 0; i < N; i++) { const z = Z0 + i * VAO; L("media", [cx - 0.3, 0.01, z - 0.3], [cx + 0.3, 0.01, z + 0.3]); }
+// cota vertical no pilar da frente direita
+const px = MEIA - 1.2, pz = Z0 + VAO;
+L("media", [px, 0, pz], [px, BEIRAL, pz]);
+L("media", [px - 0.3, 0, pz], [px + 0.3, 0, pz]);
+L("media", [px - 0.3, BEIRAL, pz], [px + 0.3, BEIRAL, pz]);
+
+// ---------- monta as camadas ----------
+for (const c of Object.values(camadas)) {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute(c.pts, 3));
+  scene.add(new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: c.cor, transparent: true, opacity: c.op, fog: true })));
+}
+
+// leve brilho do chão (piso escuro reflexivo sugerido)
+const piso = new THREE.Mesh(new THREE.PlaneGeometry(60, 80),
+  new THREE.MeshBasicMaterial({ color: "#061420", transparent: true, opacity: 0.55, fog: true }));
+piso.rotation.x = -Math.PI / 2; piso.position.set(0, -0.001, 16);
+scene.add(piso);
+
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+composer.addPass(new UnrealBloomPass(new THREE.Vector2(W, H), 0.85, 0.5, 0.0));
+composer.addPass(new OutputPass());
+composer.render();
+requestAnimationFrame(() => { composer.render(); window.__pronto = true; });
+</script>
+</body>
+</html>

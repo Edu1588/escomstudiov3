@@ -3,18 +3,25 @@ import { Header } from "../components/Header";
 import { Settings, Trash2, RotateCcw, Plus, X } from "lucide-react";
 
 interface Service {
-  id: number;
+  id: number | string;
   name: string;
   price: string;
   active: boolean;
   description?: string;
+  recorrencia?: "unico" | "mensal";
+  precoPaginaExtra?: string;
 }
+
+const brl = (v: string | number) => {
+  const n = Number(v);
+  return Number.isFinite(n) ? n.toLocaleString("pt-BR", { minimumFractionDigits: 2 }) : String(v);
+};
 
 export default function Servicos() {
   const [services, setServices] = useState<Service[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
-  const [serviceToDelete, setServiceToDelete] = useState<number | null>(null);
+  const [serviceToDelete, setServiceToDelete] = useState<number | string | null>(null);
 
   React.useEffect(() => {
     fetchServices();
@@ -29,7 +36,9 @@ export default function Servicos() {
         // Convert prices to string to match the local interface easily
         const formatted = data.services.map((s: any) => ({
           ...s,
-          price: s.price.toString()
+          price: s.price.toString(),
+          precoPaginaExtra: String(s.precoPaginaExtra ?? 0),
+          recorrencia: s.recorrencia === "mensal" ? "mensal" : "unico"
         }));
         setServices(formatted);
       }
@@ -38,7 +47,7 @@ export default function Servicos() {
     }
   };
 
-  const toggleStatus = async (id: number) => {
+  const toggleStatus = async (id: number | string) => {
     const service = services.find(s => s.id === id);
     if (!service) return;
     
@@ -60,7 +69,7 @@ export default function Servicos() {
   };
 
   const handleNewService = () => {
-    setEditingService({ id: Date.now(), name: "", price: "", active: true, description: "" });
+    setEditingService({ id: Date.now(), name: "", price: "", active: true, description: "", recorrencia: "unico", precoPaginaExtra: "0" });
     setIsModalOpen(true);
   };
 
@@ -94,7 +103,7 @@ export default function Servicos() {
     setEditingService(null);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: number | string) => {
     setServiceToDelete(id);
   };
 
@@ -118,18 +127,15 @@ export default function Servicos() {
 
   return (
     <div className="flex-1 overflow-y-auto w-full relative">
-      <Header title="Análise Geral" />
+      <Header title="Serviços" />
       <div className="p-8 max-w-[1000px] mx-auto mt-4">
         
         <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-6">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-xl font-bold">Valores & Serviços</h2>
             <div className="flex gap-4">
-              <button className="flex items-center gap-2 bg-[#1a1a1a] hover:bg-[#222] border border-[#333] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                <RotateCcw size={16} />
-                Restaurar Padrões
-              </button>
-              <button onClick={() => { setEditingService({ id: 0, name: "", price: "", active: true, description: "" }); handleNewService(); }} className="flex items-center gap-2 bg-[#00d1ff] hover:bg-[#00b8e6] text-black px-4 py-2 rounded-lg text-sm font-bold transition-colors">
+              
+              <button onClick={() => { setEditingService({ id: 0, name: "", price: "", active: true, description: "", recorrencia: "unico", precoPaginaExtra: "0" }); handleNewService(); }} className="flex items-center gap-2 bg-[#00d1ff] hover:bg-[#00b8e6] text-black px-4 py-2 rounded-lg text-sm font-bold transition-colors">
                 <Plus size={16} />
                 Novo Serviço
               </button>
@@ -160,8 +166,15 @@ export default function Servicos() {
 
                 <div className="flex items-center gap-6">
                   <div className="flex items-center gap-2">
-                     <span className="text-xs font-mono text-gray-500">R$</span>
-                     <span className={`font-mono font-medium ${service.active ? 'text-white' : 'text-gray-400'}`}>{service.price}</span>
+                     {Number(service.price) > 0 ? (
+                       <>
+                         <span className="text-xs font-mono text-gray-500">R$</span>
+                         <span className={`font-mono font-medium ${service.active ? 'text-white' : 'text-gray-400'}`}>{brl(service.price)}</span>
+                         {service.recorrencia === "mensal" && <span className="text-xs font-mono text-gray-500">/mês</span>}
+                       </>
+                     ) : (
+                       <span className="text-xs font-mono text-amber-400">defina o preço</span>
+                     )}
                   </div>
                   <div className="flex items-center gap-2 opacity-50 group-hover:opacity-100 transition-opacity">
                     <button onClick={() => handleDelete(service.id)} className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-lg hover:bg-red-500/10">
@@ -224,6 +237,29 @@ export default function Servicos() {
                   onChange={(e) => setEditingService({...editingService, price: e.target.value})}
                   className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white outline-none focus:border-[#00d1ff] transition-colors"
                   placeholder="Ex: 2.500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono text-gray-500 mb-1">COBRANÇA</label>
+                <select
+                  value={editingService.recorrencia || "unico"}
+                  onChange={(e) => setEditingService({...editingService, recorrencia: e.target.value as "unico" | "mensal"})}
+                  className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white outline-none focus:border-[#00d1ff] transition-colors"
+                >
+                  <option value="unico">Valor único (projeto)</option>
+                  <option value="mensal">Mensalidade (recorrente)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono text-gray-500 mb-1">PÁGINA EXTRA (R$ por página, 0 = não se aplica)</label>
+                <input
+                  type="text"
+                  value={editingService.precoPaginaExtra ?? "0"}
+                  onChange={(e) => setEditingService({...editingService, precoPaginaExtra: e.target.value})}
+                  className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white outline-none focus:border-[#00d1ff] transition-colors"
+                  placeholder="Ex: 300"
                 />
               </div>
 

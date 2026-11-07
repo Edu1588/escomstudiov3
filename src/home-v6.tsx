@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
-import { ArrowRight, Menu, X } from "lucide-react";
+import { logPageView } from "@/lib/analytics";
+import { ArrowRight, ArrowUpRight, ChevronDown, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VerticalNav } from "@/components/v6/VerticalNav";
+import { TopNav } from "@/components/v6/TopNav";
 import { LenisProvider } from "@/components/v6/LenisProvider";
 import { HeroManifestoStage } from "@/components/v6/HeroManifestoStage";
 import { MethodStage } from "@/components/v6/MethodStage";
 import { AboutInsightsStage } from "@/components/v6/AboutInsightsStage";
 import { DiagnosisStage } from "@/components/v6/DiagnosisStage";
-import { FixedContactButton, FixedBottomBar } from "@/components/v6/FixedUIElements";
+import { FixedContactButton, FixedBottomBar, useNicheLinks } from "@/components/v6/FixedUIElements";
 import { FloatingOrbContactButton } from "@/components/v6/FloatingOrbContactButton";
 import { LanguageProvider, useLanguage } from "@/components/v6/LanguageContext";
 import { DynamicSectionFrame } from "@/components/v6/DynamicSectionFrame";
@@ -16,8 +18,9 @@ import { DeliveryPlansSection } from "@/components/v6/DeliveryPlansSection";
 import { FeaturedWorksSection } from "@/components/v6/FeaturedWorksSection";
 import { PageSpeedAuditSection } from "@/components/v6/PageSpeedAuditSection";
 import { ClientsMarqueeSection } from "@/components/v6/ClientsMarqueeSection";
+import { VisibilitySection } from "@/components/v6/VisibilitySection";
 import { InteractiveBlurTitle } from "@/components/v6/InteractiveBlurTitle";
-import RobotBust3D from "@/components/RobotBust3D";
+import GalpaoVoo from "@/components/v6/floresta/GalpaoVoo";
 
 import {
   Accordion,
@@ -79,7 +82,9 @@ function AnchorButton({
 
 export function HomeV6() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [nichesOpen, setNichesOpen] = useState(false);
   const { t } = useLanguage();
+  const nicheLinks = useNicheLinks();
 
   const navLinks = [
     { label: t.nav.solutions, id: "solucoes" },
@@ -93,6 +98,7 @@ export function HomeV6() {
   return (
     <main className="relative bg-[#000000] text-foreground pb-8">
       {/* BOTÃO FIXO NO CANTO SUPERIOR DIREITO DE CONTATO (Ref: APPLY ->) */}
+      <TopNav />
       <FixedContactButton />
 
       {/* BOTÃO FIXO NO CANTO INFERIOR DIREITO COM ANIMAÇÃO LIVE ORB */}
@@ -134,6 +140,34 @@ export function HomeV6() {
                 {label}
               </a>
             ))}
+            <div className="border-b border-white/10 py-3">
+              <button
+                type="button"
+                aria-expanded={nichesOpen}
+                onClick={() => setNichesOpen((o) => !o)}
+                className="flex w-full items-center justify-between text-left text-white/90 transition-colors hover:text-cyan"
+              >
+                {t.nav.niches}
+                <ChevronDown className={`size-5 transition-transform ${nichesOpen ? "rotate-180" : ""}`} />
+              </button>
+              {nichesOpen && (
+                <div className="mt-3 grid gap-3 pl-4">
+                  {nicheLinks.map((l) => (
+                    <a
+                      key={l.href}
+                      href={l.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.16em] text-cyan"
+                    >
+                      {l.label}
+                      <ArrowUpRight className="size-4" />
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
           </nav>
         )}
       </div>
@@ -215,8 +249,11 @@ export function HomeV6() {
         </div>
       </section>
 
-      {/* ALGUNS DE NOSSOS TRABALHOS (2 COLUNAS: ESQUERDA FIXA / DIREITA SCROLL GALLERY) */}
-      <FeaturedWorksSection Eyebrow={Eyebrow} />
+      {/* VISIBILIDADE: CIDADE ISOMÉTRICA EM SVG, SÓ OS COMÉRCIOS COM SITE ACENDEM */}
+      <VisibilitySection Eyebrow={Eyebrow} />
+
+      {/* SEÇÃO DE PROJETOS SELECIONADOS REMOVIDA TEMPORARIAMENTE A PEDIDO DO USUÁRIO */}
+      {/* <FeaturedWorksSection Eyebrow={Eyebrow} /> */}
 
       {/* AUDITORIA DE PERFORMANCE GOOGLE PAGESPEED INSIGHTS (CORE WEB VITALS) */}
       <PageSpeedAuditSection Eyebrow={Eyebrow} />
@@ -313,7 +350,7 @@ export function HomeV6() {
                 {t.aiSection.desc}
               </p>
               <div className="mt-6 md:mt-10">
-                <AnchorButton outline className="h-9 px-4 text-[10px] tracking-[0.16em] md:h-12 md:px-6">
+                <AnchorButton outline className="h-9 px-4 text-[10px] tracking-[0.16em] md:h-12 md:px-6 max-md:w-full max-md:justify-center">
                   {t.aiSection.cta}
                 </AnchorButton>
               </div>
@@ -325,67 +362,7 @@ export function HomeV6() {
         <DeliveryPlansSection Eyebrow={Eyebrow} />
       </div>
 
-      {/* PROJETOS (Sistemas em Movimento) COM CARDS STACKING E ROBÔ 3D FIXO (Fundo Preto #000000) */}
-      <section
-        id="projetos"
-        className="border-t border-white/15 bg-[#000000] px-5 py-16 md:px-12 xl:pl-[14vw] xl:pr-12 2xl:pr-16 md:py-32 relative text-white"
-      >
-        <Eyebrow cyan>{t.systemsSection.eyebrow}</Eyebrow>
-        <InteractiveBlurTitle
-          as="h2"
-          className="mt-8 md:mt-12 max-w-4xl font-serif text-2xl sm:text-3xl md:text-6xl lg:text-7xl leading-[1.08] md:leading-[1.05] font-light text-white"
-        >
-          {t.systemsSection.title}
-        </InteractiveBlurTitle>
-
-        {/* LAYOUT DE 2 COLUNAS: ESQUERDA CARDS COM SCROLL (6 col) | DIREITA ROBÔ 3D FIXO (6 col) */}
-        <div className="mt-10 md:mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 relative">
-          {/* COLUNA ESQUERDA: 6 CARDS SUBINDO E SOBREPONDO O ANTERIOR NO SCROLL */}
-          <div className="lg:col-span-6 relative pb-56">
-            {t.systemsSection.items.map((item, i) => (
-              <div
-                key={item}
-                style={{
-                  top: `calc(5.5rem + ${i * 20}px)`,
-                  zIndex: i + 1,
-                }}
-                className="sticky mb-12 sm:mb-16 md:mb-24 last:mb-0"
-              >
-                <article className="group flex min-h-[190px] sm:min-h-[220px] md:min-h-[280px] flex-col justify-between bg-[#0d0d0d] border border-white/15 p-5 sm:p-6 md:p-10 shadow-[0_-14px_35px_rgba(0,0,0,0.85)] hover:bg-[#141414] hover:border-white/30 transition-colors">
-                  <div className="flex items-center justify-between border-b border-white/10 pb-3 md:pb-4">
-                    <span className="font-mono text-xs tracking-widest text-cyan group-hover:text-white transition-colors">
-                      FIELD // 0{i + 1}
-                    </span>
-                    <span className="font-mono text-[10px] text-white/50">
-                      0{i + 1} / 06
-                    </span>
-                  </div>
-
-                  <div className="my-4 md:my-6">
-                    <h3 className="font-serif text-lg sm:text-xl md:text-3xl text-white font-light leading-snug">
-                      {item}
-                    </h3>
-                  </div>
-
-                  <div className="flex justify-end pt-3 md:pt-4 border-t border-white/10">
-                    <ArrowRight className="size-4 md:size-5 text-white/60 transition-transform group-hover:translate-x-2 group-hover:text-cyan" />
-                  </div>
-                </article>
-              </div>
-            ))}
-          </div>
-
-          {/* COLUNA DIREITA: ROBÔ 3D FIXO (STICKY) APROVEITANDO O ESPAÇO À DIREITA */}
-          <div className="lg:col-span-6 relative">
-            <div className="lg:sticky lg:top-20 flex items-center justify-center">
-              <div className="relative w-full h-[560px] sm:h-[640px] lg:h-[720px] xl:h-[780px] flex items-center justify-center overflow-visible">
-                <div className="absolute size-96 md:size-[32rem] rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
-                <RobotBust3D />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* SEÇÃO PROJETOS REMOVIDA TEMPORARIAMENTE A PEDIDO DO USUÁRIO */}
 
       {/* PALCO 3: TRANSIÇÃO PROJETOS (Bege) -> SOBRE (Preto) -> INSIGHTS (Bege) */}
       <AboutInsightsStage Eyebrow={Eyebrow} />
@@ -431,6 +408,7 @@ export function HomeV6() {
 
 const rootElement = document.getElementById("root");
 if (rootElement) {
+  logPageView("home");   // contador de visitas do painel (Resumo Geral e Gestão de Páginas)
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
       <LanguageProvider>

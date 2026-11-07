@@ -102,9 +102,11 @@ export default function Contratos() {
     try {
       const res = await fetch("/api/contracts");
       const contentType = res.headers.get("content-type");
-      if (res.ok && contentType && contentType.includes("application/json")) {
+      if (contentType && contentType.includes("application/json")) {
         const data = await res.json();
         setContracts(data.contracts || []);
+        // antes um erro do banco aparecia como "nenhum contrato encontrado"
+        if (!res.ok || data.success === false) alert("Não consegui carregar os contratos: " + (data.error || res.status) + "\nVeja Configurações > Status do sistema.");
       }
     } catch (e) {
       console.error("Failed to fetch contracts", e);

@@ -12,6 +12,8 @@ export interface Translations {
     diagnosis: string;
     contactBtn: string;
     mobileBanner: string;
+    niches: string;
+    nicheConstrutoras: string;
   };
   hero: {
     eyebrow: string;
@@ -151,6 +153,21 @@ export interface Translations {
       instagram: string;
     };
   };
+  visibility: {
+    eyebrow: string;
+    titleA: string;
+    titleEm: string;
+    titleB: string;
+    cta: string;
+    tagOn: string;
+    tagOff: string;
+    ariaLabel: string;
+    hintHover: string;
+    hintTap: string;
+    popupGoogle: string;
+    noSiteTitle: string;
+    noSiteDesc: string;
+  };
   clientsMarquee: {
     eyebrow: string;
     title: string;
@@ -173,6 +190,8 @@ const translations: Record<Language, Translations> = {
       diagnosis: "Iniciar diagnóstico",
       contactBtn: "CONTATO",
       mobileBanner: "Engenharia digital para empresas que querem operar na próxima fase do mercado.",
+      niches: "Nichos",
+      nicheConstrutoras: "Construtoras",
     },
     hero: {
       eyebrow: "ESCOM STUDIO · DIGITAL GROWTH SYSTEMS",
@@ -494,6 +513,21 @@ const translations: Record<Language, Translations> = {
         instagram: "INSTAGRAM",
       },
     },
+    visibility: {
+      eyebrow: "03 · Visibilidade",
+      titleA: "Quem tem site",
+      titleEm: "é visto.",
+      titleB: "Quem não tem, some.",
+      cta: "Quero ser encontrado",
+      tagOn: "Com site",
+      tagOff: "Sem site",
+      ariaLabel: "Cidade à noite com vários comércios. Só os que têm site ficam acesos e recebem clientes; os outros ficam apagados.",
+      hintHover: "Passe o mouse nos comércios",
+      hintTap: "Toque nos comércios",
+      popupGoogle: "Encontrado no Google",
+      noSiteTitle: "Site não encontrado",
+      noSiteDesc: "Quem procurou por {nome} no Google não achou nada.",
+    },
     clientsMarquee: {
       eyebrow: "✦ Clientes & Marcas Atendidas",
       title: "Empresas que confiam na engenharia e visão da ESCOM Studio",
@@ -514,6 +548,8 @@ const translations: Record<Language, Translations> = {
       diagnosis: "Start diagnosis",
       contactBtn: "CONTACT",
       mobileBanner: "Digital engineering for enterprises ready to operate in the next market phase.",
+      niches: "Niches",
+      nicheConstrutoras: "Real estate developers",
     },
     hero: {
       eyebrow: "ESCOM STUDIO · DIGITAL GROWTH SYSTEMS",
@@ -847,6 +883,21 @@ const translations: Record<Language, Translations> = {
         instagram: "INSTAGRAM",
       },
     },
+    visibility: {
+      eyebrow: "03 · Visibility",
+      titleA: "With a website,",
+      titleEm: "you get seen.",
+      titleB: "Without one, you disappear.",
+      cta: "I want to be found",
+      tagOn: "Has website",
+      tagOff: "No website",
+      ariaLabel: "A city at night with many local businesses. Only the ones with a website light up and get customers; the others stay dark.",
+      hintHover: "Hover over the businesses",
+      hintTap: "Tap the businesses",
+      popupGoogle: "Found on Google",
+      noSiteTitle: "Website not found",
+      noSiteDesc: "People searching for {nome} on Google found nothing.",
+    },
     clientsMarquee: {
       eyebrow: "✦ Trusted Clients & Brands",
       title: "Companies powered by ESCOM Studio's engineering and vision",
@@ -867,6 +918,8 @@ const translations: Record<Language, Translations> = {
       diagnosis: "Iniciar diagnóstico",
       contactBtn: "CONTACTO",
       mobileBanner: "Ingeniería digital para empresas preparadas para operar en la próxima fase del mercado.",
+      niches: "Nichos",
+      nicheConstrutoras: "Constructoras",
     },
     hero: {
       eyebrow: "ESCOM STUDIO · DIGITAL GROWTH SYSTEMS",
@@ -1199,6 +1252,21 @@ const translations: Record<Language, Translations> = {
         whatsapp: "WHATSAPP",
         instagram: "INSTAGRAM",
       },
+    },
+    visibility: {
+      eyebrow: "03 · Visibilidad",
+      titleA: "Quien tiene sitio web",
+      titleEm: "es visto.",
+      titleB: "Quien no, desaparece.",
+      cta: "Quiero ser encontrado",
+      tagOn: "Con sitio",
+      tagOff: "Sin sitio",
+      ariaLabel: "Ciudad de noche con varios comercios. Solo los que tienen sitio web se iluminan y reciben clientes; los demás quedan apagados.",
+      hintHover: "Pasa el mouse por los comercios",
+      hintTap: "Toca los comercios",
+      popupGoogle: "Encontrado en Google",
+      noSiteTitle: "Sitio no encontrado",
+      noSiteDesc: "Quien buscó {nome} en Google no encontró nada.",
     },
     clientsMarquee: {
       eyebrow: "✦ Clientes y Marcas Atendidas",

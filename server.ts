@@ -7,6 +7,21 @@ const PORT = Number(process.env.PORT) || 3000;
 
 
 async function startLocalServer() {
+  const publicPath = path.join(process.cwd(), "public");
+  app.get(["/home-v5", "/home-v5/", "/home5", "/home5/"], (_req, res) => {
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+    res.sendFile(path.join(publicPath, "home-v5", "index.html"));
+  });
+  app.get(["/goodfella", "/goodfella/"], (_req, res) => {
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+    res.sendFile(path.join(publicPath, "goodfella", "index.html"));
+  });
+  app.get(["/", "/en", "/en/", "/enerblock", "/enerblock/"], (_req, res) => {
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+    res.sendFile(path.join(publicPath, "en", "index.html"));
+  });
+  app.use(express.static(publicPath, { etag: false, maxAge: 0 }));
+
   if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
     app.get("/portfolio-projetos*", (req, res, next) => {
       req.url = "/portfolio-projetos/index.html";
@@ -75,9 +90,25 @@ async function startLocalServer() {
     });
     app.use(vite.middlewares);
 
-    app.listen(PORT, "0.0.0.0", () => {
+    const server = app.listen(PORT, "0.0.0.0", () => {
       console.log(`[SECURE_SERVER] Running on http://localhost:${PORT}`);
+      console.log(`[SECURE_SERVER] Direct IP: http://127.0.0.1:${PORT}`);
       console.log(`[ENVIRONMENT] ${process.env.NODE_ENV || 'development'}`);
+    });
+
+    server.keepAliveTimeout = 65000;
+    server.headersTimeout = 66000;
+
+    server.on("error", (err) => {
+      console.error("[SERVER_ERROR]", err);
+    });
+
+    process.on("uncaughtException", (err) => {
+      console.error("[UNCAUGHT_EXCEPTION]", err);
+    });
+
+    process.on("unhandledRejection", (err) => {
+      console.error("[UNHANDLED_REJECTION]", err);
     });
   } else if (!process.env.VERCEL) {
     // Local production fallback (e.g. self-hosted VPS)

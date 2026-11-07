@@ -5,7 +5,7 @@ import { FileText, ArrowRight, FileSignature, Copy, CheckCircle2, Trash2 } from 
 export default function Propostas() {
   const [services, setServices] = useState<any[]>([]);
 
-  const [selectedServices, setSelectedServices] = useState<number[]>([]);
+  const [selectedServices, setSelectedServices] = useState<(number | string)[]>([]);
   const [formData, setFormData] = useState({ clientName: "", email: "", phone: "", company: "", observations: "" });
   const [loading, setLoading] = useState(false);
   const [propostas, setPropostas] = useState<any[]>([]);
@@ -55,32 +55,39 @@ export default function Propostas() {
     return isNaN(d.getTime()) ? String(date) : d.toLocaleDateString('pt-BR');
   };
 
-  const toggleService = (id: number) => {
+  const toggleService = (id: number | string) => {
     if (selectedServices.includes(id)) {
       setSelectedServices(selectedServices.filter(s => s !== id));
-      if (id === 2) setExtraPages(0);
     } else {
       setSelectedServices([...selectedServices, id]);
     }
   };
 
-  const calculateFinalTotal = () => {
-    let base = 0;
+  const brl2 = (n: number) => n.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+  // Preço de cada serviço escolhido: base + páginas extras (se o serviço cobra por página) + repasse %
+  const precoDoServico = (service: any) => {
+    let p = Number(service.price) || 0;
+    const extra = Number(service.precoPaginaExtra) || 0;
+    if (extra > 0 && extraPages > 0) p += extraPages * extra;
+    if (additionalPercentage > 0) p = p + (p * (additionalPercentage / 100));
+    return p;
+  };
+
+  const calcularTotais = () => {
+    let unico = 0, mensal = 0;
     selectedServices.forEach(id => {
       const service = services.find(s => s.id === id);
-      if (service) {
-        base += service.price;
-        if (id === 2 && extraPages > 0) {
-          base += extraPages * 300;
-        }
-      }
+      if (!service) return;
+      if (service.recorrencia === 'mensal') mensal += precoDoServico(service);
+      else unico += precoDoServico(service);
     });
+    return { unico, mensal };
+  };
 
-    if (additionalPercentage > 0) {
-      base = base + (base * (additionalPercentage / 100));
-    }
-
-    return base.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+  const calculateFinalTotal = () => {
+    const { unico, mensal } = calcularTotais();
+    return brl2(unico > 0 || mensal === 0 ? unico : mensal);
   };
 
   const handleGenerate = async () => {
@@ -94,27 +101,20 @@ export default function Propostas() {
     try {
         const formattedServices = selectedServices.map(id => {
           const service = services.find(s => s.id === id)!;
-          let finalPrice = service.price;
           let finalName = service.name;
-          
-          if (id === 2 && extraPages > 0) {
-            finalPrice += extraPages * 300;
-            finalName += ` + ${extraPages} página(s)`;
-          }
-
-          if (additionalPercentage > 0) {
-            finalPrice = finalPrice + (finalPrice * (additionalPercentage / 100));
-          }
-
-          const priceStr = finalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-          return { id: service.id, name: finalName, price: priceStr };
+          if ((Number(service.precoPaginaExtra) || 0) > 0 && extraPages > 0) finalName += ` + ${extraPages} página(s)`;
+          if (service.recorrencia === 'mensal') finalName += ' (mensal)';
+          return { id: service.id, name: finalName, price: brl2(precoDoServico(service)), recorrencia: service.recorrencia || 'unico', description: service.description || '' };
         });
 
+        const { unico, mensal } = calcularTotais();
         const finalBudgetStr = calculateFinalTotal();
 
         const payload = {
             ...formData,
             budget: finalBudgetStr,
+            // projeto + mensalidade: o total é o valor do projeto e a mensalidade vai separada
+            mensal: unico > 0 && mensal > 0 ? brl2(mensal) : '',
             selectedServices: formattedServices
         };
         const res = await fetch("/api/proposals", {
@@ -181,7 +181,7 @@ export default function Propostas() {
 
   return (
     <div className="flex-1 overflow-y-auto w-full">
-      <Header title="Análise Geral" />
+      <Header title="Propostas" />
       <div className="p-4 md:p-8 max-w-[1000px] mx-auto mt-2 md:mt-4 space-y-6">
         
         <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl p-4 md:p-8">
@@ -252,12 +252,12 @@ export default function Propostas() {
                     <div>
                       <div className="font-bold text-sm text-white">{service.name}</div>
                       {service.description && <div className="text-[10px] text-gray-400 mt-1 line-clamp-2">{service.description}</div>}
-                      <div className="text-[11px] text-gray-500 mt-0.5">Preço base: <span className="text-[#00d1ff] font-mono">R$ {service.price.toLocaleString('pt-BR')}</span></div>
+                      <div className="text-[11px] text-gray-500 mt-0.5">Preço base: <span className="text-[#00d1ff] font-mono">R$ {Number(service.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}{service.recorrencia === 'mensal' ? '/mês' : ''}</span></div>
                     </div>
                   </div>
-                  {service.id === 2 && selectedServices.includes(2) && (
+                  {(Number(service.precoPaginaExtra) || 0) > 0 && selectedServices.includes(service.id) && (
                      <div className="pl-4 border-l-2 border-[#00d1ff]/30 ml-4 mb-2 flex items-center justify-between">
-                        <label className="text-xs text-gray-400">Páginas extras (+ R$ 300 cada):</label>
+                        <label className="text-xs text-gray-400">Páginas extras (+ R$ {Number(service.precoPaginaExtra).toLocaleString('pt-BR')} cada):</label>
                         <div className="flex items-center bg-[#1a1a1a] border border-[#333] rounded-lg overflow-hidden">
                            <button onClick={(e) => { e.stopPropagation(); setExtraPages(Math.max(0, extraPages - 1))}} className="px-3 py-1 hover:bg-[#333] transition-colors text-gray-400 text-lg leading-none">-</button>
                            <div className="w-8 text-center text-xs font-mono text-white">{extraPages}</div>
@@ -273,6 +273,9 @@ export default function Propostas() {
           <div className="mb-8 bg-[#111] border border-[#333] rounded-lg p-6 flex flex-col items-center justify-center">
             <label className="block text-[10px] text-gray-500 font-mono tracking-widest mb-1 text-center">ORÇAMENTO TOTAL ESTIMADO</label>
             <div className="text-4xl font-black text-[#00d1ff] mt-2 mb-2">R$ {calculateFinalTotal()}</div>
+            {calcularTotais().unico > 0 && calcularTotais().mensal > 0 && (
+              <div className="text-sm font-mono text-white/80 mb-2">+ R$ {brl2(calcularTotais().mensal)}/mês de manutenção</div>
+            )}
             <div className="text-xs text-gray-500 text-center">Valor auto-calculado com base aos serviços e +{additionalPercentage}% repasse</div>
           </div>
 

@@ -20,9 +20,18 @@ import {
   ChevronDown,
   Loader2
 } from "lucide-react";
-import { db } from "../../lib/firebase";
-import { collection, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+
+// Data de um documento do Firestore: aceita Timestamp, string ISO ou número, nos nomes de campo usados pelo site e pelo n8n
+function docDate(data: any): Date | null {
+  for (const key of ["createdAt", "criado_em", "created_at", "data", "date"]) {
+    const v = data?.[key];
+    if (!v) continue;
+    const d = typeof v?.toDate === "function" ? v.toDate() : new Date(v);
+    if (!isNaN(d.getTime())) return d;
+  }
+  return null;
+}
 
 // Componente para desenhar a linha de tendência (Sparkline glowing blue)
 function Sparkline({ hasViews = false, viewsCount = 0 }: { hasViews?: boolean, viewsCount?: number }) {
@@ -59,8 +68,14 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [totalViews, setTotalViews] = useState(0);
   const [totalLeads, setTotalLeads] = useState(0);
+  const [leadsDoSite, setLeadsDoSite] = useState(0);
   const [totalPropostas, setTotalPropostas] = useState(0);
+  const [totalPagos, setTotalPagos] = useState(0);
   const [pageViewsMap, setPageViewsMap] = useState<Record<string, number>>({});
+  // dados brutos com data, para o filtro de período ser real (antes só multiplicava o total por 0,08 / 0,25 / 0,65)
+  const [dailyViews, setDailyViews] = useState<Record<string, number>>({});
+  const [leadDates, setLeadDates] = useState<(Date | null)[]>([]);
+  const [siteDates, setSiteDates] = useState<(Date | null)[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [timeRange, setTimeRange] = useState<"all" | "today" | "week" | "month" | "year">("all");
@@ -69,27 +84,37 @@ export default function Dashboard() {
     async function loadRealData() {
       setLoading(true);
       try {
-        // 1. Buscar Acessos por Página do Firestore
-        const viewsSnap = await getDocs(collection(db, "page_views"));
-        let sumViews = 0;
-        const vMap: Record<string, number> = {};
-        viewsSnap.forEach(docSnap => {
-          const data = docSnap.data();
-          const count = data.viewCount || 0;
-          sumViews += count;
-          vMap[docSnap.id.toLowerCase()] = count;
-        });
-        setTotalViews(sumViews);
-        setPageViewsMap(vMap);
-
-        // 2. Buscar Leads do Firestore
-        const leadsSnap = await getDocs(collection(db, "leads"));
-        setTotalLeads(leadsSnap.size);
-
-        // 3. Buscar Propostas do Firestore (generated_sites)
+        // 1. Visitas por página e por dia (Supabase, via /api/visitas)
         try {
-          const propostasSnap = await getDocs(collection(db, "generated_sites"));
-          setTotalPropostas(propostasSnap.size);
+          const r = await fetch("/api/visitas");
+          const j = r.ok ? await r.json() : { paginas: [], diarias: {} };
+          const vMap: Record<string, number> = {};
+          let soma = 0;
+          (j.paginas || []).forEach((p: any) => { vMap[String(p.id).toLowerCase()] = p.total; soma += p.total; });
+          setTotalViews(soma);
+          setPageViewsMap(vMap);
+          setDailyViews(j.diarias || {});
+        } catch { setDailyViews({}); }
+
+        // 2. Leads vêm do Supabase (fonte única), com a data de criação de cada um
+        try {
+          const r = await fetch("/api/leads");
+          const j = r.ok ? await r.json() : { leads: [] };
+          const rows: any[] = j.leads || [];
+          const minerados = rows.filter(r => r.origem !== "site");   // contatos do formulário do site contam na Home, não na Mineração
+          setTotalLeads(minerados.length);
+          setLeadsDoSite(rows.length - minerados.length);
+          setLeadDates(minerados.map(docDate));
+        } catch { setTotalLeads(0); setLeadDates([]); }
+
+        // 3. Sites gerados (propostas automáticas), também do Supabase
+        try {
+          const r = await fetch("/api/generated-sites");
+          const j = r.ok ? await r.json() : { data: [] };
+          const rows: any[] = j.data || [];
+          setTotalPropostas(rows.length);
+          setTotalPagos(rows.filter(r => r.status === "pago").length);
+          setSiteDates(rows.map(docDate));
         } catch {
           setTotalPropostas(0);
         }
@@ -102,23 +127,25 @@ export default function Dashboard() {
     loadRealData();
   }, []);
 
-  // Multiplicador de filtro por período
-  const timeMultiplier = useMemo(() => {
-    if (timeRange === "today") return 0.08;
-    if (timeRange === "week") return 0.25;
-    if (timeRange === "month") return 0.65;
-    if (timeRange === "year") return 0.95;
-    return 1; // "all"
+  // Filtro de período REAL: início da janela (hoje, últimos 7 dias, 30 dias, 365 dias).
+  // Visitas somam o contador diário; leads e propostas contam pela data do documento (sem data = só aparece em "Todo o Período").
+  const rangeStart = useMemo(() => {
+    const d = new Date(); d.setHours(0, 0, 0, 0);
+    const days = timeRange === "today" ? 0 : timeRange === "week" ? 6 : timeRange === "month" ? 29 : timeRange === "year" ? 364 : -1;
+    if (days < 0) return null;
+    d.setDate(d.getDate() - days);
+    return d;
   }, [timeRange]);
 
-  const displayViews = Math.round(totalViews * timeMultiplier);
-  const displayLeads = Math.round(totalLeads * timeMultiplier);
-  const displayPropostas = Math.round(totalPropostas * timeMultiplier);
+  const displayViews = useMemo(() => {
+    if (!rangeStart) return totalViews;
+    const from = rangeStart.toISOString().slice(0, 10);
+    return Object.entries(dailyViews).reduce((sum, [day, n]) => (day >= from ? sum + n : sum), 0);
+  }, [rangeStart, totalViews, dailyViews]);
+  const countSince = (dates: (Date | null)[], all: number) => !rangeStart ? all : dates.filter(d => d && d >= rangeStart).length;
+  const displayLeads = countSince(leadDates, totalLeads);
+  const displayPropostas = countSince(siteDates, totalPropostas);
 
-  // Taxa de conversão real calculada com base em acessos e leads do banco
-  const conversionRate = displayViews > 0 
-    ? ((displayLeads / displayViews) * 100).toFixed(1) + "%" 
-    : "0%";
 
   // Lista de páginas do sistema com dados conectados ao Firestore
   const allPages = [
@@ -129,7 +156,7 @@ export default function Dashboard() {
       icon: <Home size={18} className="text-[#3b82f6]" />,
       iconBg: "bg-[#18294a]",
       views: pageViewsMap["home"] || pageViewsMap["/"] || 0,
-      leads: totalLeads > 0 ? totalLeads : 0,
+      leads: leadsDoSite,   // contatos que chegaram pelo formulário do site (origem = "site")
       active: true,
     },
     {
@@ -163,12 +190,12 @@ export default function Dashboard() {
       active: true,
     },
     {
-      id: "home-v3",
-      title: "Home V3 (Modular System)",
-      path: "/home-v3",
+      id: "construtora",
+      title: "Espelho de Vendas 3D (Construtoras)",
+      path: "/construtora",
       icon: <Box size={18} className="text-[#06b6d4]" />,
       iconBg: "bg-[#12363b]",
-      views: pageViewsMap["home-v3"] || pageViewsMap["/home-v3"] || 0,
+      views: pageViewsMap["construtora"] || pageViewsMap["/construtora"] || 0,
       leads: 0,
       active: true,
     },
@@ -179,16 +206,6 @@ export default function Dashboard() {
       icon: <Info size={18} className="text-[#f97316]" />,
       iconBg: "bg-[#3d2314]",
       views: pageViewsMap["sobre"] || pageViewsMap["/sobre"] || 0,
-      leads: 0,
-      active: true,
-    },
-    {
-      id: "contato",
-      title: "Contato",
-      path: "/contato",
-      icon: <Mail size={18} className="text-[#8b5cf6]" />,
-      iconBg: "bg-[#281b4e]",
-      views: pageViewsMap["contato"] || pageViewsMap["/contato"] || 0,
       leads: 0,
       active: true,
     },
@@ -204,7 +221,7 @@ export default function Dashboard() {
       {/* Header Principal */}
       <Header 
         title="Olá, Eduardo! 👋" 
-        subtitle="Veja o desempenho geral do seu site e funil de leads." 
+        subtitle="Veja o desempenho geral do seu site e dos seus leads." 
       />
 
       <div className="p-4 md:p-8 max-w-[1400px] mx-auto space-y-8">
@@ -257,7 +274,7 @@ export default function Dashboard() {
                 <Users size={22} />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-xs font-medium text-gray-400">Leads Gerados</div>
+                <div className="text-xs font-medium text-gray-400">Leads Minerados</div>
                 <div className="flex items-baseline gap-2 mt-1">
                   <span className="text-2xl font-bold text-white">
                     {loading ? "..." : displayLeads}
@@ -281,17 +298,17 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Card 3: Taxa de Conversão */}
+            {/* Card 3: Sites pagos (aceite do cliente pelo Mercado Pago) */}
             <div className="bg-[#0e172a] border border-[#1b2b4a] rounded-2xl p-5 shadow-lg flex items-center gap-4">
               <div className="w-12 h-12 rounded-2xl bg-[#123829] flex items-center justify-center text-[#22c55e] shrink-0">
                 <TrendingUp size={22} />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-xs font-medium text-gray-400">Taxa de Conversão</div>
+                <div className="text-xs font-medium text-gray-400">Sites Pagos</div>
                 <div className="text-2xl font-bold text-white mt-1">
-                  {loading ? "..." : conversionRate}
+                  {loading ? "..." : totalPagos}
                 </div>
-                <div className="text-[10px] text-gray-500 mt-1">Leads / Acessos</div>
+                <div className="text-[10px] text-gray-500 mt-1">Aceitos pelo cliente (total)</div>
               </div>
             </div>
 
@@ -301,11 +318,11 @@ export default function Dashboard() {
                 <DollarSign size={22} />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-xs font-medium text-gray-400">Propostas Criadas</div>
+                <div className="text-xs font-medium text-gray-400">Sites Gerados</div>
                 <div className="text-2xl font-bold text-white mt-1">
                   {loading ? "..." : displayPropostas}
                 </div>
-                <div className="text-[10px] text-gray-500 mt-1">Cadastradas no período</div>
+                <div className="text-[10px] text-gray-500 mt-1">Amostras da Mineração no período</div>
               </div>
             </div>
           </div>
@@ -394,7 +411,7 @@ export default function Dashboard() {
                       <Sparkline hasViews={page.views > 0 || page.leads > 0} viewsCount={page.views} />
 
                       <div className="text-right">
-                        <div className="text-[10px] text-gray-500 font-mono tracking-wider">LEADS</div>
+                        <div className="text-[10px] text-gray-500 font-mono tracking-wider">LEADS DO SITE</div>
                         <div className={`text-base font-bold mt-0.5 ${page.leads > 0 ? "text-[#3b82f6]" : "text-gray-400"}`}>
                           {page.leads}
                         </div>

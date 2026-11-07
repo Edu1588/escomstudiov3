@@ -6,8 +6,6 @@ import {
   Copy, Check, ExternalLink, Instagram, MessageCircle, RefreshCw,
   Filter, ArrowUpRight, RotateCcw
 } from "lucide-react";
-import { db } from "../../lib/firebase";
-import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 export const ESTADOS_LIST = [
@@ -92,7 +90,6 @@ export default function Leads() {
 
   const [leads, setLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
   const [bookmarkedIds, setBookmarkedIds] = useState<string[]>([]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -103,6 +100,9 @@ export default function Leads() {
   const [emailInput, setEmailInput] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
   const [showMineradorModal, setShowMineradorModal] = useState(false);
+  const [scraping, setScraping] = useState(false);
+  const [scrapeStep, setScrapeStep] = useState("");
+  const [scrapeProgress, setScrapeProgress] = useState(0);
   const [refazerSiteModal, setRefazerSiteModal] = useState<{ lead: any } | null>(null);
   const [observacoesInput, setObservacoesInput] = useState("");
 
@@ -307,7 +307,28 @@ export default function Leads() {
   };
 
   const handleSearchLeads = async () => {
-    setLoading(true);
+    setScraping(true);
+    setScrapeProgress(0);
+    setScrapeStep("Conectando ao Google Maps...");
+
+    const steps = [
+      { pct: 10, msg: "Conectando ao Google Maps..." },
+      { pct: 25, msg: "Buscando estabelecimentos na região..." },
+      { pct: 45, msg: "Extraindo contatos e informações..." },
+      { pct: 65, msg: "Qualificando e filtrando leads..." },
+      { pct: 80, msg: "Salvando leads no banco de dados..." },
+      { pct: 92, msg: "Finalizando raspagem..." },
+    ];
+
+    let stepIdx = 0;
+    const stepInterval = setInterval(() => {
+      if (stepIdx < steps.length) {
+        setScrapeProgress(steps[stepIdx].pct);
+        setScrapeStep(steps[stepIdx].msg);
+        stepIdx++;
+      }
+    }, 3500);
+
     try {
       const ufClean = selectedEstado.split(" — ")[0];
       const res = await fetch("/api/buscar-leads", {
@@ -320,7 +341,11 @@ export default function Leads() {
           quantidade: leadLimit
         })
       });
+      clearInterval(stepInterval);
       if (res.ok) {
+        setScrapeProgress(100);
+        setScrapeStep("Concluído!");
+        await new Promise(r => setTimeout(r, 800));
         notify("Raspagem concluída! Leads atualizados com sucesso.");
         setShowMineradorModal(false);
         await fetchLeads();
@@ -328,10 +353,13 @@ export default function Leads() {
         throw new Error("Falha ao acionar raspagem");
       }
     } catch (err) {
+      clearInterval(stepInterval);
       notify("Erro ao buscar leads. Verifique a conexão.", "error");
       console.error(err);
     } finally {
-      setLoading(false);
+      setScraping(false);
+      setScrapeProgress(0);
+      setScrapeStep("");
     }
   };
 
@@ -349,39 +377,46 @@ export default function Leads() {
     );
   };
 
-  const handleToggleSelectAll = () => {
-    if (selectedLeadIds.length === filteredLeads.length && filteredLeads.length > 0) {
-      setSelectedLeadIds([]);
-    } else {
-      setSelectedLeadIds(filteredLeads.map(l => l.id));
-    }
+  // Reativação de proposta expirada: a lógica (preço, novo prazo de 72 h, status) fica no workflow "reativar-proposta" do n8n.
+  // Preço combinado: R$ 700. Se o n8n devolver outro valor, avisa para ajustar o workflow.
+  const PRECO_REATIVACAO = 700;
+  const [reativandoId, setReativandoId] = useState<string | null>(null);
+  const slugProposta = (l: any): string => l.propostaSlug || l.proposta_slug || l.site_slug || "";
+  const statusProposta = (l: any): string => String(l.propostaStatus || l.proposta_status || "").toLowerCase();
+  const expiraProposta = (l: any): number => {
+    const v = l.propostaExpiraEm || l.proposta_expira_em || l.expiraEm || l.expira_em;
+    const t = typeof v === "number" ? v : v ? new Date(v).getTime() : NaN;
+    return Number.isFinite(t) ? t : 0;
+  };
+  // Mostra o botão quando há proposta, ela não foi paga e não está dentro do prazo
+  const podeReativar = (l: any) => {
+    if (!slugProposta(l) || statusProposta(l) === "pago") return false;
+    const exp = expiraProposta(l);
+    return statusProposta(l) === "expirado" || (exp > 0 && exp < Date.now()) || exp === 0;
   };
 
-  const handleToggleSelectLead = (id: string) => {
-    setSelectedLeadIds(prev => 
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-    );
-  };
-
-  const handleSendToCRM = async () => {
-    if (selectedLeadIds.length === 0) {
-      alert("Selecione pelo menos um lead para enviar ao CRM.");
-      return;
-    }
-    const selectedLeads = leads.filter(l => selectedLeadIds.includes(l.id));
+  const handleReativarProposta = async (lead: any) => {
+    const slug = slugProposta(lead);
+    if (!slug) return;
+    if (!window.confirm(`Reativar a proposta de ${lead.nome || "este lead"} por R$ ${PRECO_REATIVACAO}? O site volta a ficar acessível por mais 72 horas.`)) return;
+    setReativandoId(lead.id);
     try {
-      for (const lead of selectedLeads) {
-        await addDoc(collection(db, "leads"), {
-          ...lead,
-          etapa: "Base",
-          createdAt: serverTimestamp()
-        });
+      const res = await fetch("/api/reativar-proposta", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      const valor = Number(data.novoValor);
+      setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, propostaStatus: "gerada", propostaValor: data.novoValor, propostaExpiraEm: data.novaExpiraEm } : l));
+      if (Number.isFinite(valor) && valor !== PRECO_REATIVACAO) {
+        alert(`Proposta reativada, mas o n8n aplicou R$ ${valor}. O combinado é R$ ${PRECO_REATIVACAO}: ajuste o valor no workflow "reativar-proposta" do n8n.`);
+      } else {
+        notify(`Proposta reativada por R$ ${Number.isFinite(valor) ? valor : PRECO_REATIVACAO}. Válida por mais 72 horas.`);
       }
-      alert(`${selectedLeads.length} leads enviados com sucesso para o CRM!`);
-      navigate("/prospect");
-    } catch (err) {
-      console.error("Erro ao enviar pro CRM", err);
-      navigate("/prospect");
+    } catch (err: any) {
+      notify("Erro ao reativar: " + (err?.message || "confira o workflow no n8n"), "error");
+    } finally {
+      setReativandoId(null);
     }
   };
 
@@ -440,7 +475,7 @@ export default function Leads() {
 
   return (
     <div className="flex-1 overflow-y-auto w-full bg-[#000000] text-foreground min-h-screen p-4 md:p-8">
-      <Header title="Organização de Leads" subtitle="CRM de Prospecção // Extração e Contatos Rápidos" />
+      <Header title="Organização de Leads" subtitle="Base de contatos // Extração e contatos rápidos" />
 
       {/* NOTIFICAÇÃO */}
       {notification && (
@@ -564,25 +599,6 @@ export default function Leads() {
             <strong className="text-white font-medium">{filteredLeads.length}</strong> leads exibidos
           </span>
 
-          <label className="flex items-center gap-2 cursor-pointer text-xs font-mono text-white/60 hover:text-white">
-            <input
-              type="checkbox"
-              checked={selectedLeadIds.length === filteredLeads.length && filteredLeads.length > 0}
-              onChange={handleToggleSelectAll}
-              className="accent-[#00d1ff] cursor-pointer"
-            />
-            <span>Selecionar todos ({selectedLeadIds.length})</span>
-          </label>
-
-          {selectedLeadIds.length > 0 && (
-            <button
-              onClick={handleSendToCRM}
-              className="bg-[#00d1ff]/10 hover:bg-[#00d1ff]/20 border border-[#00d1ff]/40 text-[#00d1ff] font-mono text-[10px] uppercase tracking-[0.1em] px-3 py-1.5 flex items-center gap-2 transition-colors cursor-pointer"
-            >
-              <Send size={12} className="text-[#00d1ff]" />
-              <span>Enviar para CRM</span>
-            </button>
-          )}
         </div>
 
         <button
@@ -625,7 +641,6 @@ export default function Leads() {
               </tr>
             ) : (
               filteredLeads.map((lead) => {
-                const isSelected = selectedLeadIds.includes(lead.id);
                 const isBookmarked = bookmarkedIds.includes(lead.id);
                 const isCopied = copiedId === lead.id;
                 const cleanPhone = (lead.telefone || "").replace(/\D/g, "");
@@ -634,7 +649,7 @@ export default function Leads() {
                 return (
                   <tr 
                     key={lead.id} 
-                    className={`hover:bg-white/[0.02] transition-colors ${isSelected ? 'bg-white/[0.04]' : ''}`}
+                    className={`hover:bg-white/[0.02] transition-colors`}
                   >
                     {/* Estrela / Favoritar */}
                     <td className="py-4 px-4 text-center">
@@ -654,12 +669,6 @@ export default function Leads() {
                     {/* LEAD: Foto + Nome + Cidade */}
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => handleToggleSelectLead(lead.id)}
-                          className="accent-cyan cursor-pointer mr-1"
-                        />
                         {lead.photoUrl ? (
                           <img 
                             src={lead.photoUrl} 
@@ -673,11 +682,16 @@ export default function Leads() {
                         )}
                         <div className="min-w-0">
                           <div className="font-semibold text-white text-sm hover:text-cyan transition-colors truncate max-w-xs md:max-w-md">
+                            {lead.origem === "site" && <span className="mr-2 align-middle text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">Site</span>}
                             {lead.nome}
                           </div>
                           <div className="text-white/40 text-xs font-mono mt-0.5 truncate">
-                            {lead.cidade}
+                            {lead.origem === "site" ? [lead.email, lead.criado_em ? new Date(lead.criado_em).toLocaleDateString("pt-BR") : ""].filter(Boolean).join(" · ") : lead.cidade}
                           </div>
+                          {/* contato pelo formulário do site: a mensagem que a pessoa escreveu */}
+                          {lead.origem === "site" && lead.mensagem && (
+                            <div className="mt-1 text-xs text-white/70 max-w-md whitespace-pre-line line-clamp-3" title={lead.mensagem}>"{lead.mensagem}"</div>
+                          )}
                           {/* Indicadores de assets gerados */}
                           {pendingLeads[lead.id] && (
                             <div className="mt-1.5 px-2 py-1.5 bg-amber-500/10 border border-amber-500/30 w-fit max-w-[240px] space-y-1">
@@ -728,6 +742,17 @@ export default function Leads() {
                                   >
                                     <span>✉ Enviar Proposta</span>
                                   </button>
+                                  {podeReativar(lead) && (
+                                    <button
+                                      onClick={() => handleReativarProposta(lead)}
+                                      disabled={reativandoId === lead.id}
+                                      className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-rose-500/10 border border-rose-500/30 text-rose-300 text-[10px] font-mono hover:bg-rose-500/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                                      title="Proposta expirada: reativar por R$ 700 e mais 72 horas"
+                                    >
+                                      <RotateCcw size={9} />
+                                      <span>{reativandoId === lead.id ? "Reativando…" : `Reativar R$ ${PRECO_REATIVACAO}`}</span>
+                                    </button>
+                                  )}
                                 </>
                               )}
                               {(lead.diagnostico || analiseUrls[lead.id]) && (
@@ -1061,9 +1086,9 @@ export default function Leads() {
                   Extração automatizada no Google Maps & Redes
                 </p>
               </div>
-              <button 
-                onClick={() => setShowMineradorModal(false)}
-                className="text-white/40 hover:text-white p-1 font-mono text-sm"
+              <button
+                onClick={() => !scraping && setShowMineradorModal(false)}
+                className={`p-1 font-mono text-sm ${scraping ? "text-white/15 cursor-not-allowed" : "text-white/40 hover:text-white"}`}
               >
                 ✕
               </button>
@@ -1124,20 +1149,37 @@ export default function Leads() {
               </div>
             </div>
 
+            {/* Barra de progresso */}
+            {scraping && (
+              <div className="space-y-2">
+                <div className="flex justify-between items-center font-mono text-xs">
+                  <span className="text-white/60">{scrapeStep}</span>
+                  <span className="text-[#00d1ff]">{scrapeProgress}%</span>
+                </div>
+                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-[#00d1ff] rounded-full transition-all duration-700 ease-out"
+                    style={{ width: `${scrapeProgress}%` }}
+                  />
+                </div>
+                <p className="font-mono text-[10px] text-white/30 text-center">Não feche esta janela enquanto a raspagem estiver em andamento</p>
+              </div>
+            )}
+
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
               <button
-                onClick={() => setShowMineradorModal(false)}
-                className="px-4 py-2 font-mono text-xs text-white/60 hover:text-white"
+                onClick={() => !scraping && setShowMineradorModal(false)}
+                className={`px-4 py-2 font-mono text-xs transition-colors ${scraping ? "text-white/20 cursor-not-allowed" : "text-white/60 hover:text-white"}`}
               >
                 Cancelar
               </button>
               <button
                 onClick={handleSearchLeads}
-                disabled={loading}
-                className="bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-mono text-xs uppercase tracking-[0.12em] font-bold px-6 py-2.5 flex items-center gap-2 transition-all active:scale-95 shadow-[0_0_20px_rgba(0,209,255,0.35)] cursor-pointer"
+                disabled={scraping}
+                className="bg-[#00d1ff] hover:bg-[#00b8e6] disabled:opacity-60 disabled:cursor-not-allowed text-black font-mono text-xs uppercase tracking-[0.12em] font-bold px-6 py-2.5 flex items-center gap-2 transition-all active:scale-95 shadow-[0_0_20px_rgba(0,209,255,0.35)] cursor-pointer"
               >
-                {loading ? <Loader2 className="animate-spin size-4 text-black" /> : <Sparkles className="size-4 text-black" />}
-                <span className="text-black font-bold">Iniciar Raspagem</span>
+                {scraping ? <Loader2 className="animate-spin size-4 text-black" /> : <Sparkles className="size-4 text-black" />}
+                <span className="text-black font-bold">{scraping ? "Raspando..." : "Iniciar Raspagem"}</span>
               </button>
             </div>
           </div>

@@ -1,22 +1,12 @@
-import { db } from "./firebase";
-import { collection, addDoc, serverTimestamp, query, where, getDocs, doc, setDoc, increment } from "firebase/firestore";
+// Contador de visitas: manda para a API do site (/api/visita), que soma no Supabase.
+// Os ids das páginas são os mesmos que o painel usa: home, construtora, portfolio-projetos, portfolioedu, baseproposta, sobre, piassa.
+export type PaginaContada = "home" | "construtora" | "portfolio-projetos" | "portfolioedu" | "baseproposta" | "sobre" | "piassa";
 
-export async function logPageView(pageName: string) {
+export function logPageView(pagina: PaginaContada) {
   try {
-    const pageRef = doc(db, "page_views", pageName);
-    await setDoc(pageRef, {
-      viewCount: increment(1),
-      lastViewed: serverTimestamp()
-    }, { merge: true });
-    
-    // Also store daily for the charts
-    const today = new Date().toISOString().split('T')[0];
-    const dailyRef = doc(db, "daily_views", today);
-    await setDoc(dailyRef, {
-      viewCount: increment(1)
-    }, { merge: true });
-
-  } catch (error) {
-    console.warn("Analytics not saved (permissions or disabled):", error);
-  }
+    const corpo = JSON.stringify({ pagina });
+    // sendBeacon não atrasa a página e envia mesmo se a pessoa sair logo
+    if (navigator.sendBeacon && navigator.sendBeacon("/api/visita", new Blob([corpo], { type: "application/json" }))) return;
+    fetch("/api/visita", { method: "POST", headers: { "Content-Type": "application/json" }, body: corpo, keepalive: true }).catch(() => {});
+  } catch { /* o contador nunca pode quebrar a página */ }
 }

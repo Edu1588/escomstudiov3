@@ -2395,25 +2395,7 @@ export default function BrillianceHome() {
             <p className="text-lg leading-relaxed md:col-span-5 md:text-xl">
               Preencha e nossa equipe técnica entra em contato em menos de 24 horas para agendar uma reunião estratégica de diagnóstico.
             </p>
-            <form className="md:col-span-6 md:col-start-7" onSubmit={(e) => e.preventDefault()}>
-              <div className="space-y-6">
-                <div>
-                  <label className="font-mono-tag">Nome</label>
-                  <input className="mt-2 w-full border-b border-ink bg-transparent py-3 text-lg outline-none placeholder:text-ink/40 focus:border-b-2" placeholder="Seu nome completo" />
-                </div>
-                <div>
-                  <label className="font-mono-tag">E-mail</label>
-                  <input type="email" className="mt-2 w-full border-b border-ink bg-transparent py-3 text-lg outline-none placeholder:text-ink/40 focus:border-b-2" placeholder="voce@empresa.com" />
-                </div>
-                <div>
-                  <label className="font-mono-tag">Projeto</label>
-                  <textarea rows={3} className="mt-2 w-full border-b border-ink bg-transparent py-3 text-lg outline-none placeholder:text-ink/40 focus:border-b-2" placeholder="Descreva brevemente seu objetivo" />
-                </div>
-                <button className="mt-6 border border-ink bg-ink px-8 py-4 font-mono-tag text-paper transition hover:bg-background hover:text-ink">
-                  Enviar mensagem →
-                </button>
-              </div>
-            </form>
+            <ContatoHome />
           </div>
         </div>
       </section>
@@ -2494,5 +2476,49 @@ export default function BrillianceHome() {
       </div>
       </div> {/* Fechamento do wrapper da Seção 2 */}
     </div>
+  );
+}
+
+
+// Formulário de contato da home: grava em Admin > Leads (origem "site") e avisa a ESCOM por e-mail (/api/contact).
+function ContatoHome() {
+  const [estado, setEstado] = useState<"livre" | "enviando" | "ok" | "erro">("livre");
+  const [protocolo, setProtocolo] = useState("");
+  const [erro, setErro] = useState("");
+  const enviar = async (e: { preventDefault(): void; currentTarget: HTMLFormElement }) => {
+    e.preventDefault();
+    const f = new FormData(e.currentTarget);
+    const dados = Object.fromEntries(f.entries()) as Record<string, string>;
+    if (!dados.email && !dados.phone) { setErro("Informe um e-mail ou WhatsApp."); setEstado("erro"); return; }
+    setEstado("enviando"); setErro("");
+    try {
+      const r = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...dados, origem: "home" }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(j.error || "Falha ao enviar");
+      setProtocolo(j.protocol || ""); setEstado("ok"); e.currentTarget?.reset?.();
+    } catch (err: any) { setErro(err.message || "Falha ao enviar"); setEstado("erro"); }
+  };
+  if (estado === "ok") return (
+    <div className="md:col-span-6 md:col-start-7 border border-ink p-8">
+      <div className="font-mono-tag">MENSAGEM RECEBIDA</div>
+      <p className="mt-4 text-lg">Obrigado! Respondemos em até 24 horas.{protocolo ? ` Protocolo: ${protocolo}.` : ""}</p>
+      <button onClick={() => setEstado("livre")} className="mt-6 font-mono-tag underline">Enviar outra mensagem</button>
+    </div>
+  );
+  const campo = "mt-2 w-full border-b border-ink bg-transparent py-3 text-lg outline-none placeholder:text-ink/40 focus:border-b-2";
+  return (
+    <form className="md:col-span-6 md:col-start-7" onSubmit={enviar}>
+      <div className="space-y-6">
+        <div><label className="font-mono-tag" htmlFor="ct-nome">Nome</label><input id="ct-nome" name="name" required maxLength={120} className={campo} placeholder="Seu nome completo" /></div>
+        <div><label className="font-mono-tag" htmlFor="ct-email">E-mail</label><input id="ct-email" name="email" type="email" maxLength={160} className={campo} placeholder="voce@empresa.com" /></div>
+        <div><label className="font-mono-tag" htmlFor="ct-whats">WhatsApp</label><input id="ct-whats" name="phone" type="tel" maxLength={40} className={campo} placeholder="(11) 90000-0000" /></div>
+        <div><label className="font-mono-tag" htmlFor="ct-msg">Projeto</label><textarea id="ct-msg" name="message" required rows={3} maxLength={4000} className={campo} placeholder="Descreva brevemente seu objetivo" /></div>
+        <input name="website_url" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
+        {estado === "erro" && <p className="text-sm text-red-600">{erro} Se preferir, fale pelo WhatsApp.</p>}
+        <button disabled={estado === "enviando"} className="mt-6 border border-ink bg-ink px-8 py-4 font-mono-tag text-paper transition hover:bg-background hover:text-ink disabled:opacity-50">
+          {estado === "enviando" ? "Enviando..." : "Enviar mensagem →"}
+        </button>
+      </div>
+    </form>
   );
 }

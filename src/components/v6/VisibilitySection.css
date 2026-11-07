@@ -1,0 +1,65 @@
+/* Seção "Visibilidade": cidade isométrica em SVG. Classes com prefixo vz- para não colidir com o resto da HOME. */
+.vz-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(55% 55% at 68% 55%, rgba(0, 209, 255, 0.08), transparent 70%);
+}
+.vz-city svg { display: block; width: 100%; height: auto; max-height: 92vh; overflow: visible; }
+
+.vz-b { transition: opacity 1s ease; }
+/* escalonamento do acendimento (definido por elemento em --vz-d) */
+.vz-b, .vz-b *, .vz-pool, .vz-tag { transition-delay: var(--vz-d, 0ms); }
+.vz-pick { cursor: pointer; }
+.vz-b.vz-off:hover { opacity: 0.5; transition-delay: 0ms; }
+.vz-city [data-layer="pools"], .vz-city [data-layer="people"], .vz-city [data-layer="tags"] { pointer-events: none; }
+.vz-popup { animation: vz-pop 0.22s cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes vz-pop { from { opacity: 0; margin-top: 8px; } to { opacity: 1; margin-top: 0; } }
+.vz-b .vz-t { fill: #2a2a2a; }
+.vz-b .vz-l { fill: #161616; }
+.vz-b .vz-r { fill: #202020; }
+.vz-b .vz-t, .vz-b .vz-l, .vz-b .vz-r { stroke: rgba(255, 255, 255, 0.07); stroke-width: 0.6; stroke-linejoin: round; transition: fill 0.9s, stroke 0.9s; }
+.vz-b .vz-win { fill: #ffcf7a; opacity: 0; transition: opacity 0.9s; }
+.vz-b .vz-glass { fill: #0c0c0c; transition: fill 0.9s; }
+.vz-b .vz-door { fill: #050505; }
+.vz-b .vz-sign { fill: #2c2c2c; transition: fill 0.9s; }
+.vz-b .vz-signtxt { fill: rgba(255, 255, 255, 0.4); font-family: Manrope, sans-serif; font-weight: 700; transition: fill 0.9s; }
+.vz-b .vz-unit .vz-t { fill: #333; }
+.vz-b .vz-unit .vz-l { fill: #1c1c1c; }
+.vz-b .vz-unit .vz-r { fill: #262626; }
+
+.vz-b.vz-off { opacity: 0.22; }
+.vz-b.vz-lit { filter: url(#vz-glow); }
+.vz-b.vz-lit .vz-t { fill: #164a58; stroke: rgba(0, 209, 255, 0.55); }
+.vz-b.vz-lit .vz-l { fill: #0a2a33; stroke: rgba(0, 209, 255, 0.45); }
+.vz-b.vz-lit .vz-r { fill: #0f3a46; stroke: rgba(0, 209, 255, 0.45); }
+.vz-b.vz-lit .vz-win { opacity: 0.95; }
+.vz-b.vz-lit .vz-glass { fill: #ffd791; }
+.vz-b.vz-lit .vz-sign { fill: #00d1ff; }
+.vz-b.vz-lit .vz-signtxt { fill: #000; }
+
+.vz-pool { opacity: 0; transition: opacity 1.2s; }
+.vz-pool.vz-on { opacity: 1; }
+
+.vz-tag { opacity: 0; transform: translateY(8px); transition: opacity 0.6s, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+.vz-tag.vz-on { opacity: 1; transform: none; }
+.vz-tag text { font-family: "DM Mono", monospace; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+.vz-tag.vz-good rect { fill: #00d1ff; }
+.vz-tag.vz-good text { fill: #000; }
+.vz-tag.vz-good line { stroke: #00d1ff; }
+.vz-tag.vz-bad rect { fill: #111; stroke: rgba(255, 255, 255, 0.18); }
+.vz-tag.vz-bad text { fill: rgba(255, 255, 255, 0.55); text-decoration: line-through; }
+.vz-tag.vz-bad line { stroke: rgba(255, 255, 255, 0.25); }
+
+.vz-car .vz-t, .vz-car .vz-l, .vz-car .vz-r { stroke: rgba(0, 0, 0, 0.4); stroke-width: 0.4; }
+.vz-lamp { fill: #fff3c4; }
+
+@media (max-width: 1023px) {
+  .vz-city { margin: 0 -1.25rem; overflow: hidden; }
+  .vz-city svg { width: 135%; margin-left: -17.5%; max-height: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vz-b, .vz-pool, .vz-tag, .vz-b * { transition: none !important; }
+}

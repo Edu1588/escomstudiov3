@@ -9,7 +9,6 @@ import {
   Users, 
   FileSignature, 
   Briefcase, 
-  Instagram, 
   BarChart2, 
   Settings,
   LogOut,
@@ -21,12 +20,9 @@ import {
   Building,
   ExternalLink,
   Wrench,
-  CheckSquare,
   Plug,
   Crown,
-  Box,
-  Globe,
-  Sparkles
+  Globe
 } from "lucide-react";
 
 import Dashboard from "./pages/Dashboard";
@@ -36,22 +32,21 @@ import Propostas from "./pages/Propostas";
 import Leads from "./pages/Leads";
 import Contratos from "./pages/Contratos";
 import Portfolio from "./pages/Portfolio";
-import LogoCreator from "./pages/LogoCreator";
-import InstagramGEM from "./pages/InstagramGEM";
 import ProjetosNoAr from "./pages/ProjetosNoAr";
+import Prospeccao from "./pages/Prospeccao";
 import Configuracoes from "./pages/Configuracoes";
-import Prospect from "./pages/Prospect";
 import Mineracao from "./pages/Mineracao";
 import Saude from "./pages/Saude";
 import Financas from "./pages/Financas";
 import Login from "./pages/Login";
 import Trajetoria from "./pages/Trajetoria";
-import Escritorio from "./pages/Escritorio";
-import Agendamentos from "./pages/Agendamentos";
 import { VoicePoweredOrb } from "../components/ui/voice-powered-orb";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { app as firebaseApp } from "../lib/firebase";
 
 function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: boolean) => void }) {
   const location = useLocation();
+  const userEmail = getAuth(firebaseApp).currentUser?.email || "";
 
   React.useEffect(() => {
     if (window.innerWidth < 1280) {
@@ -61,38 +56,31 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
     }
   }, [location.pathname, setIsOpen]);
 
-  const handleMenuClick = (itemName: string) => {
-    if (itemName === "Saúde") {
-      const audio = new Audio("/audio/saude_barriga.mp3");
-      audio.play().catch(err => console.log("Audio play prevented:", err));
-      window.dispatchEvent(new Event('app-audio-active'));
-    }
-    if (itemName === "Instagram GEM") {
-      const audio = new Audio("/audio/geradorInsta.mp3");
-      audio.play().catch(err => console.log("Audio play prevented:", err));
-      window.dispatchEvent(new Event('app-audio-active'));
-    }
-    if (itemName === "Prospect Suite") {
-      const audio = new Audio("/audio/buscarCliente.mp3");
-      audio.play().catch(err => console.log("Audio play prevented:", err));
-      window.dispatchEvent(new Event('app-audio-active'));
-    }
+  // o áudio é escolhido pelo CAMINHO da tela (antes comparava o nome do menu com "Prospect Suite", que não existe, e nunca tocava)
+  const handleMenuClick = (path: string) => {
+    const audioPorTela: Record<string, string> = {
+      "/saude": "/audio/saude_barriga.mp3",
+    };
+    const src = audioPorTela[path];
+    if (!src) return;
+    new Audio(src).play().catch(err => console.log("Audio play prevented:", err));
+    window.dispatchEvent(new Event('app-audio-active'));
   };
+  // Nomes do menu = nome real da tela (antes "Relatórios" abria Projetos no Ar, "Integrações" abria Serviços e "Tarefas" abria Agendamentos)
   const navItems = [
     { name: "Resumo Geral", path: "/", icon: <LayoutDashboard size={18} />, hoverColor: "group-hover:text-cyan text-cyan" },
     { name: "Leads", path: "/leads", icon: <Users size={18} />, hoverColor: "group-hover:text-sky-400 text-sky-400" },
+    { name: "Mineração", path: "/mineracao", icon: <Target size={18} />, hoverColor: "group-hover:text-lime-400 text-lime-400" },
     { name: "Propostas", path: "/propostas", icon: <FileText size={18} />, hoverColor: "group-hover:text-amber-400 text-amber-400" },
-    { name: "Clientes", path: "/prospect", icon: <Briefcase size={18} />, hoverColor: "group-hover:text-blue-400 text-blue-400" },
     { name: "Gestão de Páginas", path: "/paginas", icon: <Layers size={18} />, hoverColor: "group-hover:text-indigo-400 text-indigo-400" },
     { name: "Contratos", path: "/contratos", icon: <FileSignature size={18} />, hoverColor: "group-hover:text-orange-400 text-orange-400" },
     { name: "Finanças", path: "/financas", icon: <DollarSign size={18} />, hoverColor: "group-hover:text-emerald-400 text-emerald-400" },
     { name: "Saúde", path: "/saude", icon: <HeartPulse size={18} />, hoverColor: "group-hover:text-rose-500 text-rose-500" },
     { name: "Portfólio", path: "/portfolio", icon: <Briefcase size={18} />, hoverColor: "group-hover:text-fuchsia-400 text-fuchsia-400" },
-    { name: "Logo Studio", path: "/logos", icon: <Sparkles size={18} />, hoverColor: "group-hover:text-amber-400 text-amber-400" },
-    { name: "Instagram GEM", path: "/instagram", icon: <Instagram size={18} />, hoverColor: "group-hover:text-pink-500 text-pink-500" },
-    { name: "Tarefas", path: "/agendamentos", icon: <CheckSquare size={18} />, hoverColor: "group-hover:text-teal-400 text-teal-400" },
-    { name: "Relatórios", path: "/projetos-no-ar", icon: <BarChart2 size={18} />, hoverColor: "group-hover:text-cyan-400 text-cyan-400" },
-    { name: "Integrações", path: "/servicos", icon: <Plug size={18} />, hoverColor: "group-hover:text-yellow-400 text-yellow-400" },
+    { name: "Trajetória", path: "/trajetoria", icon: <Crown size={18} />, hoverColor: "group-hover:text-yellow-400 text-yellow-400" },
+    { name: "Projetos no Ar", path: "/projetos-no-ar", icon: <Globe size={18} />, hoverColor: "group-hover:text-cyan-400 text-cyan-400" },
+    { name: "Prospecção", path: "/prospeccao", icon: <Globe size={18} />, hoverColor: "group-hover:text-cyan-400 text-cyan-400" },
+    { name: "Serviços", path: "/servicos", icon: <Tags size={18} />, hoverColor: "group-hover:text-yellow-400 text-yellow-400" },
     { name: "Configurações", path: "/configuracoes", icon: <Settings size={18} />, hoverColor: "group-hover:text-slate-200 text-slate-200" },
   ];
 
@@ -125,7 +113,7 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
                 <li key={item.name}>
                   <Link 
                     to={item.path} 
-                    onClick={() => handleMenuClick(item.name)}
+                    onClick={() => handleMenuClick(item.path)}
                     className={`group flex items-center gap-3 px-3 py-2 text-xs transition-all duration-200 border-l-2 ${
                       isActive 
                         ? "bg-cyan-950/30 text-cyan border-cyan shadow-none" 
@@ -154,18 +142,15 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-serif text-xs font-medium text-white truncate">Eduardo Santos</div>
-                <div className="font-mono text-[9px] uppercase tracking-[0.06em] text-white/40 truncate">admin@escom.studio</div>
+                <div className="font-mono text-[9px] uppercase tracking-[0.06em] text-white/40 truncate">{userEmail || "administrador"}</div>
               </div>
             </div>
-            <button 
-              onClick={() => {
-                localStorage.removeItem("admin_auth");
-                window.location.reload();
-              }}
+            <button
+              onClick={() => { signOut(getAuth(firebaseApp)).catch(() => {}); }}
               className="text-white/40 hover:text-white p-1 transition-colors"
-              title="Opções / Sair"
+              title="Sair"
             >
-              <ChevronDown size={14} />
+              <LogOut size={14} />
             </button>
           </div>
         </div>
@@ -175,9 +160,14 @@ function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: bool
 }
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem("admin_auth") === "true";
-  });
+  // O login vale se o Firebase tem um usuário logado de verdade. Antes bastava gravar admin_auth=true no navegador
+  // (qualquer um abria o painel pelo console). "loading" = o Firebase ainda está restaurando a sessão salva.
+  const [authState, setAuthState] = useState<"loading" | "in" | "out">("loading");
+  const isAuthenticated = authState === "in";
+  React.useEffect(() => {
+    localStorage.removeItem("admin_auth");   // marca antiga, não é mais usada
+    return onAuthStateChanged(getAuth(firebaseApp), user => setAuthState(user ? "in" : "out"));
+  }, []);
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth >= 1280);
 
   React.useEffect(() => {
@@ -209,18 +199,12 @@ export default function App() {
     }
   }, [isAuthenticated]);
 
-  const handleLogin = () => {
-    localStorage.setItem("admin_auth", "true");
-    setIsAuthenticated(true);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("admin_auth");
-    setIsAuthenticated(false);
-  };
+  if (authState === "loading") {
+    return <div className="h-screen bg-[#000000]" aria-busy="true" />;
+  }
 
   if (!isAuthenticated) {
-    return <Login onLogin={handleLogin} />;
+    return <Login onLogin={() => { /* o onAuthStateChanged acima já troca para o painel */ }} />;
   }
 
   return (
@@ -235,17 +219,13 @@ export default function App() {
           <Route path="/leads" element={<Leads />} />
           <Route path="/contratos" element={<Contratos />} />
           <Route path="/portfolio" element={<Portfolio />} />
-          <Route path="/logos" element={<LogoCreator />} />
           <Route path="/trajetoria" element={<Trajetoria />} />
-          <Route path="/instagram" element={<InstagramGEM />} />
           <Route path="/projetos-no-ar" element={<ProjetosNoAr />} />
+          <Route path="/prospeccao" element={<Prospeccao />} />
           <Route path="/configuracoes" element={<Configuracoes />} />
-          <Route path="/prospect" element={<Prospect />} />
           <Route path="/mineracao" element={<Mineracao />} />
           <Route path="/saude" element={<Saude />} />
           <Route path="/financas" element={<Financas />} />
-          <Route path="/escritorio" element={<Escritorio />} />
-          <Route path="/agendamentos" element={<Agendamentos />} />
         </Routes>
       </main>
 

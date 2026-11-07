@@ -10,26 +10,45 @@ import Footer from "./components/Footer";
 import BackToTop from "./components/BackToTop";
 import { logPageView } from "./lib/analytics";
 import { getPortfolioProjects, PortfolioProject } from "./firebase";
+import { INITIAL_PORTFOLIO_PROJECTS } from "./data/initialPortfolio";
 
-function getRandomScore(seed: string): string {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) {
-    hash = ((hash << 5) - hash) + seed.charCodeAt(i);
-    hash |= 0;
-  }
-  const base = 89 + (Math.abs(hash) % 11);
-  return `${base}%`;
+// Mesma base da Home: cases oficiais embutidos (com imagens locais) + projetos do Firestore
+const norm = (v?: string) => (v || "").toLowerCase().trim();
+const OBSOLETE_NAMES = ["posts diversos","nutritech","gf engenharia","maria malta","leandro lamezi","sem foto","studio one","goloni","estante do escritor","moa pro","full english","ugb","autosim","rilucci"];
+const PLACEHOLDER = "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'800'%20height%3D'600'%3E%3Crect%20width%3D'800'%20height%3D'600'%20fill%3D'%23111'%2F%3E%3Ctext%20x%3D'400'%20y%3D'310'%20text-anchor%3D'middle'%20font-family%3D'monospace'%20font-size%3D'28'%20fill%3D'%23555'%3EESCOM%20STUDIO%3C%2Ftext%3E%3C%2Fsvg%3E";
+const DEFAULTS: PortfolioProject[] = INITIAL_PORTFOLIO_PROJECTS.map((d) => ({
+  id: d.id, name: d.client, client: d.client, title: d.title, category: d.category, tag: d.tagType, tagType: d.tagType,
+  desc: d.desc || d.deliverables, deliverables: d.deliverables, image: d.image, video: d.video, link: d.link, url: d.link,
+  year: d.year, score: d.score, badges: d.badges, destaque: d.destaque, featured: d.destaque,
+} as PortfolioProject));
+const defaultFor = (p: { client?: string; name?: string }) => DEFAULTS.find((d) => norm(d.client) === norm(p.client || p.name));
+const onImgError = (proj: PortfolioProject) => (e: React.SyntheticEvent<HTMLImageElement>) => {
+  const el = e.currentTarget; const fb = defaultFor(proj)?.image;
+  if (fb && !el.src.endsWith(fb)) el.src = fb; else if (el.src !== PLACEHOLDER) el.src = PLACEHOLDER;
+};
+
+function mergeWithDefaults(fromDb: PortfolioProject[]): PortfolioProject[] {
+  const valid = fromDb.filter((p) => {
+    if (p.destaque === false) return false;
+    const t = norm(p.title || p.name), c = norm(p.client);
+    return !OBSOLETE_NAMES.some((o) => t.includes(o) || c.includes(o));
+  }).map((p) => {
+    const def = defaultFor(p);
+    return def ? { ...p, image: p.image || def.image, video: p.video || def.video, score: p.score || def.score } : p;
+  });
+  const names = new Set(valid.map((p) => norm(p.client || p.name)));
+  return [...valid, ...DEFAULTS.filter((d) => !names.has(norm(d.client)))];
 }
 
 function PortfolioPage() {
-  const [projects, setProjects] = useState<PortfolioProject[]>([]);
+  const [projects, setProjects] = useState<PortfolioProject[]>(DEFAULTS);
   const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
 
   useEffect(() => {
-    logPageView("Portfolio Projetos");
+    logPageView("portfolio-projetos");
     getPortfolioProjects().then(data => {
-      setProjects(data);
-    });
+      if (data && data.length > 0) setProjects(mergeWithDefaults(data));
+    }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -108,11 +127,11 @@ function PortfolioPage() {
               >
                 <div className="relative h-64 overflow-hidden">
                   <img 
-                    src={proj.image || "https://fakeimg.pl/800x600/111/333?text=Sem+foto"} 
+                    src={proj.image || PLACEHOLDER} loading="lazy" onError={onImgError(proj)} 
                     alt={proj.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100" 
                   />
-                  {(proj.score || true) && (
+                  {proj.score && (
                     <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm text-black flex items-center pr-3 rounded">
                       <div className="bg-[#00d1ff] text-black font-bold text-2xl px-4 py-2 flex items-center justify-center h-full">
                         A
@@ -120,7 +139,7 @@ function PortfolioPage() {
                       <div className="flex flex-col text-[10px] uppercase font-bold leading-none py-2 pl-3 border-l border-black/10">
                         <span className="text-black/50 mb-1">Performance + Structure</span>
                         <div className="flex gap-2">
-                           <span className="text-green-700">{getRandomScore(proj.name + (proj.id || ''))}</span>
+                           <span className="text-green-700">{proj.score}</span>
                         </div>
                       </div>
                     </div>
@@ -172,11 +191,12 @@ function PortfolioPage() {
                    phone: (form.querySelectorAll('input[type="text"]')[1] as HTMLInputElement).value,
                    message: (form.querySelector('textarea') as HTMLTextAreaElement).value
                  };
-                 await fetch('/api/contact', {
+                 const resp = await fetch('/api/contact', {
                    method: 'POST',
                    headers: { 'Content-Type': 'application/json' },
-                   body: JSON.stringify(data)
+                   body: JSON.stringify({ ...data, origem: 'portfolio' })
                  });
+                 if (!resp.ok) throw new Error('falha ' + resp.status);
                  if(btn) { btn.innerHTML = 'ENVIADO COM SUCESSO ✓'; btn.classList.replace('bg-[#00d1ff]','bg-green-600'); }
                  form.reset();
                } catch(err) {
@@ -235,7 +255,8 @@ function PortfolioPage() {
 
             <div className="md:w-1/2 overflow-y-auto max-h-[45vh] md:max-h-[90vh]">
               <img
-                src={selectedProject.image || "https://fakeimg.pl/800x600/111/333?text=Sem+foto"}
+                src={selectedProject.image || PLACEHOLDER}
+                onError={onImgError(selectedProject)}
                 alt={selectedProject.name}
                 className="w-full h-auto object-contain"
               />
@@ -257,7 +278,7 @@ function PortfolioPage() {
               </div>
 
               <div className="border-t border-white/10 pt-5 mt-auto flex items-center justify-between text-xs font-mono text-gray-500">
-                <span>SCORE: {getRandomScore(selectedProject.name + (selectedProject.id || ''))}</span>
+                <span>{selectedProject.score ? `SCORE: ${selectedProject.score}` : ''}</span>
                 <span>STATUS: FINALIZADO</span>
               </div>
             </div>

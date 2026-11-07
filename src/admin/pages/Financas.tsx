@@ -1,1281 +1,552 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Header } from "../components/Header";
 import {
-  DollarSign,
-  TrendingUp,
-  TrendingDown,
-  Sparkles,
-  Plus,
-  Trash2,
-  CheckCircle,
-  Clock,
-  RefreshCw,
-  PieChart as PieChartIcon,
-  Calendar,
-  AlertCircle,
-  Check,
-  Zap,
-  ArrowUpRight,
-  ArrowDownRight,
-  Filter,
-  ShieldCheck,
-  CreditCard,
-  Pencil,
-  Wallet,
-  Search,
-  ChevronRight,
-  BarChart2,
-  Inbox,
-  Lightbulb,
-  CheckSquare,
-  X
+  Plus, Trash2, RefreshCw, Lightbulb, ArrowUpRight, ArrowDownRight, PieChart as PieChartIcon, CreditCard,
+  Pencil, Wallet, Search, BarChart2, Inbox, X, ChevronLeft, ChevronRight, Check, Clock, Repeat, Layers, AlertCircle, DownloadCloud,
 } from "lucide-react";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, CartesianGrid } from "recharts";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Cell } from "recharts";
 import { db } from "../../lib/firebase";
-import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, getDoc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
+import {
+  type Lancamento, type Cartao, valorBR, mesAtual, somarMeses, rotuloMesLongo, ocorrenciasDoMes, resumoDoMes,
+  serieMeses, usoDoCartao, faturaAte, dividirParcelas,
+} from "../lib/financas";
 
-interface Transaction {
-  id: string;
-  title: string;
-  amount: number;
-  flow: "income" | "expense"; // income = Ganho, expense = Gasto
-  type: "recurring" | "single"; // recurring = Recorrente, single = Único
-  category: string;
-  date: string;
-  status: "paid" | "pending";
-}
+// Controle financeiro: dados no Supabase (/api/financas). As regras de mês, recorrência, parcelas e cartão
+// estão em ../lib/financas.ts (com testes). Esta tela só mostra e envia.
 
-interface CardItem {
-  id: string;
-  name: string;
-  last4: string;
-  expiry: string;
-  limit: number;
-  used: number;
-  color: string;
-  brand: string;
-}
-
-interface DailyTip {
-  id: number;
-  title: string;
-  description: string;
-  category: string;
-  priority: "alta" | "media" | "baixa";
-  impact: string;
-}
+interface DailyTip { id: number; title: string; description: string; category: string; priority: "alta" | "media" | "baixa"; impact: string; }
 
 const CATEGORIES = [
-  "Clientes & Contratos",
-  "Infraestrutura & Servidores",
-  "Software & Ferramentas SaaS",
-  "Marketing & Anúncios",
-  "Pessoal & Pró-labore",
-  "Impostos & Taxas",
-  "Equipamentos & Compras",
-  "Outros"
+  "Clientes & Contratos", "Infraestrutura & Servidores", "Software & Ferramentas SaaS", "Marketing & Anúncios",
+  "Pessoal & Pró-labore", "Impostos & Taxas", "Equipamentos & Compras", "Outros",
 ];
+const CORES_CARTAO = [
+  "from-[#2563eb] via-[#1d4ed8] to-[#1e3a8a]", "from-[#7c3aed] via-[#6d28d9] to-[#4c1d95]",
+  "from-[#0f172a] via-[#1e293b] to-[#334155]", "from-[#059669] via-[#047857] to-[#064e3b]", "from-[#e11d48] via-[#be123c] to-[#881337]",
+];
+const brl = (n: number) => { const v = Number(n) || 0; return (v < 0 ? "− R$ " : "R$ ") + Math.abs(v).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+const hojeISO = () => new Date().toISOString().slice(0, 10);
+const dataBR = (d: string) => d ? d.slice(8, 10) + "/" + d.slice(5, 7) + "/" + d.slice(0, 4) : "";
+
+type Filtro = "all" | "income" | "expense" | "recurring" | "pending";
+
+async function chamar(metodo: string, url: string, corpo?: unknown) {
+  const r = await fetch(url, { method: metodo, headers: { "Content-Type": "application/json" }, body: corpo ? JSON.stringify(corpo) : undefined });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || j.success === false) throw new Error(j.error || `Erro ${r.status}`);
+  return j;
+}
 
 export default function Financas() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [cards, setCards] = useState<CardItem[]>([]);
-  const [loadingData, setLoadingData] = useState(true);
+  const [lancamentos, setLancamentos] = useState<Lancamento[]>([]);
+  const [cartoes, setCartoes] = useState<Cartao[]>([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erroCarga, setErroCarga] = useState("");
+  const [aviso, setAviso] = useState<{ msg: string; tipo: "ok" | "erro" } | null>(null);
+  const [mes, setMes] = useState(mesAtual());
+  const [filtro, setFiltro] = useState<Filtro>("all");
+  const [busca, setBusca] = useState("");
 
-  const [filterType, setFilterType] = useState<"all" | "income" | "expense" | "recurring" | "single">("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showAddCardModal, setShowAddCardModal] = useState(false);
-  const [editingTx, setEditingTx] = useState<Transaction | null>(null);
+  // importação do Firestore (dados antigos)
+  const [antigos, setAntigos] = useState<{ lancamentos: any[]; cartoes: any[] } | null>(null);
+  const [importando, setImportando] = useState(false);
 
-  // State Form Transação (Novo ou Edição)
-  const [formTitle, setFormTitle] = useState("");
-  const [formAmount, setFormAmount] = useState("");
-  const [formFlow, setFormFlow] = useState<"income" | "expense">("expense");
-  const [formType, setFormType] = useState<"recurring" | "single">("recurring");
-  const [formCategory, setFormCategory] = useState(CATEGORIES[0]);
-  const [formDate, setFormDate] = useState(new Date().toISOString().split("T")[0]);
-  const [formStatus, setFormStatus] = useState<"paid" | "pending">("paid");
+  // modal de lançamento
+  const [modalAberto, setModalAberto] = useState(false);
+  const [editando, setEditando] = useState<Lancamento | null>(null);
+  const [fTitulo, setFTitulo] = useState("");
+  const [fValor, setFValor] = useState("");
+  const [fFluxo, setFFluxo] = useState<"income" | "expense">("expense");
+  const [fTipo, setFTipo] = useState<"single" | "recurring">("single");
+  const [fCategoria, setFCategoria] = useState(CATEGORIES[0]);
+  const [fData, setFData] = useState(hojeISO());
+  const [fFim, setFFim] = useState("");
+  const [fPago, setFPago] = useState(true);
+  const [fCartao, setFCartao] = useState("");
+  const [fParcelas, setFParcelas] = useState(1);
+  const [salvando, setSalvando] = useState(false);
 
-  // State Específico de Cartão & Parcelamento
-  const [isCardExpense, setIsCardExpense] = useState(false);
-  const [selectedCardId, setSelectedCardId] = useState("");
-  const [isInstallment, setIsInstallment] = useState(false);
-  const [installmentsCount, setInstallmentsCount] = useState(2);
+  // modal de cartão
+  const [modalCartao, setModalCartao] = useState(false);
+  const [cNome, setCNome] = useState("");
+  const [cFinal, setCFinal] = useState("");
+  const [cValidade, setCValidade] = useState("");
+  const [cLimite, setCLimite] = useState("");
+  const [cCor, setCCor] = useState(CORES_CARTAO[0]);
 
-  // State Form Cartão
-  const [cardName, setCardName] = useState("");
-  const [cardLast4, setCardLast4] = useState("");
-  const [cardExpiry, setCardExpiry] = useState("12/28");
-  const [cardLimit, setCardLimit] = useState("");
-  const [cardUsed, setCardUsed] = useState("");
-  const [cardColor, setCardColor] = useState("from-[#2563eb] via-[#1d4ed8] to-[#1e3a8a]");
+  // dicas da IA
+  const [dicasAberto, setDicasAberto] = useState(false);
+  const [carregandoDicas, setCarregandoDicas] = useState(false);
+  const [dicas, setDicas] = useState<{ date: string; dicas: DailyTip[] } | null>(null);
+  const [erroDicas, setErroDicas] = useState("");
 
-  // State das 5 Dicas do Dia do Cron / IA
-  const [showTipsModal, setShowTipsModal] = useState(false);
-  const [loadingTips, setLoadingTips] = useState(false);
-  const [dailyTipsData, setDailyTipsData] = useState<{ date: string; dicas: DailyTip[] } | null>(null);
+  const avisar = (msg: string, tipo: "ok" | "erro" = "ok") => { setAviso({ msg, tipo }); setTimeout(() => setAviso(null), 4500); };
 
-  // Escutar Firebase Firestore em Tempo Real (financas & cartoes)
-  useEffect(() => {
-    setLoadingData(true);
-
-    // 1. Escutar Lançamentos no Firestore
-    const unsubFinancas = onSnapshot(collection(db, "financas"), (snapshot) => {
-      const list: Transaction[] = [];
-      snapshot.forEach((d) => {
-        const data = d.data();
-        list.push({
-          id: d.id,
-          title: data.title || "Sem título",
-          amount: Number(data.amount) || 0,
-          flow: data.flow || "expense",
-          type: data.type || "recurring",
-          category: data.category || "Geral",
-          date: data.date || "",
-          status: data.status || "paid"
-        });
-      });
-
-      // Ordenar por data decrescente
-      list.sort((a, b) => (b.date > a.date ? 1 : -1));
-      setTransactions(list);
-      setLoadingData(false);
-    }, (error) => {
-      console.warn("Erro ao ouvir financas no Firebase:", error);
-      setLoadingData(false);
-    });
-
-    // 2. Escutar Cartões no Firestore
-    const unsubCartoes = onSnapshot(collection(db, "cartoes"), (snapshot) => {
-      const cardList: CardItem[] = [];
-      snapshot.forEach((d) => {
-        const data = d.data();
-        cardList.push({
-          id: d.id,
-          name: data.name || "Cartão Corporativo",
-          last4: data.last4 || "0000",
-          expiry: data.expiry || "12/28",
-          limit: Number(data.limit) || 0,
-          used: Number(data.used) || 0,
-          color: data.color || "from-[#2563eb] via-[#1d4ed8] to-[#1e3a8a]",
-          brand: data.brand || "Mastercard"
-        });
-      });
-      setCards(cardList);
-    }, (error) => {
-      console.warn("Erro ao ouvir cartoes no Firebase:", error);
-    });
-
-    return () => {
-      unsubFinancas();
-      unsubCartoes();
-    };
+  const carregar = useCallback(async () => {
+    try {
+      const j = await chamar("GET", "/api/financas");
+      setLancamentos(j.lancamentos || []);
+      setCartoes(j.cartoes || []);
+      setErroCarga("");
+      // base nova vazia: procura dados antigos no Firestore para oferecer a importação
+      if (!(j.lancamentos || []).length && !(j.cartoes || []).length) {
+        try {
+          const [fl, fc] = await Promise.all([getDocs(collection(db, "financas")), getDocs(collection(db, "cartoes"))]);
+          const ls = fl.docs.map(d => ({ id: d.id, ...d.data() }));
+          const cs = fc.docs.map(d => ({ id: d.id, ...d.data() }));
+          setAntigos(ls.length || cs.length ? { lancamentos: ls, cartoes: cs } : null);
+        } catch { setAntigos(null); }
+      } else setAntigos(null);
+    } catch (e: any) {
+      setErroCarga(e.message);
+    } finally {
+      setCarregando(false);
+    }
   }, []);
 
-  // Métricas Consolidadas Calculadas em Tempo Real
-  const metrics = useMemo(() => {
-    let totalIncome = 0;
-    let totalExpense = 0;
-    let recurringIncome = 0;
-    let recurringExpense = 0;
+  useEffect(() => { carregar(); }, [carregar]);
 
-    transactions.forEach(t => {
-      if (t.flow === "income") {
-        totalIncome += t.amount;
-        if (t.type === "recurring") recurringIncome += t.amount;
+  // ── números do mês ──
+  const resumo = useMemo(() => resumoDoMes(lancamentos, mes), [lancamentos, mes]);
+  const serie = useMemo(() => serieMeses(lancamentos, mes, 3, 2), [lancamentos, mes]);
+  const usoCartoes = useMemo(() => cartoes.map(c => ({ c, usado: usoDoCartao(c.id, lancamentos), fatura: faturaAte(c.id, lancamentos, mes).reduce((a, l) => a + l.amount, 0) })), [cartoes, lancamentos, mes]);
+  const limiteTotal = cartoes.reduce((a, c) => a + (Number(c.limit) || 0), 0);
+  const usadoTotal = usoCartoes.reduce((a, x) => a + x.usado, 0);
+  const nomeCartao = (id?: string | null) => cartoes.find(c => c.id === id)?.name;
+
+  const extrato = useMemo(() => {
+    const q = busca.trim().toLowerCase();
+    return ocorrenciasDoMes(lancamentos, mes)
+      .filter(o => !q || o.lanc.title.toLowerCase().includes(q) || o.lanc.category.toLowerCase().includes(q))
+      .filter(o => filtro === "all" || (filtro === "income" && o.lanc.flow === "income") || (filtro === "expense" && o.lanc.flow === "expense")
+        || (filtro === "recurring" && o.lanc.type === "recurring") || (filtro === "pending" && !o.pago))
+      .sort((a, b) => (a.lanc.type === "recurring" ? a.lanc.date.slice(8) : a.lanc.date.slice(8)).localeCompare(b.lanc.date.slice(8)));
+  }, [lancamentos, mes, busca, filtro]);
+
+  // ── ações ──
+  const abrirNovo = () => {
+    setEditando(null); setFTitulo(""); setFValor(""); setFFluxo("expense"); setFTipo("single"); setFCategoria("Outros");
+    const hoje = hojeISO(); setFData(mesAtual() === mes ? hoje : `${mes}-01`); setFFim(""); setFPago(true); setFCartao(""); setFParcelas(1);
+    setModalAberto(true);
+  };
+  const abrirEdicao = (l: Lancamento) => {
+    setEditando(l); setFTitulo(l.title); setFValor(String(l.amount).replace(".", ",")); setFFluxo(l.flow); setFTipo(l.type);
+    setFCategoria(l.category || CATEGORIES[0]); setFData(l.date); setFFim(l.end_date || ""); setFPago(l.status === "paid");
+    setFCartao(l.card_id || ""); setFParcelas(1); setModalAberto(true);
+  };
+
+  const salvar = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const valor = valorBR(fValor);
+    if (!fTitulo.trim()) return avisar("Informe a descrição.", "erro");
+    if (!(valor > 0)) return avisar("Informe um valor válido, por exemplo 1500 ou 1.500,50.", "erro");
+    if (fTipo === "recurring" && fFim && fFim < fData) return avisar("A data final não pode ser antes do início.", "erro");
+    const corpo: any = {
+      title: fTitulo.trim(), amount: valor, flow: fFluxo, type: fTipo, category: fCategoria, date: fData,
+      end_date: fTipo === "recurring" ? (fFim || null) : null, status: fPago ? "paid" : "pending",
+      card_id: fFluxo === "expense" ? (fCartao || null) : null,
+    };
+    setSalvando(true);
+    try {
+      if (editando) {
+        if (editando.type === "recurring") delete corpo.status;   // no recorrente o pago é por mês (botão no extrato)
+        await chamar("PUT", `/api/financas/lancamentos/${editando.id}`, corpo);
+        avisar("Lançamento atualizado.");
       } else {
-        totalExpense += t.amount;
-        if (t.type === "recurring") recurringExpense += t.amount;
+        const r = await chamar("POST", "/api/financas/lancamentos", { ...corpo, parcelas: fFluxo === "expense" && fTipo === "single" ? fParcelas : 1 });
+        avisar(r.criados > 1 ? `${r.criados} parcelas criadas.` : "Lançamento criado.");
       }
-    });
-
-    const netProfit = totalIncome - totalExpense;
-    const profitMargin = totalIncome > 0 ? ((netProfit / totalIncome) * 100).toFixed(1) : "0";
-
-    const totalCardLimit = cards.reduce((acc, c) => acc + (Number(c.limit) || 0), 0);
-    const totalCardUsed = cards.reduce((acc, c) => acc + (Number(c.used) || 0), 0);
-
-    return {
-      totalIncome,
-      totalExpense,
-      recurringIncome,
-      recurringExpense,
-      netProfit,
-      profitMargin,
-      totalCardLimit,
-      totalCardUsed
-    };
-  }, [transactions, cards]);
-
-  // Dados Agrupados por Mês para o Gráfico Recharts
-  const chartData = useMemo(() => {
-    const monthsMap: Record<string, { month: string; ganho: number; gasto: number }> = {};
-    const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-
-    // Iniciar últimos 6 meses
-    const now = new Date();
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-      monthsMap[key] = {
-        month: monthNames[d.getMonth()],
-        ganho: 0,
-        gasto: 0
-      };
-    }
-
-    // Somar transações do banco
-    transactions.forEach(t => {
-      if (!t.date) return;
-      const key = t.date.substring(0, 7); // YYYY-MM
-      if (monthsMap[key]) {
-        if (t.flow === "income") monthsMap[key].ganho += t.amount;
-        else monthsMap[key].gasto += t.amount;
-      }
-    });
-
-    return Object.values(monthsMap);
-  }, [transactions]);
-
-  // Transações Filtradas por Tipo e Busca
-  const filteredTransactions = useMemo(() => {
-    return transactions.filter(t => {
-      const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            t.category.toLowerCase().includes(searchQuery.toLowerCase());
-      if (!matchesSearch) return false;
-
-      if (filterType === "all") return true;
-      if (filterType === "income") return t.flow === "income";
-      if (filterType === "expense") return t.flow === "expense";
-      if (filterType === "recurring") return t.type === "recurring";
-      if (filterType === "single") return t.type === "single";
-      return true;
-    });
-  }, [transactions, filterType, searchQuery]);
-
-  // Abrir Modal para Criar Novo Lançamento
-  const openNewModal = () => {
-    setEditingTx(null);
-    setFormTitle("");
-    setFormAmount("");
-    setFormFlow("expense");
-    setFormType("recurring");
-    setFormCategory(CATEGORIES[0]);
-    setFormDate(new Date().toISOString().split("T")[0]);
-    setFormStatus("paid");
-    setIsCardExpense(false);
-    setSelectedCardId("");
-    setIsInstallment(false);
-    setInstallmentsCount(2);
-    setShowAddModal(true);
+      setModalAberto(false);
+      await carregar();
+    } catch (err: any) { avisar(err.message, "erro"); }
+    finally { setSalvando(false); }
   };
 
-  // Abrir Modal para Editar Existente
-  const openEditModal = (tx: Transaction) => {
-    setEditingTx(tx);
-    setFormTitle(tx.title);
-    setFormAmount(String(tx.amount));
-    setFormFlow(tx.flow);
-    setFormType(tx.type);
-    setFormCategory(tx.category);
-    setFormDate(tx.date);
-    setFormStatus(tx.status);
-    setIsCardExpense(false);
-    setIsInstallment(false);
-    setShowAddModal(true);
+  const alternar = async (l: Lancamento) => {
+    try { await chamar("POST", `/api/financas/lancamentos/${l.id}/alternar`, l.type === "recurring" ? { mes } : {}); await carregar(); }
+    catch (err: any) { avisar(err.message, "erro"); }
   };
 
-  // Salvar no Firebase Firestore (Novo ou Edição com Gerador de Parcelas)
-  const handleSaveTransaction = async (e: React.FormEvent) => {
+  const apagar = async (l: Lancamento) => {
+    let grupo = false;
+    if (l.group_id && (l.installment_total || 0) > 1) {
+      const todas = window.confirm(`"${l.title}" faz parte de uma compra parcelada.\n\nOK = apagar TODAS as ${l.installment_total} parcelas\nCancelar = escolher apagar só esta`);
+      if (todas) grupo = true;
+      else if (!window.confirm("Apagar só esta parcela?")) return;
+    } else if (!window.confirm(l.type === "recurring" ? `Apagar "${l.title}"? Ele some de todos os meses.` : `Apagar "${l.title}"?`)) return;
+    try { await chamar("DELETE", `/api/financas/lancamentos/${l.id}${grupo ? "?grupo=1" : ""}`); avisar("Apagado."); await carregar(); }
+    catch (err: any) { avisar(err.message, "erro"); }
+  };
+
+  const salvarCartao = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formTitle || !formAmount) return;
-
-    const amountNum = parseFloat(formAmount.replace(",", "."));
-
-    if (editingTx) {
-      try {
-        await updateDoc(doc(db, "financas", editingTx.id), {
-          title: formTitle,
-          amount: amountNum,
-          flow: formFlow,
-          type: formType,
-          category: formCategory,
-          date: formDate,
-          status: formStatus
-        });
-      } catch (err) {
-        console.error("Erro ao atualizar no Firebase:", err);
-      }
-    } else if (formFlow === "expense" && isCardExpense && isInstallment && installmentsCount > 1) {
-      const totalAmount = amountNum;
-      const installmentVal = parseFloat((totalAmount / installmentsCount).toFixed(2));
-
-      for (let i = 1; i <= installmentsCount; i++) {
-        const baseDate = new Date(formDate + "T12:00:00");
-        baseDate.setMonth(baseDate.getMonth() + (i - 1));
-        const installmentDateStr = baseDate.toISOString().split("T")[0];
-
-        const installmentTx = {
-          title: `${formTitle} (${i}/${installmentsCount})`,
-          amount: installmentVal,
-          flow: "expense",
-          type: "recurring",
-          category: formCategory,
-          date: installmentDateStr,
-          status: i === 1 ? formStatus : "pending",
-          cardId: selectedCardId || null,
-          createdAt: new Date().toISOString()
-        };
-
-        try {
-          await addDoc(collection(db, "financas"), installmentTx);
-        } catch (err) {
-          console.error("Erro ao gerar parcela no Firebase:", err);
-        }
-      }
-
-      if (selectedCardId) {
-        const targetCard = cards.find(c => c.id === selectedCardId);
-        if (targetCard) {
-          const newUsed = (Number(targetCard.used) || 0) + totalAmount;
-          try {
-            await updateDoc(doc(db, "cartoes", selectedCardId), { used: newUsed });
-          } catch (err) {}
-        }
-      }
-    } else {
-      const newTxData = {
-        title: formTitle,
-        amount: amountNum,
-        flow: formFlow,
-        type: formType,
-        category: formCategory,
-        date: formDate,
-        status: formStatus,
-        createdAt: new Date().toISOString()
-      };
-
-      try {
-        await addDoc(collection(db, "financas"), newTxData);
-      } catch (err) {
-        console.error("Erro ao salvar no Firebase:", err);
-      }
-    }
-
-    setShowAddModal(false);
-  };
-
-  // Salvar Novo Cartão no Firebase Firestore (collection: "cartoes")
-  const handleSaveCard = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!cardName || !cardLast4) return;
-
-    const newCardData = {
-      name: cardName,
-      last4: cardLast4,
-      expiry: cardExpiry || "12/28",
-      limit: parseFloat(cardLimit || "0"),
-      used: parseFloat(cardUsed || "0"),
-      color: cardColor,
-      brand: "Mastercard",
-      createdAt: new Date().toISOString()
-    };
-
     try {
-      await addDoc(collection(db, "cartoes"), newCardData);
-    } catch (err) {
-      console.error("Erro ao salvar cartão no Firebase:", err);
-    }
-
-    setCardName("");
-    setCardLast4("");
-    setCardLimit("");
-    setCardUsed("");
-    setShowAddCardModal(false);
+      await chamar("POST", "/api/financas/cartoes", { name: cNome, last4: cFinal, expiry: cValidade, limit: cLimite, color: cCor });
+      setModalCartao(false); setCNome(""); setCFinal(""); setCValidade(""); setCLimite("");
+      avisar("Cartão cadastrado."); await carregar();
+    } catch (err: any) { avisar(err.message, "erro"); }
   };
 
-  // Alternar Status no Firebase
-  const toggleStatus = async (id: string, currentStatus: "paid" | "pending") => {
-    const nextStatus = currentStatus === "paid" ? "pending" : "paid";
+  const apagarCartao = async (c: Cartao) => {
+    if (!window.confirm(`Remover o cartão ${c.name}? Os gastos continuam no extrato, só sem o cartão.`)) return;
+    try { await chamar("DELETE", `/api/financas/cartoes/${c.id}`); await carregar(); } catch (err: any) { avisar(err.message, "erro"); }
+  };
+
+  const pagarFatura = async (c: Cartao, valor: number) => {
+    if (!window.confirm(`Pagar a fatura do ${c.name} até ${rotuloMesLongo(mes)}: ${brl(valor)}?\nOs gastos ficam como pagos e o limite é liberado.`)) return;
+    try { await chamar("POST", `/api/financas/cartoes/${c.id}/pagar-fatura`, { mes }); avisar("Fatura paga."); await carregar(); }
+    catch (err: any) { avisar(err.message, "erro"); }
+  };
+
+  const importar = async () => {
+    if (!antigos) return;
+    setImportando(true);
     try {
-      await updateDoc(doc(db, "financas", id), { status: nextStatus });
-    } catch (err) {
-      console.error("Erro ao atualizar status no Firebase:", err);
-    }
+      const r = await chamar("POST", "/api/financas/importar", antigos);
+      avisar(`Importados: ${r.lancamentos} lançamentos e ${r.cartoes} cartões${r.ignorados?.length ? ` (${r.ignorados.length} ignorados por estarem incompletos)` : ""}.`);
+      await carregar();
+    } catch (err: any) { avisar(err.message, "erro"); }
+    finally { setImportando(false); }
   };
 
-  // Deletar Lançamento do Firebase
-  const handleDeleteTx = async (id: string) => {
+  const abrirDicas = async (forcar = false) => {
+    setDicasAberto(true); setErroDicas("");
+    if (dicas && !forcar) return;
+    setCarregandoDicas(true);
     try {
-      await deleteDoc(doc(db, "financas", id));
-    } catch (err) {
-      console.error("Erro ao deletar lançamento do Firebase:", err);
-    }
+      const j = await chamar("GET", forcar ? "/api/financas-cron" : "/api/financas-dicas");
+      setDicas(j.data);
+    } catch (err: any) { setErroDicas(err.message); }
+    finally { setCarregandoDicas(false); }
   };
 
-  // Deletar Cartão do Firebase
-  const handleDeleteCard = async (id: string) => {
-    try {
-      await deleteDoc(doc(db, "cartoes", id));
-    } catch (err) {
-      console.error("Erro ao deletar cartão do Firebase:", err);
-    }
-  };
-
-  // Abrir Modal de Sugestões (5 Dicas do Dia)
-  const handleOpenSuggestions = async () => {
-    setShowTipsModal(true);
-    if (!dailyTipsData) {
-      setLoadingTips(true);
-      try {
-        const res = await fetch("/api/financas-dicas");
-        const data = await res.json();
-        if (data.success && data.data) {
-          setDailyTipsData(data.data);
-        }
-      } catch (e) {
-        console.error("Erro ao carregar dicas do dia:", e);
-      } finally {
-        setLoadingTips(false);
-      }
-    }
-  };
-
-  // Forçar Atualização Manual das 5 Dicas
-  const handleRefreshDailyTips = async () => {
-    setLoadingTips(true);
-    try {
-      const res = await fetch("/api/financas-cron");
-      const data = await res.json();
-      if (data.success && data.data) {
-        setDailyTipsData(data.data);
-      }
-    } catch (e) {
-      console.error("Erro ao regerar dicas do dia:", e);
-    } finally {
-      setLoadingTips(false);
-    }
-  };
+  const previaParcelas = fFluxo === "expense" && fTipo === "single" && !editando && fParcelas > 1 && valorBR(fValor) > 0 ? dividirParcelas(valorBR(fValor), fParcelas) : null;
+  const ehFuturo = (m: string) => m > mesAtual();
 
   return (
     <div className="flex-1 h-full overflow-y-auto bg-[#050507] text-white custom-scrollbar pb-24">
-      {/* HEADER DA PÁGINA */}
-      <Header 
-        title="Painel Financeiro & Cartões" 
-        subtitle="Controle completo de fluxo de caixa, cartões corporativos, edições de lançamentos e 5 dicas diárias com IA." 
-      />
+      <Header title="Painel Financeiro & Cartões" subtitle="Fluxo de caixa por mês: realizado e previsto, fixos mensais, parcelas e cartões." />
+
+      {aviso && (
+        <div className={`fixed top-4 right-4 z-[200] max-w-sm px-4 py-3 rounded-xl border text-sm shadow-xl ${aviso.tipo === "ok" ? "bg-emerald-950/90 border-emerald-500/40 text-emerald-200" : "bg-rose-950/90 border-rose-500/40 text-rose-200"}`}>{aviso.msg}</div>
+      )}
 
       <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-6">
-        
-        {/* BARRA DE AÇÕES SUPERIOR */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#0b0c12] border border-white/10 rounded-2xl p-6 shadow-xl">
+        {/* BARRA SUPERIOR: mês + ações */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#0b0c12] border border-white/10 rounded-2xl p-5 shadow-xl">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-cyan/10 border border-cyan/30 text-cyan flex items-center justify-center shrink-0">
-              <Wallet size={20} />
-            </div>
-            <div>
-              <h2 className="text-lg md:text-xl font-serif text-white font-normal tracking-tight">
-                Fluxo de Caixa Operacional
-              </h2>
-              <p className="text-white/40 text-xs font-mono mt-0.5">
-                Balanço consolidado em tempo real com Firestore
-              </p>
+            <div className="w-10 h-10 rounded-xl bg-cyan/10 border border-cyan/30 text-cyan flex items-center justify-center shrink-0"><Wallet size={20} /></div>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setMes(somarMeses(mes, -1))} className="p-1.5 rounded-lg hover:bg-white/10 text-white/60" title="Mês anterior"><ChevronLeft size={18} /></button>
+              <div className="min-w-[150px] text-center">
+                <div className="text-lg font-serif">{rotuloMesLongo(mes)}</div>
+                <div className="text-[10px] font-mono uppercase tracking-wider text-white/40">{mes === mesAtual() ? "mês atual" : ehFuturo(mes) ? "previsão" : "mês passado"}</div>
+              </div>
+              <button onClick={() => setMes(somarMeses(mes, 1))} className="p-1.5 rounded-lg hover:bg-white/10 text-white/60" title="Próximo mês"><ChevronRight size={18} /></button>
+              {mes !== mesAtual() && <button onClick={() => setMes(mesAtual())} className="text-[10px] font-mono uppercase px-2 py-1 rounded-md border border-white/15 text-white/60 hover:text-white">Hoje</button>}
             </div>
           </div>
-
           <div className="flex flex-wrap items-center gap-3">
-            {/* BOTÃO SUGESTÕES (5 DICAS COM IA) */}
-            <button
-              onClick={handleOpenSuggestions}
-              disabled={loadingTips}
-              className="flex items-center gap-2 bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 font-mono font-bold text-xs uppercase tracking-wider px-4 py-2.5 rounded-xl border border-amber-400/30 transition-all disabled:opacity-50 cursor-pointer"
-            >
-              {loadingTips ? (
-                <RefreshCw size={14} className="animate-spin text-amber-300" />
-              ) : (
-                <Lightbulb size={14} className="text-amber-400 fill-amber-400/40" />
-              )}
-              <span>Sugestões IA</span>
+            <button onClick={() => abrirDicas(false)} className="flex items-center gap-2 bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 font-mono font-bold text-xs uppercase tracking-wider px-4 py-2.5 rounded-xl border border-amber-400/30">
+              <Lightbulb size={14} /> Sugestões IA
             </button>
-
-            {/* BOTÃO NOVO LANÇAMENTO */}
-            <button
-              onClick={openNewModal}
-              className="flex items-center gap-2 bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-mono font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-xl shadow-lg shadow-[#00d1ff]/15 active:scale-95 transition-all cursor-pointer"
-            >
-              <Plus size={15} strokeWidth={2.5} />
-              <span>Novo Lançamento</span>
+            <button onClick={abrirNovo} disabled={!!erroCarga} className="flex items-center gap-2 bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-mono font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-xl disabled:opacity-40">
+              <Plus size={15} strokeWidth={2.5} /> Novo Lançamento
             </button>
           </div>
         </div>
 
-        {/* TOP CARDS KPIS (RESUMO EXECUTIVO) */}
+        {erroCarga && (
+          <div className="flex gap-3 items-start p-4 rounded-xl border border-rose-500/30 bg-rose-500/10 text-sm text-rose-200">
+            <AlertCircle size={18} className="shrink-0 mt-0.5" />
+            <div><b>Não consegui carregar as finanças.</b> {erroCarga}<br /><span className="text-rose-200/70">Veja Configurações &gt; Status do sistema.</span></div>
+          </div>
+        )}
+
+        {antigos && (
+          <div className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between p-4 rounded-xl border border-cyan/30 bg-cyan/5 text-sm">
+            <div><b className="text-cyan">Dados antigos encontrados.</b> {antigos.lancamentos.length} lançamentos e {antigos.cartoes.length} cartões estão no Firestore. Importe para o novo controle (pode repetir sem duplicar).</div>
+            <button onClick={importar} disabled={importando} className="flex items-center gap-2 shrink-0 bg-cyan text-black font-mono font-bold text-xs uppercase px-4 py-2 rounded-lg disabled:opacity-50">
+              {importando ? <RefreshCw size={14} className="animate-spin" /> : <DownloadCloud size={14} />} Importar
+            </button>
+          </div>
+        )}
+
+        {/* KPIs DO MÊS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-          {/* Card Saldo & Ganhos */}
-          <div className="bg-[#0b0c12] border border-white/10 rounded-2xl p-5 hover:border-emerald-500/40 transition-all shadow-xl space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-white/50">Saldo & Ganhos</span>
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
-                <ArrowUpRight size={16} />
-              </div>
-            </div>
-            <div className="text-2xl font-serif font-light text-emerald-400 tracking-tight">
-              R$ {metrics.totalIncome.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-            </div>
-            <div className="text-xs font-mono text-white/40 pt-1 border-t border-white/5">
-              Recorrentes: <span className="text-white font-semibold">R$ {metrics.recurringIncome.toLocaleString("pt-BR")}</span>
-            </div>
-          </div>
-
-          {/* Card Total de Despesas */}
-          <div className="bg-[#0b0c12] border border-white/10 rounded-2xl p-5 hover:border-rose-500/40 transition-all shadow-xl space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-white/50">Total de Despesas</span>
-              <div className="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center border border-rose-500/20">
-                <ArrowDownRight size={16} />
-              </div>
-            </div>
-            <div className="text-2xl font-serif font-light text-rose-400 tracking-tight">
-              R$ {metrics.totalExpense.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-            </div>
-            <div className="text-xs font-mono text-white/40 pt-1 border-t border-white/5">
-              Fixos Recorrentes: <span className="text-white font-semibold">R$ {metrics.recurringExpense.toLocaleString("pt-BR")}</span>
-            </div>
-          </div>
-
-          {/* Card Lucro Líquido */}
-          <div className="bg-[#0b0c12] border border-white/10 rounded-2xl p-5 hover:border-cyan/40 transition-all shadow-xl space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-white/50">Lucro Líquido</span>
-              <div className={`w-8 h-8 rounded-lg ${metrics.netProfit >= 0 ? "bg-cyan/10 text-cyan border border-cyan/20" : "bg-rose-500/10 text-rose-400 border border-rose-500/20"} flex items-center justify-center`}>
-                <PieChartIcon size={16} />
-              </div>
-            </div>
-            <div className={`text-2xl font-serif font-light ${metrics.netProfit >= 0 ? "text-cyan" : "text-rose-400"} tracking-tight`}>
-              R$ {metrics.netProfit.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-            </div>
-            <div className="text-xs font-mono text-white/40 pt-1 border-t border-white/5">
-              Margem de Lucro: <span className="text-white font-semibold">{metrics.profitMargin}%</span>
-            </div>
-          </div>
-
-          {/* Card Limite de Cartões */}
-          <div className="bg-[#0b0c12] border border-white/10 rounded-2xl p-5 hover:border-white/20 transition-all shadow-xl space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-white/50">Limite de Cartões</span>
-              <CreditCard size={18} className="text-white/60" />
-            </div>
-            <div className="text-xl font-serif font-light text-white tracking-tight">
-              R$ {metrics.totalCardUsed.toLocaleString("pt-BR")} <span className="text-white/30 text-sm">/ R$ {metrics.totalCardLimit.toLocaleString("pt-BR")}</span>
-            </div>
-            <div className="text-xs font-mono text-white/40 pt-1 border-t border-white/5">
-              {cards.length} cartões corporativos
-            </div>
-          </div>
+          <Kpi titulo="Entradas do mês" cor="emerald" icone={<ArrowUpRight size={16} />} valor={resumo.entradas.total}
+            linhas={[["Recebido", resumo.entradas.realizado], ["A receber", resumo.entradas.previsto]]} />
+          <Kpi titulo="Saídas do mês" cor="rose" icone={<ArrowDownRight size={16} />} valor={resumo.saidas.total}
+            linhas={[["Pago", resumo.saidas.realizado], ["A pagar", resumo.saidas.previsto], ["Fixos mensais", resumo.fixos]]} />
+          <Kpi titulo="Saldo do mês" cor={resumo.saldoPrevisto >= 0 ? "cyan" : "rose"} icone={<PieChartIcon size={16} />} valor={resumo.saldoPrevisto}
+            linhas={[["Realizado até agora", resumo.saldoRealizado], ["Margem prevista", null, resumo.entradas.total > 0 ? ((resumo.saldoPrevisto / resumo.entradas.total) * 100).toFixed(1) + "%" : "sem entradas"]]} />
+          <Kpi titulo="Cartões (limite usado)" cor="white" icone={<CreditCard size={16} />} valor={usadoTotal}
+            linhas={[["Limite total", limiteTotal], ["Disponível", Math.max(0, limiteTotal - usadoTotal)]]} />
         </div>
 
-        {/* SEÇÃO 2: MEUS CARTÕES DE CRÉDITO & GRÁFICO COMPARATIVO */}
+        {/* CARTÕES + GRÁFICO */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          {/* PAINEL DE CARTÕES (MY CARDS) */}
-          <div className="bg-[#0b0c12] border border-white/10 rounded-2xl p-6 shadow-xl space-y-4 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
-                <div className="flex items-center gap-2.5">
-                  <CreditCard size={18} className="text-cyan" />
-                  <h3 className="font-serif text-base text-white font-normal">Meus Cartões</h3>
-                </div>
-                <button
-                  onClick={() => setShowAddCardModal(true)}
-                  className="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-white font-mono text-[10px] uppercase tracking-wider rounded-lg border border-white/10 transition-all cursor-pointer"
-                >
-                  + Adicionar
-                </button>
-              </div>
-
-              <div className="space-y-3.5 max-h-[360px] overflow-y-auto pr-1 custom-scrollbar">
-                {cards.length === 0 ? (
-                  <div className="py-12 text-center text-white/40 space-y-2">
-                    <Inbox size={32} className="mx-auto text-white/20" />
-                    <p className="text-xs font-mono text-white/70">Nenhum cartão cadastrado.</p>
-                    <p className="text-[11px] text-white/40 max-w-[200px] mx-auto">
-                      Clique em <strong className="text-cyan">+ Adicionar</strong> acima para cadastrar seu cartão.
-                    </p>
+          <div className="bg-[#0b0c12] border border-white/10 rounded-2xl p-6 shadow-xl space-y-4">
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+              <div className="flex items-center gap-2.5"><CreditCard size={18} className="text-cyan" /><h3 className="font-serif text-base">Meus Cartões</h3></div>
+              <button onClick={() => setModalCartao(true)} disabled={!!erroCarga} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 font-mono text-[10px] uppercase tracking-wider rounded-lg border border-white/10 disabled:opacity-40">+ Adicionar</button>
+            </div>
+            <div className="space-y-3.5 max-h-[420px] overflow-y-auto pr-1 custom-scrollbar">
+              {cartoes.length === 0 ? (
+                <div className="py-12 text-center text-white/40 space-y-2"><Inbox size={32} className="mx-auto text-white/20" /><p className="text-xs font-mono text-white/70">Nenhum cartão cadastrado.</p></div>
+              ) : usoCartoes.map(({ c, usado, fatura }) => {
+                const pct = c.limit > 0 ? Math.min(100, Math.round((usado / c.limit) * 100)) : 0;
+                return (
+                  <div key={c.id} className={`relative bg-gradient-to-br ${c.color || CORES_CARTAO[0]} p-5 rounded-xl border border-white/15 shadow-xl space-y-3`}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-white/75">{c.name}</span>
+                      <button onClick={() => apagarCartao(c)} className="text-white/40 hover:text-rose-300 text-xs" title="Remover cartão">✕</button>
+                    </div>
+                    <div className="text-base font-mono tracking-widest font-semibold">•••• {c.last4}</div>
+                    <div className="flex items-center justify-between text-xs font-mono text-white/80">
+                      <div><span className="block text-[9px] text-white/50 uppercase">Validade</span>{c.expiry || "—"}</div>
+                      <div className="text-right"><span className="block text-[9px] text-white/50 uppercase">Usado / limite</span><b>{brl(usado)}</b> / {brl(c.limit)}</div>
+                    </div>
+                    <div className="w-full bg-black/50 h-1.5 rounded-full overflow-hidden border border-white/10">
+                      <div className={`h-full ${pct > 80 ? "bg-rose-500" : pct > 50 ? "bg-amber-400" : "bg-emerald-400"}`} style={{ width: `${pct}%` }} />
+                    </div>
+                    {fatura > 0 && (
+                      <button onClick={() => pagarFatura(c, fatura)} className="w-full text-[11px] font-mono font-bold uppercase py-2 rounded-lg bg-black/30 hover:bg-black/50 border border-white/20">
+                        Pagar fatura até {rotuloMesLongo(mes).split(" ")[0]}: {brl(fatura)}
+                      </button>
+                    )}
                   </div>
-                ) : (
-                  cards.map(card => {
-                    const percentUsed = card.limit > 0 ? Math.min(100, Math.round((card.used / card.limit) * 100)) : 0;
-                    return (
-                      <div
-                        key={card.id}
-                        className={`relative bg-gradient-to-br ${card.color} text-white p-5 rounded-xl border border-white/15 shadow-xl overflow-hidden space-y-3`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono uppercase tracking-widest text-white/75">{card.name}</span>
-                          <button
-                            onClick={() => handleDeleteCard(card.id)}
-                            className="text-white/40 hover:text-rose-300 text-xs font-bold transition-colors cursor-pointer"
-                            title="Remover Cartão"
-                          >
-                            ✕
-                          </button>
-                        </div>
-
-                        <div className="text-base font-mono tracking-widest font-semibold text-white/95">
-                          •••• •••• •••• {card.last4}
-                        </div>
-
-                        <div className="flex items-center justify-between text-xs font-mono pt-1 text-white/80">
-                          <div>
-                            <span className="block text-[9px] text-white/50 uppercase">Validade</span>
-                            <span>{card.expiry}</span>
-                          </div>
-                          <div className="text-right">
-                            <span className="block text-[9px] text-white/50 uppercase">Limite Usado</span>
-                            <span className="font-semibold">R$ {card.used.toLocaleString()} / R$ {card.limit.toLocaleString()}</span>
-                          </div>
-                        </div>
-
-                        {/* Barra de Progresso do Limite */}
-                        <div className="w-full bg-black/50 h-1.5 rounded-full overflow-hidden border border-white/10">
-                          <div
-                            className={`h-full transition-all ${
-                              percentUsed > 80 ? "bg-rose-500" : percentUsed > 50 ? "bg-amber-400" : "bg-emerald-400"
-                            }`}
-                            style={{ width: `${percentUsed}%` }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
+                );
+              })}
             </div>
           </div>
 
-          {/* GRÁFICO COMPARATIVO MENSAL (RECHARTS DINÂMICO REAL) */}
-          <div className="lg:col-span-2 bg-[#0b0c12] border border-white/10 rounded-2xl p-6 shadow-xl space-y-4 flex flex-col justify-between">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
-              <div className="flex items-center gap-2.5">
-                <BarChart2 size={18} className="text-cyan" />
-                <h3 className="font-serif text-base text-white font-normal">Evolução Mensal (Ganhos vs Gastos)</h3>
-              </div>
+          <div className="lg:col-span-2 bg-[#0b0c12] border border-white/10 rounded-2xl p-6 shadow-xl space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-4">
+              <div className="flex items-center gap-2.5"><BarChart2 size={18} className="text-cyan" /><h3 className="font-serif text-base">Entradas e saídas por mês</h3></div>
               <div className="flex items-center gap-4 text-xs font-mono">
-                <span className="flex items-center gap-1.5 text-emerald-400">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span> Ganhos
-                </span>
-                <span className="flex items-center gap-1.5 text-rose-400">
-                  <span className="w-2.5 h-2.5 rounded-full bg-rose-400"></span> Gastos
-                </span>
+                <span className="flex items-center gap-1.5 text-emerald-400"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400" /> Entradas</span>
+                <span className="flex items-center gap-1.5 text-rose-400"><span className="w-2.5 h-2.5 rounded-full bg-rose-400" /> Saídas</span>
+                <span className="text-white/40">meses futuros = previsão</span>
               </div>
             </div>
-
-            <div className="h-[280px] w-full pt-2">
+            <div className="h-[280px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                <BarChart data={serie} margin={{ top: 10, right: 10, left: -10, bottom: 0 }} onClick={(d: any) => d?.activePayload?.[0]?.payload?.mes && setMes(d.activePayload[0].payload.mes)}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.06} />
-                  <XAxis dataKey="month" stroke="#666666" tick={{ fill: "#888888", fontSize: 11, fontFamily: "monospace" }} />
-                  <YAxis stroke="#666666" tick={{ fill: "#888888", fontSize: 10, fontFamily: "monospace" }} />
-                  <Tooltip
-                    formatter={(val: any) => `R$ ${Number(val).toLocaleString("pt-BR")}`}
-                    contentStyle={{ backgroundColor: "#09090b", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", fontFamily: "monospace", fontSize: "12px" }}
-                  />
-                  <Bar dataKey="ganho" fill="#10b981" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="gasto" fill="#f43f5e" radius={[4, 4, 0, 0]} />
+                  <XAxis dataKey="rotulo" stroke="#666" tick={{ fill: "#888", fontSize: 11, fontFamily: "monospace" }} />
+                  <YAxis stroke="#666" tick={{ fill: "#888", fontSize: 10, fontFamily: "monospace" }} />
+                  <Tooltip formatter={(v: any) => brl(Number(v))} labelFormatter={(_: any, p: any) => p?.[0]?.payload?.mes ? rotuloMesLongo(p[0].payload.mes) : ""}
+                    contentStyle={{ backgroundColor: "#09090b", borderRadius: 12, border: "1px solid rgba(255,255,255,0.15)", color: "#fff", fontFamily: "monospace", fontSize: 12 }} />
+                  <Bar dataKey="ganho" name="Entradas" radius={[4, 4, 0, 0]}>
+                    {serie.map(s => <Cell key={s.mes} fill="#10b981" fillOpacity={ehFuturo(s.mes) ? 0.4 : s.mes === mes ? 1 : 0.75} />)}
+                  </Bar>
+                  <Bar dataKey="gasto" name="Saídas" radius={[4, 4, 0, 0]}>
+                    {serie.map(s => <Cell key={s.mes} fill="#f43f5e" fillOpacity={ehFuturo(s.mes) ? 0.4 : s.mes === mes ? 1 : 0.75} />)}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
+            <p className="text-[11px] font-mono text-white/40">Clique numa barra para abrir aquele mês.</p>
           </div>
         </div>
 
-        {/* SEÇÃO 3: TABELA DE LANÇAMENTOS (EXTRATO) */}
-        <div className="bg-[#0b0c12] border border-white/10 rounded-2xl p-6 shadow-xl space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+        {/* EXTRATO DO MÊS */}
+        <div className="bg-[#0b0c12] border border-white/10 rounded-2xl p-6 shadow-xl space-y-5">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-white/10 pb-4">
             <div className="flex items-center gap-3">
-              <Filter size={16} className="text-white/50" />
-              <h3 className="font-serif text-base text-white font-normal">Extrato de Lançamentos</h3>
-              <span className="text-[11px] font-mono bg-white/5 text-cyan border border-cyan/30 px-2 py-0.5 rounded-md">
-                {filteredTransactions.length} itens
-              </span>
+              <h3 className="font-serif text-base">Extrato de {rotuloMesLongo(mes)}</h3>
+              <span className="text-[11px] font-mono bg-white/5 text-cyan border border-cyan/30 px-2 py-0.5 rounded-md">{extrato.length} itens</span>
             </div>
-
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative">
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
-                <input
-                  type="text"
-                  placeholder="Buscar lançamento..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  className="pl-8 pr-3 py-1.5 text-xs font-mono bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-white/40 focus:outline-none focus:border-cyan/50"
-                />
+                <input value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar..." className="pl-8 pr-3 py-1.5 text-xs font-mono bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-cyan/50" />
               </div>
-
-              {["all", "income", "expense", "recurring"].map(typeKey => (
-                <button
-                  key={typeKey}
-                  onClick={() => setFilterType(typeKey as any)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
-                    filterType === typeKey 
-                      ? "bg-cyan/15 text-cyan border border-cyan/30 font-bold" 
-                      : "bg-white/5 text-white/50 hover:text-white border border-white/10"
-                  }`}
-                >
-                  {typeKey === "all" ? "Todos" : typeKey === "income" ? "Ganhos" : typeKey === "expense" ? "Gastos" : "Recorrentes"}
-                </button>
+              {([["all", "Todos"], ["income", "Entradas"], ["expense", "Saídas"], ["recurring", "Fixos"], ["pending", "Pendentes"]] as [Filtro, string][]).map(([k, r]) => (
+                <button key={k} onClick={() => setFiltro(k)} className={`px-3 py-1.5 text-[11px] font-mono rounded-lg border ${filtro === k ? "bg-cyan/15 text-cyan border-cyan/40" : "bg-white/5 text-white/50 border-white/10"}`}>{r}</button>
               ))}
             </div>
           </div>
 
-          {/* TABELA DE LANÇAMENTOS */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-white/10 text-[10px] font-mono uppercase text-white/40 tracking-[0.14em]">
-                  <th className="py-3 px-3">Lançamento</th>
-                  <th className="py-3 px-3">Tipo / Recorrência</th>
-                  <th className="py-3 px-3">Categoria</th>
-                  <th className="py-3 px-3">Data</th>
-                  <th className="py-3 px-3 text-right">Valor</th>
-                  <th className="py-3 px-3 text-center">Status</th>
-                  <th className="py-3 px-3 text-center">Ações</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5 text-xs font-sans">
-                {filteredTransactions.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="text-center py-12 text-white/40 font-mono">
-                      Nenhum lançamento encontrado.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredTransactions.map(item => (
-                    <tr key={item.id} className="hover:bg-white/[0.02] transition-colors">
-                      <td className="py-3.5 px-3 font-medium text-white">
-                        {item.title}
-                      </td>
-
-                      <td className="py-3.5 px-3 font-mono">
-                        <div className="flex items-center gap-1.5">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
-                            item.flow === "income" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" : "bg-rose-500/10 text-rose-400 border-rose-500/30"
-                          }`}>
-                            {item.flow === "income" ? "Ganho" : "Gasto"}
-                          </span>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/5 text-white/60 border border-white/10">
-                            {item.type === "recurring" ? "Recorrente" : "Único"}
-                          </span>
+          {carregando ? <div className="py-10 text-center text-white/40 text-sm">Carregando...</div>
+            : extrato.length === 0 ? (
+              <div className="py-12 text-center text-white/40 space-y-2"><Inbox size={32} className="mx-auto text-white/20" /><p className="text-xs font-mono">Nada neste mês{filtro !== "all" || busca ? " com esse filtro" : ""}.</p></div>
+            ) : (
+              <div className="divide-y divide-white/5">
+                {extrato.map(o => {
+                  const l = o.lanc;
+                  const entrada = l.flow === "income";
+                  return (
+                    <div key={l.id} className="flex flex-col md:flex-row md:items-center gap-3 py-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-medium truncate">{l.title}</span>
+                          {l.type === "recurring" && <Etiqueta icone={<Repeat size={10} />} texto={l.end_date ? `Fixo até ${dataBR(l.end_date).slice(3)}` : "Fixo mensal"} />}
+                          {l.group_id && l.installment_total && <Etiqueta icone={<Layers size={10} />} texto={`Parcela ${l.installment_n}/${l.installment_total}`} />}
+                          {l.card_id && <Etiqueta icone={<CreditCard size={10} />} texto={nomeCartao(l.card_id) || "Cartão"} />}
                         </div>
-                      </td>
-
-                      <td className="py-3.5 px-3 text-xs text-white/60 font-mono">
-                        {item.category}
-                      </td>
-
-                      <td className="py-3.5 px-3 text-xs text-white/50 font-mono">
-                        {item.date}
-                      </td>
-
-                      <td className={`py-3.5 px-3 text-right font-mono font-bold text-sm ${
-                        item.flow === "income" ? "text-emerald-400" : "text-rose-400"
-                      }`}>
-                        {item.flow === "income" ? "+" : "-"} R$ {Number(item.amount).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-                      </td>
-
-                      <td className="py-3.5 px-3 text-center font-mono">
-                        <button
-                          onClick={() => toggleStatus(item.id, item.status)}
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all cursor-pointer ${
-                            item.status === "paid"
-                              ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
-                              : "bg-amber-500/15 text-amber-400 border-amber-500/30"
-                          }`}
-                        >
-                          {item.status === "paid" ? <Check size={12} /> : <Clock size={12} />}
-                          <span>{item.status === "paid" ? "Pago/Recebido" : "Pendente"}</span>
+                        <div className="text-[11px] font-mono text-white/40 mt-0.5">
+                          {l.type === "recurring" ? `todo dia ${l.date.slice(8, 10)} · desde ${dataBR(l.date).slice(3)}` : dataBR(l.date)} · {l.category}
+                        </div>
+                      </div>
+                      <div className={`font-mono font-semibold md:w-36 md:text-right ${entrada ? "text-emerald-400" : "text-rose-400"}`}>{entrada ? "+" : "−"} {brl(o.valor)}</div>
+                      <div className="flex items-center gap-1.5">
+                        <button onClick={() => alternar(l)} title={o.pago ? "Marcar como pendente" : entrada ? "Marcar como recebido" : "Marcar como pago"}
+                          className={`flex items-center gap-1 text-[10px] font-mono uppercase px-2 py-1 rounded-md border ${o.pago ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30" : "bg-amber-500/10 text-amber-300 border-amber-500/30"}`}>
+                          {o.pago ? <Check size={11} /> : <Clock size={11} />} {o.pago ? (entrada ? "Recebido" : "Pago") : "Pendente"}
                         </button>
-                      </td>
+                        <button onClick={() => abrirEdicao(l)} className="p-1.5 rounded-md text-white/40 hover:text-white hover:bg-white/10" title="Editar"><Pencil size={13} /></button>
+                        <button onClick={() => apagar(l)} className="p-1.5 rounded-md text-white/40 hover:text-rose-400 hover:bg-rose-500/10" title="Apagar"><Trash2 size={13} /></button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+        </div>
+      </div>
 
-                      {/* BOTÕES DE AÇÕES: EDITAR (LÁPIS) E EXCLUIR (LIXEIRA) */}
-                      <td className="py-3.5 px-3 text-center">
-                        <div className="flex items-center justify-center gap-1.5">
-                          <button
-                            onClick={() => openEditModal(item)}
-                            className="p-1.5 hover:bg-cyan/10 text-white/40 hover:text-cyan rounded-lg transition-colors cursor-pointer"
-                            title="Editar Valores e Detalhes"
-                          >
-                            <Pencil size={14} />
-                          </button>
+      {/* MODAL LANÇAMENTO */}
+      {modalAberto && (
+        <div className="fixed inset-0 z-[100] bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <form onSubmit={salvar} className="bg-[#0b0c12] border border-white/10 rounded-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-serif text-lg">{editando ? "Editar lançamento" : "Novo lançamento"}</h3>
+              <button type="button" onClick={() => setModalAberto(false)} className="text-white/50 hover:text-white"><X size={20} /></button>
+            </div>
+            {editando?.group_id && <p className="text-[11px] text-amber-300/80">Esta é uma parcela: a edição vale só para ela.</p>}
 
-                          <button
-                            onClick={() => handleDeleteTx(item.id)}
-                            className="p-1.5 hover:bg-rose-500/10 text-white/40 hover:text-rose-400 rounded-lg transition-colors cursor-pointer"
-                            title="Excluir Lançamento"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+            <Alternador valor={fFluxo} onChange={v => { setFFluxo(v as any); if (!editando) setFCategoria(v === "income" ? "Clientes & Contratos" : "Outros"); if (v === "income") { setFCartao(""); setFParcelas(1); } }}
+              opcoes={[["expense", "Saída (gasto)"], ["income", "Entrada (ganho)"]]} />
+            <Campo rotulo="Descrição"><input value={fTitulo} onChange={e => setFTitulo(e.target.value)} className="inp" placeholder="Ex.: Aluguel, Cliente X, Notebook" required /></Campo>
+            <div className="grid grid-cols-2 gap-3">
+              <Campo rotulo={previaParcelas ? "Valor total da compra (R$)" : "Valor (R$)"}><input value={fValor} onChange={e => setFValor(e.target.value)} className="inp font-mono" placeholder="1.500,00" inputMode="decimal" required /></Campo>
+              <Campo rotulo="Categoria"><select value={fCategoria} onChange={e => setFCategoria(e.target.value)} className="inp">{CATEGORIES.map(c => <option key={c}>{c}</option>)}</select></Campo>
+            </div>
+
+            <Alternador valor={fTipo} onChange={v => { setFTipo(v as any); if (v === "recurring") setFParcelas(1); }} desabilitado={!!editando?.group_id}
+              opcoes={[["single", "Único / parcelado"], ["recurring", "Fixo mensal (repete todo mês)"]]} />
+
+            <div className="grid grid-cols-2 gap-3">
+              <Campo rotulo={fTipo === "recurring" ? "Começa em" : previaParcelas ? "Data da 1ª parcela" : "Data"}><input type="date" value={fData} onChange={e => setFData(e.target.value)} className="inp" required /></Campo>
+              {fTipo === "recurring"
+                ? <Campo rotulo="Termina em (opcional)"><input type="date" value={fFim} onChange={e => setFFim(e.target.value)} className="inp" /></Campo>
+                : !(editando?.type === "recurring") && (
+                  <Campo rotulo="Situação"><select value={fPago ? "paid" : "pending"} onChange={e => setFPago(e.target.value === "paid")} className="inp">
+                    <option value="paid">{fFluxo === "income" ? "Já recebido" : previaParcelas ? "1ª parcela paga" : "Já pago"}</option>
+                    <option value="pending">{fFluxo === "income" ? "A receber" : "A pagar"}</option>
+                  </select></Campo>
                 )}
-              </tbody>
-            </table>
+            </div>
+            {fTipo === "recurring" && !editando && (
+              <label className="flex items-center gap-2 text-xs text-white/70"><input type="checkbox" checked={fPago} onChange={e => setFPago(e.target.checked)} /> Já {fFluxo === "income" ? "recebido" : "pago"} no primeiro mês</label>
+            )}
+
+            {fFluxo === "expense" && (
+              <div className="grid grid-cols-2 gap-3">
+                <Campo rotulo="Pago no cartão? (opcional)"><select value={fCartao} onChange={e => setFCartao(e.target.value)} className="inp">
+                  <option value="">Não (Pix, boleto, dinheiro)</option>
+                  {cartoes.map(c => <option key={c.id} value={c.id}>{c.name} •••• {c.last4}</option>)}
+                </select></Campo>
+                {fTipo === "single" && !editando && (
+                  <Campo rotulo="Parcelas"><select value={fParcelas} onChange={e => setFParcelas(Number(e.target.value))} className="inp">
+                    {Array.from({ length: 24 }, (_, i) => i + 1).map(n => <option key={n} value={n}>{n === 1 ? "À vista" : `${n}x`}</option>)}
+                  </select></Campo>
+                )}
+              </div>
+            )}
+            {previaParcelas && (
+              <p className="text-[11px] font-mono text-cyan/80">Serão criadas {fParcelas} parcelas mensais de {brl(previaParcelas[0])}{previaParcelas[fParcelas - 1] !== previaParcelas[0] ? ` (a última de ${brl(previaParcelas[fParcelas - 1])}, para fechar o total)` : ""}.</p>
+            )}
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button type="button" onClick={() => setModalAberto(false)} className="px-4 py-2 text-sm text-white/60 hover:text-white">Cancelar</button>
+              <button type="submit" disabled={salvando} className="px-5 py-2 text-sm font-bold bg-[#00d1ff] text-black rounded-lg disabled:opacity-50">{salvando ? "Salvando..." : "Salvar"}</button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* MODAL CARTÃO */}
+      {modalCartao && (
+        <div className="fixed inset-0 z-[100] bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <form onSubmit={salvarCartao} className="bg-[#0b0c12] border border-white/10 rounded-2xl w-full max-w-md p-6 space-y-4">
+            <div className="flex items-center justify-between"><h3 className="font-serif text-lg">Novo cartão</h3><button type="button" onClick={() => setModalCartao(false)} className="text-white/50 hover:text-white"><X size={20} /></button></div>
+            <Campo rotulo="Nome"><input value={cNome} onChange={e => setCNome(e.target.value)} className="inp" placeholder="Ex.: Nubank PJ" required /></Campo>
+            <div className="grid grid-cols-3 gap-3">
+              <Campo rotulo="4 últimos dígitos"><input value={cFinal} onChange={e => setCFinal(e.target.value.replace(/\D/g, "").slice(0, 4))} className="inp font-mono" inputMode="numeric" required /></Campo>
+              <Campo rotulo="Validade"><input value={cValidade} onChange={e => setCValidade(e.target.value.slice(0, 5))} className="inp font-mono" placeholder="MM/AA" /></Campo>
+              <Campo rotulo="Limite (R$)"><input value={cLimite} onChange={e => setCLimite(e.target.value)} className="inp font-mono" placeholder="5.000" inputMode="decimal" /></Campo>
+            </div>
+            <div className="flex gap-2">{CORES_CARTAO.map(c => <button type="button" key={c} onClick={() => setCCor(c)} className={`w-8 h-8 rounded-lg bg-gradient-to-br ${c} border-2 ${cCor === c ? "border-white" : "border-transparent"}`} />)}</div>
+            <p className="text-[11px] text-white/40">O limite usado é calculado sozinho a partir dos gastos lançados neste cartão.</p>
+            <div className="flex justify-end gap-3"><button type="button" onClick={() => setModalCartao(false)} className="px-4 py-2 text-sm text-white/60">Cancelar</button><button type="submit" className="px-5 py-2 text-sm font-bold bg-[#00d1ff] text-black rounded-lg">Salvar</button></div>
+          </form>
+        </div>
+      )}
+
+      {/* MODAL DICAS */}
+      {dicasAberto && (
+        <div className="fixed inset-0 z-[100] bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#0b0c12] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[88vh] overflow-y-auto p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-serif text-lg flex items-center gap-2"><Lightbulb size={18} className="text-amber-400" /> Sugestões do dia (IA)</h3>
+              <div className="flex items-center gap-2">
+                <button onClick={() => abrirDicas(true)} disabled={carregandoDicas} className="p-1.5 rounded-md text-white/50 hover:text-white" title="Gerar de novo"><RefreshCw size={15} className={carregandoDicas ? "animate-spin" : ""} /></button>
+                <button onClick={() => setDicasAberto(false)} className="text-white/50 hover:text-white"><X size={20} /></button>
+              </div>
+            </div>
+            <p className="text-[11px] text-white/40">Baseadas nos lançamentos do mês atual. São sugestões automáticas, confira antes de agir.</p>
+            {carregandoDicas ? <div className="py-10 text-center text-white/40 text-sm">Analisando...</div>
+              : erroDicas ? <div className="p-4 rounded-xl border border-rose-500/30 bg-rose-500/10 text-sm text-rose-200">{erroDicas}</div>
+              : (dicas?.dicas || []).map(d => (
+                <div key={d.id} className="p-4 rounded-xl border border-white/10 bg-white/[0.02] space-y-1">
+                  <div className="flex items-center justify-between gap-2"><b>{d.title}</b><span className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded ${d.priority === "alta" ? "bg-rose-500/15 text-rose-300" : d.priority === "media" ? "bg-amber-500/15 text-amber-300" : "bg-white/10 text-white/60"}`}>{d.priority}</span></div>
+                  <p className="text-sm text-white/70">{d.description}</p>
+                  {d.impact && <p className="text-[11px] font-mono text-cyan/80">{d.impact}</p>}
+                </div>
+              ))}
           </div>
         </div>
+      )}
 
-        {/* MODAL ADICIONAR / EDITAR LANÇAMENTO */}
-        {showAddModal && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-            <div className="bg-[#0b0c12] border border-white/15 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-5 animate-in fade-in zoom-in duration-200 text-white">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <h3 className="font-serif text-lg text-white font-normal">
-                  {editingTx ? "Editar Lançamento Financeiro" : "Novo Lançamento Financeiro"}
-                </h3>
-                <button onClick={() => setShowAddModal(false)} className="text-white/40 hover:text-white transition-colors cursor-pointer">
-                  <X size={18} />
-                </button>
-              </div>
+      <style>{`.inp{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:.75rem;padding:.5rem .75rem;font-size:.8rem;color:#fff;outline:none}.inp:focus{border-color:rgba(0,209,255,.5)}.inp option{background:#0b0c12}`}</style>
+    </div>
+  );
+}
 
-              <form onSubmit={handleSaveTransaction} className="space-y-4">
-                <div>
-                  <label className="block text-[10px] font-mono uppercase tracking-wider text-white/50 mb-1.5">Tipo do Lançamento</label>
-                  <div className="grid grid-cols-2 gap-3 font-mono text-xs">
-                    <button
-                      type="button"
-                      onClick={() => setFormFlow("expense")}
-                      className={`py-2 rounded-xl border transition-all cursor-pointer ${
-                        formFlow === "expense" ? "bg-rose-500/20 text-rose-300 border-rose-500/50 font-bold" : "bg-white/5 text-white/50 border-white/10"
-                      }`}
-                    >
-                      Gasto (Saída)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setFormFlow("income")}
-                      className={`py-2 rounded-xl border transition-all cursor-pointer ${
-                        formFlow === "income" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/50 font-bold" : "bg-white/5 text-white/50 border-white/10"
-                      }`}
-                    >
-                      Ganho (Entrada)
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-mono uppercase tracking-wider text-white/50 mb-1.5">Frequência</label>
-                  <div className="grid grid-cols-2 gap-3 font-mono text-xs">
-                    <button
-                      type="button"
-                      onClick={() => setFormType("recurring")}
-                      className={`py-2 rounded-xl border transition-all cursor-pointer ${
-                        formType === "recurring" ? "bg-cyan/15 text-cyan border-cyan/40 font-bold" : "bg-white/5 text-white/50 border-white/10"
-                      }`}
-                    >
-                      Recorrente (Mensal)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setFormType("single")}
-                      className={`py-2 rounded-xl border transition-all cursor-pointer ${
-                        formType === "single" ? "bg-cyan/15 text-cyan border-cyan/40 font-bold" : "bg-white/5 text-white/50 border-white/10"
-                      }`}
-                    >
-                      Único (Pontual)
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-mono uppercase tracking-wider text-white/50 mb-1">Título do Lançamento</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Ex: Servidor Vercel, Cliente X, Pró-labore"
-                    value={formTitle}
-                    onChange={e => setFormTitle(e.target.value)}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white font-mono text-xs placeholder:text-white/30 focus:outline-none focus:border-cyan/50"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[10px] font-mono uppercase tracking-wider text-white/50 mb-1">Valor (R$)</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      required
-                      placeholder="0.00"
-                      value={formAmount}
-                      onChange={e => setFormAmount(e.target.value)}
-                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white font-mono text-xs placeholder:text-white/30 focus:outline-none focus:border-cyan/50 font-bold"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] font-mono uppercase tracking-wider text-white/50 mb-1">Categoria</label>
-                    <select
-                      value={formCategory}
-                      onChange={e => setFormCategory(e.target.value)}
-                      className="w-full px-3 py-2 bg-[#09090b] border border-white/10 rounded-xl text-white font-mono text-xs focus:outline-none focus:border-cyan/50"
-                    >
-                      {CATEGORIES.map(cat => (
-                        <option key={cat} value={cat}>{cat}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* OPÇÃO DE CARTÃO DE CRÉDITO E PARCELAMENTO */}
-                {formFlow === "expense" && !editingTx && (
-                  <div className="p-3.5 bg-white/[0.02] border border-white/10 rounded-xl space-y-3 font-mono">
-                    <label className="flex items-center gap-2 cursor-pointer text-xs text-white/80">
-                      <input
-                        type="checkbox"
-                        checked={isCardExpense}
-                        onChange={(e) => setIsCardExpense(e.target.checked)}
-                        className="accent-cyan cursor-pointer"
-                      />
-                      <span>💳 Pagamento com Cartão de Crédito?</span>
-                    </label>
-
-                    {isCardExpense && (
-                      <div className="space-y-3 pt-2 border-t border-white/5">
-                        {cards.length > 0 && (
-                          <div>
-                            <label className="block text-[10px] uppercase text-white/50 mb-1">
-                              Selecione o Cartão Utilizado
-                            </label>
-                            <select
-                              value={selectedCardId}
-                              onChange={(e) => setSelectedCardId(e.target.value)}
-                              className="w-full px-3 py-1.5 bg-[#09090b] border border-white/10 rounded-lg text-xs text-white"
-                            >
-                              <option value="">Nenhum / Cartão Geral</option>
-                              {cards.map((c) => (
-                                <option key={c.id} value={c.id}>
-                                  {c.name} (•••• {c.last4})
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        )}
-
-                        <label className="flex items-center gap-2 cursor-pointer text-xs text-white/80">
-                          <input
-                            type="checkbox"
-                            checked={isInstallment}
-                            onChange={(e) => setIsInstallment(e.target.checked)}
-                            className="accent-cyan cursor-pointer"
-                          />
-                          <span>É Compra Parcelada? (Lançar parcelas mensais)</span>
-                        </label>
-
-                        {isInstallment && (
-                          <div className="space-y-2 pt-1">
-                            <label className="block text-[10px] uppercase text-white/50">
-                              Número de Parcelas
-                            </label>
-                            <select
-                              value={installmentsCount}
-                              onChange={(e) => setInstallmentsCount(parseInt(e.target.value, 10))}
-                              className="w-full px-3 py-1.5 bg-[#09090b] border border-white/10 rounded-lg text-xs font-bold text-white"
-                            >
-                              {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 18, 24, 36, 48].map((n) => (
-                                <option key={n} value={n}>
-                                  {n}x parcelas mensais
-                                </option>
-                              ))}
-                            </select>
-
-                            {formAmount && parseFloat(formAmount.replace(",", ".")) > 0 && (
-                              <div className="p-2.5 bg-cyan/10 border border-cyan/30 rounded-lg text-xs text-cyan space-y-1">
-                                <div className="flex items-center gap-1.5">
-                                  <Zap size={13} className="text-cyan" />
-                                  <span>Geração de Parcelas Automáticas:</span>
-                                </div>
-                                <p className="text-[11px] text-white/70 leading-snug">
-                                  Serão criadas <strong>{installmentsCount} parcelas de R$ {(parseFloat(formAmount.replace(",", ".")) / installmentsCount).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mês</strong> sequenciais mês a mês no extrato.
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[10px] font-mono uppercase tracking-wider text-white/50 mb-1">Data</label>
-                    <input
-                      type="date"
-                      value={formDate}
-                      onChange={e => setFormDate(e.target.value)}
-                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white font-mono text-xs focus:outline-none focus:border-cyan/50"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] font-mono uppercase tracking-wider text-white/50 mb-1">Status</label>
-                    <select
-                      value={formStatus}
-                      onChange={e => setFormStatus(e.target.value as any)}
-                      className="w-full px-3 py-2 bg-[#09090b] border border-white/10 rounded-xl text-white font-mono text-xs focus:outline-none focus:border-cyan/50"
-                    >
-                      <option value="paid">Pago / Concluído</option>
-                      <option value="pending">Pendente</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="pt-3 flex justify-end gap-3 border-t border-white/10">
-                  <button
-                    type="button"
-                    onClick={() => setShowAddModal(false)}
-                    className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white font-mono text-xs rounded-xl border border-white/10 transition-colors cursor-pointer"
-                  >
-                    Cancelar
-                  </button>
-
-                  <button
-                    type="submit"
-                    className="px-5 py-2 bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-mono font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-lg shadow-[#00d1ff]/15"
-                  >
-                    {editingTx ? "Atualizar Lançamento" : "Salvar Lançamento"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* MODAL ADICIONAR CARTÃO DE CRÉDITO */}
-        {showAddCardModal && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-            <div className="bg-[#0b0c12] border border-white/15 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 text-white">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <h3 className="font-serif text-lg text-white font-normal">Cadastrar Novo Cartão</h3>
-                <button onClick={() => setShowAddCardModal(false)} className="text-white/40 hover:text-white transition-colors cursor-pointer">
-                  <X size={18} />
-                </button>
-              </div>
-
-              <form onSubmit={handleSaveCard} className="space-y-3 font-mono">
-                <div>
-                  <label className="block text-[10px] uppercase text-white/50 mb-1">Nome do Cartão / Banco</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Ex: Itaú Black, Nubank Pro"
-                    value={cardName}
-                    onChange={e => setCardName(e.target.value)}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-cyan/50"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[10px] uppercase text-white/50 mb-1">Últimos 4 Dígitos</label>
-                    <input
-                      type="text"
-                      maxLength={4}
-                      required
-                      placeholder="6782"
-                      value={cardLast4}
-                      onChange={e => setCardLast4(e.target.value)}
-                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white font-bold text-xs placeholder:text-white/30 focus:outline-none focus:border-cyan/50"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] uppercase text-white/50 mb-1">Validade</label>
-                    <input
-                      type="text"
-                      placeholder="08/29"
-                      value={cardExpiry}
-                      onChange={e => setCardExpiry(e.target.value)}
-                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-cyan/50"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[10px] uppercase text-white/50 mb-1">Limite Total (R$)</label>
-                    <input
-                      type="number"
-                      required
-                      placeholder="15000"
-                      value={cardLimit}
-                      onChange={e => setCardLimit(e.target.value)}
-                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white font-bold text-xs placeholder:text-white/30 focus:outline-none focus:border-cyan/50"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] uppercase text-white/50 mb-1">Gasto Atual (R$)</label>
-                    <input
-                      type="number"
-                      placeholder="0"
-                      value={cardUsed}
-                      onChange={e => setCardUsed(e.target.value)}
-                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white font-bold text-xs placeholder:text-white/30 focus:outline-none focus:border-cyan/50"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] uppercase text-white/50 mb-1">Estilo Visual do Cartão</label>
-                  <select
-                    value={cardColor}
-                    onChange={e => setCardColor(e.target.value)}
-                    className="w-full px-3 py-2 bg-[#09090b] border border-white/10 rounded-xl text-white text-xs"
-                  >
-                    <option value="from-[#2563eb] via-[#1d4ed8] to-[#1e3a8a]">Azul ESCOM Pro</option>
-                    <option value="from-slate-950 via-[#0e172a] to-slate-900">Black Card Premium</option>
-                    <option value="from-emerald-700 via-emerald-800 to-slate-900">Emerald Green</option>
-                    <option value="from-orange-600 via-amber-600 to-slate-900">Sunset Gold</option>
-                  </select>
-                </div>
-
-                <div className="pt-3 flex justify-end gap-3 border-t border-white/10">
-                  <button
-                    type="button"
-                    onClick={() => setShowAddCardModal(false)}
-                    className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white font-mono text-xs rounded-xl border border-white/10 transition-colors cursor-pointer"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-5 py-2 bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-mono font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-lg shadow-[#00d1ff]/15"
-                  >
-                    Salvar Cartão
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* MODAL 💡 5 DICAS DO DIA (DISPARADAS PELO CRON DIÁRIO / IA GROQ) */}
-        {showTipsModal && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-            <div className="bg-[#0b0c12] border border-white/15 rounded-2xl p-6 max-w-2xl w-full shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar animate-in fade-in zoom-in duration-200 text-white">
-              
-              {/* Header Modal */}
-              <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-400/10 border border-amber-400/30 text-amber-400 flex items-center justify-center">
-                    <Lightbulb size={20} className="fill-amber-400/40" />
-                  </div>
-                  <div>
-                    <h3 className="font-serif text-lg text-white font-normal flex items-center gap-2">
-                      5 Dicas Financeiras do Dia
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan/10 text-cyan border border-cyan/30">
-                        Cron 08h ⚡
-                      </span>
-                    </h3>
-                    <p className="text-xs font-mono text-white/40">
-                      {dailyTipsData?.date ? `Análise realizada em: ${dailyTipsData.date}` : "Análise em tempo real do seu balanço com IA"}
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setShowTipsModal(false)}
-                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white flex items-center justify-center border border-white/10 transition-colors cursor-pointer"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-
-              {/* Lista de 5 Dicas */}
-              {loadingTips ? (
-                <div className="py-16 text-center space-y-3 font-mono">
-                  <RefreshCw size={32} className="animate-spin text-cyan mx-auto" />
-                  <p className="text-xs font-bold text-white">Processando análise financeira com IA...</p>
-                  <p className="text-[11px] text-white/40">Avaliando lançamentos, despesas e fluxo de caixa.</p>
-                </div>
-              ) : dailyTipsData?.dicas && dailyTipsData.dicas.length > 0 ? (
-                <div className="space-y-3.5">
-                  {dailyTipsData.dicas.map((tip, idx) => (
-                    <div
-                      key={tip.id || idx}
-                      className="p-4 bg-white/[0.02] border border-white/10 rounded-xl space-y-2 hover:border-white/20 transition-all"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="w-5 h-5 rounded-full bg-white/10 text-cyan font-mono font-bold text-[10px] flex items-center justify-center">
-                            #{idx + 1}
-                          </span>
-                          <span className="text-[11px] font-mono text-cyan uppercase tracking-wider">
-                            {tip.category || "Geral"}
-                          </span>
-                        </div>
-
-                        <span className={`px-2 py-0.5 rounded font-mono text-[9px] uppercase border ${
-                          tip.priority === "alta"
-                            ? "bg-rose-500/10 text-rose-400 border-rose-500/30"
-                            : tip.priority === "media"
-                            ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
-                            : "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-                        }`}>
-                          Prioridade {tip.priority}
-                        </span>
-                      </div>
-
-                      <h4 className="font-serif text-sm font-medium text-white">{tip.title}</h4>
-                      <p className="text-xs text-white/70 font-sans leading-relaxed">{tip.description}</p>
-
-                      {tip.impact && (
-                        <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded inline-block mt-1">
-                          💡 Impacto: {tip.impact}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="py-12 text-center text-white/40 space-y-2 font-mono">
-                  <Inbox size={32} className="mx-auto text-white/20" />
-                  <p className="text-xs text-white/70">Nenhuma dica gerada ainda.</p>
-                  <p className="text-[11px] text-white/40">Cadastre seus lançamentos e clique abaixo para calcular.</p>
-                </div>
-              )}
-
-              {/* Footer Modal com Botão de Regeneração */}
-              <div className="pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 font-mono">
-                <span className="text-[10px] uppercase text-white/40">
-                  Automação diária às 08:00
-                </span>
-
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={handleRefreshDailyTips}
-                    disabled={loadingTips}
-                    className="px-3.5 py-2 bg-white/5 hover:bg-white/10 text-white font-mono text-xs rounded-xl border border-white/10 flex items-center gap-2 transition-colors disabled:opacity-50 cursor-pointer"
-                  >
-                    <RefreshCw size={13} className={loadingTips ? "animate-spin" : ""} />
-                    <span>Recalcular Dicas</span>
-                  </button>
-
-                  <button
-                    onClick={() => setShowTipsModal(false)}
-                    className="px-4 py-2 bg-[#00d1ff] hover:bg-[#00b8e6] text-black font-mono font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-lg shadow-[#00d1ff]/15"
-                  >
-                    Fechar
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        )}
-
+function Kpi({ titulo, cor, icone, valor, linhas }: { titulo: string; cor: "emerald" | "rose" | "cyan" | "white"; icone: React.ReactNode; valor: number; linhas: [string, number | null, string?][] }) {
+  const cores = { emerald: "text-emerald-400", rose: "text-rose-400", cyan: "text-cyan", white: "text-white" };
+  return (
+    <div className="bg-[#0b0c12] border border-white/10 rounded-2xl p-5 shadow-xl space-y-3">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-white/50">{titulo}</span>
+        <div className={`w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center ${cores[cor]}`}>{icone}</div>
       </div>
+      <div className={`text-2xl font-serif font-light tracking-tight ${cores[cor]}`}>{brl(valor)}</div>
+      <div className="text-xs font-mono text-white/40 pt-1 border-t border-white/5 space-y-0.5">
+        {linhas.map(([r, v, t]) => <div key={r} className="flex justify-between gap-2"><span>{r}</span><span className="text-white/80">{t ?? brl(v || 0)}</span></div>)}
+      </div>
+    </div>
+  );
+}
+
+function Etiqueta({ icone, texto }: { icone: React.ReactNode; texto: string }) {
+  return <span className="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-white/60">{icone}{texto}</span>;
+}
+
+function Campo({ rotulo, children }: { rotulo: string; children: React.ReactNode }) {
+  return <label className="block space-y-1"><span className="text-[10px] font-mono uppercase tracking-wider text-white/50">{rotulo}</span>{children}</label>;
+}
+
+function Alternador({ valor, onChange, opcoes, desabilitado }: { valor: string; onChange: (v: string) => void; opcoes: [string, string][]; desabilitado?: boolean }) {
+  return (
+    <div className={`grid grid-cols-2 gap-2 ${desabilitado ? "opacity-40 pointer-events-none" : ""}`}>
+      {opcoes.map(([v, r]) => (
+        <button type="button" key={v} onClick={() => onChange(v)} className={`py-2 text-xs rounded-xl border ${valor === v ? "bg-cyan/15 text-cyan border-cyan/40 font-bold" : "bg-white/5 text-white/50 border-white/10"}`}>{r}</button>
+      ))}
     </div>
   );
 }

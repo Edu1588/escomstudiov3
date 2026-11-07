@@ -38,7 +38,7 @@ export default function App() {
   }, [loading]);
 
   useEffect(() => {
-    logPageView("HOME");
+    logPageView("home");
   }, []);
 
   return (

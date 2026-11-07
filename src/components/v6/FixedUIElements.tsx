@@ -1,6 +1,61 @@
-import React, { useEffect, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { ArrowRight, ArrowUpRight, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/components/v6/LanguageContext";
+
+// Páginas por nicho (abrem em nova aba). O menu do celular usa a mesma lista em home-v6.tsx.
+export function useNicheLinks() {
+  const { t } = useLanguage();
+  return [{ href: "/construtora", label: t.nav.nicheConstrutoras }];
+}
+
+function NichesDropdown() {
+  const { t } = useLanguage();
+  const links = useNicheLinks();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("click", close);
+    return () => document.removeEventListener("click", close);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative hidden xl:block" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+      <button
+        type="button"
+        aria-haspopup="true"
+        aria-expanded={open}
+        onClick={() => setOpen(true)}
+        className="flex items-center gap-2 bg-black/90 hover:bg-black text-white hover:text-cyan border border-white/25 hover:border-cyan px-4 py-2 font-mono text-[11px] uppercase tracking-[0.20em] transition-all duration-200 backdrop-blur-md shadow-2xl cursor-pointer"
+      >
+        <span className="font-semibold">{t.nav.niches}</span>
+        <ChevronDown className={`size-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full min-w-[230px] pt-2">
+          <div className="border border-white/20 bg-black/95 shadow-2xl backdrop-blur-md">
+            {links.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between gap-4 px-4 py-3 font-mono text-[11px] uppercase tracking-[0.18em] text-white transition-colors hover:bg-cyan hover:text-black"
+              >
+                {l.label}
+                <ArrowUpRight className="size-3.5" />
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function FixedContactButton() {
   const { t } = useLanguage();

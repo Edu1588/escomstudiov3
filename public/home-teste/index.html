@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ESCOM Studio — The Slash: Frame Sequence Scrubber</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow: hidden;
+    }
+
+    #experience-root {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      overflow: hidden;
+    }
+
+    /* Canvas do Frame Scrubber */
+    #frame-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Canvas de Partículas Aditivas */
+    #fx-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Fissura Luminosa do Corte */
+    .slash-fissure {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 15;
+      opacity: 0;
+      transition: opacity 0.05s ease-out;
+      mix-blend-mode: screen;
+    }
+
+    .slash-line {
+      position: absolute;
+      top: 18%;
+      left: -15%;
+      width: 130%;
+      height: 5px;
+      background: linear-gradient(90deg, transparent, #00f0ff 25%, #ffffff 50%, #00f0ff 75%, transparent);
+      box-shadow: 0 0 35px #00f0ff, 0 0 80px #0088ff;
+      transform: rotate(-24deg);
+      transform-origin: center;
+    }
+
+    /* Screen Flash no Golpe */
+    #slash-flash {
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 16;
+      transition: opacity 0.06s ease-out;
+    }
+
+    /* HUD */
+    .hud {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 32px 40px;
+    }
+
+    .hud-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hud-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hud-badge {
+      font-family: monospace;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: #00f0ff;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 6px 14px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+
+    .hud-center {
+      text-align: center;
+      pointer-events: auto;
+    }
+
+    .hud-phase-num {
+      font-family: monospace;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: #00f0ff;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .hud-phase {
+      font-size: clamp(20px, 3.2vw, 36px);
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      text-shadow: 0 4px 25px rgba(0,0,0,0.9);
+    }
+
+    .hud-desc {
+      font-family: monospace;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      color: rgba(255, 255, 255, 0.65);
+      text-transform: uppercase;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .hud-footer {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      pointer-events: auto;
+      max-width: 680px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .timeline-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .timeline-labels {
+      display: flex;
+      justify-content: space-between;
+      font-family: monospace;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+    }
+
+    .timeline-track {
+      position: relative;
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+      cursor: pointer;
+    }
+
+    .timeline-progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #00f0ff, #fff);
+      box-shadow: 0 0 12px #00f0ff;
+      border-radius: 2px;
+    }
+
+    .timeline-thumb {
+      position: absolute;
+      top: 50%;
+      left: 0%;
+      width: 14px;
+      height: 14px;
+      background: #fff;
+      border: 2px solid #00f0ff;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px #00f0ff;
+      transition: transform 0.1s;
+    }
+
+    .timeline-track:hover .timeline-thumb {
+      transform: translate(-50%, -50%) scale(1.3);
+    }
+
+    .controls-row {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .btn-ctrl {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 8px 24px;
+      border-radius: 20px;
+      font-family: monospace;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-ctrl:hover {
+      background: rgba(0, 240, 255, 0.2);
+      border-color: #00f0ff;
+      color: #00f0ff;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+    }
+
+    .btn-ctrl.active {
+      background: #00f0ff;
+      color: #000;
+      border-color: #00f0ff;
+      font-weight: bold;
+    }
+
+    .hint-scroll {
+      font-family: monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: rgba(255, 255, 255, 0.4);
+      text-align: center;
+      text-transform: uppercase;
+      animation: pulse 2.5s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.8; }
+    }
+
+    /* Loading Overlay */
+    #loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      transition: opacity 0.5s;
+    }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 3px solid rgba(0, 240, 255, 0.2);
+      border-top-color: #00f0ff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="experience-root">
+    <div id="loading-overlay">
+      <div class="spinner"></div>
+      <div style="font-family: monospace; font-size: 12px; letter-spacing: 0.2em; color: #00f0ff;" id="loading-txt">
+        PREPARANDO SEQUÊNCIA CINEMATOGRÁFICA...
+      </div>
+    </div>
+
+    <!-- Canvas principal de renderização da sequência de frames -->
+    <canvas id="frame-canvas"></canvas>
+
+    <!-- Canvas de efeitos e partículas de plasma -->
+    <canvas id="fx-canvas"></canvas>
+
+    <!-- Linha e Flash de Impacto do Corte -->
+    <div class="slash-fissure" id="slash-fissure">
+      <div class="slash-line"></div>
+    </div>
+    <div id="slash-flash"></div>
+
+    <!-- HUD -->
+    <div class="hud">
+      <header class="hud-header">
+        <div class="hud-title">
+          <span>ESCOM STUDIO</span>
+          <span style="opacity: 0.3;">/</span>
+          <span style="color: #00f0ff; font-weight: 300;">THE SLASH ENGINE</span>
+        </div>
+        <div class="hud-badge" id="hud-badge">ESTADO: REPOUSO</div>
+      </header>
+
+      <div class="hud-center">
+        <div class="hud-phase-num" id="phase-num">ETAPA 01 / 06</div>
+        <div class="hud-phase" id="phase-title">1. A CONTEMPLAÇÃO</div>
+        <div class="hud-desc" id="phase-desc">O robô oficial agachado no galpão blueprint observa a borboleta morpho.</div>
+      </div>
+
+      <footer class="hud-footer">
+        <div class="hint-scroll">Role a roda do mouse (Scroll), arraste a barra ou aperte PLAY</div>
+
+        <div class="timeline-container">
+          <div class="timeline-labels">
+            <span>01. Agachado</span>
+            <span>02. Impulso</span>
+            <span>03. Ascensão</span>
+            <span>04. Em Pé</span>
+            <span>05. Avanço</span>
+            <span>06. O Corte</span>
+          </div>
+          <div class="timeline-track" id="timeline-track">
+            <div class="timeline-progress" id="timeline-progress"></div>
+            <div class="timeline-thumb" id="timeline-thumb"></div>
+          </div>
+        </div>
+
+        <div class="controls-row">
+          <button class="btn-ctrl" id="btn-play">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            PLAY CINEMATIC
+          </button>
+          <button class="btn-ctrl" id="btn-reset">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+            REINICIAR
+          </button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    // As 6 Etapas da Narrativa Contínua
+    const PHASES = [
+      {
+        num: "ETAPA 01 / 06",
+        badge: "ESTADO: REPOUSO",
+        title: "1. A CONTEMPLAÇÃO",
+        desc: "O robô oficial agachado no galpão blueprint observa a borboleta morpho azul pousada na mão."
+      },
+      {
+        num: "ETAPA 02 / 06",
+        badge: "ESTADO: O IMPULSO INICIAL",
+        title: "2. O IMPULSO ARTICULAR",
+        desc: "O robô inicia a subida estendendo os joelhos e elevando a bacia; a borboleta dissolve-se em vórtice de luz azul."
+      },
+      {
+        num: "ETAPA 03 / 06",
+        badge: "ESTADO: ASCENSÃO DE ENERGIA",
+        title: "3. A CONDENSAÇÃO DE PLASMA",
+        desc: "Quase em pé, filamentos de energia azul luminescente fluem em espiral envolvendo o braço até o chão espelhado."
+      },
+      {
+        num: "ETAPA 04 / 06",
+        badge: "ESTADO: MATERIALIZAÇÃO",
+        title: "4. A KATANA MANIFESTADA",
+        desc: "O robô ergue-se totalmente frontal de corpo inteiro com as duas mãos empunhando a lâmina de plasma azul elétrico."
+      },
+      {
+        num: "ETAPA 05 / 06",
+        badge: "ESTADO: O ATAQUE EM AVANÇO",
+        title: "5. O PASSO EM COMBATE",
+        desc: "O robô avança com um lunge firme em direção à câmera iniciando o golpe com faíscas azuis no primeiro plano."
+      },
+      {
+        num: "ETAPA 06 / 06",
+        badge: "ESTADO: O CORTE DA REALIDADE",
+        title: "6. O CORTE FRONTAL DA TELA",
+        desc: "O corte transversal rasga a tela do usuário de ponta a ponta com plasma azul e fissura de luz."
+      }
+    ];
+
+    // URLs dos Frames de Alta Resolução da Sequência
+    const FRAME_URLS = [
+      "/home-teste/frames/sequence/seq_01.png",
+      "/home-teste/frames/sequence/seq_02.jpg",
+      "/home-teste/frames/sequence/seq_03.jpg",
+      "/home-teste/frames/sequence/seq_04.jpg",
+      "/home-teste/frames/sequence/seq_05.jpg",
+      "/home-teste/frames/sequence/seq_06.jpg"
+    ];
+
+    const frameImages = [];
+    let loadedCount = 0;
+
+    // Estado da Timeline
+    let progress = 0.0;
+    let targetProgress = 0.0;
+    let isPlaying = false;
+    let playSpeed = 0.0028;
+
+    window.setProgress = (v) => {
+      targetProgress = v;
+      progress = v;
+    };
+
+    // Canvas Elements
+    const canvas = document.getElementById("frame-canvas");
+    const ctx = canvas.getContext("2d");
+
+    const fxCanvas = document.getElementById("fx-canvas");
+    const fxCtx = fxCanvas.getContext("2d");
+
+    const slashFissure = document.getElementById("slash-fissure");
+    const slashFlash = document.getElementById("slash-flash");
+    const progressBar = document.getElementById("timeline-progress");
+    const thumb = document.getElementById("timeline-thumb");
+    const track = document.getElementById("timeline-track");
+    const hudBadge = document.getElementById("hud-badge");
+    const phaseNum = document.getElementById("phase-num");
+    const phaseTitle = document.getElementById("phase-title");
+    const phaseDesc = document.getElementById("phase-desc");
+    const btnPlay = document.getElementById("btn-play");
+    const btnReset = document.getElementById("btn-reset");
+    const loadingOverlay = document.getElementById("loading-overlay");
+    const loadingTxt = document.getElementById("loading-txt");
+
+    // Partículas de Plasma Azul
+    const particles = [];
+    for (let i = 0; i < 75; i++) {
+      particles.push({
+        x: Math.random(),
+        y: Math.random(),
+        vx: (Math.random() - 0.5) * 0.0012,
+        vy: -Math.random() * 0.002 - 0.0004,
+        size: Math.random() * 2.2 + 0.8,
+        alpha: Math.random() * 0.7 + 0.2
+      });
+    }
+
+    // Preload dos Frames
+    FRAME_URLS.forEach((url, index) => {
+      const img = new Image();
+      img.src = url;
+      img.onload = () => {
+        frameImages[index] = img;
+        loadedCount++;
+        const pct = Math.round((loadedCount / FRAME_URLS.length) * 100);
+        loadingTxt.innerText = `CARREGANDO SEQUÊNCIA CINEMATOGRÁFICA: ${pct}%`;
+        if (loadedCount === FRAME_URLS.length) {
+          initExperience();
+        }
+      };
+      img.onerror = () => {
+        console.error("Erro ao carregar frame:", url);
+      };
+    });
+
+    function resize() {
+      const dpr = window.devicePixelRatio || 1;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      ctx.scale(dpr, dpr);
+
+      fxCanvas.width = w * dpr;
+      fxCanvas.height = h * dpr;
+      fxCanvas.style.width = w + "px";
+      fxCanvas.style.height = h + "px";
+      fxCtx.scale(dpr, dpr);
+    }
+
+    window.addEventListener("resize", resize);
+
+    function initExperience() {
+      resize();
+      loadingOverlay.style.opacity = "0";
+      setTimeout(() => loadingOverlay.style.display = "none", 500);
+      requestAnimationFrame(renderLoop);
+    }
+
+    // Motor de Renderização a 60 FPS
+    function renderLoop() {
+      // Lerp para inércia cinematográfica
+      progress += (targetProgress - progress) * 0.10;
+
+      if (isPlaying) {
+        targetProgress += playSpeed;
+        if (targetProgress >= 1.0) {
+          targetProgress = 1.0;
+          isPlaying = false;
+          btnPlay.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> REPLAY`;
+          btnPlay.classList.remove("active");
+        }
+      }
+
+      // UI Timeline
+      const pct = Math.min(Math.max(progress * 100, 0), 100);
+      progressBar.style.width = pct + "%";
+      thumb.style.left = pct + "%";
+
+      // Atualiza textos da fase
+      updateHUD(progress);
+
+      // Renderiza os frames com interpolação de alta precisão
+      drawFrameSequence(progress);
+
+      // Renderiza partículas e efeitos
+      drawFX(progress);
+
+      requestAnimationFrame(renderLoop);
+    }
+
+    function updateHUD(p) {
+      const totalPhases = PHASES.length;
+      const phaseIdx = Math.min(Math.floor(p * totalPhases), totalPhases - 1);
+      const cur = PHASES[phaseIdx];
+
+      hudBadge.innerText = cur.badge;
+      phaseNum.innerText = cur.num;
+      phaseTitle.innerText = cur.title;
+      phaseDesc.innerText = cur.desc;
+    }
+
+    // Algoritmo de Frame Scrubber com Interpolação Contínua
+    function drawFrameSequence(p) {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      ctx.clearRect(0, 0, w, h);
+
+      const totalSegments = FRAME_URLS.length - 1; // 5 segmentos
+      const exactPos = p * totalSegments;
+      const frameAIndex = Math.min(Math.floor(exactPos), totalSegments);
+      const frameBIndex = Math.min(frameAIndex + 1, totalSegments);
+      const blend = exactPos - frameAIndex; // 0.0 a 1.0 entre os dois frames
+
+      const imgA = frameImages[frameAIndex];
+      const imgB = frameImages[frameBIndex];
+
+      // Leve Zoom In cinemático com o avanço do corte
+      const zoom = 1.0 + p * 0.04;
+      ctx.save();
+      ctx.translate(w / 2, h / 2);
+      ctx.scale(zoom, zoom);
+      ctx.translate(-w / 2, -h / 2);
+
+      function drawImageFit(img, opacity) {
+        if (!img || opacity <= 0) return;
+        ctx.globalAlpha = Math.max(0, Math.min(1, opacity));
+
+        const imgRatio = img.width / img.height;
+        const screenRatio = w / h;
+        let dw, dh, dx, dy;
+
+        if (screenRatio > imgRatio) {
+          dw = w;
+          dh = w / imgRatio;
+          dx = 0;
+          dy = (h - dh) / 2;
+        } else {
+          dh = h;
+          dw = h * imgRatio;
+          dx = (w - dw) / 2;
+          dy = 0;
+        }
+
+        ctx.drawImage(img, dx, dy, dw, dh);
+      }
+
+      // Renderiza o frame A e dissolve suavemente o frame B por cima
+      drawImageFit(imgA, 1.0);
+      if (blend > 0 && imgB) {
+        drawImageFit(imgB, blend);
+      }
+
+      ctx.restore();
+    }
+
+    function drawFX(p) {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      fxCtx.clearRect(0, 0, w, h);
+
+      // Partículas azuis aumentam com a materialização da katana
+      if (p > 0.15) {
+        const intensity = Math.min((p - 0.15) * 1.5, 1.0);
+        fxCtx.fillStyle = "#00f0ff";
+
+        particles.forEach(pt => {
+          pt.y += pt.vy;
+          pt.x += pt.vx;
+          if (pt.y < 0) pt.y = 1;
+          if (pt.x < 0) pt.x = 1;
+          if (pt.x > 1) pt.x = 0;
+
+          const px = pt.x * w;
+          const py = pt.y * h;
+
+          fxCtx.beginPath();
+          fxCtx.arc(px, py, pt.size * intensity, 0, Math.PI * 2);
+          fxCtx.globalAlpha = pt.alpha * intensity;
+          fxCtx.shadowColor = "#00f0ff";
+          fxCtx.shadowBlur = 10;
+          fxCtx.fill();
+        });
+      }
+
+      // Efeito de Corte no ápice (p > 0.82)
+      if (p > 0.82) {
+        const slashPower = (p - 0.82) / 0.18;
+        slashFissure.style.opacity = Math.min(slashPower * 1.3, 1.0);
+
+        if (p > 0.84 && p < 0.90) {
+          slashFlash.style.opacity = "0.45";
+        } else {
+          slashFlash.style.opacity = "0";
+        }
+      } else {
+        slashFissure.style.opacity = "0";
+        slashFlash.style.opacity = "0";
+      }
+    }
+
+    // Scroll
+    window.addEventListener("wheel", (e) => {
+      targetProgress += e.deltaY * 0.0007;
+      targetProgress = Math.max(0, Math.min(1, targetProgress));
+      if (isPlaying) {
+        isPlaying = false;
+        btnPlay.classList.remove("active");
+        btnPlay.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> PLAY CINEMATIC`;
+      }
+    }, { passive: true });
+
+    // Slider Drag
+    let isDragging = false;
+    function updateFromTrack(e) {
+      const rect = track.getBoundingClientRect();
+      const pos = (e.clientX - rect.left) / rect.width;
+      targetProgress = Math.max(0, Math.min(1, pos));
+      progress = targetProgress;
+    }
+
+    track.addEventListener("mousedown", (e) => {
+      isDragging = true;
+      isPlaying = false;
+      btnPlay.classList.remove("active");
+      updateFromTrack(e);
+    });
+
+    window.addEventListener("mousemove", (e) => { if (isDragging) updateFromTrack(e); });
+    window.addEventListener("mouseup", () => { isDragging = false; });
+
+    // Touch
+    let touchY = 0;
+    window.addEventListener("touchstart", (e) => { touchY = e.touches[0].clientY; });
+    window.addEventListener("touchmove", (e) => {
+      const dy = touchY - e.touches[0].clientY;
+      touchY = e.touches[0].clientY;
+      targetProgress += dy * 0.0015;
+      targetProgress = Math.max(0, Math.min(1, targetProgress));
+    });
+
+    // Botões
+    btnPlay.addEventListener("click", () => {
+      isPlaying = !isPlaying;
+      if (isPlaying) {
+        if (targetProgress >= 0.99) targetProgress = 0;
+        btnPlay.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg> PAUSE`;
+        btnPlay.classList.add("active");
+      } else {
+        btnPlay.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> PLAY CINEMATIC`;
+        btnPlay.classList.remove("active");
+      }
+    });
+
+    btnReset.addEventListener("click", () => {
+      targetProgress = 0;
+      progress = 0;
+      isPlaying = false;
+      btnPlay.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> PLAY CINEMATIC`;
+      btnPlay.classList.remove("active");
+    });
+  </script>
+</body>
+</html>
